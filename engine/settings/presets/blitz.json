@@ -1,0 +1,4 @@
+{
+  "clock": {"roll_interval_ms": 8000},
+  "victory": {"target": 7}
+}
