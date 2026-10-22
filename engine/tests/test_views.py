@@ -85,14 +85,19 @@ class ProjectStateTest(unittest.TestCase):
         self.assertEqual(views.project_state(s, 0)["players"][1]["points"], 3)
 
     def test_buildable(self) -> None:
-        s = make_state()
-        s.buildable_cache[0] = {"roads": [7], "settlements": [], "cities": []}
-        self.assertEqual(views.project_state(s, 0)["buildable"]["roads"], [7])
-        self.assertNotIn("buildable", views.project_state(s, 1))
-        self.assertNotIn("buildable", views.project_state(s, None))
-        views.register_buildable_provider(lambda st, seat: {"roads": [seat], "settlements": [], "cities": []})
-        self.assertEqual(views.project_state(s, 2)["buildable"]["roads"], [2])
-        self.assertNotIn("buildable", views.project_state(s, None))
+        previous = views._buildable_provider  # placement registers a real provider at import
+        try:
+            views.register_buildable_provider(None)
+            s = make_state()
+            s.buildable_cache[0] = {"roads": [7], "settlements": [], "cities": []}
+            self.assertEqual(views.project_state(s, 0)["buildable"]["roads"], [7])
+            self.assertNotIn("buildable", views.project_state(s, 1))
+            self.assertNotIn("buildable", views.project_state(s, None))
+            views.register_buildable_provider(lambda st, seat: {"roads": [seat], "settlements": [], "cities": []})
+            self.assertEqual(views.project_state(s, 2)["buildable"]["roads"], [2])
+            self.assertNotIn("buildable", views.project_state(s, None))
+        finally:
+            views.register_buildable_provider(previous)
 
 
 class FilterEventsTest(unittest.TestCase):
