@@ -364,8 +364,16 @@ class LargestArmySettings(_Group):
     points: int = setting(2, label="settings.victory.largest_army.points", ge=0, le=10)
 
 
+class BuildingPointsSettings(_Group):
+    settlement: int = setting(1, label="settings.victory.building_points.settlement", ge=0, le=10)
+    city: int = setting(2, label="settings.victory.building_points.city", ge=0, le=10)
+    """Total points of a city (it replaces the settlement's points)."""
+
+
 class VictorySettings(_Group):
     target: int = setting(10, label="settings.victory.target", ge=5, le=20)
+    building_points: BuildingPointsSettings = setting(label="settings.victory.building_points",
+                                                      factory=BuildingPointsSettings)
     longest_road: LongestRoadSettings = setting(label="settings.victory.longest_road", stage=2,
                                                 factory=LongestRoadSettings)
     largest_army: LargestArmySettings = setting(label="settings.victory.largest_army", stage=2,
