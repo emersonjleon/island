@@ -12,8 +12,10 @@ integer maths only:
 * **Number tokens**: one per producing land hex, largest remainder on the
   standard multiset; ties go to the token closer to the robber roll (7), then
   the lower number (order 6, 8, 5, 9, 4, 10, 3, 11, 2, 12).
-* **Fishing grounds / generic harbors** = ``round_half_up(land * std / 19)``.
-  Fishing tokens cycle through ``fishing_grounds.tokens`` in their given order.
+* **Fishing grounds / generic harbors** scale with the *coastline*, not the area,
+  because both sit on the coast: ``round_half_up(std * coast_edges / 30)`` where
+  ``coast_edges`` is the outer coastline length of the island (30 on the standard
+  board). Fishing tokens cycle through ``fishing_grounds.tokens`` in their order.
 * **Specific harbors** are never scaled: ``harbors.specific`` is used as is.
 
 Explicit values in the settings always win over auto values.
@@ -24,6 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Hashable, Mapping, Sequence
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import TYPE_CHECKING, TypeVar
 
 from .enums import PRODUCING_TERRAINS, Resource, Terrain
@@ -79,6 +82,27 @@ class ResolvedBoardCounts:
 def scale_round(standard: int, land_hexes: int) -> int:
     """``round_half_up(standard * land_hexes / STANDARD_LAND_HEXES)`` in integers."""
     return (2 * standard * land_hexes + STANDARD_LAND_HEXES) // (2 * STANDARD_LAND_HEXES)
+
+
+STANDARD_COAST_EDGES = 30
+
+
+def coast_edges(land_hexes: int, shape: str = "spiral") -> int:
+    """Number of coastal edges of the island generated for this size and shape."""
+    return _coast_edges_cached(land_hexes, str(shape))
+
+
+@lru_cache(maxsize=256)
+def _coast_edges_cached(land_hexes: int, shape: str) -> int:
+    from engine.board.topology import Board  # local import keeps settings importable on its own
+
+    # Only the spiral shape exists in stage 1; other shapes will add their own branch here.
+    return len(Board.spiral_island(land_hexes, 0).coastal_edges)
+
+
+def scale_by_coast(standard: int, coast: int) -> int:
+    """``round_half_up(standard * coast / STANDARD_COAST_EDGES)`` in integers."""
+    return (2 * standard * coast + STANDARD_COAST_EDGES) // (2 * STANDARD_COAST_EDGES)
 
 
 def scale_counts(base: Sequence[tuple[K, int]], total: int) -> dict[K, int]:
@@ -145,9 +169,10 @@ def resolve_board_counts(settings: GameSettings | BoardSettings) -> ResolvedBoar
         tokens = _expand(board.number_tokens)
 
     fg = board.fishing_grounds
-    fishing_count = scale_round(STANDARD_FISHING_GROUNDS, land) if fg.count is None else fg.count
     hb = board.harbors
-    generic = scale_round(STANDARD_GENERIC_HARBORS, land) if hb.generic is None else hb.generic
+    coast = coast_edges(land, board.shape) if (fg.count is None or hb.generic is None) else 0
+    fishing_count = scale_by_coast(STANDARD_FISHING_GROUNDS, coast) if fg.count is None else fg.count
+    generic = scale_by_coast(STANDARD_GENERIC_HARBORS, coast) if hb.generic is None else hb.generic
     return ResolvedBoardCounts(
         terrain_counts=terrain,
         number_tokens=tokens,

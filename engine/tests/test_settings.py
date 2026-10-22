@@ -121,14 +121,14 @@ class ResolveTest(unittest.TestCase):
         r7 = resolve_board_counts(board(land_hexes=7))
         self.assertEqual(r7.terrain_counts[Terrain.DESERT], 0)
         self.assertEqual(r7.number_tokens, (3, 4, 5, 6, 8, 9, 10))
-        self.assertEqual((r7.fishing_count, r7.harbors_generic), (2, 1))
+        self.assertEqual((r7.fishing_count, r7.harbors_generic), (4, 2))  # coast 18 edges
         self.assertEqual(resolve_board_counts(board(land_hexes=10)).terrain_counts[Terrain.DESERT], 1)
         r37 = resolve_board_counts(board(land_hexes=37))
         self.assertEqual([r37.terrain_counts[t] for t in Terrain], [8, 8, 7, 6, 6, 2])
-        self.assertEqual((r37.fishing_count, r37.harbors_generic), (12, 8))
+        self.assertEqual((r37.fishing_count, r37.harbors_generic), (8, 6))  # coast 42 edges
         r250 = resolve_board_counts(board(land_hexes=250))
         self.assertEqual(r250.terrain_counts[Terrain.DESERT], 13)
-        self.assertEqual((r250.fishing_count, r250.harbors_generic), (79, 53))
+        self.assertEqual((r250.fishing_count, r250.harbors_generic), (22, 15))  # coast 112 edges
 
     def test_explicit_counts_win(self) -> None:
         s = board(land_hexes=7, terrain_counts={"forest": 2, "hills": 2, "fields": 2, "desert": 1},
