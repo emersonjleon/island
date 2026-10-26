@@ -15,3 +15,16 @@ Stage 1 in progress. The rules engine (`engine/`) is pure Python and is being bu
 python3 -m pip install "pydantic~=2.12"
 python3 -m unittest discover -s engine -t . -p "test_*.py"
 ```
+
+## Simulations and protocol contract
+
+`engine/sim/` has headless bots (`RandomBot`, `GreedyBot`), a manual-clock runner that records the
+command log, replay/resume helpers and state invariants. The suite in `engine/tests/simulation/`
+plays full games, replays them from the log and from mid-game snapshots, and checks redaction.
+
+`protocol/` (codes, JSON Schemas, golden fixtures for the TypeScript client) is generated:
+
+```bash
+python3 scripts/export_protocol.py          # regenerate
+python3 scripts/export_protocol.py --check  # what the tests verify
+```
