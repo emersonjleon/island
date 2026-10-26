@@ -36,7 +36,8 @@ class NewGameTest(unittest.TestCase):
         for i, p in enumerate(state.players):
             self.assertEqual(p.seat, i)
             self.assertEqual(p.hand, {r: 0 for r in Resource})
-            self.assertEqual(p.pieces_left, {BuildKind.ROAD: 12, BuildKind.SETTLEMENT: 5, BuildKind.CITY: 4})
+            self.assertEqual(p.pieces_left, {BuildKind.ROAD: 12, BuildKind.SETTLEMENT: 5, BuildKind.CITY: 4,
+                                             BuildKind.MEGACITY: 4})
             self.assertEqual(p.setup_remaining, {BuildKind.SETTLEMENT: 2, BuildKind.ROAD: 1})
             self.assertFalse(p.setup_done)
         self.assertEqual(len(state.timers), 0)

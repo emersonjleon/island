@@ -186,11 +186,12 @@ def brute_buildable(state: GameState, seat: int) -> dict[str, list[int]]:
     b = state.board.board
     rng_v, rng_e = range(len(b.vertices)), range(len(b.edges))
     if state.phase == "finished":
-        return {"roads": [], "settlements": [], "cities": []}
+        return {"roads": [], "settlements": [], "cities": [], "megacities": []}
     return {
         "roads": [e for e in rng_e if placement.build_error(state, seat, R, e) is None],
         "settlements": [v for v in rng_v if placement.build_error(state, seat, S, v) is None],
         "cities": [v for v in rng_v if placement.build_error(state, seat, C, v) is None],
+        "megacities": [v for v in rng_v if placement.build_error(state, seat, BuildKind.MEGACITY, v) is None],
     }
 
 
@@ -475,7 +476,8 @@ class BuildableEventsTest(WP6Case):
         initial = [e for e in events if isinstance(e, Buildable)]
         self.assertEqual([e.seat for e in initial], [0, 1, 2])
         for e in initial:
-            self.assertEqual({"roads": e.roads, "settlements": e.settlements, "cities": e.cities},
+            self.assertEqual({"roads": e.roads, "settlements": e.settlements, "cities": e.cities,
+                              "megacities": e.megacities},
                              state.buildable_cache[e.seat])
         self.assertEqual(placement.update_buildable(state, 0), [])
         v = inner_vertices(state)[0]

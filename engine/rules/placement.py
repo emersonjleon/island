@@ -16,7 +16,7 @@ Build modes (per player and kind, see :func:`build_mode`):
   ``setup.network_build_during_setup``). Settlement: land, empty, distance rule,
   touches an own finished road. Road: land, empty, touches an own building, or an
   own road at an end vertex that holds no opponent building. City: replaces an own
-  finished settlement.
+  finished settlement. Megacity: replaces an own finished city.
 
 In-progress constructions of *other* players never block a target (first to
 finish wins); the same player cannot build the same kind on the same target twice.
@@ -24,7 +24,7 @@ finish wins); the same player cannot build the same kind on the same target twic
 Reject codes (``RuleError.code``; params always include ``kind`` and ``target``):
 ``build.not_land``, ``build.occupied``, ``build.distance_rule``,
 ``build.not_connected``, ``build.road_needs_settlement``,
-``build.not_own_settlement``, ``build.setup_unfinished``, ``build.setup_limit``,
+``build.not_own_settlement``, ``build.not_own_city``, ``build.setup_unfinished``, ``build.setup_limit``,
 ``build.already_building``, ``build.no_piece``, ``build.cannot_afford``
 (``missing``: resource -> count).
 """
@@ -42,7 +42,7 @@ from engine.views import register_buildable_provider
 __all__ = [
     "Mode", "SETUP", "NETWORK", "BUILDABLE_ORDER",
     "cost_of", "missing_resources", "can_afford", "pending_setup", "build_mode", "mode_error",
-    "road_connected", "settlement_error", "road_error", "city_error", "placement_error",
+    "road_connected", "settlement_error", "road_error", "city_error", "megacity_error", "placement_error",
     "build_error", "check_build", "legal_targets", "buildable", "buildable_view", "update_buildable",
 ]
 
@@ -51,7 +51,8 @@ SETUP: Mode = "setup"
 NETWORK: Mode = "network"
 BUILDABLE_ORDER = 200
 
-_KEYS = {BuildKind.ROAD: "roads", BuildKind.SETTLEMENT: "settlements", BuildKind.CITY: "cities"}
+_KEYS = {BuildKind.ROAD: "roads", BuildKind.SETTLEMENT: "settlements", BuildKind.CITY: "cities",
+         BuildKind.MEGACITY: "megacities"}
 
 
 def _err(code: str, kind: BuildKind, target: int | None, **extra: object) -> RuleError:
@@ -86,7 +87,7 @@ def mode_error(state: GameState, seat: int, kind: BuildKind) -> tuple[Mode | Non
     if p.setup_done:
         return NETWORK, None
     during = state.settings.setup.network_build_during_setup
-    remaining = p.setup_remaining.get(kind, 0) if kind is not BuildKind.CITY else 0
+    remaining = p.setup_remaining.get(kind, 0) if kind in (BuildKind.SETTLEMENT, BuildKind.ROAD) else 0
     if remaining > 0:
         if remaining - pending_setup(state, seat, kind) > 0:
             return SETUP, None
@@ -182,6 +183,16 @@ def city_error(state: GameState, seat: int, vertex: int) -> RuleError | None:
     return None
 
 
+def megacity_error(state: GameState, seat: int, vertex: int) -> RuleError | None:
+    k = BuildKind.MEGACITY
+    if not _land_vertex(state, vertex):
+        return _err("build.not_land", k, vertex)
+    b = state.buildings.get(vertex)
+    if b is None or b.seat != seat or b.kind is not BuildKind.CITY:
+        return _err("build.not_own_city", k, vertex)
+    return None
+
+
 def placement_error(state: GameState, seat: int, kind: BuildKind, target: int, mode: Mode,
                     recheck: bool = False) -> RuleError | None:
     """Board-position rules only (no mode, piece, cost, duplicate or builder checks)."""
@@ -189,6 +200,8 @@ def placement_error(state: GameState, seat: int, kind: BuildKind, target: int, m
         return settlement_error(state, seat, target, mode)
     if kind is BuildKind.ROAD:
         return road_error(state, seat, target, mode, recheck)
+    if kind is BuildKind.MEGACITY:
+        return megacity_error(state, seat, target)
     return city_error(state, seat, target)
 
 

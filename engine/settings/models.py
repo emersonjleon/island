@@ -201,6 +201,9 @@ class CostSettings(_Group):
         {Resource.BRICK: 1, Resource.LUMBER: 1, Resource.WOOL: 1, Resource.GRAIN: 1},
         label="settings.economy.costs.settlement")
     city: ResourceMap = setting({Resource.GRAIN: 2, Resource.ORE: 3}, label="settings.economy.costs.city")
+    megacity: ResourceMap = setting(
+        {Resource.GRAIN: 3, Resource.ORE: 4, Resource.BRICK: 2, Resource.WOOL: 2},
+        label="settings.economy.costs.megacity")
     dev_card: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1},
                                     label="settings.economy.costs.dev_card", stage=2)
     settler: ResourceMap = setting(
@@ -211,6 +214,7 @@ class CostSettings(_Group):
 class ProductionSettings(_Group):
     settlement: int = setting(1, label="settings.economy.production_per.settlement", ge=0, le=10)
     city: int = setting(2, label="settings.economy.production_per.city", ge=0, le=10)
+    megacity: int = setting(4, label="settings.economy.production_per.megacity", ge=0, le=20)
 
 
 class StartingResourcesSettings(_Group):
@@ -266,6 +270,8 @@ class PieceSettings(_Group):
     roads: int = setting(15, label="settings.pieces.roads", ge=0, le=200)
     settlements: int = setting(5, label="settings.pieces.settlements", ge=1, le=100)
     cities: int = setting(4, label="settings.pieces.cities", ge=0, le=100)
+    megacities: int = setting(4, label="settings.pieces.megacities", ge=0, le=100)
+    """Megacities upgrade an own city (the city piece returns). 0 disables them."""
 
 
 # ----------------------------------------------------------------------- build
@@ -273,6 +279,7 @@ class BuildTimeSettings(_Group):
     road: int = setting(3000, label="settings.build.time_ms.road", ge=0, le=600000)
     settlement: int = setting(8000, label="settings.build.time_ms.settlement", ge=0, le=600000)
     city: int = setting(10000, label="settings.build.time_ms.city", ge=0, le=600000)
+    megacity: int = setting(15000, label="settings.build.time_ms.megacity", ge=0, le=600000)
 
 
 class BuildSettings(_Group):
@@ -337,6 +344,7 @@ class SightSettings(_Group):
     road: int = setting(1, label="settings.visibility.sight.road", ge=0, le=10)
     settlement: int = setting(1, label="settings.visibility.sight.settlement", ge=0, le=10)
     city: int = setting(2, label="settings.visibility.sight.city", ge=0, le=10)
+    megacity: int = setting(3, label="settings.visibility.sight.megacity", ge=0, le=10)
     settler: int = setting(1, label="settings.visibility.sight.settler", ge=0, le=10)
 
 
@@ -368,6 +376,8 @@ class BuildingPointsSettings(_Group):
     settlement: int = setting(1, label="settings.victory.building_points.settlement", ge=0, le=10)
     city: int = setting(2, label="settings.victory.building_points.city", ge=0, le=10)
     """Total points of a city (it replaces the settlement's points)."""
+    megacity: int = setting(3, label="settings.victory.building_points.megacity", ge=0, le=20)
+    """Total points of a megacity (it replaces the city's points)."""
 
 
 class VictorySettings(_Group):

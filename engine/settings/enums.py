@@ -53,6 +53,7 @@ class BuildKind(StrEnum):
     ROAD = "road"
     SETTLEMENT = "settlement"
     CITY = "city"
+    MEGACITY = "megacity"
 
 
 class DevCardKind(StrEnum):

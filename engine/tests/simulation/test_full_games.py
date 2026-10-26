@@ -42,6 +42,15 @@ class GreedyGamesTest(unittest.TestCase):
                     s = parse_settings({"board": {"land_hexes": n}})
                     self.assert_won(run_game(s, make_seats(players), 0, ["greedy"] * players, MAX_MS), 10)
 
+    def test_megacities_unblock_crowded_board(self) -> None:
+        """On a 7-hex island the spots run out; upgrading to megacities still reaches the target."""
+        s = parse_settings({"board": {"land_hexes": 7}})
+        for seed in (0, 1, 2):
+            with self.subTest(seed=seed):
+                r = run_game(s, make_seats(3), seed, ["greedy"] * 3, MAX_MS)
+                self.assert_won(r, 10)
+                self.assertTrue(any(b.kind.value == "megacity" for b in r.state.buildings.values()))
+
     def test_blitz_preset(self) -> None:
         s = load_preset("blitz")
         r = run_game(s, make_seats(3), 3, ["greedy"] * 3, MAX_MS)

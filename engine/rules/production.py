@@ -37,6 +37,8 @@ def _amount(state: GameState, kind: BuildKind) -> int:
         return per.settlement
     if kind is BuildKind.CITY:
         return per.city
+    if kind is BuildKind.MEGACITY:
+        return per.megacity
     return 0
 
 

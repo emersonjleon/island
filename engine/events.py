@@ -256,6 +256,7 @@ class Buildable(Event):
     roads: list[int]
     settlements: list[int]
     cities: list[int]
+    megacities: list[int] = Field(default_factory=list)
 
 
 class GameOver(Event):

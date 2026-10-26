@@ -46,7 +46,8 @@ def _conservation(state: GameState, totals: dict[Resource, int]) -> list[str]:
 def _pieces(state: GameState) -> list[str]:
     out: list[str] = []
     cfg = state.settings.pieces
-    limits = {BuildKind.ROAD: cfg.roads, BuildKind.SETTLEMENT: cfg.settlements, BuildKind.CITY: cfg.cities}
+    limits = {BuildKind.ROAD: cfg.roads, BuildKind.SETTLEMENT: cfg.settlements, BuildKind.CITY: cfg.cities,
+              BuildKind.MEGACITY: cfg.megacities}
     for p in state.players:
         used = {k: 0 for k in BuildKind}
         used[BuildKind.ROAD] = sum(1 for s in state.roads.values() if s == p.seat)
@@ -94,8 +95,8 @@ def _points(state: GameState) -> list[str]:
     out: list[str] = []
     bp = state.settings.victory.building_points
     for p in state.players:
-        pts = sum(bp.settlement if b.kind is BuildKind.SETTLEMENT else bp.city
-                  for b in state.buildings.values() if b.seat == p.seat)
+        per = {BuildKind.SETTLEMENT: bp.settlement, BuildKind.CITY: bp.city, BuildKind.MEGACITY: bp.megacity}
+        pts = sum(per[b.kind] for b in state.buildings.values() if b.seat == p.seat)
         if pts != p.points:
             out.append(f"points.{p.seat}: cached {p.points} != {pts}")
     if state.phase == "finished":

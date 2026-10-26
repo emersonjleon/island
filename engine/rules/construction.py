@@ -215,9 +215,11 @@ def _place(state: GameState, c: Construction) -> None:
     elif c.kind is BuildKind.SETTLEMENT:
         state.buildings[c.target] = Building(seat=c.seat, kind=BuildKind.SETTLEMENT)
     else:
-        state.buildings[c.target] = Building(seat=c.seat, kind=BuildKind.CITY)
+        # a city returns its settlement piece, a megacity its city piece
+        replaced = BuildKind.SETTLEMENT if c.kind is BuildKind.CITY else BuildKind.CITY
+        state.buildings[c.target] = Building(seat=c.seat, kind=c.kind)
         p = state.player(c.seat)
-        p.pieces_left[BuildKind.SETTLEMENT] = p.pieces_left.get(BuildKind.SETTLEMENT, 0) + 1
+        p.pieces_left[replaced] = p.pieces_left.get(replaced, 0) + 1
 
 
 def cancel_conflicts(state: GameState, now_ms: int) -> list[Event]:

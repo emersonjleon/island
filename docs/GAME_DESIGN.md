@@ -38,20 +38,23 @@ The default preset copies the Catan base game for 3–4 players. Each value belo
 
 **Bank.** The bank holds 19 cards of each resource. If it cannot pay every player owed a resource, nobody gets that resource on that roll. The exception is when only one player is owed it, who then gets what is left.
 
-**Pieces per player.** Each player has 15 roads, 5 settlements and 4 cities. Building a city returns its settlement to the player's supply.
+**Pieces per player.** Each player has 15 roads, 5 settlements, 4 cities and 4 megacities. Building a city returns its settlement to the player's supply; building a megacity returns its city.
 
 | Build | Cost | Points |
 | --- | --- | --- |
 | Road | 1 brick, 1 lumber | 0 |
 | Settlement | 1 brick, 1 lumber, 1 wool, 1 grain | 1 |
 | City (upgrades a settlement) | 2 grain, 3 ore | 2 |
+| Megacity (upgrades a city) | 3 grain, 4 ore, 2 brick, 2 wool | 3 |
 | Development card | 1 wool, 1 grain, 1 ore | varies |
 
 **Placement.**
 
 - Settlements go on corners where three hexes meet. No settlement may sit on a corner next to another settlement (the distance rule).
 - After setup, every road and settlement must connect to the player's own road network.
-- A hex produces its resource for each adjacent settlement (1 card) and city (2 cards) when its number is rolled.
+- A hex produces its resource for each adjacent settlement (1 card), city (2 cards) and megacity (4 cards) when its number is rolled.
+
+**Megacities.** A very expensive upgrade of a city that produces 4 cards per roll and is worth 3 points. They keep the game moving when the island is full: once a player has no room left for new settlements, they can still grow by upgrading, so a game cannot get stuck below the target. Cost, production, points, pieces and build time are settings; 0 megacity pieces turns them off.
 
 **Development cards.** The deck has 25 cards:
 
@@ -125,6 +128,7 @@ Every game uses settlers to build the first two settlements. In the Settlers var
 | Road | 3 s |
 | Settlement | 8 s |
 | City | 10 s |
+| Megacity | 15 s |
 
 **More settlers.** An extra settler costs 5 grain, 5 wool, 3 wood and 2 fish by default, up to 4 per player (more for bigger maps). A new settler appears at any of the player's settlements or cities. Settlers can improve productivity as well.
 
@@ -197,7 +201,7 @@ Every number in this doc is a customizable variable, and the code never hard-cod
   - Board size: any number of hexes, from the first version. Island shapes and a map editor come later; the land stays one connected island until a sea expansion.
 - **Dice and clock:** roll interval, two dice or dice deck, pause after a 7, setup pick timer.
 - **Economy:** cost of each build, card and settler, starting materials, starting resources per first settlement, bank size, bank and harbor ratios, hand limit on a 7.
-- **Pieces:** roads, settlements and cities per player.
+- **Pieces:** roads, settlements, cities and megacities per player.
 - **Robber:** on or off; on a 7 it randomly steals a percentage of materials (50% by default) from everyone holding more than 7 cards, or only from those with a building next to the robber; cards stolen per knight (1 by default); it moves randomly to neighbouring hexes, or up to 3 hexes when a knight card is used; and a "friendly robber" option that cannot target players with few points.
 - **Development cards:** deck contents and play cooldown.
 - **Settlers:** starting count, landing points, maximum, cost of extras, walking speed, road speed bonus, build times and build reach.

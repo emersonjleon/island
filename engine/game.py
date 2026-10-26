@@ -205,7 +205,7 @@ def _new_player(settings: GameSettings, info: SeatInfo) -> PlayerState:
     return PlayerState(
         seat=info.seat, info=info, hand=empty_resources(),
         pieces_left={BuildKind.ROAD: pieces.roads, BuildKind.SETTLEMENT: pieces.settlements,
-                     BuildKind.CITY: pieces.cities},
+                     BuildKind.CITY: pieces.cities, BuildKind.MEGACITY: pieces.megacities},
         setup_remaining={BuildKind.SETTLEMENT: settings.setup.settlements, BuildKind.ROAD: settings.setup.roads},
     )
 

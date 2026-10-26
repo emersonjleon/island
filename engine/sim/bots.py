@@ -22,7 +22,7 @@ from engine.state import GameState, Settler
 __all__ = ["Bot", "RandomBot", "GreedyBot", "BOT_TYPES", "make_bot", "pips", "vertex_score"]
 
 Intent = dict[str, Any]
-SETTLEMENT, ROAD, CITY = BuildKind.SETTLEMENT, BuildKind.ROAD, BuildKind.CITY
+SETTLEMENT, ROAD, CITY, MEGACITY = BuildKind.SETTLEMENT, BuildKind.ROAD, BuildKind.CITY, BuildKind.MEGACITY
 
 
 def pips(token: int | None, state: GameState) -> int:
@@ -134,7 +134,7 @@ class RandomBot(Bot):
     """Uniformly random legal setup spots and network builds; occasional random trades."""
 
     def network(self, state: GameState) -> list[Intent]:
-        options = [(k, t) for k in (ROAD, SETTLEMENT, CITY) for t in placement.legal_targets(state, self.seat, k)]
+        options = [(k, t) for k in (ROAD, SETTLEMENT, CITY, MEGACITY) for t in placement.legal_targets(state, self.seat, k)]
         out: list[Intent] = []
         if options:
             k, t = self.rng.choice(options)
@@ -181,6 +181,9 @@ class GreedyBot(Bot):
         return self.rng.choice([e for e in options if score(e) == best])
 
     def network(self, state: GameState) -> list[Intent]:
+        megas = placement.legal_targets(state, self.seat, MEGACITY)
+        if megas:
+            return [_build(MEGACITY, self.pick_vertex(state, megas))]
         cities = placement.legal_targets(state, self.seat, CITY)
         if cities:
             return [_build(CITY, self.pick_vertex(state, cities))]
@@ -201,8 +204,16 @@ class GreedyBot(Bot):
             t = self._trade_for(state, CITY, max_missing=2)
             if t is not None:
                 return [t]
-        if primary is ROAD and p.pieces_left.get(ROAD, 0) <= 0:
-            return []
+        if primary is ROAD and not (p.pieces_left.get(ROAD, 0) > 0 and any(
+                placement.road_error(state, self.seat, e, placement.NETWORK) is None for e in board.land_edges)):
+            # no room to grow: upgrade instead
+            has_city = any(b.seat == self.seat and b.kind is CITY for b in state.buildings.values())
+            if has_settlement and p.pieces_left.get(CITY, 0) > 0:
+                primary = CITY
+            elif has_city and p.pieces_left.get(MEGACITY, 0) > 0:
+                primary = MEGACITY
+            else:
+                return []
         t = self._trade_for(state, primary)
         return [] if t is None else [t]
 

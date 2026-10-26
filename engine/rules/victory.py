@@ -52,6 +52,8 @@ def building_points(state: GameState, kind: BuildKind) -> int:
         return bp.settlement
     if kind is BuildKind.CITY:
         return bp.city - bp.settlement
+    if kind is BuildKind.MEGACITY:
+        return bp.megacity - bp.city
     return 0
 
 

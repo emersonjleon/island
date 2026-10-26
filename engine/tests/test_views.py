@@ -64,7 +64,7 @@ class ProjectStateTest(unittest.TestCase):
         self.assertEqual(v["bank"]["ore"], 19)
         self.assertEqual(v["phase"], "setup")
         self.assertEqual(p0["setup"]["remaining"], {"settlement": 2, "road": 2})
-        self.assertEqual(p0["pieces"], {"road": 15, "settlement": 5, "city": 4})
+        self.assertEqual(p0["pieces"], {"road": 15, "settlement": 5, "city": 4, "megacity": 4})
 
     def test_open_and_hidden(self) -> None:
         v = views.project_state(make_state({"visibility": {"hands": "open"}}), None)
