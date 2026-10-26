@@ -229,4 +229,5 @@ Version 1 is the Classic preset, fully playable online in the 2D view by 2–4 p
 - [x] Roll interval: 20 seconds.
 - [x] Computer players: not in version 1.
 - [x] Players need accounts to play.
+- [x] Megacities (upgrade of a city: 4 cards per roll, 3 points) so full islands cannot stall a game. Added Oct 26, 2026 (not yet in the Claude Docs version).
 - [x] Interface in English and Spanish from the start, with all text kept in translation files so more languages can be added later.
