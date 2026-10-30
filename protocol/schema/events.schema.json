@@ -1,0 +1,970 @@
+{
+  "$defs": {
+    "BuildKind": {
+      "enum": [
+        "road",
+        "settlement",
+        "city",
+        "megacity"
+      ],
+      "title": "BuildKind",
+      "type": "string"
+    },
+    "Buildable": {
+      "additionalProperties": false,
+      "description": "Legal build spots of ``seat`` (sent only to that seat, when they change).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "cities": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Cities",
+          "type": "array"
+        },
+        "k": {
+          "const": "buildable",
+          "default": "buildable",
+          "title": "K",
+          "type": "string"
+        },
+        "megacities": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Megacities",
+          "type": "array"
+        },
+        "roads": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Roads",
+          "type": "array"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "settlements": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Settlements",
+          "type": "array"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "roads",
+        "settlements",
+        "cities"
+      ],
+      "title": "Buildable",
+      "type": "object"
+    },
+    "Built": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "built",
+          "default": "built",
+          "title": "K",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/BuildKind"
+        },
+        "points_after": {
+          "title": "Points After",
+          "type": "integer"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "target": {
+          "title": "Target",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "kind",
+        "target",
+        "points_after"
+      ],
+      "title": "Built",
+      "type": "object"
+    },
+    "ClockStarted": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "clock_started",
+          "default": "clock_started",
+          "title": "K",
+          "type": "string"
+        },
+        "next_roll_at": {
+          "title": "Next Roll At",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "next_roll_at"
+      ],
+      "title": "ClockStarted",
+      "type": "object"
+    },
+    "ConstructionCancelled": {
+      "additionalProperties": false,
+      "description": "``reason``: code such as ``\"conflict\"``, ``\"builder_left\"``, ``\"cancelled\"``.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "k": {
+          "const": "construction_cancelled",
+          "default": "construction_cancelled",
+          "title": "K",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "refund": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Refund",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "id",
+        "seat",
+        "reason",
+        "refund"
+      ],
+      "title": "ConstructionCancelled",
+      "type": "object"
+    },
+    "ConstructionStarted": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "builder": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Builder"
+        },
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "k": {
+          "const": "construction_started",
+          "default": "construction_started",
+          "title": "K",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/BuildKind"
+        },
+        "paid": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Paid",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "t0": {
+          "title": "T0",
+          "type": "integer"
+        },
+        "t1": {
+          "title": "T1",
+          "type": "integer"
+        },
+        "target": {
+          "title": "Target",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "id",
+        "seat",
+        "kind",
+        "target",
+        "builder",
+        "t0",
+        "t1",
+        "paid"
+      ],
+      "title": "ConstructionStarted",
+      "type": "object"
+    },
+    "DiceRolled": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "dice": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Dice",
+          "type": "array"
+        },
+        "k": {
+          "const": "dice_rolled",
+          "default": "dice_rolled",
+          "title": "K",
+          "type": "string"
+        },
+        "next_roll_at": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Next Roll At"
+        },
+        "sum": {
+          "title": "Sum",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "dice",
+        "sum",
+        "next_roll_at"
+      ],
+      "title": "DiceRolled",
+      "type": "object"
+    },
+    "GameOver": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "game_over",
+          "default": "game_over",
+          "title": "K",
+          "type": "string"
+        },
+        "points": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Points",
+          "type": "object"
+        },
+        "winner": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Winner"
+        }
+      },
+      "required": [
+        "at",
+        "winner",
+        "points"
+      ],
+      "title": "GameOver",
+      "type": "object"
+    },
+    "Hand": {
+      "additionalProperties": false,
+      "description": "A player's full hand after a change (resulting values).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "hand": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Hand",
+          "type": "object"
+        },
+        "k": {
+          "const": "hand",
+          "default": "hand",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "hand"
+      ],
+      "title": "Hand",
+      "type": "object"
+    },
+    "Points": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "points",
+          "default": "points",
+          "title": "K",
+          "type": "string"
+        },
+        "points": {
+          "title": "Points",
+          "type": "integer"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "points"
+      ],
+      "title": "Points",
+      "type": "object"
+    },
+    "Produced": {
+      "additionalProperties": false,
+      "description": "``gains``: seat -> resources received; ``skipped``: resource -> reason code\n(e.g. ``\"bank_shortage\"``, ``\"robber\"``).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "gains": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/$defs/Resource"
+            },
+            "type": "object"
+          },
+          "title": "Gains",
+          "type": "object"
+        },
+        "k": {
+          "const": "produced",
+          "default": "produced",
+          "title": "K",
+          "type": "string"
+        },
+        "roll": {
+          "title": "Roll",
+          "type": "integer"
+        },
+        "skipped": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Skipped",
+          "type": "object"
+        }
+      },
+      "required": [
+        "at",
+        "roll",
+        "gains"
+      ],
+      "title": "Produced",
+      "type": "object"
+    },
+    "Resource": {
+      "enum": [
+        "lumber",
+        "brick",
+        "wool",
+        "grain",
+        "ore",
+        "fish"
+      ],
+      "title": "Resource",
+      "type": "string"
+    },
+    "RobberMoved": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "from_hex": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "From Hex"
+        },
+        "k": {
+          "const": "robber_moved",
+          "default": "robber_moved",
+          "title": "K",
+          "type": "string"
+        },
+        "to_hex": {
+          "title": "To Hex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "from_hex",
+        "to_hex"
+      ],
+      "title": "RobberMoved",
+      "type": "object"
+    },
+    "RobberStole": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "robber_stole",
+          "default": "robber_stole",
+          "title": "K",
+          "type": "string"
+        },
+        "lost": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Lost",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "lost"
+      ],
+      "title": "RobberStole",
+      "type": "object"
+    },
+    "SettlerArrived": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "settler_arrived",
+          "default": "settler_arrived",
+          "title": "K",
+          "type": "string"
+        },
+        "settler": {
+          "title": "Settler",
+          "type": "integer"
+        },
+        "vertex": {
+          "title": "Vertex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "settler",
+        "vertex"
+      ],
+      "title": "SettlerArrived",
+      "type": "object"
+    },
+    "SettlerLanded": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "settler_landed",
+          "default": "settler_landed",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "settler": {
+          "title": "Settler",
+          "type": "integer"
+        },
+        "vertex": {
+          "title": "Vertex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "settler",
+        "seat",
+        "vertex"
+      ],
+      "title": "SettlerLanded",
+      "type": "object"
+    },
+    "SettlerLeft": {
+      "additionalProperties": false,
+      "description": "The settler is removed from the map.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "settler_left",
+          "default": "settler_left",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "settler": {
+          "title": "Settler",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "settler",
+        "seat"
+      ],
+      "title": "SettlerLeft",
+      "type": "object"
+    },
+    "SettlerPath": {
+      "additionalProperties": false,
+      "description": "The vertices still queued after the current step (empty = path cleared).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "settler_path",
+          "default": "settler_path",
+          "title": "K",
+          "type": "string"
+        },
+        "path": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "Path",
+          "type": "array"
+        },
+        "settler": {
+          "title": "Settler",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "settler",
+        "path"
+      ],
+      "title": "SettlerPath",
+      "type": "object"
+    },
+    "SettlerStepEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "edge": {
+          "title": "Edge",
+          "type": "integer"
+        },
+        "from_v": {
+          "title": "From V",
+          "type": "integer"
+        },
+        "k": {
+          "const": "settler_step",
+          "default": "settler_step",
+          "title": "K",
+          "type": "string"
+        },
+        "settler": {
+          "title": "Settler",
+          "type": "integer"
+        },
+        "t0": {
+          "title": "T0",
+          "type": "integer"
+        },
+        "t1": {
+          "title": "T1",
+          "type": "integer"
+        },
+        "to_v": {
+          "title": "To V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "settler",
+        "edge",
+        "from_v",
+        "to_v",
+        "t0",
+        "t1"
+      ],
+      "title": "SettlerStepEvent",
+      "type": "object"
+    },
+    "SetupComplete": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "setup_complete",
+          "default": "setup_complete",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat"
+      ],
+      "title": "SetupComplete",
+      "type": "object"
+    },
+    "StartingMaterials": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "starting_materials",
+          "default": "starting_materials",
+          "title": "K",
+          "type": "string"
+        },
+        "materials": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Materials",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "materials"
+      ],
+      "title": "StartingMaterials",
+      "type": "object"
+    },
+    "StartingResources": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "gained": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Gained",
+          "type": "object"
+        },
+        "k": {
+          "const": "starting_resources",
+          "default": "starting_resources",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "gained"
+      ],
+      "title": "StartingResources",
+      "type": "object"
+    },
+    "Traded": {
+      "additionalProperties": false,
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "get": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Get",
+          "type": "object"
+        },
+        "give": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Give",
+          "type": "object"
+        },
+        "k": {
+          "const": "traded",
+          "default": "traded",
+          "title": "K",
+          "type": "string"
+        },
+        "ratio": {
+          "title": "Ratio",
+          "type": "integer"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "via": {
+          "enum": [
+            "bank",
+            "harbor"
+          ],
+          "title": "Via",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "give",
+        "get",
+        "ratio",
+        "via"
+      ],
+      "title": "Traded",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "buildable": "#/$defs/Buildable",
+      "built": "#/$defs/Built",
+      "clock_started": "#/$defs/ClockStarted",
+      "construction_cancelled": "#/$defs/ConstructionCancelled",
+      "construction_started": "#/$defs/ConstructionStarted",
+      "dice_rolled": "#/$defs/DiceRolled",
+      "game_over": "#/$defs/GameOver",
+      "hand": "#/$defs/Hand",
+      "points": "#/$defs/Points",
+      "produced": "#/$defs/Produced",
+      "robber_moved": "#/$defs/RobberMoved",
+      "robber_stole": "#/$defs/RobberStole",
+      "settler_arrived": "#/$defs/SettlerArrived",
+      "settler_landed": "#/$defs/SettlerLanded",
+      "settler_left": "#/$defs/SettlerLeft",
+      "settler_path": "#/$defs/SettlerPath",
+      "settler_step": "#/$defs/SettlerStepEvent",
+      "setup_complete": "#/$defs/SetupComplete",
+      "starting_materials": "#/$defs/StartingMaterials",
+      "starting_resources": "#/$defs/StartingResources",
+      "traded": "#/$defs/Traded"
+    },
+    "propertyName": "k"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ClockStarted"
+    },
+    {
+      "$ref": "#/$defs/DiceRolled"
+    },
+    {
+      "$ref": "#/$defs/Produced"
+    },
+    {
+      "$ref": "#/$defs/RobberStole"
+    },
+    {
+      "$ref": "#/$defs/RobberMoved"
+    },
+    {
+      "$ref": "#/$defs/Hand"
+    },
+    {
+      "$ref": "#/$defs/SettlerLanded"
+    },
+    {
+      "$ref": "#/$defs/SettlerPath"
+    },
+    {
+      "$ref": "#/$defs/SettlerStepEvent"
+    },
+    {
+      "$ref": "#/$defs/SettlerArrived"
+    },
+    {
+      "$ref": "#/$defs/SettlerLeft"
+    },
+    {
+      "$ref": "#/$defs/ConstructionStarted"
+    },
+    {
+      "$ref": "#/$defs/ConstructionCancelled"
+    },
+    {
+      "$ref": "#/$defs/Built"
+    },
+    {
+      "$ref": "#/$defs/SetupComplete"
+    },
+    {
+      "$ref": "#/$defs/StartingResources"
+    },
+    {
+      "$ref": "#/$defs/StartingMaterials"
+    },
+    {
+      "$ref": "#/$defs/Traded"
+    },
+    {
+      "$ref": "#/$defs/Points"
+    },
+    {
+      "$ref": "#/$defs/Buildable"
+    },
+    {
+      "$ref": "#/$defs/GameOver"
+    }
+  ]
+}

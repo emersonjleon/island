@@ -1,0 +1,9 @@
+{
+  "cid": "a19",
+  "code": "build.distance_rule",
+  "params": {
+    "kind": "settlement",
+    "target": 41
+  },
+  "t": "reject"
+}

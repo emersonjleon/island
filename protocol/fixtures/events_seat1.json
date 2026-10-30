@@ -1,0 +1,241 @@
+{
+  "events": [
+    {
+      "at": 0,
+      "cities": [],
+      "k": "buildable",
+      "megacities": [],
+      "roads": [],
+      "seat": 1,
+      "settlements": [
+        7,
+        9,
+        11,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        84,
+        86,
+        88
+      ]
+    },
+    {
+      "at": 11000,
+      "k": "built",
+      "kind": "settlement",
+      "points_after": 1,
+      "seat": 2,
+      "target": 61
+    },
+    {
+      "at": 11000,
+      "k": "clock_started",
+      "next_roll_at": 31000
+    },
+    {
+      "at": 27000,
+      "id": 6,
+      "k": "construction_cancelled",
+      "reason": "conflict",
+      "refund": {
+        "brick": 1,
+        "fish": 0,
+        "grain": 1,
+        "lumber": 1,
+        "ore": 0,
+        "wool": 1
+      },
+      "seat": 1
+    },
+    {
+      "at": 3000,
+      "builder": 3,
+      "id": 1,
+      "k": "construction_started",
+      "kind": "settlement",
+      "paid": {
+        "brick": 1,
+        "fish": 0,
+        "grain": 1,
+        "lumber": 1,
+        "ore": 0,
+        "wool": 1
+      },
+      "seat": 2,
+      "t0": 3000,
+      "t1": 11000,
+      "target": 61
+    },
+    {
+      "at": 31000,
+      "dice": [
+        6,
+        2
+      ],
+      "k": "dice_rolled",
+      "next_roll_at": 51000,
+      "sum": 8
+    },
+    {
+      "at": 1022000,
+      "k": "game_over",
+      "points": {
+        "0": 7,
+        "1": 3,
+        "2": 10
+      },
+      "winner": 2
+    },
+    {
+      "at": 0,
+      "hand_count": 12,
+      "k": "hand",
+      "seat": 0
+    },
+    {
+      "at": 11000,
+      "k": "points",
+      "points": 1,
+      "seat": 2
+    },
+    {
+      "at": 31000,
+      "gains": {
+        "0": {
+          "lumber": 1
+        }
+      },
+      "k": "produced",
+      "roll": 8,
+      "skipped": {}
+    },
+    {
+      "at": 91000,
+      "from_hex": 9,
+      "k": "robber_moved",
+      "to_hex": 8
+    },
+    {
+      "at": 611000,
+      "k": "robber_stole",
+      "lost_count": 5,
+      "seat": 0
+    },
+    {
+      "at": 1500,
+      "k": "settler_arrived",
+      "settler": 1,
+      "vertex": 66
+    },
+    {
+      "at": 0,
+      "k": "settler_landed",
+      "seat": 0,
+      "settler": 1,
+      "vertex": 67
+    },
+    {
+      "at": 30000,
+      "k": "settler_left",
+      "seat": 0,
+      "settler": 1
+    },
+    {
+      "at": 0,
+      "k": "settler_path",
+      "path": [
+        51,
+        50
+      ],
+      "settler": 1
+    },
+    {
+      "at": 0,
+      "edge": 99,
+      "from_v": 67,
+      "k": "settler_step",
+      "settler": 1,
+      "t0": 0,
+      "t1": 1500,
+      "to_v": 66
+    },
+    {
+      "at": 30000,
+      "k": "setup_complete",
+      "seat": 0
+    },
+    {
+      "at": 0,
+      "k": "starting_materials",
+      "materials_count": 12,
+      "seat": 0
+    },
+    {
+      "at": 11000,
+      "gained_count": 3,
+      "k": "starting_resources",
+      "seat": 2
+    },
+    {
+      "at": 71000,
+      "get": {
+        "grain": 1
+      },
+      "give": {
+        "lumber": 4
+      },
+      "k": "traded",
+      "ratio": 4,
+      "seat": 0,
+      "via": "bank"
+    }
+  ],
+  "now": 1022000,
+  "seq": 2,
+  "t": "events"
+}

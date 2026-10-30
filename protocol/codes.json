@@ -1,0 +1,72 @@
+{
+  "errors": [
+    "build.already_building",
+    "build.cannot_afford",
+    "build.distance_rule",
+    "build.need_settler",
+    "build.no_piece",
+    "build.not_connected",
+    "build.not_land",
+    "build.not_own_city",
+    "build.not_own_settlement",
+    "build.not_your_construction",
+    "build.not_your_settler",
+    "build.occupied",
+    "build.road_needs_settlement",
+    "build.settler_busy",
+    "build.setup_limit",
+    "build.setup_unfinished",
+    "build.unknown_construction",
+    "command.invalid",
+    "command.unknown_seat",
+    "command.unsupported",
+    "game.finished",
+    "game.player_count",
+    "game.time_backwards",
+    "movement.not_land",
+    "movement.not_your_settler",
+    "movement.unknown_settler",
+    "movement.unknown_vertex",
+    "movement.unreachable",
+    "trade.bad_ratio",
+    "trade.bank_empty",
+    "trade.cannot_afford",
+    "trade.same_resource",
+    "trade.setup_forbidden"
+  ],
+  "events": [
+    "buildable",
+    "built",
+    "clock_started",
+    "construction_cancelled",
+    "construction_started",
+    "dice_rolled",
+    "game_over",
+    "hand",
+    "points",
+    "produced",
+    "robber_moved",
+    "robber_stole",
+    "settler_arrived",
+    "settler_landed",
+    "settler_left",
+    "settler_path",
+    "settler_step",
+    "setup_complete",
+    "starting_materials",
+    "starting_resources",
+    "traded"
+  ],
+  "reasons": {
+    "construction_cancelled": [
+      "builder_left",
+      "cancelled",
+      "conflict"
+    ],
+    "produced_skipped": [
+      "bank_partial",
+      "bank_shortage",
+      "robber"
+    ]
+  }
+}
