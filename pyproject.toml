@@ -5,6 +5,12 @@ description = "Real-time Catan-style strategy game"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic~=2.12",
+    "django~=5.2",
+    "channels~=4.3",
+    "channels-redis~=4.3",
+    "daphne~=4.2",
+    "psycopg[binary]~=3.2",
+    "redis>=5.2",
 ]
 
 [project.optional-dependencies]
@@ -17,7 +23,7 @@ testpaths = ["engine"]
 python_files = ["test_*.py"]
 
 [tool.setuptools.packages.find]
-include = ["engine*"]
+include = ["engine*", "config*", "common*", "accounts*", "lobby*", "gamehost*", "gameplay*"]
 
 [tool.setuptools.package-data]
 "engine.settings.presets" = ["*.json"]

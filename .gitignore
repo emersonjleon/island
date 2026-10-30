@@ -11,3 +11,5 @@ node_modules/
 frontend/dist/
 staticfiles/
 .DS_Store
+*.mo
+static/dist/

@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% load i18n %}
+{% block title %}{% translate "Sign up" %} · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>{% translate "Sign up" %}</h1>
+
+<form method="post" class="stacked">
+  {% csrf_token %}
+  {{ form.as_div }}
+  <button type="submit">{% translate "Create account" %}</button>
+</form>
+<p>{% translate "Already have an account?" %} <a href="{% url 'accounts:login' %}">{% translate "Log in" %}</a></p>
+{% endblock %}

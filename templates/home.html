@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% load i18n %}
+{% block content %}
+<h1>{% translate "Ages of the Island" %}</h1>
+<p>{% blocktranslate trimmed %}
+  Settle an island in real time. The clock rolls the dice for everyone, and your
+  settlements collect what the land gives.
+{% endblocktranslate %}</p>
+{% if not user.is_authenticated %}
+  <p><a class="button" href="{% url 'accounts:signup' %}">{% translate "Sign up" %}</a>
+     <a href="{% url 'accounts:login' %}">{% translate "Log in" %}</a></p>
+{% endif %}
+{% endblock %}
