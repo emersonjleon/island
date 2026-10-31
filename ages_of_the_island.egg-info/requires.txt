@@ -1,0 +1,10 @@
+pydantic~=2.12
+django~=5.2
+channels~=4.3
+channels-redis~=4.3
+daphne~=4.2
+psycopg[binary]~=3.2
+redis>=5.2
+
+[dev]
+pytest>=8

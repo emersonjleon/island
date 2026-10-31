@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-30 18:37+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/admin.py:12
+msgid "Game"
+msgstr "Juego"
+
+#: accounts/models.py:12
+msgid "display name"
+msgstr "nombre visible"
+
+#: accounts/models.py:14
+msgid "language"
+msgstr "idioma"
+
+#: accounts/models.py:17
+msgid "key bindings"
+msgstr "atajos de teclado"
+
+#: accounts/models.py:19
+msgid "interface preferences"
+msgstr "preferencias de interfaz"
+
+#: accounts/views.py:35
+msgid "Profile saved."
+msgstr "Perfil guardado."
+
+#: config/settings/base.py:105
+msgid "English"
+msgstr "English"
+
+#: config/settings/base.py:106
+msgid "Español"
+msgstr "Español"
+
+#: templates/accounts/login.html:2 templates/accounts/login.html:4
+#: templates/accounts/login.html:10
+#: templates/accounts/password_reset_complete.html:5
+#: templates/accounts/signup.html:11 templates/base.html:20
+#: templates/home.html:10
+msgid "Log in"
+msgstr "Iniciar sesión"
+
+#: templates/accounts/login.html:12
+msgid "Forgot your password?"
+msgstr "¿Olvidaste tu contraseña?"
+
+#: templates/accounts/login.html:13
+msgid "New here?"
+msgstr "¿Eres nuevo?"
+
+#: templates/accounts/login.html:13 templates/accounts/signup.html:2
+#: templates/accounts/signup.html:4 templates/base.html:21
+#: templates/home.html:9
+msgid "Sign up"
+msgstr "Registrarse"
+
+#: templates/accounts/password_change.html:2
+#: templates/accounts/password_change.html:4
+#: templates/accounts/password_change.html:9
+#: templates/accounts/profile.html:11
+msgid "Change password"
+msgstr "Cambiar contraseña"
+
+#: templates/accounts/password_change_done.html:2
+#: templates/accounts/password_change_done.html:4
+msgid "Password changed"
+msgstr "Contraseña cambiada"
+
+#: templates/accounts/password_change_done.html:5
+msgid "Your password was changed."
+msgstr "Tu contraseña fue cambiada."
+
+#: templates/accounts/password_reset.html:2
+#: templates/accounts/password_reset.html:4
+msgid "Reset password"
+msgstr "Restablecer contraseña"
+
+#: templates/accounts/password_reset.html:5
+msgid ""
+"Enter your email address and we will send you a link to choose a new "
+"password."
+msgstr ""
+"Escribe tu correo y te enviaremos un enlace para elegir una contraseña "
+"nueva."
+
+#: templates/accounts/password_reset.html:9
+msgid "Send reset link"
+msgstr "Enviar enlace"
+
+#: templates/accounts/password_reset_complete.html:2
+#: templates/accounts/password_reset_complete.html:4
+msgid "Password set"
+msgstr "Contraseña establecida"
+
+#: templates/accounts/password_reset_complete.html:5
+msgid "Your new password is set."
+msgstr "Tu contraseña nueva quedó establecida."
+
+#: templates/accounts/password_reset_confirm.html:2
+#: templates/accounts/password_reset_confirm.html:4
+msgid "Choose a new password"
+msgstr "Elige una contraseña nueva"
+
+#: templates/accounts/password_reset_confirm.html:10
+msgid "Set password"
+msgstr "Guardar contraseña"
+
+#: templates/accounts/password_reset_confirm.html:13
+msgid ""
+"This reset link is invalid or has already been used. Please ask for a new "
+"one."
+msgstr "Este enlace no es válido o ya se usó. Pide uno nuevo."
+
+#: templates/accounts/password_reset_done.html:2
+#: templates/accounts/password_reset_done.html:4
+msgid "Check your email"
+msgstr "Revisa tu correo"
+
+#: templates/accounts/password_reset_done.html:5
+msgid "If an account uses that address, we sent a link to reset its password."
+msgstr ""
+"Si alguna cuenta usa esa dirección, le enviamos un enlace para restablecer "
+"la contraseña."
+
+#: templates/accounts/password_reset_email.txt:1
+#, python-format
+msgid "Someone asked to reset the password for %(user)s on %(site_name)s."
+msgstr "Alguien pidió restablecer la contraseña de %(user)s en %(site_name)s."
+
+#: templates/accounts/password_reset_email.txt:3
+msgid "Open this link to choose a new password:"
+msgstr "Abre este enlace para elegir una contraseña nueva:"
+
+#: templates/accounts/password_reset_email.txt:6
+msgid "If you did not ask for this, you can ignore this email."
+msgstr "Si no lo pediste, puedes ignorar este correo."
+
+#: templates/accounts/password_reset_subject.txt:1
+msgid "Reset your Ages of the Island password"
+msgstr "Restablece tu contraseña de Ages of the Island"
+
+#: templates/accounts/profile.html:2 templates/accounts/profile.html:4
+msgid "Profile"
+msgstr "Perfil"
+
+#: templates/accounts/profile.html:9
+msgid "Save"
+msgstr "Guardar"
+
+#: templates/accounts/signup.html:9
+msgid "Create account"
+msgstr "Crear cuenta"
+
+#: templates/accounts/signup.html:11
+msgid "Already have an account?"
+msgstr "¿Ya tienes cuenta?"
+
+#: templates/base.html:6 templates/base.html:12 templates/home.html:3
+msgid "Ages of the Island"
+msgstr "Ages of the Island"
+
+#: templates/base.html:17
+msgid "Log out"
+msgstr "Cerrar sesión"
+
+#: templates/base.html:26
+msgid "Language"
+msgstr "Idioma"
+
+#: templates/base.html:33
+msgid "Change"
+msgstr "Cambiar"
+
+#: templates/home.html:4
+msgid ""
+"Settle an island in real time. The clock rolls the dice for everyone, and "
+"your settlements collect what the land gives."
+msgstr ""
+"Coloniza una isla en tiempo real. El reloj lanza los dados para todos y tus "
+"poblados recogen lo que da la tierra."

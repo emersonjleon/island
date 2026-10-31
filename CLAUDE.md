@@ -15,5 +15,12 @@ Real-time Catan-style game. Design: `docs/GAME_DESIGN.md`. Architecture and work
 - Run all engine tests: `python3 -m unittest discover -s engine -t . -p "test_*.py"`
 - `pytest`/`hypothesis` are not installed in the dev workspace; use seeded loops for property-style tests.
 
+## Django site
+- Settings: `config/settings/{base,dev,test,prod}.py`. Dev uses SQLite and the in-memory channel layer unless `USE_POSTGRES` / `REDIS_URL` are set.
+- `config/urls.py`, `config/asgi.py` and `INSTALLED_APPS` already include every app; apps fill in their own `urls.py` / `routing.py`.
+- Tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py test common accounts lobby gamehost gameplay`.
+- User-facing strings use gettext; add Spanish to `locale/es/LC_MESSAGES/django.po` (`.mo` files are not committed; run `compilemessages`).
+- Frontend: `frontend/` (Vite + TS); `{% load vite %}{% vite_entry "game" %}` emits the bundle tags.
+
 ## Ownership
 Each work package owns the files listed for it in `docs/STAGE1_PLAN.md` §9. Do not edit files owned by another package; if you need a change there, say so in your report.

@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% load i18n %}
+{% block title %}{% translate "Profile" %} · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>{% translate "Profile" %}</h1>
+
+<form method="post" class="stacked">
+  {% csrf_token %}
+  {{ form.as_div }}
+  <button type="submit">{% translate "Save" %}</button>
+</form>
+<p><a href="{% url 'accounts:password_change' %}">{% translate "Change password" %}</a></p>
+{% endblock %}
