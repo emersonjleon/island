@@ -1,0 +1,208 @@
+{
+  "$defs": {
+    "BankTrade": {
+      "additionalProperties": false,
+      "description": "Trade with the bank (or a harbor the player owns; the rule picks the best ratio).\n\nStage 1: exactly one ``give`` resource and one different ``get`` resource,\npositive amounts. Whether ``give`` amount == ratio * ``get`` amount is a rule check\n(``trade.*`` codes), not a schema check.",
+      "properties": {
+        "a": {
+          "const": "bank_trade",
+          "default": "bank_trade",
+          "title": "A",
+          "type": "string"
+        },
+        "get": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Get",
+          "type": "object"
+        },
+        "give": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Give",
+          "type": "object"
+        }
+      },
+      "required": [
+        "give",
+        "get"
+      ],
+      "title": "BankTrade",
+      "type": "object"
+    },
+    "Build": {
+      "additionalProperties": false,
+      "description": "Start building. Settlement/city need ``vertex``; road needs ``edge``.\n``settler`` names the builder when one is required (setup / Settlers variation).",
+      "properties": {
+        "a": {
+          "const": "build",
+          "default": "build",
+          "title": "A",
+          "type": "string"
+        },
+        "edge": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Edge"
+        },
+        "kind": {
+          "$ref": "#/$defs/BuildKind"
+        },
+        "settler": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Settler"
+        },
+        "vertex": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vertex"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "Build",
+      "type": "object"
+    },
+    "BuildKind": {
+      "enum": [
+        "road",
+        "settlement",
+        "city",
+        "megacity"
+      ],
+      "title": "BuildKind",
+      "type": "string"
+    },
+    "CancelBuild": {
+      "additionalProperties": false,
+      "properties": {
+        "a": {
+          "const": "cancel_build",
+          "default": "cancel_build",
+          "title": "A",
+          "type": "string"
+        },
+        "construction": {
+          "minimum": 0,
+          "title": "Construction",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "construction"
+      ],
+      "title": "CancelBuild",
+      "type": "object"
+    },
+    "MoveSettler": {
+      "additionalProperties": false,
+      "description": "Walk ``settler`` to ``to_vertex``. ``replace`` re-paths (after the current\nedge); ``append`` queues the path after the already-queued one.",
+      "properties": {
+        "a": {
+          "const": "move_settler",
+          "default": "move_settler",
+          "title": "A",
+          "type": "string"
+        },
+        "mode": {
+          "default": "replace",
+          "enum": [
+            "replace",
+            "append"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "settler": {
+          "minimum": 0,
+          "title": "Settler",
+          "type": "integer"
+        },
+        "to_vertex": {
+          "minimum": 0,
+          "title": "To Vertex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "settler",
+        "to_vertex"
+      ],
+      "title": "MoveSettler",
+      "type": "object"
+    },
+    "Resource": {
+      "enum": [
+        "lumber",
+        "brick",
+        "wool",
+        "grain",
+        "ore",
+        "fish"
+      ],
+      "title": "Resource",
+      "type": "string"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "bank_trade": "#/$defs/BankTrade",
+      "build": "#/$defs/Build",
+      "cancel_build": "#/$defs/CancelBuild",
+      "move_settler": "#/$defs/MoveSettler"
+    },
+    "propertyName": "a"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/MoveSettler"
+    },
+    {
+      "$ref": "#/$defs/Build"
+    },
+    {
+      "$ref": "#/$defs/CancelBuild"
+    },
+    {
+      "$ref": "#/$defs/BankTrade"
+    }
+  ]
+}

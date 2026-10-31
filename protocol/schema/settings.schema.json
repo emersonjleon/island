@@ -1,0 +1,1744 @@
+{
+  "$defs": {
+    "AdjacencyTiming": {
+      "enum": [
+        "before_move",
+        "after_move"
+      ],
+      "title": "AdjacencyTiming",
+      "type": "string"
+    },
+    "BankSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "per_resource": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 19,
+            "fish": 19,
+            "grain": 19,
+            "lumber": 19,
+            "ore": 19,
+            "wool": 19
+          },
+          "description": "Cards per resource. Input may be a single int applied to every resource.",
+          "label": "settings.economy.bank.per_resource",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Per Resource",
+          "type": "object"
+        },
+        "shortage_rule": {
+          "$ref": "#/$defs/ShortageRule",
+          "default": "classic",
+          "label": "settings.economy.bank.shortage_rule",
+          "stage": 1
+        }
+      },
+      "title": "BankSettings",
+      "type": "object"
+    },
+    "BoardLayout": {
+      "enum": [
+        "random",
+        "seeded",
+        "beginner"
+      ],
+      "title": "BoardLayout",
+      "type": "string"
+    },
+    "BoardSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "fishing_grounds": {
+          "$ref": "#/$defs/FishingGroundSettings",
+          "label": "settings.board.fishing_grounds",
+          "stage": 1
+        },
+        "harbors": {
+          "$ref": "#/$defs/HarborSettings",
+          "label": "settings.board.harbors",
+          "stage": 1
+        },
+        "land_hexes": {
+          "default": 19,
+          "label": "settings.board.land_hexes",
+          "maximum": 250,
+          "minimum": 7,
+          "stage": 1,
+          "title": "Land Hexes",
+          "type": "integer"
+        },
+        "layout": {
+          "$ref": "#/$defs/BoardLayout",
+          "default": "random",
+          "label": "settings.board.layout",
+          "stage": 1
+        },
+        "number_tokens": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "maximum": 250,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "token -> count. None = auto; explicit total must equal producing land hexes.",
+          "label": "settings.board.number_tokens",
+          "stage": 1,
+          "title": "Number Tokens"
+        },
+        "red_may_touch": {
+          "default": false,
+          "label": "settings.board.red_may_touch",
+          "stage": 1,
+          "title": "Red May Touch",
+          "type": "boolean"
+        },
+        "red_numbers": {
+          "default": [
+            6,
+            8
+          ],
+          "items": {
+            "maximum": 80,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "label": "settings.board.red_numbers",
+          "maxItems": 20,
+          "stage": 1,
+          "title": "Red Numbers",
+          "type": "array"
+        },
+        "red_rule_includes_fishing": {
+          "default": true,
+          "label": "settings.board.red_rule_includes_fishing",
+          "stage": 1,
+          "title": "Red Rule Includes Fishing",
+          "type": "boolean"
+        },
+        "robber_start": {
+          "$ref": "#/$defs/RobberStart",
+          "default": "desert",
+          "description": "``desert``: a random desert; on a board without deserts, a random land hex.",
+          "label": "settings.board.robber_start",
+          "stage": 1
+        },
+        "sea_margin": {
+          "default": 2,
+          "description": "Rings of sea drawn around the island.",
+          "label": "settings.board.sea_margin",
+          "maximum": 6,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Sea Margin",
+          "type": "integer"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "maximum": 9223372036854775807,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Board seed for ``layout=seeded``. None = derived from the game seed.",
+          "label": "settings.board.seed",
+          "stage": 1,
+          "title": "Seed"
+        },
+        "shape": {
+          "$ref": "#/$defs/BoardShape",
+          "default": "spiral",
+          "label": "settings.board.shape",
+          "stage": 1
+        },
+        "terrain_counts": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "maximum": 250,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "propertyNames": {
+                "$ref": "#/$defs/Terrain"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "None = auto (see ``resolve``); explicit counts must sum to ``land_hexes`` (missing = 0).",
+          "label": "settings.board.terrain_counts",
+          "stage": 1,
+          "title": "Terrain Counts"
+        }
+      },
+      "title": "BoardSettings",
+      "type": "object"
+    },
+    "BoardShape": {
+      "enum": [
+        "spiral",
+        "hexagon",
+        "custom"
+      ],
+      "title": "BoardShape",
+      "type": "string"
+    },
+    "BuildSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "conflict": {
+          "$ref": "#/$defs/ConflictRule",
+          "default": "first_to_finish",
+          "label": "settings.build.conflict",
+          "stage": 1
+        },
+        "network_builds_timed": {
+          "default": true,
+          "label": "settings.build.network_builds_timed",
+          "stage": 1,
+          "title": "Network Builds Timed",
+          "type": "boolean"
+        },
+        "refund_pct": {
+          "default": 100,
+          "label": "settings.build.refund_pct",
+          "maximum": 100,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Refund Pct",
+          "type": "integer"
+        },
+        "time_ms": {
+          "$ref": "#/$defs/BuildTimeSettings",
+          "label": "settings.build.time_ms",
+          "stage": 1
+        }
+      },
+      "title": "BuildSettings",
+      "type": "object"
+    },
+    "BuildTimeSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "default": 10000,
+          "label": "settings.build.time_ms.city",
+          "maximum": 600000,
+          "minimum": 0,
+          "stage": 1,
+          "title": "City",
+          "type": "integer"
+        },
+        "megacity": {
+          "default": 15000,
+          "label": "settings.build.time_ms.megacity",
+          "maximum": 600000,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Megacity",
+          "type": "integer"
+        },
+        "road": {
+          "default": 3000,
+          "label": "settings.build.time_ms.road",
+          "maximum": 600000,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Road",
+          "type": "integer"
+        },
+        "settlement": {
+          "default": 8000,
+          "label": "settings.build.time_ms.settlement",
+          "maximum": 600000,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Settlement",
+          "type": "integer"
+        }
+      },
+      "title": "BuildTimeSettings",
+      "type": "object"
+    },
+    "BuilderRequired": {
+      "enum": [
+        "setup_only",
+        "always"
+      ],
+      "title": "BuilderRequired",
+      "type": "string"
+    },
+    "BuildingPointsSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "default": 2,
+          "description": "Total points of a city (it replaces the settlement's points).",
+          "label": "settings.victory.building_points.city",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "City",
+          "type": "integer"
+        },
+        "megacity": {
+          "default": 3,
+          "description": "Total points of a megacity (it replaces the city's points).",
+          "label": "settings.victory.building_points.megacity",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Megacity",
+          "type": "integer"
+        },
+        "settlement": {
+          "default": 1,
+          "label": "settings.victory.building_points.settlement",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Settlement",
+          "type": "integer"
+        }
+      },
+      "title": "BuildingPointsSettings",
+      "type": "object"
+    },
+    "ClockSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_vote_pause": {
+          "default": false,
+          "label": "settings.clock.allow_vote_pause",
+          "stage": 3,
+          "title": "Allow Vote Pause",
+          "type": "boolean"
+        },
+        "dice_count": {
+          "default": 2,
+          "label": "settings.clock.dice_count",
+          "maximum": 4,
+          "minimum": 1,
+          "stage": 3,
+          "title": "Dice Count",
+          "type": "integer"
+        },
+        "dice_mode": {
+          "$ref": "#/$defs/DiceMode",
+          "default": "two_dice",
+          "label": "settings.clock.dice_mode",
+          "stage": 1
+        },
+        "dice_sides": {
+          "default": 6,
+          "label": "settings.clock.dice_sides",
+          "maximum": 20,
+          "minimum": 2,
+          "stage": 3,
+          "title": "Dice Sides",
+          "type": "integer"
+        },
+        "pause_after_seven_ms": {
+          "default": 0,
+          "label": "settings.clock.pause_after_seven_ms",
+          "maximum": 60000,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Pause After Seven Ms",
+          "type": "integer"
+        },
+        "roll_interval_ms": {
+          "default": 20000,
+          "label": "settings.clock.roll_interval_ms",
+          "maximum": 120000,
+          "minimum": 5000,
+          "stage": 1,
+          "title": "Roll Interval Ms",
+          "type": "integer"
+        },
+        "setup_pick_timer_ms": {
+          "anyOf": [
+            {
+              "maximum": 600000,
+              "minimum": 1000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "label": "settings.clock.setup_pick_timer_ms",
+          "stage": 3,
+          "title": "Setup Pick Timer Ms"
+        },
+        "start_trigger": {
+          "$ref": "#/$defs/StartTrigger",
+          "default": "first_settlement",
+          "label": "settings.clock.start_trigger",
+          "stage": 1
+        }
+      },
+      "title": "ClockSettings",
+      "type": "object"
+    },
+    "ConflictRule": {
+      "enum": [
+        "first_to_finish"
+      ],
+      "title": "ConflictRule",
+      "type": "string"
+    },
+    "Cooldown": {
+      "enum": [
+        "per_roll",
+        "ms"
+      ],
+      "title": "Cooldown",
+      "type": "string"
+    },
+    "CostSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "grain": 2,
+            "ore": 3
+          },
+          "label": "settings.economy.costs.city",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "City",
+          "type": "object"
+        },
+        "dev_card": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "grain": 1,
+            "ore": 1,
+            "wool": 1
+          },
+          "label": "settings.economy.costs.dev_card",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 2,
+          "title": "Dev Card",
+          "type": "object"
+        },
+        "megacity": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 2,
+            "grain": 3,
+            "ore": 4,
+            "wool": 2
+          },
+          "label": "settings.economy.costs.megacity",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Megacity",
+          "type": "object"
+        },
+        "road": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 1,
+            "lumber": 1
+          },
+          "label": "settings.economy.costs.road",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Road",
+          "type": "object"
+        },
+        "settlement": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 1,
+            "grain": 1,
+            "lumber": 1,
+            "wool": 1
+          },
+          "label": "settings.economy.costs.settlement",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Settlement",
+          "type": "object"
+        },
+        "settler": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "fish": 2,
+            "grain": 5,
+            "lumber": 3,
+            "wool": 5
+          },
+          "label": "settings.economy.costs.settler",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 3,
+          "title": "Settler",
+          "type": "object"
+        }
+      },
+      "title": "CostSettings",
+      "type": "object"
+    },
+    "DevCardKind": {
+      "enum": [
+        "knight",
+        "victory_point",
+        "road_building",
+        "year_of_plenty",
+        "monopoly"
+      ],
+      "title": "DevCardKind",
+      "type": "string"
+    },
+    "DevCardSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "cooldown": {
+          "$ref": "#/$defs/Cooldown",
+          "default": "per_roll",
+          "label": "settings.dev_cards.cooldown",
+          "stage": 1
+        },
+        "cooldown_ms": {
+          "anyOf": [
+            {
+              "maximum": 600000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "label": "settings.dev_cards.cooldown_ms",
+          "stage": 1,
+          "title": "Cooldown Ms"
+        },
+        "deck": {
+          "additionalProperties": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "knight": 14,
+            "monopoly": 2,
+            "road_building": 2,
+            "victory_point": 5,
+            "year_of_plenty": 2
+          },
+          "label": "settings.dev_cards.deck",
+          "propertyNames": {
+            "$ref": "#/$defs/DevCardKind"
+          },
+          "stage": 1,
+          "title": "Deck",
+          "type": "object"
+        },
+        "road_building_roads": {
+          "default": 2,
+          "label": "settings.dev_cards.road_building_roads",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Road Building Roads",
+          "type": "integer"
+        },
+        "vp_cards_must_be_played": {
+          "default": true,
+          "label": "settings.dev_cards.vp_cards_must_be_played",
+          "stage": 1,
+          "title": "Vp Cards Must Be Played",
+          "type": "boolean"
+        },
+        "year_of_plenty_cards": {
+          "default": 2,
+          "label": "settings.dev_cards.year_of_plenty_cards",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Year Of Plenty Cards",
+          "type": "integer"
+        }
+      },
+      "title": "DevCardSettings",
+      "type": "object"
+    },
+    "DiceMode": {
+      "enum": [
+        "two_dice",
+        "deck"
+      ],
+      "title": "DiceMode",
+      "type": "string"
+    },
+    "EconomySettings": {
+      "additionalProperties": false,
+      "properties": {
+        "bank": {
+          "$ref": "#/$defs/BankSettings",
+          "label": "settings.economy.bank",
+          "stage": 1
+        },
+        "costs": {
+          "$ref": "#/$defs/CostSettings",
+          "label": "settings.economy.costs",
+          "stage": 1
+        },
+        "production_per": {
+          "$ref": "#/$defs/ProductionSettings",
+          "label": "settings.economy.production_per",
+          "stage": 1
+        },
+        "starting_materials": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 4,
+            "grain": 2,
+            "lumber": 4,
+            "wool": 2
+          },
+          "label": "settings.economy.starting_materials",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Starting Materials",
+          "type": "object"
+        },
+        "starting_materials_from_bank": {
+          "default": true,
+          "label": "settings.economy.starting_materials_from_bank",
+          "stage": 1,
+          "title": "Starting Materials From Bank",
+          "type": "boolean"
+        },
+        "starting_resources": {
+          "$ref": "#/$defs/StartingResourcesSettings",
+          "label": "settings.economy.starting_resources",
+          "stage": 1
+        },
+        "trade": {
+          "$ref": "#/$defs/TradeRatioSettings",
+          "label": "settings.economy.trade",
+          "stage": 1
+        }
+      },
+      "title": "EconomySettings",
+      "type": "object"
+    },
+    "FishingGroundSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "anyOf": [
+            {
+              "maximum": 250,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "None = auto (6 at 19 land hexes, scaled).",
+          "label": "settings.board.fishing_grounds.count",
+          "stage": 1,
+          "title": "Count"
+        },
+        "min_gap": {
+          "default": 1,
+          "description": "Minimum number of hexes between two fishing grounds.",
+          "label": "settings.board.fishing_grounds.min_gap",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Min Gap",
+          "type": "integer"
+        },
+        "tokens": {
+          "default": [
+            4,
+            5,
+            6,
+            8,
+            9,
+            10
+          ],
+          "description": "Token values, cycled in order when the count differs from their number.",
+          "items": {
+            "maximum": 80,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "label": "settings.board.fishing_grounds.tokens",
+          "maxItems": 250,
+          "stage": 1,
+          "title": "Tokens",
+          "type": "array"
+        }
+      },
+      "title": "FishingGroundSettings",
+      "type": "object"
+    },
+    "HarborSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "generic": {
+          "anyOf": [
+            {
+              "maximum": 250,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Generic (3:1) harbors. None = auto (4 at 19 land hexes, scaled).",
+          "label": "settings.board.harbors.generic",
+          "stage": 1,
+          "title": "Generic"
+        },
+        "generic_ratio": {
+          "default": 3,
+          "label": "settings.board.harbors.generic_ratio",
+          "maximum": 10,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Generic Ratio",
+          "type": "integer"
+        },
+        "specific": {
+          "additionalProperties": {
+            "maximum": 50,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 1,
+            "fish": 0,
+            "grain": 1,
+            "lumber": 1,
+            "ore": 1,
+            "wool": 1
+          },
+          "description": "Resource-specific (2:1) harbors per resource; never auto-scaled; missing = 0.",
+          "label": "settings.board.harbors.specific",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Specific",
+          "type": "object"
+        },
+        "specific_ratio": {
+          "default": 2,
+          "label": "settings.board.harbors.specific_ratio",
+          "maximum": 10,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Specific Ratio",
+          "type": "integer"
+        }
+      },
+      "title": "HarborSettings",
+      "type": "object"
+    },
+    "InfoVisibility": {
+      "enum": [
+        "counts",
+        "open",
+        "hidden"
+      ],
+      "title": "InfoVisibility",
+      "type": "string"
+    },
+    "Landing": {
+      "enum": [
+        "even_coast"
+      ],
+      "title": "Landing",
+      "type": "string"
+    },
+    "LargestArmySettings": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "default": 3,
+          "description": "Minimum knights played to claim the award.",
+          "label": "settings.victory.largest_army.min",
+          "maximum": 50,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Min",
+          "type": "integer"
+        },
+        "points": {
+          "default": 2,
+          "label": "settings.victory.largest_army.points",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "LargestArmySettings",
+      "type": "object"
+    },
+    "LongestRoadSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "min": {
+          "default": 5,
+          "description": "Minimum road length (segments) to claim the award.",
+          "label": "settings.victory.longest_road.min",
+          "maximum": 50,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Min",
+          "type": "integer"
+        },
+        "points": {
+          "default": 2,
+          "label": "settings.victory.longest_road.points",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "LongestRoadSettings",
+      "type": "object"
+    },
+    "MapVisibility": {
+      "enum": [
+        "open",
+        "growing",
+        "explored",
+        "live_fog"
+      ],
+      "title": "MapVisibility",
+      "type": "string"
+    },
+    "MoveOnSeven": {
+      "enum": [
+        "random_neighbour",
+        "player"
+      ],
+      "title": "MoveOnSeven",
+      "type": "string"
+    },
+    "PieceSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "cities": {
+          "default": 4,
+          "label": "settings.pieces.cities",
+          "maximum": 100,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Cities",
+          "type": "integer"
+        },
+        "megacities": {
+          "default": 4,
+          "description": "Megacities upgrade an own city (the city piece returns). 0 disables them.",
+          "label": "settings.pieces.megacities",
+          "maximum": 100,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Megacities",
+          "type": "integer"
+        },
+        "roads": {
+          "default": 15,
+          "label": "settings.pieces.roads",
+          "maximum": 200,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Roads",
+          "type": "integer"
+        },
+        "settlements": {
+          "default": 5,
+          "label": "settings.pieces.settlements",
+          "maximum": 100,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Settlements",
+          "type": "integer"
+        }
+      },
+      "title": "PieceSettings",
+      "type": "object"
+    },
+    "PlayersSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "max": {
+          "default": 4,
+          "label": "settings.players.max",
+          "later_stage_above": {
+            "stage": 3,
+            "value": 4
+          },
+          "maximum": 6,
+          "minimum": 2,
+          "stage": 1,
+          "title": "Max",
+          "type": "integer"
+        },
+        "min": {
+          "default": 2,
+          "label": "settings.players.min",
+          "later_stage_above": {
+            "stage": 3,
+            "value": 4
+          },
+          "maximum": 6,
+          "minimum": 2,
+          "stage": 1,
+          "title": "Min",
+          "type": "integer"
+        },
+        "seat_order": {
+          "$ref": "#/$defs/SeatOrder",
+          "default": "random",
+          "label": "settings.players.seat_order",
+          "stage": 1
+        }
+      },
+      "title": "PlayersSettings",
+      "type": "object"
+    },
+    "ProductionLog": {
+      "enum": [
+        "all",
+        "own"
+      ],
+      "title": "ProductionLog",
+      "type": "string"
+    },
+    "ProductionSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "default": 2,
+          "label": "settings.economy.production_per.city",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "City",
+          "type": "integer"
+        },
+        "megacity": {
+          "default": 4,
+          "label": "settings.economy.production_per.megacity",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Megacity",
+          "type": "integer"
+        },
+        "settlement": {
+          "default": 1,
+          "label": "settings.economy.production_per.settlement",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Settlement",
+          "type": "integer"
+        }
+      },
+      "title": "ProductionSettings",
+      "type": "object"
+    },
+    "Resource": {
+      "enum": [
+        "lumber",
+        "brick",
+        "wool",
+        "grain",
+        "ore",
+        "fish"
+      ],
+      "title": "Resource",
+      "type": "string"
+    },
+    "RobberSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "adjacency_timing": {
+          "$ref": "#/$defs/AdjacencyTiming",
+          "default": "before_move",
+          "label": "settings.robber.adjacency_timing",
+          "stage": 1
+        },
+        "card_limit": {
+          "default": 7,
+          "label": "settings.robber.card_limit",
+          "maximum": 100,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Card Limit",
+          "type": "integer"
+        },
+        "enabled": {
+          "default": true,
+          "label": "settings.robber.enabled",
+          "stage": 1,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "friendly_min_points": {
+          "default": 0,
+          "label": "settings.robber.friendly_min_points",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Friendly Min Points",
+          "type": "integer"
+        },
+        "knight_max_distance": {
+          "default": 3,
+          "label": "settings.robber.knight_max_distance",
+          "maximum": 20,
+          "minimum": 1,
+          "stage": 2,
+          "title": "Knight Max Distance",
+          "type": "integer"
+        },
+        "knight_steal": {
+          "default": 1,
+          "label": "settings.robber.knight_steal",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 2,
+          "title": "Knight Steal",
+          "type": "integer"
+        },
+        "may_enter_desert": {
+          "default": true,
+          "label": "settings.robber.may_enter_desert",
+          "stage": 1,
+          "title": "May Enter Desert",
+          "type": "boolean"
+        },
+        "may_enter_fishing": {
+          "default": false,
+          "label": "settings.robber.may_enter_fishing",
+          "stage": 3,
+          "title": "May Enter Fishing",
+          "type": "boolean"
+        },
+        "move_on_seven": {
+          "$ref": "#/$defs/MoveOnSeven",
+          "default": "random_neighbour",
+          "label": "settings.robber.move_on_seven",
+          "stage": 1
+        },
+        "require_adjacent": {
+          "default": false,
+          "label": "settings.robber.require_adjacent",
+          "stage": 1,
+          "title": "Require Adjacent",
+          "type": "boolean"
+        },
+        "require_over_limit": {
+          "default": true,
+          "label": "settings.robber.require_over_limit",
+          "stage": 1,
+          "title": "Require Over Limit",
+          "type": "boolean"
+        },
+        "steal_pct": {
+          "default": 50,
+          "label": "settings.robber.steal_pct",
+          "maximum": 100,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Steal Pct",
+          "type": "integer"
+        },
+        "steal_rounding": {
+          "$ref": "#/$defs/Rounding",
+          "default": "floor",
+          "label": "settings.robber.steal_rounding",
+          "stage": 1
+        },
+        "stolen_to_bank": {
+          "default": true,
+          "label": "settings.robber.stolen_to_bank",
+          "stage": 3,
+          "title": "Stolen To Bank",
+          "type": "boolean"
+        }
+      },
+      "title": "RobberSettings",
+      "type": "object"
+    },
+    "RobberStart": {
+      "enum": [
+        "desert",
+        "random_land"
+      ],
+      "title": "RobberStart",
+      "type": "string"
+    },
+    "Rounding": {
+      "enum": [
+        "floor",
+        "ceil"
+      ],
+      "title": "Rounding",
+      "type": "string"
+    },
+    "ScoreVisibility": {
+      "enum": [
+        "shown",
+        "hidden_until_end"
+      ],
+      "title": "ScoreVisibility",
+      "type": "string"
+    },
+    "SeatOrder": {
+      "enum": [
+        "random",
+        "host"
+      ],
+      "title": "SeatOrder",
+      "type": "string"
+    },
+    "SettlerSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "build_reach_edges": {
+          "default": 0,
+          "label": "settings.settlers.build_reach_edges",
+          "maximum": 3,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Build Reach Edges",
+          "type": "integer"
+        },
+        "builder_required": {
+          "$ref": "#/$defs/BuilderRequired",
+          "default": "setup_only",
+          "label": "settings.settlers.builder_required",
+          "stage": 1
+        },
+        "landing": {
+          "$ref": "#/$defs/Landing",
+          "default": "even_coast",
+          "label": "settings.settlers.landing",
+          "stage": 1
+        },
+        "leave_after_setup": {
+          "default": true,
+          "label": "settings.settlers.leave_after_setup",
+          "stage": 3,
+          "title": "Leave After Setup",
+          "type": "boolean"
+        },
+        "max": {
+          "default": 4,
+          "label": "settings.settlers.max",
+          "maximum": 20,
+          "minimum": 1,
+          "stage": 3,
+          "title": "Max",
+          "type": "integer"
+        },
+        "ms_per_edge": {
+          "default": 1500,
+          "label": "settings.settlers.ms_per_edge",
+          "maximum": 60000,
+          "minimum": 100,
+          "stage": 1,
+          "title": "Ms Per Edge",
+          "type": "integer"
+        },
+        "road_speed_pct": {
+          "default": 200,
+          "description": "Walking speed on the player's own roads, in percent of normal speed.",
+          "label": "settings.settlers.road_speed_pct",
+          "maximum": 1000,
+          "minimum": 100,
+          "stage": 1,
+          "title": "Road Speed Pct",
+          "type": "integer"
+        },
+        "spawn_at": {
+          "$ref": "#/$defs/SpawnAt",
+          "default": "own_building",
+          "label": "settings.settlers.spawn_at",
+          "stage": 1
+        },
+        "start_count": {
+          "default": 1,
+          "label": "settings.settlers.start_count",
+          "maximum": 10,
+          "minimum": 1,
+          "stage": 3,
+          "title": "Start Count",
+          "type": "integer"
+        }
+      },
+      "title": "SettlerSettings",
+      "type": "object"
+    },
+    "SetupMode": {
+      "enum": [
+        "settlers",
+        "snake_click",
+        "random"
+      ],
+      "title": "SetupMode",
+      "type": "string"
+    },
+    "SetupSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "bank_trade_during_setup": {
+          "default": true,
+          "label": "settings.setup.bank_trade_during_setup",
+          "stage": 1,
+          "title": "Bank Trade During Setup",
+          "type": "boolean"
+        },
+        "mode": {
+          "$ref": "#/$defs/SetupMode",
+          "default": "settlers",
+          "label": "settings.setup.mode",
+          "stage": 1
+        },
+        "network_build_during_setup": {
+          "default": false,
+          "description": "False: a player builds on the network only after finishing their own setup.",
+          "label": "settings.setup.network_build_during_setup",
+          "stage": 1,
+          "title": "Network Build During Setup",
+          "type": "boolean"
+        },
+        "road_touches_new_settlement": {
+          "default": true,
+          "label": "settings.setup.road_touches_new_settlement",
+          "stage": 1,
+          "title": "Road Touches New Settlement",
+          "type": "boolean"
+        },
+        "roads": {
+          "default": 2,
+          "label": "settings.setup.roads",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Roads",
+          "type": "integer"
+        },
+        "settlements": {
+          "default": 2,
+          "label": "settings.setup.settlements",
+          "maximum": 10,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Settlements",
+          "type": "integer"
+        }
+      },
+      "title": "SetupSettings",
+      "type": "object"
+    },
+    "ShortageRule": {
+      "enum": [
+        "classic"
+      ],
+      "title": "ShortageRule",
+      "type": "string"
+    },
+    "SightSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "default": 2,
+          "label": "settings.visibility.sight.city",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "City",
+          "type": "integer"
+        },
+        "megacity": {
+          "default": 3,
+          "label": "settings.visibility.sight.megacity",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Megacity",
+          "type": "integer"
+        },
+        "road": {
+          "default": 1,
+          "label": "settings.visibility.sight.road",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Road",
+          "type": "integer"
+        },
+        "settlement": {
+          "default": 1,
+          "label": "settings.visibility.sight.settlement",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Settlement",
+          "type": "integer"
+        },
+        "settler": {
+          "default": 1,
+          "label": "settings.visibility.sight.settler",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Settler",
+          "type": "integer"
+        }
+      },
+      "title": "SightSettings",
+      "type": "object"
+    },
+    "SpawnAt": {
+      "enum": [
+        "own_building"
+      ],
+      "title": "SpawnAt",
+      "type": "string"
+    },
+    "StartTrigger": {
+      "enum": [
+        "first_settlement"
+      ],
+      "title": "StartTrigger",
+      "type": "string"
+    },
+    "StartingResourcesSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "cards_per_hex": {
+          "default": 1,
+          "label": "settings.economy.starting_resources.cards_per_hex",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Cards Per Hex",
+          "type": "integer"
+        },
+        "granting_settlements": {
+          "default": 2,
+          "description": "How many of a player's first settlements grant starting resources.",
+          "label": "settings.economy.starting_resources.granting_settlements",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Granting Settlements",
+          "type": "integer"
+        },
+        "include_fishing": {
+          "default": true,
+          "label": "settings.economy.starting_resources.include_fishing",
+          "stage": 1,
+          "title": "Include Fishing",
+          "type": "boolean"
+        }
+      },
+      "title": "StartingResourcesSettings",
+      "type": "object"
+    },
+    "Terrain": {
+      "enum": [
+        "forest",
+        "pasture",
+        "fields",
+        "hills",
+        "mountains",
+        "desert"
+      ],
+      "title": "Terrain",
+      "type": "string"
+    },
+    "TradeOffers": {
+      "enum": [
+        "public",
+        "private"
+      ],
+      "title": "TradeOffers",
+      "type": "string"
+    },
+    "TradeRatioSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "bank_ratio": {
+          "default": 4,
+          "label": "settings.economy.trade.bank_ratio",
+          "maximum": 10,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Bank Ratio",
+          "type": "integer"
+        }
+      },
+      "title": "TradeRatioSettings",
+      "type": "object"
+    },
+    "TradingSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "harbor_trade": {
+          "default": true,
+          "label": "settings.trading.harbor_trade",
+          "stage": 1,
+          "title": "Harbor Trade",
+          "type": "boolean"
+        },
+        "offer_expiry_ms": {
+          "anyOf": [
+            {
+              "maximum": 600000,
+              "minimum": 1000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "label": "settings.trading.offer_expiry_ms",
+          "stage": 2,
+          "title": "Offer Expiry Ms"
+        },
+        "player_trades": {
+          "default": true,
+          "label": "settings.trading.player_trades",
+          "stage": 2,
+          "title": "Player Trades",
+          "type": "boolean"
+        },
+        "private_offers": {
+          "default": false,
+          "label": "settings.trading.private_offers",
+          "stage": 3,
+          "title": "Private Offers",
+          "type": "boolean"
+        }
+      },
+      "title": "TradingSettings",
+      "type": "object"
+    },
+    "VictorySettings": {
+      "additionalProperties": false,
+      "properties": {
+        "building_points": {
+          "$ref": "#/$defs/BuildingPointsSettings",
+          "label": "settings.victory.building_points",
+          "stage": 1
+        },
+        "largest_army": {
+          "$ref": "#/$defs/LargestArmySettings",
+          "label": "settings.victory.largest_army",
+          "stage": 2
+        },
+        "longest_road": {
+          "$ref": "#/$defs/LongestRoadSettings",
+          "label": "settings.victory.longest_road",
+          "stage": 2
+        },
+        "target": {
+          "default": 10,
+          "label": "settings.victory.target",
+          "maximum": 20,
+          "minimum": 5,
+          "stage": 1,
+          "title": "Target",
+          "type": "integer"
+        },
+        "time_limit_ms": {
+          "anyOf": [
+            {
+              "maximum": 14400000,
+              "minimum": 60000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "label": "settings.victory.time_limit_ms",
+          "stage": 3,
+          "title": "Time Limit Ms"
+        }
+      },
+      "title": "VictorySettings",
+      "type": "object"
+    },
+    "VisibilitySettings": {
+      "additionalProperties": false,
+      "properties": {
+        "dev_cards": {
+          "$ref": "#/$defs/InfoVisibility",
+          "default": "counts",
+          "label": "settings.visibility.dev_cards",
+          "stage": 2
+        },
+        "hands": {
+          "$ref": "#/$defs/InfoVisibility",
+          "default": "counts",
+          "label": "settings.visibility.hands",
+          "stage": 1
+        },
+        "hidden_numbers": {
+          "default": false,
+          "label": "settings.visibility.hidden_numbers",
+          "stage": 3,
+          "title": "Hidden Numbers",
+          "type": "boolean"
+        },
+        "map": {
+          "$ref": "#/$defs/MapVisibility",
+          "default": "open",
+          "label": "settings.visibility.map",
+          "stage": 1
+        },
+        "production_log": {
+          "$ref": "#/$defs/ProductionLog",
+          "default": "all",
+          "label": "settings.visibility.production_log",
+          "stage": 1
+        },
+        "scores": {
+          "$ref": "#/$defs/ScoreVisibility",
+          "default": "shown",
+          "label": "settings.visibility.scores",
+          "stage": 1
+        },
+        "sight": {
+          "$ref": "#/$defs/SightSettings",
+          "label": "settings.visibility.sight",
+          "stage": 3
+        },
+        "trade_offers": {
+          "$ref": "#/$defs/TradeOffers",
+          "default": "public",
+          "label": "settings.visibility.trade_offers",
+          "stage": 2
+        }
+      },
+      "title": "VisibilitySettings",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "All per-game settings. Validate raw input with ``parse_settings`` (runs migrations).",
+  "properties": {
+    "board": {
+      "$ref": "#/$defs/BoardSettings",
+      "label": "settings.board",
+      "stage": 1
+    },
+    "build": {
+      "$ref": "#/$defs/BuildSettings",
+      "label": "settings.build",
+      "stage": 1
+    },
+    "clock": {
+      "$ref": "#/$defs/ClockSettings",
+      "label": "settings.clock",
+      "stage": 1
+    },
+    "dev_cards": {
+      "$ref": "#/$defs/DevCardSettings",
+      "label": "settings.dev_cards",
+      "stage": 2
+    },
+    "economy": {
+      "$ref": "#/$defs/EconomySettings",
+      "label": "settings.economy",
+      "stage": 1
+    },
+    "pieces": {
+      "$ref": "#/$defs/PieceSettings",
+      "label": "settings.pieces",
+      "stage": 1
+    },
+    "players": {
+      "$ref": "#/$defs/PlayersSettings",
+      "label": "settings.players",
+      "stage": 1
+    },
+    "preset": {
+      "default": "classic",
+      "label": "settings.preset",
+      "pattern": "^[a-z0-9_]{1,32}$",
+      "stage": 1,
+      "title": "Preset",
+      "type": "string"
+    },
+    "robber": {
+      "$ref": "#/$defs/RobberSettings",
+      "label": "settings.robber",
+      "stage": 1
+    },
+    "schema_version": {
+      "default": 1,
+      "label": "settings.schema_version",
+      "maximum": 1,
+      "minimum": 1,
+      "stage": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "settlers": {
+      "$ref": "#/$defs/SettlerSettings",
+      "label": "settings.settlers",
+      "stage": 1
+    },
+    "setup": {
+      "$ref": "#/$defs/SetupSettings",
+      "label": "settings.setup",
+      "stage": 1
+    },
+    "trading": {
+      "$ref": "#/$defs/TradingSettings",
+      "label": "settings.trading",
+      "stage": 1
+    },
+    "victory": {
+      "$ref": "#/$defs/VictorySettings",
+      "label": "settings.victory",
+      "stage": 1
+    },
+    "visibility": {
+      "$ref": "#/$defs/VisibilitySettings",
+      "label": "settings.visibility",
+      "stage": 1
+    }
+  },
+  "title": "GameSettings",
+  "type": "object",
+  "x-implemented-stage": 1,
+  "x-later-stage-values": {
+    "AdjacencyTiming": {
+      "after_move": 3
+    },
+    "BoardLayout": {
+      "beginner": 3
+    },
+    "BoardShape": {
+      "custom": 5,
+      "hexagon": 5
+    },
+    "BuilderRequired": {
+      "always": 3
+    },
+    "DiceMode": {
+      "deck": 3
+    },
+    "MapVisibility": {
+      "explored": 3,
+      "growing": 3,
+      "live_fog": 3
+    },
+    "MoveOnSeven": {
+      "player": 3
+    },
+    "Rounding": {
+      "ceil": 3
+    },
+    "ScoreVisibility": {
+      "hidden_until_end": 3
+    },
+    "SetupMode": {
+      "random": 3,
+      "snake_click": 3
+    },
+    "TradeOffers": {
+      "private": 3
+    }
+  },
+  "x-schema-version": 1
+}
