@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% load i18n %}
+{% block title %}{% translate "Lobby" %} · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>{% translate "Lobby" %}</h1>
+
+{% if my_games %}
+<section>
+  <h2>{% translate "Your games" %}</h2>
+  <ul class="game-list">
+    {% for game in my_games %}
+      <li><a href="{% url 'lobby:detail' game.code %}">{{ game.code }}</a> · {{ game.get_status_display }}</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section>
+  <h2>{% translate "Open games" %}</h2>
+  {% if open_games %}
+  <table class="games">
+    <thead><tr><th>{% translate "Code" %}</th><th>{% translate "Host" %}</th><th>{% translate "Preset" %}</th><th>{% translate "Players" %}</th></tr></thead>
+    <tbody>
+    {% for game in open_games %}
+      <tr>
+        <td><a href="{% url 'lobby:detail' game.code %}">{{ game.code }}</a></td>
+        <td>{{ game.host.public_name }}</td>
+        <td>{{ game.preset|title }}</td>
+        <td>{{ game.players.all|length }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>{% translate "No open games. Create one below." %}</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>{% translate "Create a game" %}</h2>
+  <form method="post" class="stacked">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button type="submit">{% translate "Create game" %}</button>
+  </form>
+</section>
+{% endblock %}

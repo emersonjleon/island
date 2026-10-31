@@ -1,2 +1,7 @@
-"""LobbyConsumer routes. Stub created in WP0; WP10 fills it in."""
-websocket_urlpatterns: list = []
+from django.urls import path
+
+from .consumers import LobbyConsumer
+
+websocket_urlpatterns = [
+    path("ws/lobby/<str:code>/", LobbyConsumer.as_asgi()),
+]

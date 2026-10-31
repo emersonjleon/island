@@ -1,0 +1,20 @@
+{% extends "base.html" %}{% load i18n vite %}
+{% block title %}{% blocktranslate with code=game.code %}Game {{ code }}{% endblocktranslate %} · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>{% blocktranslate with code=game.code %}Game {{ code }}{% endblocktranslate %}</h1>
+<p class="muted">{% translate "Share this code so friends can join." %}</p>
+
+<dl class="settings-summary">
+  <dt>{% translate "Preset" %}</dt><dd>{{ game.preset|title }}</dd>
+  <dt>{% translate "Island size (land hexes)" %}</dt><dd>{{ settings.board.land_hexes }}</dd>
+  <dt>{% translate "Seconds between dice rolls" %}</dt><dd>{{ roll_seconds }}</dd>
+  <dt>{% translate "Points to win" %}</dt><dd>{{ settings.victory.target }}</dd>
+  <dt>{% translate "Players" %}</dt><dd>{{ seats|length }} / {{ settings.players.max }}</dd>
+</dl>
+
+<div id="lobby-seats" data-seats-url="{% url 'lobby:seats' game.code %}" data-ws-path="/ws/lobby/{{ game.code }}/">
+  {% include "lobby/_seats.html" %}
+</div>
+<p><a href="{% url 'lobby:list' %}">{% translate "Back to the lobby" %}</a></p>
+{% endblock %}
+{% block scripts %}{% vite_entry "lobby" %}{% endblock %}

@@ -1,0 +1,52 @@
+{% load i18n %}
+<p class="status" data-status="{{ game.status }}">{% translate "Status:" %} <strong>{{ game.get_status_display }}</strong></p>
+<table class="seats">
+  <thead><tr><th>{% translate "Colour" %}</th><th>{% translate "Player" %}</th><th>{% translate "Ready" %}</th></tr></thead>
+  <tbody>
+  {% for seat in seats %}
+    <tr{% if seat == me %} class="me"{% endif %}>
+      <td><span class="swatch swatch-{{ seat.colour }}"></span> {{ seat.get_colour_display }}</td>
+      <td>{{ seat.user.public_name }}{% if seat.user_id == game.host_id %} <span class="badge">{% translate "host" %}</span>{% endif %}</td>
+      <td>{% if seat.user_id == game.host_id %}–{% elif seat.ready %}{% translate "Ready" %}{% else %}{% translate "Not ready" %}{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% if game.is_open %}
+<div class="lobby-actions">
+  {% if can_join %}
+    <form method="post" action="{% url 'lobby:join' game.code %}">{% csrf_token %}<button type="submit">{% translate "Join" %}</button></form>
+  {% endif %}
+  {% if me %}
+    {% if not is_host %}
+    <form method="post" action="{% url 'lobby:ready' game.code %}">{% csrf_token %}
+      <input type="hidden" name="ready" value="{% if me.ready %}0{% else %}1{% endif %}">
+      <button type="submit">{% if me.ready %}{% translate "Not ready" %}{% else %}{% translate "I'm ready" %}{% endif %}</button>
+    </form>
+    {% endif %}
+    {% if free_colours %}
+    <form method="post" action="{% url 'lobby:colour' game.code %}">{% csrf_token %}
+      <label for="colour-select">{% translate "Colour" %}</label>
+      <select id="colour-select" name="colour">
+        <option value="{{ me.colour }}" selected>{{ me.get_colour_display }}</option>
+        {% for value, label in free_colours %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+      </select>
+      <button type="submit">{% translate "Change" %}</button>
+    </form>
+    {% endif %}
+    <form method="post" action="{% url 'lobby:leave' game.code %}">{% csrf_token %}<button type="submit" class="secondary">{% translate "Leave" %}</button></form>
+  {% endif %}
+  {% if is_host %}
+    <form method="post" action="{% url 'lobby:start' game.code %}">{% csrf_token %}
+      <button type="submit"{% if start_problems %} disabled{% endif %}>{% translate "Start game" %}</button>
+    </form>
+    <form method="post" action="{% url 'lobby:cancel' game.code %}">{% csrf_token %}<button type="submit" class="secondary">{% translate "Cancel game" %}</button></form>
+    {% for problem in start_problems %}<p class="muted">{{ problem }}</p>{% endfor %}
+  {% endif %}
+</div>
+{% elif game.status == "STARTING" %}
+  <p>{% translate "The island is being prepared. You will be taken to the game when it is ready." %}</p>
+{% elif game.status == "RUNNING" %}
+  <p><a class="button" href="/play/{{ game.code }}/">{% translate "Go to the game" %}</a></p>
+{% endif %}

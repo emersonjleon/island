@@ -5,7 +5,9 @@
   Settle an island in real time. The clock rolls the dice for everyone, and your
   settlements collect what the land gives.
 {% endblocktranslate %}</p>
-{% if not user.is_authenticated %}
+{% if user.is_authenticated %}
+  <p><a class="button" href="{% url 'lobby:list' %}">{% translate "Go to the lobby" %}</a></p>
+{% else %}
   <p><a class="button" href="{% url 'accounts:signup' %}">{% translate "Sign up" %}</a>
      <a href="{% url 'accounts:login' %}">{% translate "Log in" %}</a></p>
 {% endif %}

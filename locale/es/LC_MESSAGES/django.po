@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-30 18:37+0000\n"
+"POT-Creation-Date: 2026-10-31 16:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,11 +49,137 @@ msgstr "English"
 msgid "Español"
 msgstr "Español"
 
+#: lobby/forms.py:14 templates/lobby/detail.html:8
+#: templates/lobby/list.html:21
+msgid "Preset"
+msgstr "Preajuste"
+
+#: lobby/forms.py:16 templates/lobby/detail.html:12
+#: templates/lobby/list.html:21
+msgid "Players"
+msgstr "Jugadores"
+
+#: lobby/forms.py:19 templates/lobby/detail.html:9
+msgid "Island size (land hexes)"
+msgstr "Tamaño de la isla (hexágonos de tierra)"
+
+#: lobby/forms.py:20
+msgid "Blank keeps the preset (19 in Classic)."
+msgstr "En blanco mantiene el preajuste (19 en Clásico)."
+
+#: lobby/forms.py:23 templates/lobby/detail.html:10
+msgid "Seconds between dice rolls"
+msgstr "Segundos entre tiradas de dados"
+
+#: lobby/forms.py:24
+msgid "Blank keeps the preset (20 in Classic)."
+msgstr "En blanco mantiene el preajuste (20 en Clásico)."
+
+#: lobby/forms.py:27 templates/lobby/detail.html:11
+msgid "Points to win"
+msgstr "Puntos para ganar"
+
+#: lobby/forms.py:28
+msgid "Blank keeps the preset (10 in Classic)."
+msgstr "En blanco mantiene el preajuste (10 en Clásico)."
+
+#: lobby/messages.py:4
+msgid "That preset does not exist."
+msgstr "Ese preajuste no existe."
+
+#: lobby/messages.py:5
+msgid "These settings are not valid together."
+msgstr "Esta combinación de opciones no es válida."
+
+#: lobby/messages.py:6
+msgid "An island cannot be generated with these settings."
+msgstr "No se puede generar una isla con estas opciones."
+
+#: lobby/messages.py:7
+msgid "This game is no longer open."
+msgstr "Esta partida ya no está abierta."
+
+#: lobby/messages.py:8
+msgid "You are not in this game."
+msgstr "No estás en esta partida."
+
+#: lobby/messages.py:9
+msgid "This game is full."
+msgstr "Esta partida está llena."
+
+#: lobby/messages.py:10
+msgid "Unknown colour."
+msgstr "Color desconocido."
+
+#: lobby/messages.py:11
+msgid "Another player already has that colour."
+msgstr "Otro jugador ya tiene ese color."
+
+#: lobby/messages.py:12
+msgid "Only the host can do that."
+msgstr "Solo el anfitrión puede hacer eso."
+
+#: lobby/messages.py:13
+msgid "More players need to join first."
+msgstr "Primero deben unirse más jugadores."
+
+#: lobby/messages.py:14
+msgid "Every player must be ready first."
+msgstr "Primero todos los jugadores deben estar listos."
+
+#: lobby/messages.py:19
+msgid "That action was refused."
+msgstr "Esa acción fue rechazada."
+
+#: lobby/models.py:13
+msgid "Red"
+msgstr "Rojo"
+
+#: lobby/models.py:14
+msgid "Blue"
+msgstr "Azul"
+
+#: lobby/models.py:15
+msgid "White"
+msgstr "Blanco"
+
+#: lobby/models.py:16
+msgid "Orange"
+msgstr "Naranja"
+
+#: lobby/models.py:17
+msgid "Green"
+msgstr "Verde"
+
+#: lobby/models.py:18
+msgid "Brown"
+msgstr "Marrón"
+
+#: lobby/models.py:28
+msgid "Waiting for players"
+msgstr "Esperando jugadores"
+
+#: lobby/models.py:29
+msgid "Starting"
+msgstr "Iniciando"
+
+#: lobby/models.py:30
+msgid "Running"
+msgstr "En curso"
+
+#: lobby/models.py:31
+msgid "Finished"
+msgstr "Terminada"
+
+#: lobby/models.py:32
+msgid "Cancelled"
+msgstr "Cancelada"
+
 #: templates/accounts/login.html:2 templates/accounts/login.html:4
 #: templates/accounts/login.html:10
 #: templates/accounts/password_reset_complete.html:5
 #: templates/accounts/signup.html:11 templates/base.html:20
-#: templates/home.html:10
+#: templates/home.html:12
 msgid "Log in"
 msgstr "Iniciar sesión"
 
@@ -67,7 +193,7 @@ msgstr "¿Eres nuevo?"
 
 #: templates/accounts/login.html:13 templates/accounts/signup.html:2
 #: templates/accounts/signup.html:4 templates/base.html:21
-#: templates/home.html:9
+#: templates/home.html:11
 msgid "Sign up"
 msgstr "Registrarse"
 
@@ -184,7 +310,7 @@ msgstr "Cerrar sesión"
 msgid "Language"
 msgstr "Idioma"
 
-#: templates/base.html:33
+#: templates/base.html:33 templates/lobby/_seats.html:35
 msgid "Change"
 msgstr "Cambiar"
 
@@ -195,3 +321,107 @@ msgid ""
 msgstr ""
 "Coloniza una isla en tiempo real. El reloj lanza los dados para todos y tus "
 "poblados recogen lo que da la tierra."
+
+#: templates/home.html:9
+msgid "Go to the lobby"
+msgstr "Ir a la sala de espera"
+
+#: templates/lobby/_seats.html:2
+msgid "Status:"
+msgstr "Estado:"
+
+#: templates/lobby/_seats.html:4 templates/lobby/_seats.html:30
+msgid "Colour"
+msgstr "Color"
+
+#: templates/lobby/_seats.html:4
+msgid "Player"
+msgstr "Jugador"
+
+#: templates/lobby/_seats.html:4 templates/lobby/_seats.html:10
+msgid "Ready"
+msgstr "Listo"
+
+#: templates/lobby/_seats.html:9
+msgid "host"
+msgstr "anfitrión"
+
+#: templates/lobby/_seats.html:10 templates/lobby/_seats.html:25
+msgid "Not ready"
+msgstr "No listo"
+
+#: templates/lobby/_seats.html:19
+msgid "Join"
+msgstr "Unirse"
+
+#: templates/lobby/_seats.html:25
+msgid "I'm ready"
+msgstr "Estoy listo"
+
+#: templates/lobby/_seats.html:38
+msgid "Leave"
+msgstr "Salir"
+
+#: templates/lobby/_seats.html:42
+msgid "Start game"
+msgstr "Iniciar partida"
+
+#: templates/lobby/_seats.html:44
+msgid "Cancel game"
+msgstr "Cancelar partida"
+
+#: templates/lobby/_seats.html:49
+msgid ""
+"The island is being prepared. You will be taken to the game when it is "
+"ready."
+msgstr ""
+"Se está preparando la isla. Te llevaremos a la partida cuando esté lista."
+
+#: templates/lobby/_seats.html:51
+msgid "Go to the game"
+msgstr "Ir a la partida"
+
+#: templates/lobby/detail.html:2 templates/lobby/detail.html:4
+#, python-format
+msgid "Game %(code)s"
+msgstr "Partida %(code)s"
+
+#: templates/lobby/detail.html:5
+msgid "Share this code so friends can join."
+msgstr "Comparte este código para que tus amigos se unan."
+
+#: templates/lobby/detail.html:18
+msgid "Back to the lobby"
+msgstr "Volver a la sala de espera"
+
+#: templates/lobby/list.html:2 templates/lobby/list.html:4
+msgid "Lobby"
+msgstr "Sala de espera"
+
+#: templates/lobby/list.html:8
+msgid "Your games"
+msgstr "Tus partidas"
+
+#: templates/lobby/list.html:18
+msgid "Open games"
+msgstr "Partidas abiertas"
+
+#: templates/lobby/list.html:21
+msgid "Code"
+msgstr "Código"
+
+#: templates/lobby/list.html:21
+msgid "Host"
+msgstr "Anfitrión"
+
+#: templates/lobby/list.html:34
+msgid "No open games. Create one below."
+msgstr "No hay partidas abiertas. Crea una abajo."
+
+#: templates/lobby/list.html:39
+msgid "Create a game"
+msgstr "Crear una partida"
+
+#: templates/lobby/list.html:43
+msgid "Create game"
+msgstr "Crear partida"
