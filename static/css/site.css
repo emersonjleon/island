@@ -50,3 +50,6 @@ button[disabled] { opacity: 0.5; cursor: not-allowed; }
 .settings-summary { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
 .settings-summary dt { color: var(--muted); }
 .settings-summary dd { margin: 0; }
+.game-main { padding: 0; }
+.game-root { position: relative; min-height: calc(100vh - 56px); }
+.game-loading { padding: 16px; color: var(--muted); }
