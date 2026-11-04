@@ -216,3 +216,41 @@ class GameHostTests(TransactionTestCase):
         self.assertGreaterEqual(async_to_sync(run)(), 5)
         kinds = sorted(GameSnapshot.objects.filter(game=game).values_list("kind", flat=True))
         self.assertEqual(kinds, ["roll", "shutdown"])
+
+
+class HostRobustnessTests(TransactionTestCase):
+    def test_concurrent_takes_start_one_runner(self):
+        game = started_lobby_game(2)
+        layer = InMemoryChannelLayer()
+
+        async def run():
+            host = GameHost(layer=layer, leases=LocalLeases(), clock_factory=ManualClock)
+            await asyncio.gather(host.take(game.pk), host.take(game.pk), host.scan())
+            self.assertEqual(len(host.tasks), 1)
+            await host.shutdown()
+
+        async_to_sync(run)()
+        self.assertEqual(GameSnapshot.objects.filter(game=game, kind="start").count(), 1)
+
+    def test_receive_loop_survives_layer_errors(self):
+        class FlakyLayer(InMemoryChannelLayer):
+            failures = 2
+
+            async def receive(self, channel):
+                if channel == "gamehost" and self.failures:
+                    self.failures -= 1
+                    raise TimeoutError("read timeout")
+                return await super().receive(channel)
+
+        layer = FlakyLayer()
+
+        async def run():
+            host = GameHost(layer=layer, leases=LocalLeases())
+            loop = asyncio.create_task(host.receive_loop())
+            reply = await layer.new_channel()
+            await layer.send("gamehost", {"type": "game.intent", "game_id": 999, "cid": "c", "reply_channel": reply})
+            msg = await asyncio.wait_for(layer.receive(reply), TIMEOUT)
+            loop.cancel()
+            return msg["msg"]["code"]
+
+        self.assertEqual(async_to_sync(run)(), "game.not_running")

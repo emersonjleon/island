@@ -16,6 +16,7 @@ from .models import GameSnapshot
 
 log = logging.getLogger(__name__)
 db = sync_to_async  # ORM calls run in the default thread executor
+RECEIVE_RETRY_S = 0.1
 
 
 class GameRunner:
@@ -86,6 +87,7 @@ class GameHost:
         self.clock_factory = clock_factory
         self.runners: dict[int, GameRunner] = {}
         self.tasks: dict[int, asyncio.Task] = {}
+        self._taking: set[int] = set()
         self.channel = conf.get("CHANNEL")
 
     # ----------------------------------------------------------- taking games
@@ -93,6 +95,15 @@ class GameHost:
         """Start (STARTING) or restore (RUNNING) a game if no other host holds it."""
         if game_id in self.runners:
             return self.runners[game_id]
+        if game_id in self._taking:  # a game.start and a scan can race for the same game
+            return None
+        self._taking.add(game_id)
+        try:
+            return await self._take(game_id)
+        finally:
+            self._taking.discard(game_id)
+
+    async def _take(self, game_id: int) -> GameRunner | None:
         game = await db(store.get_game)(game_id)
         if game is None or game.status not in ("STARTING", "RUNNING"):
             return None
@@ -150,12 +161,26 @@ class GameHost:
                 await self.layer.send(reply, {"type": "game.out", "msg": {
                     "t": "reject", "cid": message.get("cid"), "code": "game.not_running", "params": {}}})
             return
-        if kind in ("game.intent", "game.sync"):
+        if kind == "game.ping":
+            # Answered at once (not queued) so the round trip measures the network, not the game loop.
+            reply = message.get("reply_channel")
+            if reply:
+                await self.layer.send(reply, {"type": "game.out", "msg": {
+                    "t": "pong", "c": message.get("c"), "now": runner.clock.now()}})
+        elif kind in ("game.intent", "game.sync"):
             runner.inbox.put_nowait(message)
 
     async def receive_loop(self) -> None:
         while True:
-            message = await self.layer.receive(self.channel)
+            try:
+                message = await self.layer.receive(self.channel)
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                # e.g. a Redis read timeout while idle: nothing was taken off the channel, so retry.
+                log.debug("gamehost receive failed (%r); retrying", exc)
+                await asyncio.sleep(RECEIVE_RETRY_S)
+                continue
             try:
                 await self.dispatch(message)
             except Exception:
