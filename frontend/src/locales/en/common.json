@@ -1,1 +1,13 @@
-{ "loading": "Loading…", "connecting": "Connecting…", "reconnecting": "Reconnecting…" }
+{
+  "loading": "Loading…",
+  "connecting": "Connecting…",
+  "reconnecting": "Reconnecting…",
+  "status": {
+    "setup": "Setup: walk your settler and build your first settlements",
+    "nextRoll": "Next roll in {{seconds}} s",
+    "lastRoll": "Last roll: {{sum}}",
+    "spectator": "Watching",
+    "finished": "Game over",
+    "winner": "{{name}} wins"
+  }
+}
