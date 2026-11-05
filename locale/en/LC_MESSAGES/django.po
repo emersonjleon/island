@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-31 16:26+0000\n"
+"POT-Creation-Date: 2026-11-04 22:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -309,6 +309,24 @@ msgstr ""
 msgid "Change"
 msgstr ""
 
+#: templates/gameplay/game.html:2 templates/lobby/detail.html:2
+#: templates/lobby/detail.html:4
+#, python-format
+msgid "Game %(code)s"
+msgstr ""
+
+#: templates/gameplay/game.html:8
+msgid "Loading the island…"
+msgstr ""
+
+#: templates/gameplay/game.html:9
+msgid "You are watching as a spectator."
+msgstr ""
+
+#: templates/gameplay/game.html:11
+msgid "The game needs JavaScript."
+msgstr ""
+
 #: templates/home.html:4
 msgid ""
 "Settle an island in real time. The clock rolls the dice for everyone, and "
@@ -370,11 +388,6 @@ msgstr ""
 
 #: templates/lobby/_seats.html:51
 msgid "Go to the game"
-msgstr ""
-
-#: templates/lobby/detail.html:2 templates/lobby/detail.html:4
-#, python-format
-msgid "Game %(code)s"
 msgstr ""
 
 #: templates/lobby/detail.html:5
