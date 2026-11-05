@@ -1,1 +1,13 @@
-{ "loading": "Cargando…", "connecting": "Conectando…", "reconnecting": "Reconectando…" }
+{
+  "loading": "Cargando…",
+  "connecting": "Conectando…",
+  "reconnecting": "Reconectando…",
+  "status": {
+    "setup": "Preparación: lleva a tu colono y construye tus primeros poblados",
+    "nextRoll": "Próxima tirada en {{seconds}} s",
+    "lastRoll": "Última tirada: {{sum}}",
+    "spectator": "Mirando",
+    "finished": "Fin de la partida",
+    "winner": "Gana {{name}}"
+  }
+}
