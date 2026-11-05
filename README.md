@@ -7,7 +7,7 @@ An online strategy game: Settlers of Catan ideas played in real time, like Age o
 
 ## Status
 
-Stage 1 in progress. The rules engine (`engine/`, pure Python) is complete through simulation and replay. The Django site has its skeleton and accounts (sign-up, login, password reset, profile, English/Spanish, key-binding storage) and a lobby (create a game with a few settings, join, colours, ready, start, live seat updates); the game host and game page come next.
+Stage 1 in progress. The rules engine (`engine/`, pure Python) is complete through simulation and replay. The Django site has its skeleton and accounts (sign-up, login, password reset, profile, English/Spanish, key-binding storage) and a lobby (create a game with a few settings, join, colours, ready, start, live seat updates) and the game host that runs started games; the game WebSocket and the game page come next.
 
 ## Running the engine tests
 
@@ -40,6 +40,16 @@ python3 manage.py runserver        # ASGI through Daphne
 
 Postgres and Redis (what production uses): `docker compose up -d`, then run with
 `USE_POSTGRES=1 REDIS_URL=redis://localhost:6379/0`.
+
+Games are run by a separate process, the game host. It talks to the web process through the
+channel layer, so it needs Redis (the in-memory layer does not cross processes):
+
+```bash
+REDIS_URL=redis://localhost:6379/0 python3 manage.py run_gamehost
+```
+
+It starts games the lobby marks `STARTING`, persists commands and snapshots, restores `RUNNING`
+games after a restart, and snapshots every game on Ctrl-C / SIGTERM.
 
 The client lives in `frontend/` (TypeScript, Vite):
 

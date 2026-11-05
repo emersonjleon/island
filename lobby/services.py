@@ -61,9 +61,14 @@ def broadcast_changed(game: Game) -> None:
     transaction.on_commit(lambda: _group_send(group, {"type": "lobby.changed"}))
 
 
+def started_message(game: Game) -> dict[str, Any]:
+    """Group message that redirects lobby pages to the running game (sent by the game host)."""
+    return {"type": "lobby.started", "url": f"/play/{game.code}/"}
+
+
 def notify_started(game: Game) -> None:
-    """Called by the game host once the game is RUNNING: redirect lobby pages to the game."""
-    _group_send(game.group_name, {"type": "lobby.started", "url": f"/play/{game.code}/"})
+    """Synchronous variant of the game host's redirect, for scripts and tests."""
+    _group_send(game.group_name, started_message(game))
 
 
 # ------------------------------------------------------------------ helpers
