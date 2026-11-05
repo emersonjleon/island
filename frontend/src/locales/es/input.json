@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "walk": "Caminar aquí",
+    "road": "Construir camino",
+    "settlement": "Construir poblado",
+    "city": "Construir ciudad"
+  },
+  "mode": {
+    "road": "Construir un camino",
+    "settlement": "Construir un poblado",
+    "city": "Construir una ciudad",
+    "help": "Tab o flechas para elegir, Enter para construir, Esc para cancelar",
+    "none": "No hay dónde construir eso ahora"
+  },
+  "help": "WASD o flechas: caminar · Clic derecho: caminar o construir · R E C: construir · Mayús+WASD: cámara",
+  "rejected": "No es posible ({{code}})"
+}

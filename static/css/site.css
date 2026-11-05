@@ -56,3 +56,8 @@ button[disabled] { opacity: 0.5; cursor: not-allowed; }
 .game-canvas { position: absolute; inset: 0; }
 .game-canvas canvas { display: block; touch-action: none; }
 .game-status { position: absolute; left: 12px; top: 12px; padding: 6px 10px; border-radius: 6px; background: rgba(15, 25, 30, 0.75); color: #f4f1e8; font-size: 0.9rem; pointer-events: none; max-width: calc(100% - 24px); }
+.game-help { position: absolute; left: 12px; bottom: 12px; padding: 4px 8px; border-radius: 6px; background: rgba(15, 25, 30, 0.6); color: #f4f1e8; font-size: 0.8rem; pointer-events: none; max-width: calc(100% - 24px); }
+.select-box { position: absolute; border: 1px dashed #ffe066; background: rgba(255, 224, 102, 0.15); pointer-events: none; }
+.game-menu { position: absolute; display: flex; flex-direction: column; min-width: 160px; padding: 4px; border-radius: 6px; background: #f4f1e8; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35); z-index: 10; }
+.game-menu button { text-align: left; border: 0; background: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font: inherit; color: #1d2a30; }
+.game-menu button:hover, .game-menu button:focus { background: #ffe066; outline: none; }

@@ -84,3 +84,14 @@ function nearest(points: Pt[], p: Pt, maxDist: number): number | null {
   });
   return best;
 }
+
+/** Land vertices a settler can step to from ``v`` (the edge must touch land). */
+export function walkableNeighbours(board: BoardMsg, v: number): number[] {
+  const vert = board.vertices[v];
+  if (!vert) return [];
+  const land = (hexes: number[]) => hexes.some((h) => board.hexes[h]?.land);
+  return vert.adj_e
+    .filter((e) => land(board.edges[e]?.hexes ?? []))
+    .map((e) => { const [a, b] = board.edges[e]!.v; return a === v ? b : a; })
+    .filter((n) => land(board.vertices[n]?.hexes ?? []));
+}
