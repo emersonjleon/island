@@ -1,2 +1,7 @@
-"""GameConsumer routes. Stub created in WP0; WP12 fills it in."""
-websocket_urlpatterns: list = []
+from django.urls import path
+
+from .consumers import GameConsumer
+
+websocket_urlpatterns = [
+    path("ws/play/<str:code>/", GameConsumer.as_asgi()),
+]

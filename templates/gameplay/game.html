@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% load i18n vite %}
+{% block title %}{% blocktranslate with code=game.code %}Game {{ code }}{% endblocktranslate %} · {{ block.super }}{% endblock %}
+{% block body_class %}game-page{% endblock %}
+{% block main_class %}game-main{% endblock %}
+{% block content %}
+{{ config|json_script:"game-config" }}
+<div id="game-root" class="game-root">
+  <p class="game-loading">{% translate "Loading the island…" %}</p>
+  {% if seat is None %}<p class="muted">{% translate "You are watching as a spectator." %}</p>{% endif %}
+</div>
+<noscript><p>{% translate "The game needs JavaScript." %}</p></noscript>
+{% endblock %}
+{% block scripts %}{% vite_entry "game" %}{% endblock %}

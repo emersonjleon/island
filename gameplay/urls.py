@@ -1,3 +1,9 @@
-"""The /play/<code>/ page. Stub created in WP0; WP12 fills it in."""
+from django.urls import path
+
+from . import views
+
 app_name = "gameplay"
-urlpatterns: list = []
+
+urlpatterns = [
+    path("<str:code>/", views.play, name="play"),
+]

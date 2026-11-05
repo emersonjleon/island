@@ -48,5 +48,5 @@
 {% elif game.status == "STARTING" %}
   <p>{% translate "The island is being prepared. You will be taken to the game when it is ready." %}</p>
 {% elif game.status == "RUNNING" %}
-  <p><a class="button" href="/play/{{ game.code }}/">{% translate "Go to the game" %}</a></p>
+  <p><a class="button" href="{% url 'gameplay:play' game.code %}">{% translate "Go to the game" %}</a></p>
 {% endif %}
