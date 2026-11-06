@@ -1,0 +1,21 @@
+{
+  "clock_started": "El reloj de los dados ha empezado",
+  "dice_rolled": "Salió {{sum}}",
+  "produced_you": "Recibiste {{res}}",
+  "produced_none": "Nadie produjo nada",
+  "robber_moved": "El ladrón se movió",
+  "robber_stole": "{{who}} perdió {{res}} por el ladrón",
+  "built": "{{who}} construyó: {{kind}}",
+  "construction_cancelled": "{{who}}: construcción detenida ({{reason}})",
+  "setup_complete": "{{who}} terminó la preparación",
+  "starting_resources": "{{who}} recibió {{res}} para empezar",
+  "traded": "{{who}} cambió {{give}} por {{get}}",
+  "game_over": "{{who}} ganó la partida",
+  "game_over_you": "Ganaste la partida",
+  "game_over_none": "La partida terminó sin ganador",
+  "reason": {
+    "builder_left": "el colono se fue",
+    "cancelled": "cancelada",
+    "conflict": "alguien construyó ahí primero"
+  }
+}

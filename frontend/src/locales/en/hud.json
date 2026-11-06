@@ -1,0 +1,45 @@
+{
+  "res": { "lumber": "lumber", "brick": "brick", "wool": "wool", "grain": "grain", "ore": "ore", "fish": "fish" },
+  "resCount": "{{count}} {{res}}",
+  "kind": { "road": "road", "settlement": "settlement", "city": "city", "megacity": "megacity" },
+  "you": "You",
+  "hand": "Your hand",
+  "build": { "road": "Road", "settlement": "Settlement", "city": "City", "cost": "Costs {{res}}", "free": "Free" },
+  "trade": {
+    "open": "Trade",
+    "title": "Trade with the bank",
+    "give": "Give",
+    "get": "Get",
+    "ratio": "{{ratio}} : 1",
+    "summary": "Give {{give}} for {{get}}",
+    "confirm": "Trade",
+    "close": "Close"
+  },
+  "dice": { "next": "Next roll", "last": "Last roll", "history": "Recent rolls", "waiting": "The dice start after the first settlement" },
+  "scores": { "title": "Players", "points": "{{points}} / {{target}}", "cards": "{{count}} cards", "you": "(you)" },
+  "log": { "title": "What happened" },
+  "over": { "title": "Game over", "winner": "{{name}} wins!", "youWin": "You win!", "noWinner": "No winner", "back": "Back to the lobby" },
+  "keys": {
+    "open": "Keys",
+    "title": "Keyboard controls",
+    "press": "Press a key…",
+    "add": "Add key",
+    "remove": "Remove {{key}}",
+    "reset": "Reset to defaults",
+    "save": "Save",
+    "saved": "Saved",
+    "saveFailed": "Saved on this device only",
+    "conflict": "Also used by: {{actions}}",
+    "close": "Close"
+  },
+  "action": {
+    "move_up": "Walk up", "move_down": "Walk down", "move_left": "Walk left", "move_right": "Walk right",
+    "select_next": "Next settler", "select_1": "Settler 1", "select_2": "Settler 2", "select_3": "Settler 3",
+    "build_road": "Build road", "build_settlement": "Build settlement", "build_city": "Build city",
+    "confirm": "Confirm", "cancel": "Cancel",
+    "camera_up": "Camera up", "camera_down": "Camera down", "camera_left": "Camera left", "camera_right": "Camera right",
+    "zoom_in": "Zoom in", "zoom_out": "Zoom out", "center_selected": "Centre on settler",
+    "buy_dev_card": "Buy development card", "open_trade": "Open trade"
+  },
+  "spectator": "You are watching this game"
+}

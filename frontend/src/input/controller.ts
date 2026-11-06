@@ -60,6 +60,8 @@ interface PendingBuild { kind: BuildChoice; target: number; spots: number[] }
 
 export class InputController {
   selected: number[] = [];
+  /** True while a HUD dialog is open: keys go to the dialog, not the game. */
+  paused = false;
   mode: { kind: BuildChoice; focus: number | null } | null = null;
   private keys: Map<string, Action>;
   private held = new Set<Action>();
@@ -78,6 +80,11 @@ export class InputController {
 
   constructor(private opts: InputOptions) {
     this.keys = keymap(opts.bindings);
+  }
+
+  setPaused(paused: boolean): void {
+    this.paused = paused;
+    if (paused) this.held.clear();
   }
 
   setBindings(b: Bindings): void {
@@ -184,6 +191,7 @@ export class InputController {
 
   // ------------------------------------------------------------------ keyboard
   private keyDown(e: KeyboardEvent): void {
+    if (this.paused) return;
     const t = e.target as HTMLElement | null;
     if (t && (t.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(t.tagName))) return;
     const action = this.keys.get(comboOf(e));
@@ -442,6 +450,7 @@ export class InputController {
 
   // ------------------------------------------------------------------ pointer
   private pointerDown(e: PointerEvent): void {
+    if (this.paused) return;
     this.closeMenu?.();
     const p = this.local(e);
     this.press = { button: e.button, x: p.x, y: p.y, dragging: false };

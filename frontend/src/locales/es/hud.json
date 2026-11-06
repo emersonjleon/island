@@ -1,0 +1,45 @@
+{
+  "res": { "lumber": "madera", "brick": "ladrillo", "wool": "lana", "grain": "trigo", "ore": "mineral", "fish": "pescado" },
+  "resCount": "{{count}} de {{res}}",
+  "kind": { "road": "camino", "settlement": "poblado", "city": "ciudad", "megacity": "metrópolis" },
+  "you": "Tú",
+  "hand": "Tu mano",
+  "build": { "road": "Camino", "settlement": "Poblado", "city": "Ciudad", "cost": "Cuesta {{res}}", "free": "Gratis" },
+  "trade": {
+    "open": "Comerciar",
+    "title": "Comerciar con el banco",
+    "give": "Das",
+    "get": "Recibes",
+    "ratio": "{{ratio}} : 1",
+    "summary": "Das {{give}} por {{get}}",
+    "confirm": "Comerciar",
+    "close": "Cerrar"
+  },
+  "dice": { "next": "Próxima tirada", "last": "Última tirada", "history": "Tiradas recientes", "waiting": "Los dados empiezan tras el primer poblado" },
+  "scores": { "title": "Jugadores", "points": "{{points}} / {{target}}", "cards": "{{count}} cartas", "you": "(tú)" },
+  "log": { "title": "Qué ha pasado" },
+  "over": { "title": "Fin de la partida", "winner": "¡Gana {{name}}!", "youWin": "¡Has ganado!", "noWinner": "Sin ganador", "back": "Volver a la sala" },
+  "keys": {
+    "open": "Teclas",
+    "title": "Controles de teclado",
+    "press": "Pulsa una tecla…",
+    "add": "Añadir tecla",
+    "remove": "Quitar {{key}}",
+    "reset": "Restablecer",
+    "save": "Guardar",
+    "saved": "Guardado",
+    "saveFailed": "Guardado solo en este dispositivo",
+    "conflict": "También usada por: {{actions}}",
+    "close": "Cerrar"
+  },
+  "action": {
+    "move_up": "Caminar arriba", "move_down": "Caminar abajo", "move_left": "Caminar a la izquierda", "move_right": "Caminar a la derecha",
+    "select_next": "Siguiente colono", "select_1": "Colono 1", "select_2": "Colono 2", "select_3": "Colono 3",
+    "build_road": "Construir camino", "build_settlement": "Construir poblado", "build_city": "Construir ciudad",
+    "confirm": "Confirmar", "cancel": "Cancelar",
+    "camera_up": "Cámara arriba", "camera_down": "Cámara abajo", "camera_left": "Cámara a la izquierda", "camera_right": "Cámara a la derecha",
+    "zoom_in": "Acercar", "zoom_out": "Alejar", "center_selected": "Centrar en el colono",
+    "buy_dev_card": "Comprar carta de desarrollo", "open_trade": "Abrir comercio"
+  },
+  "spectator": "Estás mirando esta partida"
+}

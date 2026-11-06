@@ -1,0 +1,83 @@
+/* Game HUD: panels float over the canvas; the layer itself lets clicks through. */
+.game-hud { position: absolute; inset: 0; pointer-events: none; font-size: 0.9rem; color: #f4f1e8; }
+.hud { position: absolute; inset: 0; }
+.hud-panel, .hud-notice, .hud-spectator, .hud-overlay { pointer-events: auto; }
+.hud-panel { position: absolute; background: rgba(15, 25, 30, 0.82); border-radius: 8px; padding: 8px 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+.hud-panel h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px; color: #c9c3b3; font-weight: 600; }
+
+.hud-clock { left: 12px; top: 12px; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 260px); min-height: 24px; }
+.hud-ring .ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.15); stroke-width: 4; }
+.hud-ring .ring-fg { fill: none; stroke: #ffe066; stroke-width: 4; stroke-linecap: round; transition: stroke-dasharray 0.2s linear; }
+.hud-ring text { fill: #f4f1e8; font-size: 13px; font-weight: 700; }
+.hud-dice { display: flex; align-items: center; gap: 4px; }
+.hud-dice .die { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 5px; background: #f4f1e8; color: #1d2a30; font-weight: 700; }
+.hud-history { display: flex; gap: 4px; color: #c9c3b3; font-size: 0.8rem; }
+.hud-history .seven { color: #ff8a80; font-weight: 700; }
+
+.hud-scores { right: 12px; top: 12px; min-width: 200px; }
+.hud-scores ul { list-style: none; margin: 0; padding: 0; }
+.hud-scores li { display: grid; grid-template-columns: 14px 1fr auto; column-gap: 8px; align-items: center; padding: 2px 0; }
+.hud-scores li.me .name { font-weight: 700; }
+.hud-scores .cards { grid-column: 2 / 4; font-size: 0.75rem; color: #c9c3b3; }
+.hud-scores small { color: #c9c3b3; font-weight: 400; }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid #1d2a30; }
+
+.hud-log { left: 12px; bottom: 12px; width: 280px; max-width: calc(50% - 24px); }
+.hud-log ol { list-style: none; margin: 0; padding: 0; font-size: 0.82rem; }
+.hud-log li { padding: 1px 0; }
+
+.hud-hand { left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.hud-hand .cards, .choices { display: flex; gap: 6px; }
+.card { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; min-width: 52px; padding: 4px 6px; border-radius: 6px; color: #1d2a30; border: 2px solid transparent; font: inherit; }
+.card .count { font-size: 1.1rem; font-weight: 700; }
+.card .label { font-size: 0.7rem; }
+.card.empty { opacity: 0.45; }
+.res-lumber { background: #4e8f3a; color: #fff; } .res-brick { background: #c4623a; color: #fff; } .res-wool { background: #b6dd7a; }
+.res-grain { background: #f2cc4d; } .res-ore { background: #9aa3ab; } .res-fish { background: #6fb3d9; }
+.hud-hand .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.game-hud button { pointer-events: auto; cursor: pointer; border: 0; border-radius: 6px; padding: 6px 12px; font: inherit; background: #f4f1e8; color: #1d2a30; }
+.game-hud button.short { opacity: 0.6; }
+.game-hud button.quiet { background: transparent; color: inherit; text-decoration: underline; padding: 4px 6px; }
+.game-hud button.primary, .game-hud a.button.primary { background: #ffe066; color: #1d2a30; font-weight: 700; }
+.game-hud button[disabled] { opacity: 0.4; cursor: not-allowed; }
+.game-hud button[aria-pressed="true"] { border-color: #1d2a30; box-shadow: 0 0 0 2px #ffe066; }
+
+.hud-notices { position: absolute; top: 64px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; align-items: center; pointer-events: none; }
+.hud-notice { background: #fff3cd; color: #5c4400; padding: 6px 12px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); max-width: 480px; text-align: center; }
+.hud-spectator { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); background: rgba(15, 25, 30, 0.82); padding: 6px 12px; border-radius: 6px; }
+
+.hud-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.45); display: grid; place-items: center; z-index: 20; }
+.hud-dialog { background: #f4f1e8; color: #1d2a30; border-radius: 10px; padding: 16px 20px; max-width: min(640px, calc(100% - 32px)); max-height: calc(100% - 32px); overflow: auto; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); }
+.hud-dialog header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.hud-dialog h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.hud-dialog h3 { margin: 10px 0 6px; font-size: 0.85rem; text-transform: uppercase; color: #5b6770; }
+.hud-dialog .choices { flex-wrap: wrap; }
+.hud-dialog .choices .card small { font-size: 0.7rem; }
+.trade-amount { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.trade-why { color: #a33; margin: 8px 0 0; }
+.dialog-buttons { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 14px; }
+.dialog-buttons .saved { margin-right: auto; color: #3f7a3f; }
+.game-hud .hud-dialog button { background: #e4ddcb; }
+.game-hud .hud-dialog button.primary { background: #ffe066; }
+.game-hud .hud-dialog button.quiet { background: transparent; }
+.game-hud .hud-dialog .card { min-width: 64px; }
+.hud-dialog .res-lumber, .hud-dialog .res-brick { color: #fff; }
+.winner { font-size: 1.3rem; font-weight: 700; }
+.final { padding-left: 20px; }
+.game-hud a.button { pointer-events: auto; display: inline-block; padding: 8px 14px; border-radius: 6px; text-decoration: none; }
+
+table.keys { border-collapse: collapse; width: 100%; }
+table.keys th { text-align: left; font-weight: 500; padding: 4px 12px 4px 0; white-space: nowrap; }
+table.keys td { padding: 4px 0; }
+.key { display: inline-flex; align-items: center; gap: 2px; background: #fff; border: 1px solid #c9c3b3; border-radius: 4px; padding: 1px 2px 1px 6px; margin: 0 4px 2px 0; font-family: ui-monospace, monospace; font-size: 0.8rem; }
+.key.clash { border-color: #d64545; background: #fde8e8; }
+.game-hud .key button.quiet { padding: 0 4px; text-decoration: none; }
+
+@media (max-width: 720px) {
+  .hud-log { display: none; }
+  .hud-scores { min-width: 0; font-size: 0.8rem; }
+  .hud-clock { max-width: calc(100% - 24px); }
+  .hud-scores { top: 64px; }
+  .card { min-width: 40px; }
+}
+.hud-dialog header { position: sticky; top: -16px; margin: -16px -20px 0; padding: 16px 20px 4px; background: #f4f1e8; z-index: 1; }

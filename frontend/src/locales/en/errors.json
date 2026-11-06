@@ -1,0 +1,57 @@
+{
+  "generic": "That isn't possible right now ({{code}})",
+  "build": {
+    "already_building": "Something is already being built there",
+    "cannot_afford": "You don't have the resources for that",
+    "distance_rule": "Too close to another settlement: leave at least one empty corner between them",
+    "need_settler": "A settler has to stand there to build it",
+    "no_piece": "You have no pieces of that kind left",
+    "not_connected": "It must connect to your roads or buildings",
+    "not_land": "You can only build on land",
+    "not_own_city": "That isn't one of your cities",
+    "not_own_settlement": "That isn't one of your settlements",
+    "not_your_construction": "That isn't your construction",
+    "not_your_settler": "That isn't your settler",
+    "occupied": "That spot is taken",
+    "road_needs_settlement": "During setup, a road must touch your newest settlement",
+    "settler_busy": "That settler is busy building",
+    "setup_limit": "You have already placed all your setup pieces of that kind",
+    "setup_unfinished": "Finish your setup buildings first",
+    "unknown_construction": "That construction no longer exists"
+  },
+  "command": {
+    "invalid": "The server didn't understand that order",
+    "unknown_seat": "You don't have a seat in this game",
+    "unsupported": "That isn't available in this game yet"
+  },
+  "game": {
+    "finished": "The game is over",
+    "player_count": "Wrong number of players for this game",
+    "time_backwards": "Clock error, please reload the page",
+    "not_running": "The game isn't running"
+  },
+  "movement": {
+    "not_land": "Settlers can only walk on land",
+    "not_your_settler": "That isn't your settler",
+    "unknown_settler": "That settler no longer exists",
+    "unknown_vertex": "That spot doesn't exist",
+    "unreachable": "Your settler can't get there"
+  },
+  "trade": {
+    "bad_ratio": "Wrong amount for that trade",
+    "bank_empty": "The bank has run out of that resource",
+    "cannot_afford": "You don't have enough to trade",
+    "same_resource": "Pick two different resources",
+    "setup_forbidden": "You can't trade with the bank during setup"
+  },
+  "intent": {
+    "bad_cid": "The server didn't understand that order",
+    "rate_limited": "Too many orders at once, slow down a little",
+    "spectator": "Spectators can't give orders"
+  },
+  "message": {
+    "invalid": "The server didn't understand that message",
+    "too_large": "That message was too large"
+  },
+  "proto": { "unsupported": "Please reload the page to get the latest version" }
+}
