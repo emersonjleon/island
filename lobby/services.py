@@ -11,7 +11,9 @@ from pydantic import ValidationError
 from engine.board.generator import BoardGenerationError, check_board_settings
 from engine.codec import CODEC_VERSION
 from engine.rng import Rng
-from engine.settings import CURRENT_SCHEMA_VERSION, GameSettings, SeatOrder, UnknownPresetError, load_preset
+from engine.settings import (
+    CURRENT_SCHEMA_VERSION, GameSettings, SeatOrder, UnknownPresetError, load_preset, merge_overrides,
+)
 
 from .models import COLOUR_VALUES, Game, GamePlayer, GameStatus
 
@@ -100,6 +102,11 @@ def max_players(game: Game) -> int:
 # ------------------------------------------------------------------ actions
 @transaction.atomic
 def create_game(host, preset: str, overrides: dict[str, Any]) -> Game:
+    # Test deployments (e2e/settings.py) can force settings on every new game, e.g. a
+    # short game with plenty of resources. Empty in normal settings.
+    forced = getattr(django_settings, "LOBBY_FORCED_OVERRIDES", None)
+    if forced:
+        overrides = merge_overrides(overrides, forced)
     build_settings(preset, overrides)
     game = Game.objects.create(host=host, preset=preset, overrides=overrides)
     GamePlayer.objects.create(game=game, user=host, colour=COLOUR_VALUES[0])

@@ -139,6 +139,7 @@ describe("InputController", () => {
 
   it("after setup, builds without a settler unless the game requires one", () => {
     const { input, sent, store } = setup("running");
+    store.state!.players[0]!.setup.done = true;
     store.state!.buildable = { roads: [], settlements: [], cities: [3] };
     input.action("build_city");
     input.action("confirm");
@@ -157,7 +158,16 @@ describe("InputController", () => {
     expect(modes).toEqual([0, 1]);
   });
 
-  it("Tab cycles build candidates and Esc leaves build mode", () => {
+  it("still walks a builder for setup pieces after the dice clock has started", () => {
+    const { input, sent, store, board, start } = setup("running");
+    const target = walkableNeighbours(board, walkableNeighbours(board, start)[0]!).find((v) => v !== start)!;
+    store.state!.buildable = { roads: [], settlements: [target], cities: [] };
+    input.action("build_settlement");
+    input.action("confirm");
+    expect(sent).toEqual([{ a: "move_settler", settler: 7, to_vertex: target, mode: "replace" }]);
+  });
+
+    it("Tab cycles build candidates and Esc leaves build mode", () => {
     const { input, store } = setup();
     store.state!.buildable = { roads: [], settlements: [3, 40, 90], cities: [] };
     input.action("build_settlement");
