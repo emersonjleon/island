@@ -163,6 +163,17 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       if (kind === "road") state.roads = [...state.roads, { edge: target, seat }];
       else state.buildings = [...state.buildings.filter((b) => b.vertex !== target), { kind, seat, vertex: target }];
       setPlayer(state, seat, { points: num(ev.points_after) });
+      // Mirror engine/rules/setup.py on_built: before a player's setup is done, their
+      // settlements and roads use up setup slots (the server sends no event for this).
+      const p = state.players.find((x) => x.seat === seat);
+      const left = p?.setup.remaining[kind] ?? 0;
+      if (p && !p.setup.done && (kind === "settlement" || kind === "road") && left > 0) {
+        p.setup = {
+          ...p.setup,
+          remaining: { ...p.setup.remaining, [kind]: left - 1 },
+          settlements_built: p.setup.settlements_built + (kind === "settlement" ? 1 : 0),
+        };
+      }
       break;
     }
     case "setup_complete": {

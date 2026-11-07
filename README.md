@@ -61,3 +61,20 @@ npm test
 ```
 
 Django tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py test common accounts lobby gamehost gameplay`
+
+## Two-player browser test
+
+`e2e/` plays a whole short game in two browsers against the real web server, game host and
+Redis: sign up, create and join in the lobby, place the setup pieces with the keyboard, wait for
+a dice roll, then build until someone wins (about 20 seconds). Every game it creates uses
+`e2e/fast_game.json` (5 points to win, plenty of resources, quick builds) through
+`e2e/settings.py`.
+
+```bash
+redis-server --daemonize yes                     # or docker compose up -d
+(cd frontend && npm ci && npm run build)
+(cd e2e && npm ci && npx playwright install chromium)
+python3 e2e/run.py                               # screenshots and server logs in e2e/out/
+```
+
+CI runs it in the `e2e` job.
