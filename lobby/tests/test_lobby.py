@@ -2,7 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 
 from accounts.models import User
@@ -131,6 +131,25 @@ class ServiceTests(TestCase):
         services.cancel_game(game, self.host)
         game.refresh_from_db()
         self.assertEqual(game.status, GameStatus.ABORTED)
+
+
+class ForcedOverrideTests(TestCase):
+    """e2e/settings.py forces a short game on every new game through LOBBY_FORCED_OVERRIDES."""
+
+    def setUp(self):
+        self.host = User.objects.create_user("host", password="pw-123456789")
+
+    @override_settings(LOBBY_FORCED_OVERRIDES={"victory": {"target": 5}, "players": {"max": 2}})
+    def test_forced_overrides_win_over_the_form(self):
+        game = services.create_game(self.host, "classic", {"players": {"max": 4}, "clock": {"roll_interval_ms": 9000}})
+        settings = services.build_settings(game.preset, game.overrides)
+        self.assertEqual(settings.victory.target, 5)
+        self.assertEqual(settings.players.max, 2)
+        self.assertEqual(settings.clock.roll_interval_ms, 9000)
+
+    def test_no_forced_overrides_by_default(self):
+        game = services.create_game(self.host, "classic", {"players": {"max": 4}})
+        self.assertEqual(game.overrides, {"players": {"max": 4}})
 
 
 class ViewTests(TestCase):

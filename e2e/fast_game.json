@@ -1,0 +1,11 @@
+{
+  "clock": {"roll_interval_ms": 5000},
+  "victory": {"target": 5},
+  "economy": {
+    "starting_materials": {"brick": 20, "lumber": 20, "wool": 20, "grain": 20, "ore": 20},
+    "bank": {"per_resource": {"lumber": 200, "brick": 200, "wool": 200, "grain": 200, "ore": 200, "fish": 200}}
+  },
+  "build": {"time_ms": {"road": 300, "settlement": 500, "city": 500, "megacity": 500}},
+  "settlers": {"ms_per_edge": 250},
+  "robber": {"enabled": false}
+}

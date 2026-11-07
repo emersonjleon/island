@@ -13,3 +13,4 @@ staticfiles/
 .DS_Store
 *.mo
 static/dist/
+e2e/out/
