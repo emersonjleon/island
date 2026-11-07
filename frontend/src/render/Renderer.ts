@@ -14,7 +14,10 @@ export interface Overlays {
   /** Highlight these vertices / edges (e.g. buildable spots in build mode). */
   vertices?: number[];
   edges?: number[];
-  selectedSettler?: number | null;
+  /** The one candidate the player is about to choose (drawn stronger). */
+  focusVertex?: number | null;
+  focusEdge?: number | null;
+  selectedSettlers?: number[];
 }
 
 export interface Renderer {
@@ -23,6 +26,11 @@ export interface Renderer {
   update(store: GameStore, now: number): void;
   pick(screenX: number, screenY: number): PickResult;
   screenToWorld(screenX: number, screenY: number): Pt;
+  worldToScreen(p: Pt): Pt;
+  /** Camera: screen-pixel pan, zoom by a factor around a screen point, centre on a world point. */
+  panBy(dx: number, dy: number): void;
+  zoomAt(factor: number, screenX: number, screenY: number): void;
+  centerOn(p: Pt): void;
   fit(): void;
   setOverlays(opts: Overlays): void;
   destroy(): void;

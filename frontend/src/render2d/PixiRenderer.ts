@@ -1,5 +1,6 @@
 // PixiJS 2D renderer. World units are hex radii scaled by UNIT pixels; the camera
-// is the transform of the world container (drag to pan, wheel to zoom).
+// is the transform of the world container, moved by the input package through
+// panBy / zoomAt / centerOn.
 import { Application, Container, Graphics, Text } from "pixi.js";
 
 import { BoardGeometry, hexCorners, type Pt } from "../board/geometry";
@@ -27,7 +28,6 @@ export class PixiRenderer implements Renderer {
   private drawnVersion = -1;
   private overlays: Overlays = {};
   private store: GameStore | null = null;
-  private dragging: { x: number; y: number } | null = null;
   private lastNow = 0;
 
   async mount(el: HTMLElement): Promise<void> {
@@ -37,7 +37,6 @@ export class PixiRenderer implements Renderer {
     this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer,
                         this.overlayLayer, this.settlerLayer);
     this.app.stage.addChild(this.world);
-    this.bindCamera(this.app.canvas);
   }
 
   update(store: GameStore, now: number): void {
@@ -197,6 +196,14 @@ export class PixiRenderer implements Renderer {
       const [a, b] = geo.edgeEnds(e);
       g.moveTo(a.x * UNIT, a.y * UNIT).lineTo(b.x * UNIT, b.y * UNIT).stroke({ width: 4, color: P.HIGHLIGHT, alpha: 0.8 });
     }
+    const fv = this.overlays.focusVertex;
+    const fp = fv == null ? undefined : geo.vertex[fv];
+    if (fp) g.circle(fp.x * UNIT, fp.y * UNIT, UNIT * 0.2).fill({ color: P.HIGHLIGHT, alpha: 0.45 }).stroke({ width: 4, color: P.HIGHLIGHT });
+    const fe = this.overlays.focusEdge;
+    if (fe != null && geo.edgeMid[fe]) {
+      const [a, b] = geo.edgeEnds(fe);
+      g.moveTo(a.x * UNIT, a.y * UNIT).lineTo(b.x * UNIT, b.y * UNIT).stroke({ width: 9, color: P.HIGHLIGHT });
+    }
   }
 
   // ------------------------------------------------------------------ per frame
@@ -217,7 +224,7 @@ export class PixiRenderer implements Renderer {
     for (const settler of s.settlers) {
       const p = settlerPosition(geo, settler, now);
       const colour = P.playerColour(store.colourOf(settler.seat));
-      const selected = this.overlays.selectedSettler === settler.id;
+      const selected = this.overlays.selectedSettlers?.includes(settler.id) ?? false;
       g.circle(p.x * UNIT, p.y * UNIT, UNIT * 0.16).fill(colour).stroke({ width: selected ? 4 : 2, color: selected ? P.HIGHLIGHT : P.OUTLINE });
       g.circle(p.x * UNIT, p.y * UNIT - UNIT * 0.05, UNIT * 0.06).fill(P.OUTLINE);
       if (settler.path.length) {
@@ -269,29 +276,26 @@ export class PixiRenderer implements Renderer {
     this.drawnVersion = -1;
   }
 
-  private bindCamera(canvas: HTMLCanvasElement): void {
-    canvas.addEventListener("pointerdown", (e) => {
-      if (e.button === 0 || e.button === 1) this.dragging = { x: e.clientX, y: e.clientY };
-    });
-    window.addEventListener("pointerup", () => (this.dragging = null));
-    window.addEventListener("pointermove", (e) => {
-      if (!this.dragging) return;
-      this.world.position.x += e.clientX - this.dragging.x;
-      this.world.position.y += e.clientY - this.dragging.y;
-      this.dragging = { x: e.clientX, y: e.clientY };
-    });
-    canvas.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      const rect = canvas.getBoundingClientRect();
-      const sx = e.clientX - rect.left;
-      const sy = e.clientY - rect.top;
-      const before = this.world.toLocal({ x: sx, y: sy });
-      const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, this.world.scale.x * Math.exp(-e.deltaY * 0.0015)));
-      this.world.scale.set(zoom);
-      const after = this.world.toGlobal(before);
-      this.world.position.x += sx - after.x;
-      this.world.position.y += sy - after.y;
-    }, { passive: false });
+  worldToScreen(p: Pt): Pt {
+    const g = this.world.toGlobal({ x: p.x * UNIT, y: p.y * UNIT });
+    return { x: g.x, y: g.y };
+  }
+
+  panBy(dx: number, dy: number): void {
+    this.world.position.x += dx;
+    this.world.position.y += dy;
+  }
+
+  zoomAt(factor: number, sx: number, sy: number): void {
+    const before = this.world.toLocal({ x: sx, y: sy });
+    this.world.scale.set(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, this.world.scale.x * factor)));
+    const after = this.world.toGlobal(before);
+    this.panBy(sx - after.x, sy - after.y);
+  }
+
+  centerOn(p: Pt): void {
+    const s = this.worldToScreen(p);
+    this.panBy(this.app.screen.width / 2 - s.x, this.app.screen.height / 2 - s.y);
   }
 
   destroy(): void {

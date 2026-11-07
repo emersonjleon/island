@@ -1,0 +1,21 @@
+{
+  "clock_started": "The dice clock has started",
+  "dice_rolled": "Rolled {{sum}}",
+  "produced_you": "You got {{res}}",
+  "produced_none": "Nobody produced anything",
+  "robber_moved": "The robber moved",
+  "robber_stole": "{{who}} lost {{res}} to the robber",
+  "built": "{{who}} built a {{kind}}",
+  "construction_cancelled": "{{who}}: building stopped ({{reason}})",
+  "setup_complete": "{{who}} finished setup",
+  "starting_resources": "{{who}} got {{res}} to start",
+  "traded": "{{who}} traded {{give}} for {{get}}",
+  "game_over": "{{who}} won the game",
+  "game_over_you": "You won the game",
+  "game_over_none": "The game ended with no winner",
+  "reason": {
+    "builder_left": "the settler walked away",
+    "cancelled": "cancelled",
+    "conflict": "someone else built there first"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "generic": "Eso no es posible ahora ({{code}})",
+  "build": {
+    "already_building": "Ya se está construyendo algo ahí",
+    "cannot_afford": "No tienes los recursos para eso",
+    "distance_rule": "Demasiado cerca de otro poblado: deja al menos una esquina libre entre ellos",
+    "need_settler": "Un colono tiene que estar ahí para construirlo",
+    "no_piece": "No te quedan piezas de ese tipo",
+    "not_connected": "Debe conectar con tus caminos o edificios",
+    "not_land": "Solo puedes construir en tierra",
+    "not_own_city": "Esa no es una de tus ciudades",
+    "not_own_settlement": "Ese no es uno de tus poblados",
+    "not_your_construction": "Esa construcción no es tuya",
+    "not_your_settler": "Ese colono no es tuyo",
+    "occupied": "Ese lugar está ocupado",
+    "road_needs_settlement": "Durante la preparación, el camino debe tocar tu poblado más reciente",
+    "settler_busy": "Ese colono está ocupado construyendo",
+    "setup_limit": "Ya colocaste todas tus piezas de preparación de ese tipo",
+    "setup_unfinished": "Primero termina tus edificios de preparación",
+    "unknown_construction": "Esa construcción ya no existe"
+  },
+  "command": {
+    "invalid": "El servidor no entendió esa orden",
+    "unknown_seat": "No tienes un puesto en esta partida",
+    "unsupported": "Eso aún no está disponible en esta partida"
+  },
+  "game": {
+    "finished": "La partida ha terminado",
+    "player_count": "Número de jugadores incorrecto para esta partida",
+    "time_backwards": "Error de reloj, recarga la página",
+    "not_running": "La partida no está en marcha"
+  },
+  "movement": {
+    "not_land": "Los colonos solo pueden caminar por tierra",
+    "not_your_settler": "Ese colono no es tuyo",
+    "unknown_settler": "Ese colono ya no existe",
+    "unknown_vertex": "Ese lugar no existe",
+    "unreachable": "Tu colono no puede llegar ahí"
+  },
+  "trade": {
+    "bad_ratio": "Cantidad incorrecta para ese intercambio",
+    "bank_empty": "Al banco se le acabó ese recurso",
+    "cannot_afford": "No tienes suficiente para comerciar",
+    "same_resource": "Elige dos recursos distintos",
+    "setup_forbidden": "No puedes comerciar con el banco durante la preparación"
+  },
+  "intent": {
+    "bad_cid": "El servidor no entendió esa orden",
+    "rate_limited": "Demasiadas órdenes a la vez, ve un poco más despacio",
+    "spectator": "Los espectadores no pueden dar órdenes"
+  },
+  "message": {
+    "invalid": "El servidor no entendió ese mensaje",
+    "too_large": "Ese mensaje era demasiado grande"
+  },
+  "proto": { "unsupported": "Recarga la página para obtener la última versión" }
+}

@@ -1,0 +1,17 @@
+{
+  "menu": {
+    "walk": "Walk here",
+    "road": "Build road",
+    "settlement": "Build settlement",
+    "city": "Build city"
+  },
+  "mode": {
+    "road": "Build a road",
+    "settlement": "Build a settlement",
+    "city": "Build a city",
+    "help": "Tab or arrows to choose, Enter to build, Esc to cancel",
+    "none": "Nowhere to build that right now"
+  },
+  "help": "WASD or arrows: walk · Right-click: walk or build · R E C: build · Shift+WASD: camera",
+  "rejected": "Not possible ({{code}})"
+}

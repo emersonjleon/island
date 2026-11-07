@@ -81,10 +81,15 @@ DATABASES = {
 }
 
 REDIS_URL = env("REDIS_URL", "redis://localhost:6379/0")
+# channels_redis waits up to 5 s for a message (BZPOPMIN timeout); redis-py 8 also
+# defaults to a 5 s socket timeout, so an idle consumer could die with
+# "TimeoutError: Timeout reading from ..." and drop the WebSocket. Keep the socket
+# timeout well above the blocking wait.
+REDIS_SOCKET_TIMEOUT_S = int(env("REDIS_SOCKET_TIMEOUT_S", "30"))
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [REDIS_URL]},
+        "CONFIG": {"hosts": [{"address": REDIS_URL, "socket_timeout": REDIS_SOCKET_TIMEOUT_S}]},
     }
 }
 

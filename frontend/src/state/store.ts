@@ -12,6 +12,8 @@ export class GameStore {
   state: GameStateView | null = null;
   seat: number | null = null;
   gameCode = "";
+  /** Game settings from the welcome message (JSON as the server sent it). */
+  settings: Record<string, unknown> = {};
   /** Last applied ``seq`` of this audience's stream. */
   seq = 0;
   /** Bumps on every change; renderers redraw static layers when it moves. */
@@ -29,6 +31,7 @@ export class GameStore {
     switch (msg.t) {
       case "welcome":
         this.seat = msg.seat;
+        this.settings = msg.settings;
         this.gameCode = msg.game;
         return this.changed();
       case "board":
@@ -116,7 +119,12 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
     }
     case "settler_step": {
       const s = settler(state, num(ev.settler));
-      if (s) s.step = { edge: num(ev.edge), from_v: num(ev.from_v), to_v: num(ev.to_v), t0: num(ev.t0), t1: num(ev.t1) };
+      if (s) {
+        s.step = { edge: num(ev.edge), from_v: num(ev.from_v), to_v: num(ev.to_v), t0: num(ev.t0), t1: num(ev.t1) };
+        // The engine pops the next vertex off the path when a step starts but only
+        // sends settler_path when the path is (re)planned, so mirror the pop here.
+        if (s.path[0] === s.step.to_v) s.path = s.path.slice(1);
+      }
       break;
     }
     case "settler_arrived": {
