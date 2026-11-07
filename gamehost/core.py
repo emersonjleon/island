@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from engine import game as engine
+from engine.ai.driver import BotDriver
 from engine.errors import RuleError
 from engine.events import DiceRolled, Event
 from engine.sim.runner import CommandRecord
@@ -40,6 +41,7 @@ class GameCore:
     seqs: dict[str, int] = field(default_factory=dict)
     pending: list[tuple[int, CommandRecord]] = field(default_factory=list)
     rolls_since_snapshot: int = 0
+    bots: BotDriver = field(default_factory=lambda: BotDriver([]))  # computer players' seats
 
     # ----------------------------------------------------------- audiences
     def audiences(self) -> list[int | None]:
@@ -75,6 +77,26 @@ class GameCore:
     @property
     def finished(self) -> bool:
         return self.state.phase == "finished"
+
+    def next_wakeup(self) -> int | None:
+        """Earliest game time something is due: an engine timer or a bot's next decision."""
+        if self.finished:
+            return None
+        times = [t for t in (self.state.timers.next_due(), self.bots.next_wakeup()) if t is not None]
+        return min(times) if times else None
+
+    def bots_act(self, now: int) -> list[Outgoing]:
+        """Let every bot whose turn to think has come send its intents (like a player would)."""
+        out: list[Outgoing] = []
+        if self.finished or not self.bots:
+            return out
+        now = max(now, self.state.now_ms)
+        for bot in self.bots.due(now):
+            for payload in bot.decide(self.state):
+                if self.finished:
+                    return out
+                out += self.intent(now, {"seat": bot.seat, "payload": payload})
+        return out
 
     def advance(self, now: int) -> list[Outgoing]:
         if now < self.state.now_ms:

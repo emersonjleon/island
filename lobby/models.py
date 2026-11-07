@@ -19,6 +19,15 @@ COLOURS = [
 ]
 COLOUR_VALUES = [c for c, _label in COLOURS]
 
+# Computer players. The level names are the keys of engine.ai.levels.LEVELS.
+BOT_LEVELS = [
+    ("easy", _("Easy")),
+    ("medium", _("Medium")),
+    ("hard", _("Hard")),
+]
+# Names given to bots in seat-adding order (the same in every language).
+BOT_NAMES = ["Ada", "Bruno", "Clara", "Diego", "Elena", "Felix"]
+
 
 def new_code() -> str:
     return "".join(secrets.choice(CODE_ALPHABET) for _ in range(CODE_LENGTH))
@@ -77,7 +86,12 @@ class Game(models.Model):
 
 class GamePlayer(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="players")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="game_seats")
+    # Null for a computer player (bot_level is then set).
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="game_seats", null=True, blank=True
+    )
+    bot_level = models.CharField(max_length=10, choices=BOT_LEVELS, blank=True)
+    bot_name = models.CharField(max_length=32, blank=True)
     # Assigned at start (0..n-1, following settings.players.seat_order); null in the lobby.
     seat = models.PositiveSmallIntegerField(null=True, blank=True)
     colour = models.CharField(max_length=16, choices=COLOURS)
@@ -94,7 +108,21 @@ class GamePlayer(models.Model):
             models.UniqueConstraint(
                 fields=["game", "seat"], condition=models.Q(seat__isnull=False), name="lobby_unique_seat"
             ),
+            models.CheckConstraint(
+                condition=models.Q(user__isnull=False, bot_level="")
+                | (models.Q(user__isnull=True) & ~models.Q(bot_level="")),
+                name="lobby_person_or_bot",
+            ),
         ]
 
     def __str__(self) -> str:
-        return f"{self.game.code}:{self.user}"
+        return f"{self.game.code}:{self.display_name}"
+
+    @property
+    def is_bot(self) -> bool:
+        return self.user_id is None
+
+    @property
+    def display_name(self) -> str:
+        """The name shown in the lobby and in the game."""
+        return f"{self.bot_name} (bot)" if self.is_bot else self.user.public_name

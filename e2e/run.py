@@ -6,8 +6,9 @@ Needs Redis (REDIS_URL, default redis://127.0.0.1:6379/0), a built frontend
     python e2e/run.py [--out DIR] [--port 8765]
 
 It creates a fresh e2e.sqlite3, starts ``runserver`` and ``run_gamehost`` with
-e2e/settings.py, runs e2e/two_player.cjs (two desktop browsers) and e2e/phone.cjs
-(a desktop against a touch-screen phone) and stops both servers again.
+e2e/settings.py, runs e2e/two_player.cjs (two desktop browsers), e2e/phone.cjs
+(a desktop against a touch-screen phone) and e2e/bots.cjs (one person against two
+computer players) and stops both servers again.
 """
 from __future__ import annotations
 
@@ -20,7 +21,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ("two_player.cjs", "phone.cjs")
+SCRIPTS = ("two_player.cjs", "phone.cjs", "bots.cjs")
 READY_TIMEOUT_S = 30
 
 
