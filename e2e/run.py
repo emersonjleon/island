@@ -1,4 +1,4 @@
-"""Run the two-player browser smoke test against real servers.
+"""Run the browser smoke tests against real servers.
 
 Needs Redis (REDIS_URL, default redis://127.0.0.1:6379/0), a built frontend
 (``npm run build`` in frontend/) and Playwright with Chromium for Node.
@@ -6,7 +6,8 @@ Needs Redis (REDIS_URL, default redis://127.0.0.1:6379/0), a built frontend
     python e2e/run.py [--out DIR] [--port 8765]
 
 It creates a fresh e2e.sqlite3, starts ``runserver`` and ``run_gamehost`` with
-e2e/settings.py, runs e2e/two_player.cjs and stops both servers again.
+e2e/settings.py, runs e2e/two_player.cjs (two desktop browsers) and e2e/phone.cjs
+(a desktop against a touch-screen phone) and stops both servers again.
 """
 from __future__ import annotations
 
@@ -19,6 +20,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+SCRIPTS = ("two_player.cjs", "phone.cjs")
 READY_TIMEOUT_S = 30
 
 
@@ -57,8 +59,11 @@ def main() -> int:
         started = time.monotonic()
         wait_ready(f"{base}/accounts/login/")
         print(f"servers ready in {time.monotonic() - started:.1f} s", flush=True)
-        result = subprocess.run(["node", str(ROOT / "e2e" / "two_player.cjs"), base, str(args.out)], cwd=ROOT, env=env)
-        return result.returncode
+        failed = 0
+        for script in SCRIPTS:
+            result = subprocess.run(["node", str(ROOT / "e2e" / script), base, str(args.out)], cwd=ROOT, env=env)
+            failed += result.returncode != 0
+        return 1 if failed else 0
     finally:
         for _, p in procs:
             p.terminate()

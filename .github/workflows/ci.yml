@@ -86,7 +86,7 @@ jobs:
           python -m pip install -e .
           (cd frontend && npm ci && npm run build)
           (cd e2e && npm ci && npx playwright install --with-deps chromium)
-      - name: Two-player game
+      - name: Two-player game, desktop and phone
         run: python e2e/run.py --out e2e/out
       - name: Keep screenshots and server logs
         if: always()

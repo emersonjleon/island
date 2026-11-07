@@ -5,7 +5,7 @@ import { Application, Container, Graphics, Text } from "pixi.js";
 
 import { BoardGeometry, hexCorners, type Pt } from "../board/geometry";
 import type { BoardMsg } from "../protocol/types";
-import type { Overlays, PickResult, Renderer } from "../render/Renderer";
+import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
 import type { GameStore } from "../state/store";
 import * as P from "./palette";
@@ -13,6 +13,7 @@ import * as P from "./palette";
 const UNIT = 60;
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 4;
+const MAX_RESOLUTION = 2;
 
 export class PixiRenderer implements Renderer {
   private app = new Application();
@@ -29,11 +30,17 @@ export class PixiRenderer implements Renderer {
   private overlays: Overlays = {};
   private store: GameStore | null = null;
   private lastNow = 0;
+  private resizeObserver: ResizeObserver | null = null;
+  private fitInsets: () => Insets = () => ({ top: 0, right: 0, bottom: 0, left: 0 });
 
   async mount(el: HTMLElement): Promise<void> {
-    await this.app.init({ resizeTo: el, background: P.SEA, antialias: true, autoDensity: true,
-                          resolution: window.devicePixelRatio || 1 });
+    // Phones: no MSAA and at most 2x pixels, which keeps the frame rate up and the battery cool.
+    const coarse = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+    await this.app.init({ resizeTo: el, background: P.SEA, antialias: !coarse, autoDensity: true,
+                          resolution: Math.min(window.devicePixelRatio || 1, MAX_RESOLUTION),
+                          ...(coarse ? { powerPreference: "low-power" as const } : {}) });
     el.appendChild(this.app.canvas);
+    this.keepCentreOnResize(el);
     this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer,
                         this.overlayLayer, this.settlerLayer);
     this.app.stage.addChild(this.world);
@@ -240,14 +247,55 @@ export class PixiRenderer implements Renderer {
   }
 
   // ------------------------------------------------------------------ camera
+  /** Phones resize the page all the time (address bar, keyboard, rotation): keep the
+   * point at the centre of the screen where it was instead of refitting the island. */
+  private keepCentreOnResize(el: HTMLElement): void {
+    if (typeof ResizeObserver !== "function") return;
+    let w = this.app.screen.width;
+    let h = this.app.screen.height;
+    this.resizeObserver = new ResizeObserver(() => {
+      this.app.resize();
+      const nw = this.app.screen.width;
+      const nh = this.app.screen.height;
+      if (nw === w && nh === h) return;
+      // A turned phone gets the whole island again; other resizes keep the camera where it was.
+      if (w > 0 && h > 0 && (nw > nh) !== (w > h)) this.fit();
+      else this.panBy((nw - w) / 2, (nh - h) / 2);
+      w = nw;
+      h = nh;
+    });
+    this.resizeObserver.observe(el);
+  }
+
+  setFitInsets(fn: () => Insets): void {
+    this.fitInsets = fn;
+  }
+
   fit(): void {
     if (!this.geo) return;
-    const { minX, minY, maxX, maxY } = this.geo.bounds;
-    const w = this.app.screen.width;
-    const h = this.app.screen.height;
+    const { minX, minY, maxX, maxY } = this.islandBounds();
+    const sw = this.app.screen.width;
+    const sh = this.app.screen.height;
+    // Fit into the part of the screen the HUD leaves free, unless that is too small to be useful.
+    let ins = this.fitInsets();
+    if (sw - ins.left - ins.right < sw * 0.5 || sh - ins.top - ins.bottom < sh * 0.4) ins = { top: 0, right: 0, bottom: 0, left: 0 };
+    const w = sw - ins.left - ins.right;
+    const h = sh - ins.top - ins.bottom;
     const scale = Math.min(w / ((maxX - minX) * UNIT), h / ((maxY - minY) * UNIT)) * 0.95;
-    this.world.scale.set(scale);
-    this.world.position.set(w / 2 - ((minX + maxX) / 2) * UNIT * scale, h / 2 - ((minY + maxY) / 2) * UNIT * scale);
+    this.world.scale.set(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale)));
+    const s = this.world.scale.x;
+    this.world.position.set(ins.left + w / 2 - ((minX + maxX) / 2) * UNIT * s, ins.top + h / 2 - ((minY + maxY) / 2) * UNIT * s);
+  }
+
+  /** Land and fishing grounds (plus a hex radius): open sea around them is not worth screen space. */
+  private islandBounds(): { minX: number; minY: number; maxX: number; maxY: number } {
+    const geo = this.geo!;
+    const fishing = new Set(this.board!.fishing.map((f) => f.hex));
+    const pts = this.board!.hexes.filter((h) => h.land || fishing.has(h.id)).map((h) => geo.hex[h.id]!);
+    if (!pts.length) return geo.bounds;
+    const xs = pts.map((p) => p.x);
+    const ys = pts.map((p) => p.y);
+    return { minX: Math.min(...xs) - 1, minY: Math.min(...ys) - 1, maxX: Math.max(...xs) + 1, maxY: Math.max(...ys) + 1 };
   }
 
   screenToWorld(sx: number, sy: number): Pt {
@@ -255,17 +303,23 @@ export class PixiRenderer implements Renderer {
     return { x: p.x / UNIT, y: p.y / UNIT };
   }
 
-  pick(sx: number, sy: number): PickResult {
+  pick(sx: number, sy: number, slopPx = 0): PickResult {
     if (!this.geo) return null;
     const w = this.screenToWorld(sx, sy);
     const now = this.lastNow;
+    // A finger's slop in world units; vertices stay tighter so edges remain reachable.
+    const slop = slopPx / (UNIT * this.world.scale.x);
+    const settlerR = Math.max(0.2, slop);
+    let best: { id: number; d2: number } | null = null;
     for (const s of this.store?.state?.settlers ?? []) {
       const p = settlerPosition(this.geo, s, now);
-      if ((p.x - w.x) ** 2 + (p.y - w.y) ** 2 < 0.2 ** 2) return { kind: "settler", id: s.id };
+      const d2 = (p.x - w.x) ** 2 + (p.y - w.y) ** 2;
+      if (d2 < settlerR ** 2 && (!best || d2 < best.d2)) best = { id: s.id, d2 };
     }
-    const v = this.geo.nearestVertex(w, 0.3);
+    if (best) return { kind: "settler", id: best.id };
+    const v = this.geo.nearestVertex(w, Math.max(0.3, Math.min(slop, 0.38)));
     if (v !== null) return { kind: "vertex", id: v };
-    const e = this.geo.nearestEdge(w, 0.3);
+    const e = this.geo.nearestEdge(w, Math.max(0.3, slop));
     if (e !== null) return { kind: "edge", id: e };
     const h = this.geo.nearestHex(w, 0.9);
     return h !== null ? { kind: "hex", id: h } : null;
@@ -299,6 +353,7 @@ export class PixiRenderer implements Renderer {
   }
 
   destroy(): void {
+    this.resizeObserver?.disconnect();
     this.app.destroy(true, { children: true });
   }
 }

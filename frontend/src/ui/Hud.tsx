@@ -24,6 +24,8 @@ export interface HudControls {
   /** Pause keyboard input while a dialog is open. */
   setPaused(paused: boolean): void;
   setBindings(b: Bindings): void;
+  /** Show the whole island. */
+  fitView(): void;
 }
 
 export interface HudProps {
@@ -35,6 +37,8 @@ export interface HudProps {
   bindings: Bindings;
   csrfToken: string;
   lobbyUrl: string;
+  /** A touch screen is the main pointer: show touch help, hide keyboard-only bits. */
+  touch?: boolean;
 }
 
 /** What the page feeds the HUD from outside the store. */
@@ -105,14 +109,19 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const seated = store.seat !== null;
   const finished = s?.phase === "finished";
   return (
-    <div class="hud">
+    <div class={props.touch ? "hud touch" : "hud"}>
       <DiceClock {...props} feed={feed} />
       {s && <Scores {...props} />}
-      {s && <Log t={t} lines={log} />}
-      {s && seated && !finished && (
-        <HandBar {...props} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} />
-      )}
-      {!seated && s && <div class="hud-spectator">{t("hud:spectator")}</div>}
+      <div class="hud-bottom">
+        <div class="hud-slot-log">{s && <Log t={t} lines={log} />}</div>
+        <div class="hud-slot-hand">
+          {s && seated && !finished && (
+            <HandBar {...props} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} />
+          )}
+          {!seated && s && <div class="hud-spectator">{t("hud:spectator")}</div>}
+        </div>
+        <div class="hud-slot-camera">{s && <CameraButtons {...props} />}</div>
+      </div>
       <div class="hud-notices" aria-live="polite">
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
@@ -130,7 +139,8 @@ function Hud(props: HudProps & { handle: HudHandle }) {
 }
 
 // ------------------------------------------------------------------ dice clock
-function DiceClock({ store, t, now, feed }: HudProps & { feed: HudFeed }) {
+function DiceClock(props: HudProps & { feed: HudFeed }) {
+  const { store, t, now, feed } = props;
   const s = store.state;
   let body;
   if (feed.link !== "open") {
@@ -138,7 +148,13 @@ function DiceClock({ store, t, now, feed }: HudProps & { feed: HudFeed }) {
   } else if (!s) {
     body = <span>{t("loading")}</span>;
   } else if (feed.mode) {
-    body = <span>{t(`input:mode.${feed.mode.kind}`)} · {t(feed.mode.count ? "input:mode.help" : "input:mode.none")}</span>;
+    const help = !feed.mode.count ? "input:mode.none" : props.touch ? "input:mode.touchHelp" : "input:mode.help";
+    body = (
+      <>
+        <span class="hud-mode"><strong>{t(`input:mode.${feed.mode.kind}`)}</strong> <span>{t(help)}</span></span>
+        <button type="button" class="hud-cancel" onClick={() => props.controls.action("cancel")}>{t("hud:action.cancel")}</button>
+      </>
+    );
   } else if (s.phase === "finished") {
     body = <span>{t("status.finished")}</span>;
   } else if (!s.clock_started) {
@@ -223,7 +239,7 @@ const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Acti
   { kind: "city", action: "build_city" },
 ];
 
-function HandBar({ store, t, controls, onTrade, onKeys }: HudProps & { onTrade(): void; onKeys(): void }) {
+function HandBar({ store, t, controls, touch, onTrade, onKeys }: HudProps & { onTrade(): void; onKeys(): void }) {
   const me = store.player(store.seat!);
   const hand = me?.hand ?? {};
   return (
@@ -248,8 +264,25 @@ function HandBar({ store, t, controls, onTrade, onKeys }: HudProps & { onTrade()
           );
         })}
         <button type="button" onClick={onTrade}>{t("hud:trade.open")}</button>
-        <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>
+        {!touch && <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>}
       </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ camera
+/** Buttons for what keys and the wheel do on a desktop: centre on the settler, show the island. */
+function CameraButtons({ store, t, controls }: HudProps) {
+  return (
+    <div class="hud-camera">
+      {store.seat !== null && (
+        <button type="button" onClick={() => controls.action("center_selected")} aria-label={t("hud:camera.center")} title={t("hud:camera.center")}>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" /><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+      )}
+      <button type="button" onClick={() => controls.fitView()} aria-label={t("hud:camera.fit")} title={t("hud:camera.fit")}>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+      </button>
     </div>
   );
 }

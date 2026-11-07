@@ -18,6 +18,28 @@ function wsUrl(path: string): string {
   return `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}${path}`;
 }
 
+/** A phone or tablet: the main pointer is a finger and there is no mouse. */
+function touchFirst(): boolean {
+  return matchMedia("(pointer: coarse)").matches && !matchMedia("(any-pointer: fine)").matches;
+}
+
+/** How far the top and bottom HUD panels reach into the canvas (phones have little room to spare). */
+function hudInsets(canvas: HTMLElement, hud: HTMLElement) {
+  const box = canvas.getBoundingClientRect();
+  let top = 0;
+  let bottom = 0;
+  for (const el of hud.querySelectorAll<HTMLElement>(".hud-clock, .hud-scores")) {
+    top = Math.max(top, el.getBoundingClientRect().bottom - box.top);
+  }
+  const low = hud.querySelector<HTMLElement>(".hud-bottom");
+  if (low) {
+    const kids = [...low.querySelectorAll<HTMLElement>(".hud-panel, .hud-spectator, .hud-camera button")];
+    const tops = kids.map((el) => el.getBoundingClientRect().top).filter((y) => y > 0);
+    if (tops.length) bottom = Math.max(0, box.bottom - Math.min(...tops));
+  }
+  return { top, right: 0, bottom, left: 0 };
+}
+
 async function main(): Promise<void> {
   const root = document.getElementById("game-root");
   const configEl = document.getElementById("game-config");
@@ -49,6 +71,7 @@ async function main(): Promise<void> {
     onNotice: (code, params) => hud?.notify(code, params),
   });
   const renderer = new PixiRenderer();
+  renderer.setFitInsets(() => hudInsets(canvasHost, hudHost));
   await renderer.mount(canvasHost);
   const controller = new InputController({
     store, renderer, bindings, now: () => connection.clock.now(),
@@ -66,14 +89,22 @@ async function main(): Promise<void> {
       action: (a) => controller.action(a),
       setPaused: (p) => controller.setPaused(p),
       setBindings: (b) => controller.setBindings(b),
+      fitView: () => renderer.fit(),
     },
+    touch: touchFirst(),
     bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/",
   });
   connection.start();
-  window.addEventListener("resize", () => renderer.fit());
+  // The renderer follows its host's size itself (and keeps the camera centred).
 
   let lastFrame = performance.now();
+  let fitted = false;
   const frame = (at: number) => {
+    if (!fitted && store.state && store.board) {
+      // Fit again once the HUD has drawn its panels, so the island starts clear of them.
+      fitted = true;
+      setTimeout(() => renderer.fit(), 300);
+    }
     controller.tick(Math.min(100, at - lastFrame));
     lastFrame = at;
     renderer.update(store, connection.clock.now());

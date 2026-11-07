@@ -20,7 +20,8 @@ class FakeRenderer implements Renderer {
   screenToWorld(x: number, y: number): Pt { return { x: x / UNIT, y: y / UNIT }; }
   worldToScreen(p: Pt): Pt { return { x: p.x * UNIT, y: p.y * UNIT }; }
   panBy(dx: number, dy: number): void { this.pans.push({ x: dx, y: dy }); }
-  zoomAt(): void {}
+  zooms: number[] = [];
+  zoomAt(f: number): void { this.zooms.push(f); }
   centerOn(): void {}
   fit(): void {}
   setOverlays(o: Overlays): void { this.overlays = o; }
@@ -213,5 +214,70 @@ describe("InputController", () => {
     input.tick(16);
     input.action("move_up");
     expect(sent).toHaveLength(0);
+  });
+
+  describe("touch", () => {
+    type Ev = { pointerType: string; pointerId: number; clientX: number; clientY: number; timeStamp: number; button: number; shiftKey: boolean };
+    const ev = (id: number, x: number, y: number, t: number): Ev =>
+      ({ pointerType: "touch", pointerId: id, clientX: x, clientY: y, timeStamp: t, button: 0, shiftKey: false });
+    const priv = (input: InputController) => input as unknown as {
+      pointerDown(e: Ev): void; pointerMove(e: Ev): void; pointerUp(e: Ev, cancelled?: boolean): void;
+    };
+
+    it("a tap in build mode builds the highlighted spot nearest the finger", () => {
+      const { input, sent, store, geo, start } = setup();
+      store.state!.buildable = { roads: [], settlements: [start], cities: [] };
+      input.action("build_settlement");
+      const at = { x: geo.vertex[start]!.x * UNIT + 15, y: geo.vertex[start]!.y * UNIT - 10 };
+      const p = priv(input);
+      p.pointerDown(ev(1, at.x, at.y, 0));
+      p.pointerUp(ev(1, at.x, at.y, 80));
+      expect(sent).toEqual([{ a: "build", kind: "settlement", vertex: start, settler: 7 }]);
+      expect(input.mode).toBeNull();
+    });
+
+    it("a tap far from every highlighted spot keeps build mode open and sends nothing", () => {
+      const { input, sent, store, geo, start } = setup();
+      store.state!.buildable = { roads: [], settlements: [start], cities: [] };
+      input.action("build_settlement");
+      input.tap({ x: geo.vertex[start]!.x * UNIT + 200, y: geo.vertex[start]!.y * UNIT });
+      expect(sent).toEqual([]);
+      expect(input.mode).not.toBeNull();
+    });
+
+    it("a tap on our settler selects it; a tap on the board walks there", () => {
+      const { input, sent, renderer, start } = setup();
+      input.select([]);
+      renderer.nextPick = { kind: "settler", id: 7 };
+      input.tap({ x: 0, y: 0 });
+      expect(input.selected).toEqual([7]);
+      expect(sent).toEqual([]);
+      renderer.nextPick = { kind: "vertex", id: start };
+      input.tap({ x: 0, y: 0 });
+      expect(sent).toEqual([{ a: "move_settler", settler: 7, to_vertex: start, mode: "replace" }]);
+    });
+
+    it("dragging one finger pans the camera and does not count as a tap", () => {
+      const { input, sent, renderer, start } = setup();
+      renderer.nextPick = { kind: "vertex", id: start };
+      const p = priv(input);
+      p.pointerDown(ev(1, 100, 100, 0));
+      p.pointerMove(ev(1, 140, 120, 30));
+      p.pointerUp(ev(1, 140, 120, 60));
+      expect(renderer.pans).toContainEqual({ x: 40, y: 20 });
+      expect(sent).toEqual([]);
+    });
+
+    it("two fingers pinch-zoom", () => {
+      const { input, sent, renderer } = setup();
+      const p = priv(input);
+      p.pointerDown(ev(1, 100, 100, 0));
+      p.pointerDown(ev(2, 200, 100, 0));
+      p.pointerMove(ev(2, 300, 100, 20));
+      p.pointerUp(ev(2, 300, 100, 40));
+      p.pointerUp(ev(1, 100, 100, 40));
+      expect(renderer.zooms[0]).toBeCloseTo(2);
+      expect(sent).toEqual([]);
+    });
   });
 });

@@ -1,4 +1,4 @@
-// Keyboard and mouse controls: turns key presses and pointer gestures into
+// Keyboard, mouse and touch controls: turns key presses and pointer gestures into
 // intents (move_settler, build) and camera moves. It reads the store, never
 // changes it, and only knows the renderer through the Renderer interface.
 import { BoardGeometry, dist2, walkableNeighbours, type Pt } from "../board/geometry";
@@ -8,6 +8,7 @@ import { settlerPosition } from "../sim/interp";
 import type { GameStore } from "../state/store";
 import { type Action, type Bindings, comboOf, keymap } from "./bindings";
 import { heldDirection, neighbourToward } from "./directions";
+import { TouchGestures } from "./touch";
 
 export type BuildChoice = "road" | "settlement" | "city";
 
@@ -44,6 +45,11 @@ export const FEEL = {
   edgePushPxPerS: 600,
   zoomStep: 1.2,
   wheelZoom: 0.0015,
+  /** Touch: a finger that moves at most this far (px) and lifts within touchTapMs is a tap. */
+  touchTapPx: 10,
+  touchTapMs: 600,
+  /** Touch: fingers are blunt, so taps hit things up to this far away (screen px). */
+  touchPickPx: 26,
 } as const;
 
 const DIRS: ReadonlySet<Action> = new Set(["move_up", "move_down", "move_left", "move_right"]);
@@ -77,6 +83,7 @@ export class InputController {
   private closeMenu: (() => void) | null = null;
   private el: HTMLElement | null = null;
   private cleanup: (() => void)[] = [];
+  private touch = new TouchGestures({ tapPx: FEEL.touchTapPx, tapMs: FEEL.touchTapMs });
 
   constructor(private opts: InputOptions) {
     this.keys = keymap(opts.bindings);
@@ -106,6 +113,7 @@ export class InputController {
     on(el, "pointerdown", (e: PointerEvent) => this.pointerDown(e));
     on(win, "pointermove", (e: PointerEvent) => this.pointerMove(e));
     on(win, "pointerup", (e: PointerEvent) => this.pointerUp(e));
+    on(win, "pointercancel", (e: PointerEvent) => this.pointerUp(e, true));
     on(el, "pointerleave", () => (this.pointer.inside = false));
     on(el, "dblclick", (e: MouseEvent) => this.doubleClick(e));
     on(el, "wheel", (e: WheelEvent) => {
@@ -458,12 +466,20 @@ export class InputController {
     if (this.paused) return;
     this.closeMenu?.();
     const p = this.local(e);
+    if (e.pointerType === "touch") {
+      this.touch.down(e.pointerId, p, e.timeStamp);
+      return;
+    }
     this.press = { button: e.button, x: p.x, y: p.y, dragging: false };
     if (e.button === 2) this.rightClick(p, e.shiftKey);
   }
 
   private pointerMove(e: PointerEvent): void {
     const p = this.local(e);
+    if (e.pointerType === "touch") {
+      this.touchMove(e.pointerId, p);
+      return;
+    }
     const r = this.el?.getBoundingClientRect();
     this.pointer = { x: p.x, y: p.y, inside: !!r && p.x >= 0 && p.y >= 0 && p.x <= r.width && p.y <= r.height };
     const pr = this.press;
@@ -479,7 +495,12 @@ export class InputController {
     }
   }
 
-  private pointerUp(e: PointerEvent): void {
+  private pointerUp(e: PointerEvent, cancelled = false): void {
+    if (e.pointerType === "touch") {
+      const tap = this.touch.up(e.pointerId, e.timeStamp, cancelled || this.paused);
+      if (tap) this.tap(tap);
+      return;
+    }
     const pr = this.press;
     this.press = null;
     if (!pr) return;
@@ -505,17 +526,58 @@ export class InputController {
     }
   }
 
+  // ------------------------------------------------------------------ touch
+  private touchMove(id: number, p: Pt): void {
+    const g = this.touch.move(id, p);
+    const r = this.opts.renderer;
+    if (g.kind === "pan") r.panBy(g.dx, g.dy);
+    else if (g.kind === "pinch") {
+      r.panBy(g.dx, g.dy);
+      r.zoomAt(g.factor, g.at.x, g.at.y);
+    }
+  }
+
+  /** One-finger tap: build on a highlighted spot in build mode, pick one of our
+   * settlers, or walk / open the build menu there (what right-click does with a mouse). */
+  tap(p: Pt): void {
+    if (this.paused) return;
+    if (this.mode) {
+      const spot = this.nearestOnScreen(this.mode.kind, p, FEEL.touchPickPx);
+      if (spot !== null) this.build(this.mode.kind, spot);
+      return;
+    }
+    const hit = this.opts.renderer.pick(p.x, p.y, FEEL.touchPickPx);
+    if (hit?.kind === "settler" && this.mine().some((s) => s.id === hit.id)) {
+      this.select([hit.id]);
+      return;
+    }
+    this.rightClick(p, false, FEEL.touchPickPx);
+  }
+
+  /** The build candidate nearest a screen point, if within ``maxPx``. */
+  private nearestOnScreen(kind: BuildChoice, p: Pt, maxPx: number): number | null {
+    let best: number | null = null;
+    let bestD = maxPx * maxPx;
+    for (const c of this.candidates(kind)) {
+      const w = this.spotPos(kind, c);
+      if (!w) continue;
+      const d = dist2(this.opts.renderer.worldToScreen(w), p);
+      if (d <= bestD) { bestD = d; best = c; }
+    }
+    return best;
+  }
+
   private doubleClick(e: MouseEvent): void {
     const p = this.local(e);
     const hit = this.opts.renderer.pick(p.x, p.y);
     if (hit?.kind === "settler" && this.selected.includes(hit.id)) this.centerSelected();
   }
 
-  private rightClick(p: Pt, shift: boolean): void {
+  private rightClick(p: Pt, shift: boolean, slopPx = 0): void {
     const geo = this.geometry();
     if (!geo || !this.selectedSettlers().length && !this.mine().length) return;
     if (!this.selectedSettlers().length) this.select([this.mine()[0]!.id]);
-    const hit = this.opts.renderer.pick(p.x, p.y);
+    const hit = this.opts.renderer.pick(p.x, p.y, slopPx);
     const world = this.opts.renderer.screenToWorld(p.x, p.y);
     const items: MenuItem[] = [];
     let walkTo: number | null = null;
