@@ -20,11 +20,15 @@ export interface Overlays {
   selectedSettlers?: number[];
 }
 
+/** Screen pixels covered by HUD panels on each side; fit() keeps the island clear of them. */
+export interface Insets { top: number; right: number; bottom: number; left: number }
+
 export interface Renderer {
   mount(el: HTMLElement): Promise<void>;
   /** Called every frame with the estimated server time. */
   update(store: GameStore, now: number): void;
-  pick(screenX: number, screenY: number): PickResult;
+  /** What is under a screen point; ``slopPx`` widens the hit area (for fingers). */
+  pick(screenX: number, screenY: number, slopPx?: number): PickResult;
   screenToWorld(screenX: number, screenY: number): Pt;
   worldToScreen(p: Pt): Pt;
   /** Camera: screen-pixel pan, zoom by a factor around a screen point, centre on a world point. */
@@ -32,6 +36,8 @@ export interface Renderer {
   zoomAt(factor: number, screenX: number, screenY: number): void;
   centerOn(p: Pt): void;
   fit(): void;
+  /** Where the HUD covers the screen, asked for each time the camera fits the island. */
+  setFitInsets?(fn: () => Insets): void;
   setOverlays(opts: Overlays): void;
   destroy(): void;
 }

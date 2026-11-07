@@ -50,12 +50,20 @@ button[disabled] { opacity: 0.5; cursor: not-allowed; }
 .settings-summary { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
 .settings-summary dt { color: var(--muted); }
 .settings-summary dd { margin: 0; }
-.game-main { padding: 0; }
-.game-root { position: relative; min-height: calc(100vh - 56px); }
+/* The game fills the screen below the header: no page scroll, no browser pinch-zoom or
+   pull-to-refresh on the board (the game handles touch itself). */
+body.game-page { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; overscroll-behavior: none; }
+.game-main { padding: 0; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.game-root { position: relative; flex: 1; min-height: 0; touch-action: none; }
+@media (max-width: 720px), (max-height: 500px) {
+  body.game-page .site-header { padding: 4px 12px; padding-top: max(4px, env(safe-area-inset-top)); font-size: 0.85rem; gap: 4px 12px; }
+  body.game-page .messages { display: none; }
+}
 .game-loading { padding: 16px; color: var(--muted); }
 .game-canvas { position: absolute; inset: 0; }
 .game-canvas canvas { display: block; touch-action: none; }
 .select-box { position: absolute; border: 1px dashed #ffe066; background: rgba(255, 224, 102, 0.15); pointer-events: none; }
 .game-menu { position: absolute; display: flex; flex-direction: column; min-width: 160px; padding: 4px; border-radius: 6px; background: #f4f1e8; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35); z-index: 10; }
+@media (pointer: coarse) { .game-menu button { min-height: 44px; } }
 .game-menu button { text-align: left; border: 0; background: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font: inherit; color: #1d2a30; }
 .game-menu button:hover, .game-menu button:focus { background: #ffe066; outline: none; }
