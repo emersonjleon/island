@@ -32,6 +32,13 @@ jobs:
           python -m pip install -e .
       - name: Compile translations
         run: python manage.py compilemessages
+      - name: Translations complete and up to date
+        run: |
+          cp locale/es/LC_MESSAGES/django.po "$RUNNER_TEMP/committed.po"
+          python manage.py makemessages -l es --no-obsolete --ignore 'frontend/*' --ignore 'static/*'
+          python scripts/i18n_check.py --committed "$RUNNER_TEMP/committed.po"
+          git checkout -- locale
+          python -m unittest scripts/test_i18n_check.py
       - name: Check
         run: |
           python manage.py check
