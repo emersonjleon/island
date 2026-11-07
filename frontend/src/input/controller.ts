@@ -375,8 +375,13 @@ export class InputController {
     if (best) this.mode = { ...mode, focus: best.id };
   }
 
+  /** Mirrors engine construction.builder_required: setup builds (this player's setup,
+   * which can outlast the game-wide setup phase once the dice clock starts) or "always". */
   private builderRequired(): boolean {
     if (this.state?.phase === "setup") return true;
+    const seat = this.opts.store.seat;
+    const me = seat === null ? undefined : this.opts.store.player(seat);
+    if (me && !me.setup.done) return true;
     const settlers = this.opts.store.settings["settlers"] as { builder_required?: string } | undefined;
     return settlers?.builder_required === "always";
   }

@@ -108,4 +108,15 @@ describe("GameStore reducers", () => {
     ] });
     expect(store.state!.buildable!.settlements).toEqual([2]);
   });
+
+  it("counts down setup slots as setup pieces are built", () => {
+    const state = baseState();
+    state.players[0]!.setup = { remaining: { settlement: 2, road: 2 }, done: false, settlements_built: 0 };
+    applyEvent(state, { k: "built", seat: 0, kind: "settlement", target: 5, points_after: 1 });
+    applyEvent(state, { k: "built", seat: 0, kind: "road", target: 9, points_after: 1 });
+    expect(state.players[0]!.setup).toEqual({ remaining: { settlement: 1, road: 1 }, done: false, settlements_built: 1 });
+    applyEvent(state, { k: "setup_complete", seat: 0 });
+    applyEvent(state, { k: "built", seat: 0, kind: "road", target: 10, points_after: 1 });
+    expect(state.players[0]!.setup.remaining.road).toBe(1);
+  });
 });
