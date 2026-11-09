@@ -1,5 +1,7 @@
 import asyncio
+from unittest import mock
 from asgiref.sync import async_to_sync
+from channels.exceptions import ChannelFull
 from channels.layers import get_channel_layer
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
@@ -217,5 +219,36 @@ class GameConsumerTests(TransactionTestCase):
             self.assertEqual((await self.recv(player, "reject"))["code"], codes.GAME_NOT_RUNNING)
             await player.disconnect()
             receiver.cancel()
+
+        async_to_sync(run)()
+
+    def test_full_host_channel(self):
+        """A full gamehost channel refuses orders with game.busy and closes a connection whose sync was lost."""
+        from gameplay import consumers
+
+        layer_send = self.layer.send
+        full = {"on": False}
+
+        async def send(channel, message):
+            if full["on"] and channel == "gamehost":
+                raise ChannelFull()
+            return await layer_send(channel, message)
+
+        async def run():
+            with mock.patch.object(self.layer, "send", send):
+                player = await self.connect(self.users[0])
+                await self.recv(player, "welcome")
+                full["on"] = True
+                await player.send_json_to({"t": "intent", "cid": "b1", "a": "build", "kind": "road", "edge": 1})
+                reject = await self.recv(player, "reject")
+                self.assertEqual((reject["cid"], reject["code"]), ("b1", codes.GAME_BUSY))
+                await player.disconnect()
+
+                late = self.ws(self.users[1])
+                connected, _ = await late.connect()
+                self.assertTrue(connected)
+                await self.recv(late, "welcome")
+                closed = await late.receive_output(TIMEOUT)
+                self.assertEqual((closed["type"], closed.get("code")), ("websocket.close", consumers.TRY_AGAIN_LATER))
 
         async_to_sync(run)()

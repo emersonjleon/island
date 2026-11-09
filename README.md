@@ -78,3 +78,15 @@ python3 e2e/run.py                               # screenshots and server logs i
 ```
 
 CI runs it in the `e2e` job.
+
+## Game host load smoke
+
+`e2e/load_smoke.py` runs 200 bot games (3 players, dice every 5 s) in one game host process
+and reports how late the engine timers fire, the event-loop lag and the intent round trip.
+It fails when a game crashes or the 99th percentile timer delay is over 250 ms.
+
+```bash
+REDIS_URL=redis://localhost:6379/0 python3 e2e/load_smoke.py   # --games, --seconds, --players
+```
+
+Without `REDIS_URL` it uses the in-memory channel layer. CI runs it after the browser test.
