@@ -77,7 +77,8 @@ async function buildByTouch(page, kind) {
   await page.waitForTimeout(150);
   const mode = await page.evaluate(() => window.island.input.mode);
   if (!mode || mode.focus === null) {
-    if (mode) await page.tap(".hud-cancel");
+    // The game can end in between; then the game-over dialog covers the button.
+    if (mode) await page.tap(".hud-cancel", { timeout: 2000 }).catch(() => {});
     return false;
   }
   const at = await spotOnScreen(page, kind, mode.focus);
