@@ -15,6 +15,8 @@ const UNIT = 60;
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 4;
 const MAX_RESOLUTION = 2;
+/** Largest side of the cached board texture, in pixels (safe on phones). */
+const MAX_CACHE_PX = 4096;
 
 export class PixiRenderer implements Renderer {
   private app = new Application();
@@ -28,6 +30,8 @@ export class PixiRenderer implements Renderer {
   private geo: BoardGeometry | null = null;
   private board: BoardMsg | null = null;
   private drawnVersion = -1;
+  /** Resolution the static board is cached at (0 = not cached yet). */
+  private cacheRes = 0;
   private overlays: Overlays = {};
   private store: GameStore | null = null;
   private lastNow = 0;
@@ -55,6 +59,7 @@ export class PixiRenderer implements Renderer {
       this.board = store.board;
       this.geo = new BoardGeometry(store.board);
       this.drawBoard();
+      this.cacheRes = 0;
       this.fit();
       this.drawnVersion = -1;
     }
@@ -65,6 +70,7 @@ export class PixiRenderer implements Renderer {
       this.drawnVersion = store.version;
     }
     this.drawMoving(store, now);
+    this.cacheBoard();
   }
 
   // ------------------------------------------------------------------ board
@@ -193,6 +199,22 @@ export class PixiRenderer implements Renderer {
     }
     const len = Math.hypot(sx, sy) || 1;
     return { x: sx / len, y: sy / len };
+  }
+
+  /** The board never changes during a game, so it is drawn once into a texture and
+   * re-cached only when the zoom moves far enough to make it look soft. Drawing all
+   * the sea, beaches and details every frame is too slow on weak phones. */
+  private cacheBoard(): void {
+    const b = this.boardLayer.getLocalBounds();
+    const side = Math.max(b.width, b.height, 1);
+    const want = this.world.scale.x * this.app.renderer.resolution;
+    // Steps of √2 so small zooms don't re-cache; never larger than the texture limit.
+    const step = Math.SQRT2 ** Math.ceil(Math.log(Math.max(want, 0.25)) / Math.log(Math.SQRT2));
+    const res = Math.min(step, MAX_CACHE_PX / side);
+    if (Math.abs(res - this.cacheRes) < 1e-6) return;
+    this.cacheRes = res;
+    this.boardLayer.cacheAsTexture(false);
+    this.boardLayer.cacheAsTexture({ resolution: res, antialias: true });
   }
 
   // ------------------------------------------------------------------ pieces
