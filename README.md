@@ -51,6 +51,23 @@ REDIS_URL=redis://localhost:6379/0 python3 manage.py run_gamehost
 It starts games the lobby marks `STARTING`, persists commands and snapshots, restores `RUNNING`
 games after a restart, and snapshots every game on Ctrl-C / SIGTERM.
 
+### Bots
+
+The host can fill free seats with computer players in the lobby (**Add bot**, level easy, medium
+or hard), so a game can start with one person. Bots run inside the game host process: each live
+game asks its bots for intents on their own think interval and applies them like a player's
+commands, so they are logged, snapshotted and replayed with everything else. The levels are
+profiles in `engine/ai/levels.py`:
+
+| Level | Thinks every | Plays |
+| --- | --- | --- |
+| Easy | 4 s | picks a random spot half the time, rarely trades |
+| Medium | 2 s | best-yield spots, cities before settlements, trades for what it lacks |
+| Hard | 0.8 s | also values new resources and usable harbors, spends cards before a seven |
+
+In simulated two-bot games hard beats medium about 6 times in 10, and medium beats easy about
+9 times in 10 (`engine/tests/test_ai_levels.py`).
+
 The client lives in `frontend/` (TypeScript, Vite):
 
 ```bash
@@ -66,7 +83,8 @@ Django tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py tes
 
 `e2e/` plays a whole short game in two browsers against the real web server, game host and
 Redis: sign up, create and join in the lobby, place the setup pieces with the keyboard, wait for
-a dice roll, then build until someone wins (about 20 seconds). Every game it creates uses
+a dice roll, then build until someone wins (about 20 seconds). `e2e/bots.cjs` also plays one
+person against two bots added in the lobby. Every game it creates uses
 `e2e/fast_game.json` (5 points to win, plenty of resources, quick builds) through
 `e2e/settings.py`.
 

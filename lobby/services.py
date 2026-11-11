@@ -15,7 +15,7 @@ from engine.settings import (
     CURRENT_SCHEMA_VERSION, GameSettings, SeatOrder, UnknownPresetError, load_preset, merge_overrides,
 )
 
-from .models import COLOUR_VALUES, Game, GamePlayer, GameStatus
+from .models import BOT_LEVELS, BOT_NAMES, COLOUR_VALUES, Game, GamePlayer, GameStatus
 
 SEED_BITS = 63
 
@@ -95,6 +95,11 @@ def _free_colour(game: Game) -> str:
     return next(c for c in COLOUR_VALUES if c not in taken)
 
 
+def _free_bot_name(game: Game) -> str:
+    taken = set(game.players.filter(user=None).values_list("bot_name", flat=True))
+    return next((n for n in BOT_NAMES if n not in taken), BOT_NAMES[0])
+
+
 def max_players(game: Game) -> int:
     return load_preset(game.preset, game.overrides).players.max
 
@@ -134,13 +139,44 @@ def leave_game(game: Game, user) -> None:
     _require_open(game)
     _seat_of(game, user).delete()
     if game.host_id == user.pk:
-        successor = game.players.select_related("user").first()
+        successor = game.players.select_related("user").filter(user__isnull=False).first()
         if successor is None:
             game.status = GameStatus.ABORTED
             game.save(update_fields=["status"])
         else:
             game.host = successor.user
             game.save(update_fields=["host"])
+    broadcast_changed(game)
+
+
+@transaction.atomic
+def add_bot(game: Game, user, level: str) -> GamePlayer:
+    """The host fills a free seat with a computer player (always ready)."""
+    game = _locked(game)
+    _require_open(game)
+    if game.host_id != user.pk:
+        raise LobbyError("lobby.not_host")
+    if level not in {value for value, _label in BOT_LEVELS}:
+        raise LobbyError("lobby.bad_bot_level")
+    if game.players.count() >= max_players(game):
+        raise LobbyError("lobby.full")
+    seat = GamePlayer.objects.create(
+        game=game, user=None, bot_level=level, bot_name=_free_bot_name(game), colour=_free_colour(game), ready=True
+    )
+    broadcast_changed(game)
+    return seat
+
+
+@transaction.atomic
+def remove_bot(game: Game, user, player_id: int) -> None:
+    """The host removes one of the game's computer players."""
+    game = _locked(game)
+    _require_open(game)
+    if game.host_id != user.pk:
+        raise LobbyError("lobby.not_host")
+    deleted, _rows = game.players.filter(pk=player_id, user=None).delete()
+    if not deleted:
+        raise LobbyError("lobby.no_such_bot")
     broadcast_changed(game)
 
 

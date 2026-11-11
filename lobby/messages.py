@@ -12,6 +12,8 @@ ERROR_MESSAGES = {
     "lobby.not_host": _("Only the host can do that."),
     "lobby.too_few_players": _("More players need to join first."),
     "lobby.not_all_ready": _("Every player must be ready first."),
+    "lobby.bad_bot_level": _("Unknown bot level."),
+    "lobby.no_such_bot": _("That bot is no longer in the game."),
 }
 
 
