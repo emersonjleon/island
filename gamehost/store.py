@@ -4,6 +4,8 @@ from django.utils import timezone
 
 from engine import codec
 from engine import game as engine
+from engine.ai.driver import BotDriver
+from engine.ai.levels import DEFAULT_LEVEL, LEVELS, make_level_bot
 from engine.settings import GameSettings
 from engine.sim.runner import CommandRecord, resume
 from engine.state import SeatInfo
@@ -16,14 +18,24 @@ from .models import GameCommand, GameSnapshot
 
 def seats_for(game: Game) -> list[SeatInfo]:
     players = game.players.select_related("user").exclude(seat=None).order_by("seat")
-    return [SeatInfo(seat=p.seat, user_id=p.user_id, name=p.user.public_name, colour=p.colour) for p in players]
+    return [SeatInfo(seat=p.seat, user_id=p.user_id, name=p.display_name, colour=p.colour) for p in players]
+
+
+def bots_for(game: Game, start_ms: int) -> BotDriver:
+    """The computer players of a started game. Each bot's seed comes from the game seed and its seat."""
+    rows = game.players.filter(user=None).exclude(seat=None).order_by("seat")
+    bots = [
+        make_level_bot(p.bot_level if p.bot_level in LEVELS else DEFAULT_LEVEL, p.seat, (game.seed or 0) + p.seat)
+        for p in rows
+    ]
+    return BotDriver(bots, start_ms)
 
 
 def create_core(game: Game) -> GameCore:
     """Build the initial state of a STARTING game, store the start snapshot and set RUNNING."""
     settings = GameSettings.model_validate(game.settings)
     state, _events = engine.new_game(settings, seats_for(game), game.seed)
-    core = GameCore(game.pk, state)
+    core = GameCore(game.pk, state, bots=bots_for(game, state.now_ms))
     with transaction.atomic():
         save_snapshot(core, GameSnapshot.Kind.START)
         Game.objects.filter(pk=game.pk).update(status=GameStatus.RUNNING, started_at=timezone.now())
@@ -38,7 +50,7 @@ def restore_core(game: Game) -> GameCore:
     rows = list(GameCommand.objects.filter(game=game, cmd_seq__gt=snap.cmd_seq).order_by("cmd_seq"))
     state = resume(snap.state, [CommandRecord(r.game_ms, r.seat, r.payload) for r in rows])
     cmd_seq = rows[-1].cmd_seq if rows else snap.cmd_seq
-    return GameCore(game.pk, state, cmd_seq=cmd_seq, seqs=dict(snap.seqs))
+    return GameCore(game.pk, state, cmd_seq=cmd_seq, seqs=dict(snap.seqs), bots=bots_for(game, state.now_ms))
 
 
 def flush_commands(core: GameCore) -> int:

@@ -9,7 +9,7 @@ from engine.settings import load_preset
 from . import services
 from .forms import CreateGameForm
 from .messages import error_message
-from .models import COLOURS, Game, GameStatus
+from .models import BOT_LEVELS, COLOURS, Game, GameStatus
 
 
 def _game(code: str) -> Game:
@@ -48,6 +48,8 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
         "is_host": game.host_id == request.user.pk,
         "free_colours": [(c, label) for c, label in COLOURS if c not in taken],
         "can_join": game.is_open and me is None and len(seats) < settings.players.max,
+        "can_add_bot": game.is_open and game.host_id == request.user.pk and len(seats) < settings.players.max,
+        "bot_levels": BOT_LEVELS,
         "start_problems": [error_message(p) for p in services.start_problems(game, settings)] if game.is_open else [],
         "roll_seconds": settings.clock.roll_interval_ms // 1000,
     }
@@ -103,6 +105,22 @@ def colour(request: HttpRequest, code: str) -> HttpResponse:
 @require_POST
 def ready(request: HttpRequest, code: str) -> HttpResponse:
     return _action(request, code, services.set_ready, request.POST.get("ready") == "1")
+
+
+@login_required
+@require_POST
+def add_bot(request: HttpRequest, code: str) -> HttpResponse:
+    return _action(request, code, services.add_bot, request.POST.get("level", ""))
+
+
+@login_required
+@require_POST
+def remove_bot(request: HttpRequest, code: str) -> HttpResponse:
+    try:
+        player_id = int(request.POST.get("player", ""))
+    except ValueError:
+        player_id = 0
+    return _action(request, code, services.remove_bot, player_id)
 
 
 @login_required

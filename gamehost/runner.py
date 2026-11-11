@@ -36,7 +36,7 @@ class GameRunner:
 
     def _timeout(self) -> float:
         now = self.clock.now()
-        wake = self.core.state.timers.next_due() if not self.core.finished else None
+        wake = self.core.next_wakeup()
         limit = conf.get("MAX_IDLE_MS")
         delay = limit if wake is None else max(0, min(wake - now, limit))
         return delay / 1000
@@ -51,6 +51,7 @@ class GameRunner:
                 out += self.core.intent(now, item)
             elif kind == "game.sync":
                 out += self.core.sync(item)
+        out += self.core.bots_act(now)
         await self.send(out)
         await self.persist()
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 22:08+0000\n"
+"POT-Creation-Date: 2026-11-07 16:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,16 +41,15 @@ msgstr "preferencias de interfaz"
 msgid "Profile saved."
 msgstr "Perfil guardado."
 
-#: config/settings/base.py:105
+#: config/settings/base.py:110
 msgid "English"
 msgstr "English"
 
-#: config/settings/base.py:106
+#: config/settings/base.py:111
 msgid "Español"
 msgstr "Español"
 
-#: lobby/forms.py:14 templates/lobby/detail.html:8
-#: templates/lobby/list.html:21
+#: lobby/forms.py:14 templates/lobby/detail.html:8 templates/lobby/list.html:21
 msgid "Preset"
 msgstr "Preajuste"
 
@@ -127,7 +126,15 @@ msgstr "Primero deben unirse más jugadores."
 msgid "Every player must be ready first."
 msgstr "Primero todos los jugadores deben estar listos."
 
-#: lobby/messages.py:19
+#: lobby/messages.py:15
+msgid "Unknown bot level."
+msgstr "Nivel de bot desconocido."
+
+#: lobby/messages.py:16
+msgid "That bot is no longer in the game."
+msgstr "Ese bot ya no está en la partida."
+
+#: lobby/messages.py:21
 msgid "That action was refused."
 msgstr "Esa acción fue rechazada."
 
@@ -155,30 +162,42 @@ msgstr "Verde"
 msgid "Brown"
 msgstr "Marrón"
 
-#: lobby/models.py:28
+#: lobby/models.py:24
+msgid "Easy"
+msgstr "Fácil"
+
+#: lobby/models.py:25
+msgid "Medium"
+msgstr "Media"
+
+#: lobby/models.py:26
+msgid "Hard"
+msgstr "Difícil"
+
+#: lobby/models.py:37
 msgid "Waiting for players"
 msgstr "Esperando jugadores"
 
-#: lobby/models.py:29
+#: lobby/models.py:38
 msgid "Starting"
 msgstr "Iniciando"
 
-#: lobby/models.py:30
+#: lobby/models.py:39
 msgid "Running"
 msgstr "En curso"
 
-#: lobby/models.py:31
+#: lobby/models.py:40
 msgid "Finished"
 msgstr "Terminada"
 
-#: lobby/models.py:32
+#: lobby/models.py:41
 msgid "Cancelled"
 msgstr "Cancelada"
 
 #: templates/accounts/login.html:2 templates/accounts/login.html:4
 #: templates/accounts/login.html:10
 #: templates/accounts/password_reset_complete.html:5
-#: templates/accounts/signup.html:11 templates/base.html:20
+#: templates/accounts/signup.html:11 templates/base.html:21
 #: templates/home.html:12
 msgid "Log in"
 msgstr "Iniciar sesión"
@@ -192,15 +211,14 @@ msgid "New here?"
 msgstr "¿Eres nuevo?"
 
 #: templates/accounts/login.html:13 templates/accounts/signup.html:2
-#: templates/accounts/signup.html:4 templates/base.html:21
+#: templates/accounts/signup.html:4 templates/base.html:22
 #: templates/home.html:11
 msgid "Sign up"
 msgstr "Registrarse"
 
 #: templates/accounts/password_change.html:2
 #: templates/accounts/password_change.html:4
-#: templates/accounts/password_change.html:9
-#: templates/accounts/profile.html:11
+#: templates/accounts/password_change.html:9 templates/accounts/profile.html:11
 msgid "Change password"
 msgstr "Cambiar contraseña"
 
@@ -223,8 +241,7 @@ msgid ""
 "Enter your email address and we will send you a link to choose a new "
 "password."
 msgstr ""
-"Escribe tu correo y te enviaremos un enlace para elegir una contraseña "
-"nueva."
+"Escribe tu correo y te enviaremos un enlace para elegir una contraseña nueva."
 
 #: templates/accounts/password_reset.html:9
 msgid "Send reset link"
@@ -298,19 +315,19 @@ msgstr "Crear cuenta"
 msgid "Already have an account?"
 msgstr "¿Ya tienes cuenta?"
 
-#: templates/base.html:6 templates/base.html:12 templates/home.html:3
+#: templates/base.html:7 templates/base.html:13 templates/home.html:3
 msgid "Ages of the Island"
 msgstr "Ages of the Island"
 
-#: templates/base.html:17
+#: templates/base.html:18
 msgid "Log out"
 msgstr "Cerrar sesión"
 
-#: templates/base.html:26
+#: templates/base.html:27
 msgid "Language"
 msgstr "Idioma"
 
-#: templates/base.html:33 templates/lobby/_seats.html:35
+#: templates/base.html:34 templates/lobby/_seats.html:40
 msgid "Change"
 msgstr "Cambiar"
 
@@ -348,7 +365,7 @@ msgstr "Ir a la sala de espera"
 msgid "Status:"
 msgstr "Estado:"
 
-#: templates/lobby/_seats.html:4 templates/lobby/_seats.html:30
+#: templates/lobby/_seats.html:4 templates/lobby/_seats.html:35
 msgid "Colour"
 msgstr "Color"
 
@@ -361,41 +378,57 @@ msgid "Ready"
 msgstr "Listo"
 
 #: templates/lobby/_seats.html:9
+#, python-format
+msgid "bot · %(level)s"
+msgstr "bot · %(level)s"
+
+#: templates/lobby/_seats.html:9
 msgid "host"
 msgstr "anfitrión"
 
-#: templates/lobby/_seats.html:10 templates/lobby/_seats.html:25
+#: templates/lobby/_seats.html:10 templates/lobby/_seats.html:30
 msgid "Not ready"
 msgstr "No listo"
 
-#: templates/lobby/_seats.html:19
+#: templates/lobby/_seats.html:14
+msgid "Remove"
+msgstr "Quitar"
+
+#: templates/lobby/_seats.html:24
 msgid "Join"
 msgstr "Unirse"
 
-#: templates/lobby/_seats.html:25
+#: templates/lobby/_seats.html:30
 msgid "I'm ready"
 msgstr "Estoy listo"
 
-#: templates/lobby/_seats.html:38
+#: templates/lobby/_seats.html:43
 msgid "Leave"
 msgstr "Salir"
 
-#: templates/lobby/_seats.html:42
+#: templates/lobby/_seats.html:47
+msgid "Bot level"
+msgstr "Nivel del bot"
+
+#: templates/lobby/_seats.html:51
+msgid "Add bot"
+msgstr "Añadir bot"
+
+#: templates/lobby/_seats.html:56
 msgid "Start game"
 msgstr "Iniciar partida"
 
-#: templates/lobby/_seats.html:44
+#: templates/lobby/_seats.html:58
 msgid "Cancel game"
 msgstr "Cancelar partida"
 
-#: templates/lobby/_seats.html:49
+#: templates/lobby/_seats.html:63
 msgid ""
-"The island is being prepared. You will be taken to the game when it is "
-"ready."
+"The island is being prepared. You will be taken to the game when it is ready."
 msgstr ""
 "Se está preparando la isla. Te llevaremos a la partida cuando esté lista."
 
-#: templates/lobby/_seats.html:51
+#: templates/lobby/_seats.html:65
 msgid "Go to the game"
 msgstr "Ir a la partida"
 

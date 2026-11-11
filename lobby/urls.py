@@ -12,6 +12,8 @@ urlpatterns = [
     path("<str:code>/leave/", views.leave, name="leave"),
     path("<str:code>/colour/", views.colour, name="colour"),
     path("<str:code>/ready/", views.ready, name="ready"),
+    path("<str:code>/bots/add/", views.add_bot, name="add_bot"),
+    path("<str:code>/bots/remove/", views.remove_bot, name="remove_bot"),
     path("<str:code>/start/", views.start, name="start"),
     path("<str:code>/cancel/", views.cancel, name="cancel"),
 ]
