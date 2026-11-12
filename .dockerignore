@@ -1,0 +1,16 @@
+.git
+**/__pycache__
+**/*.py[cod]
+.venv
+venv
+.env
+*.sqlite3
+**/node_modules
+frontend/dist
+static/dist
+staticfiles
+e2e/out
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
