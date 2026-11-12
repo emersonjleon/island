@@ -1,5 +1,10 @@
 /* Ages of the Island — site styles. A warm parchment page under a deep-sea header,
    board-game cards for forms and tables, and the same palette as the island. */
+/* Title faces: Cinzel Decorative for the game's name, Cinzel for headings (SIL OFL, see static/fonts). */
+@font-face { font-family: "Cinzel Decorative"; font-weight: 900; font-style: normal; font-display: swap;
+  src: url("../fonts/cinzel-decorative-latin-900-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cinzel"; font-weight: 700; font-style: normal; font-display: swap;
+  src: url("../fonts/cinzel-latin-700-normal.woff2") format("woff2"); }
 :root {
   --bg: #f5efe1;
   --bg-deep: #ece3cd;
@@ -17,7 +22,8 @@
   --error: #a33a2a;
   --ok: #3f7a3f;
   --radius: 12px;
-  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-display: "Cinzel", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-title: "Cinzel Decorative", "Cinzel", "Palatino Linotype", Palatino, Georgia, serif;
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light;
 }
@@ -49,7 +55,7 @@ body { margin: 0; font: 16px/1.55 var(--font-body); background: var(--bg); color
 html { background: var(--bg); }
 a { color: var(--accent); text-underline-offset: 2px; }
 a:hover { color: var(--accent-strong); }
-h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; letter-spacing: -0.01em; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1.2; letter-spacing: 0.01em; }
 h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 8px 0 12px; }
 h2 { font-size: 1.35rem; margin: 24px 0 10px; }
 :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
@@ -61,10 +67,16 @@ h2 { font-size: 1.35rem; margin: 24px 0 10px; }
   position: relative; z-index: 2; }
 .site-header::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px;
   background: linear-gradient(90deg, #3f8f45, #a5d16a, #f0c94f, #cd6f45, #9a9da3); opacity: 0.9; }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 1.15rem;
-  text-decoration: none; color: #fdf8ec; letter-spacing: 0.01em; }
-.brand:hover { color: #fff; }
-.brand-mark { width: 30px; height: 30px; flex: none; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-title); font-weight: 900; font-size: 1.25rem;
+  font-variant-ligatures: none; font-feature-settings: "liga" 0, "dlig" 0;
+  text-decoration: none; color: #f8dc78; letter-spacing: 0.02em; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45), 0 0 14px rgba(240, 201, 79, 0.25); }
+.site-header a.brand, .site-header a.brand:hover { color: #f8dc78; text-decoration: none; }
+.site-header a.brand:hover { color: #fdecae; }
+/* Cinzel Decorative keeps its flourishes on capitals: only the first letter gets one. */
+.brand-name, .hero h1 { text-transform: lowercase; }
+.brand-name { display: inline-block; }
+.brand-name::first-letter, .hero h1::first-letter { text-transform: uppercase; }
+.brand-mark { width: 38px; height: 38px; flex: none; margin: -4px 0; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35)); }
 .site-nav { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .site-header a, .site-header button.link { color: #f4ecd8; text-decoration: none; }
 .site-header a:hover, .site-header button.link:hover { color: #fff; text-decoration: underline; }
@@ -111,7 +123,9 @@ button[disabled] { opacity: 0.5; cursor: not-allowed; filter: none; transform: n
 
 /* ------------------------------------------------------------------ home */
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 24px; align-items: center; margin: 12px 0 8px; }
-.hero h1 { font-size: clamp(2.2rem, 7vw, 3.2rem); margin: 0 0 12px; }
+.hero h1 { font-family: var(--font-title); font-weight: 900; font-variant-ligatures: none; font-feature-settings: "liga" 0, "dlig" 0; font-size: clamp(2.1rem, 6.5vw, 3.2rem); line-height: 1.08; margin: 0 0 14px;
+  background: linear-gradient(180deg, #e9b949 0%, #c98a1c 45%, #8a5a0c 100%); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: #b57d17; filter: drop-shadow(0 2px 0 rgba(60, 35, 0, 0.18)); }
 .hero .lead { font-size: 1.1rem; color: var(--muted); margin: 0 0 20px; }
 .hero .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .hero .cta .button { font-size: 1.05rem; padding: 11px 24px; }
@@ -172,8 +186,8 @@ body.game-page { display: flex; flex-direction: column; height: 100vh; height: 1
   background: radial-gradient(ellipse at center, #2a74a3 0%, #1f5f8b 55%, #123f5e 100%); }
 @media (max-width: 720px), (max-height: 500px) {
   body.game-page .site-header { padding: 4px 12px; padding-top: max(4px, env(safe-area-inset-top)); font-size: 0.85rem; gap: 4px 12px; }
-  body.game-page .brand { font-size: 0.95rem; }
-  body.game-page .brand-mark { width: 22px; height: 22px; }
+  body.game-page .brand { font-size: 1rem; }
+  body.game-page .brand-mark { width: 26px; height: 26px; margin: 0; }
   body.game-page .messages { display: none; }
 }
 .game-loading { padding: 16px; color: #e3eef3; }

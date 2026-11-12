@@ -4,11 +4,12 @@
 import { Application, Container, Graphics, Text } from "pixi.js";
 
 import { BoardGeometry, hexCenter, hexCorners, type Pt } from "../board/geometry";
-import type { BoardMsg } from "../protocol/types";
+import type { BoardMsg, Resource } from "../protocol/types";
 import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
 import type { GameStore } from "../state/store";
 import { drawTerrainDecor, drawWaves } from "./decor";
+import { drawHarbor } from "./harbor";
 import * as P from "./palette";
 
 const UNIT = 60;
@@ -149,39 +150,16 @@ export class PixiRenderer implements Renderer {
     return box;
   }
 
-  private harbor(vertices: number[], ratio: number, resource: string | null): Container {
+  private harbor(vertices: number[], ratio: number, resource: Resource | null): Container {
     const geo = this.geo!;
     const a = geo.vertex[vertices[0]!]!;
     const b = geo.vertex[vertices[1]!]!;
     const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-    // Push the marker out to sea: away from the centre of the land hexes next to the edge.
+    // Push the medallion out to sea: away from the centre of the land hexes next to the edge.
     const out = this.seaward(mid);
-    const pos = { x: mid.x + out.x * 0.45, y: mid.y + out.y * 0.45 };
-    const box = new Container();
-    // Two wooden piers from the shore to the harbour badge.
-    const lines = new Graphics();
-    for (const end of [a, b]) {
-      const s = { x: end.x + (pos.x - end.x) * 0.12, y: end.y + (pos.y - end.y) * 0.12 };
-      lines.moveTo(s.x * UNIT, s.y * UNIT).lineTo(pos.x * UNIT, pos.y * UNIT);
-    }
-    lines.stroke({ width: 6, color: P.PIER_DARK, cap: "round" });
-    for (const end of [a, b]) {
-      const s = { x: end.x + (pos.x - end.x) * 0.12, y: end.y + (pos.y - end.y) * 0.12 };
-      lines.moveTo(s.x * UNIT, s.y * UNIT).lineTo(pos.x * UNIT, pos.y * UNIT);
-    }
-    lines.stroke({ width: 3.5, color: P.PIER, cap: "round" });
-    const colour = resource ? P.RESOURCE[resource as keyof typeof P.RESOURCE] : 0xffffff;
-    const badge = new Graphics()
-      .circle(pos.x * UNIT + 1.5, pos.y * UNIT + 2.5, UNIT * 0.21).fill({ color: P.SHADOW, alpha: 0.35 })
-      .circle(pos.x * UNIT, pos.y * UNIT, UNIT * 0.21).fill(0xffffff).stroke({ width: 1.5, color: P.PIER_DARK })
-      .circle(pos.x * UNIT, pos.y * UNIT, UNIT * 0.165).fill(colour);
-    const dark = resource === "lumber" || resource === "brick";
-    const label = new Text({ text: `${ratio}:1`, style: { fontFamily: "system-ui, sans-serif", fontSize: UNIT * 0.15,
-      fontWeight: "800", fill: dark ? 0xffffff : P.TOKEN_TEXT } });
-    label.anchor.set(0.5);
-    label.position.set(pos.x * UNIT, pos.y * UNIT);
-    box.addChild(lines, badge, label);
-    return box;
+    const pos = { x: mid.x + out.x * 0.55, y: mid.y + out.y * 0.55 };
+    const px = (p: Pt) => ({ x: p.x * UNIT, y: p.y * UNIT });
+    return drawHarbor(px(a), px(b), px(pos), ratio, resource, UNIT);
   }
 
   private seaward(p: Pt): Pt {

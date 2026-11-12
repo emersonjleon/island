@@ -15,6 +15,9 @@ export const TOKEN_RED = 0xb3261e;
 export const SHADOW = 0x08202e;
 export const PIER = 0x8a5a33;
 export const PIER_DARK = 0x4e301a;
+export const PIER_LIGHT = 0xa8733f;
+export const ROPE = 0xd8b77a;
+export const RIBBON_DARK = 0xb08a4a;
 export const HIGHLIGHT = 0xffe066;
 
 export const TERRAIN: Record<Terrain, number> = {
