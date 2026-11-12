@@ -8,6 +8,7 @@ import type { BoardMsg, Resource } from "../protocol/types";
 import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
 import type { GameStore } from "../state/store";
+import { drawBuilding } from "./buildings";
 import { drawTerrainDecor, drawWaves } from "./decor";
 import { drawHarbor } from "./harbor";
 import * as P from "./palette";
@@ -232,25 +233,7 @@ export class PixiRenderer implements Renderer {
   }
 
   private building(g: Graphics, p: Pt, kind: string, colour: number, alpha: number): void {
-    const x = p.x * UNIT;
-    const y = p.y * UNIT;
-    const s = UNIT * (kind === "settlement" ? 0.16 : kind === "city" ? 0.2 : 0.25);
-    const shape = kind === "settlement"
-      ? [x - s, y + s, x - s, y - s * 0.3, x, y - s * 1.2, x + s, y - s * 0.3, x + s, y + s]
-      // city / megacity: a house with a tower
-      : [x - s * 1.3, y + s, x - s * 1.3, y - s * 0.2, x - s * 0.2, y - s * 0.2, x - s * 0.2, y - s,
-         x + s * 0.45, y - s * 1.6, x + s * 1.1, y - s, x + s * 1.1, y + s];
-    g.ellipse(x + s * 0.15, y + s * 1.05, s * 1.35, s * 0.35).fill({ color: P.SHADOW, alpha: 0.35 * alpha });
-    g.poly(shape).fill({ color: colour, alpha }).stroke({ width: 2, color: P.OUTLINE, alpha, join: "round" });
-    // Shade the right-hand side and add a door, so pieces read as little houses.
-    const roofX = kind === "settlement" ? x : x + s * 0.45;
-    const roofY = kind === "settlement" ? y - s * 1.2 : y - s * 1.6;
-    const rightX = kind === "settlement" ? x + s : x + s * 1.1;
-    g.poly([roofX, roofY, rightX, kind === "settlement" ? y - s * 0.3 : y - s, rightX, y + s, roofX, y + s])
-      .fill({ color: 0x000000, alpha: 0.18 * alpha });
-    const doorX = kind === "settlement" ? x - s * 0.5 : x - s * 0.95;
-    g.rect(doorX, y + s * 0.2, s * 0.4, s * 0.8).fill({ color: P.OUTLINE, alpha: 0.75 * alpha });
-    if (kind === "megacity") g.circle(x, y - s * 1.9, s * 0.35).fill({ color: 0xffd54f, alpha }).stroke({ width: 1.5, color: P.OUTLINE, alpha });
+    drawBuilding(g, kind, p.x * UNIT, p.y * UNIT, UNIT, colour, alpha);
   }
 
   private drawOverlays(): void {
