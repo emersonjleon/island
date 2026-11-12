@@ -22,7 +22,7 @@ const codes = JSON.parse(readFileSync(join(here, "../../../protocol/codes.json")
   errors: string[]; events: string[]; reasons: Record<string, string[]>;
 };
 // Codes the Django consumer sends (gameplay/codes.py).
-const GAMEPLAY_CODES = ["game.not_running", "intent.bad_cid", "intent.rate_limited", "intent.spectator",
+const GAMEPLAY_CODES = ["game.busy", "game.not_running", "intent.bad_cid", "intent.rate_limited", "intent.spectator",
   "message.invalid", "message.too_large", "proto.unsupported"];
 
 const SETTINGS = {

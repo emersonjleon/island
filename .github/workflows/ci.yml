@@ -88,6 +88,8 @@ jobs:
           (cd e2e && npm ci && npx playwright install --with-deps chromium)
       - name: Two-player game, desktop and phone
         run: python e2e/run.py --out e2e/out
+      - name: Game host load smoke (200 bot games, Redis)
+        run: python e2e/load_smoke.py --games 200 --seconds 30 | tee e2e/out/load_smoke.txt
       - name: Keep screenshots and server logs
         if: always()
         uses: actions/upload-artifact@v4

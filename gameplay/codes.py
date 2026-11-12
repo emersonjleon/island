@@ -9,8 +9,9 @@ MESSAGE_TOO_LARGE = "message.too_large"
 MESSAGE_INVALID = "message.invalid"             # not a JSON object with a known "t"
 PROTO_UNSUPPORTED = "proto.unsupported"
 GAME_NOT_RUNNING = "game.not_running"           # sent by the game host when it does not own the game
+GAME_BUSY = "game.busy"                         # the game host's channel is full; try again
 
 ALL = [
     INTENT_SPECTATOR, INTENT_RATE_LIMITED, INTENT_BAD_CID, MESSAGE_TOO_LARGE, MESSAGE_INVALID,
-    PROTO_UNSUPPORTED, GAME_NOT_RUNNING,
+    PROTO_UNSUPPORTED, GAME_NOT_RUNNING, GAME_BUSY,
 ]

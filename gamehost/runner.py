@@ -89,6 +89,7 @@ class GameHost:
         self.runners: dict[int, GameRunner] = {}
         self.tasks: dict[int, asyncio.Task] = {}
         self._taking: set[int] = set()
+        self._starts: set[asyncio.Task] = set()   # keeps start tasks referenced until done
         self.channel = conf.get("CHANNEL")
 
     # ----------------------------------------------------------- taking games
@@ -182,10 +183,20 @@ class GameHost:
                 log.debug("gamehost receive failed (%r); retrying", exc)
                 await asyncio.sleep(RECEIVE_RETRY_S)
                 continue
-            try:
-                await self.dispatch(message)
-            except Exception:
-                log.exception("bad gamehost message %r", message.get("type"))
+            if message.get("type") == "game.start":
+                # Loading a game hits the database: do it beside the loop, so the messages
+                # of running games don't queue up behind it (the channel would fill).
+                task = asyncio.create_task(self._dispatch_logged(message), name=f"start-{message.get('game_id')}")
+                self._starts.add(task)
+                task.add_done_callback(self._starts.discard)
+                continue
+            await self._dispatch_logged(message)
+
+    async def _dispatch_logged(self, message: dict[str, Any]) -> None:
+        try:
+            await self.dispatch(message)
+        except Exception:
+            log.exception("bad gamehost message %r", message.get("type"))
 
     async def scan_loop(self) -> None:
         while True:
