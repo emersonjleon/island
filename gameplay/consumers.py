@@ -8,6 +8,7 @@ import json
 from typing import Any
 
 from channels.db import database_sync_to_async
+from channels.exceptions import ChannelFull
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 
@@ -19,6 +20,8 @@ from lobby.models import Game, GameStatus
 
 from . import codes
 from .ratelimit import TokenBucket
+
+TRY_AGAIN_LATER = 1013  # WebSocket close code
 
 MAX_MESSAGE_BYTES = getattr(settings, "GAMEPLAY_MAX_MESSAGE_BYTES", 4096)
 INTENTS_PER_SECOND = getattr(settings, "GAMEPLAY_INTENTS_PER_SECOND", 20)
@@ -114,8 +117,16 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     # ---------------------------------------------------------------- helpers
     async def _to_host(self, kind: str, **fields) -> None:
-        await self.channel_layer.send(self.host_channel, {
-            "type": kind, "game_id": self.game_id, "reply_channel": self.channel_name, **fields})
+        try:
+            await self.channel_layer.send(self.host_channel, {
+                "type": kind, "game_id": self.game_id, "reply_channel": self.channel_name, **fields})
+        except ChannelFull:
+            # The game host is behind. Refuse an order; a lost ping is resent anyway; without a
+            # sync the client has no state, so close with "try again later" and let it reconnect.
+            if kind == "game.intent":
+                await self.reject(fields.get("cid"), codes.GAME_BUSY)
+            elif kind == "game.sync":
+                await self.close(code=TRY_AGAIN_LATER)
 
     @database_sync_to_async
     def _lookup(self, code: str, user):

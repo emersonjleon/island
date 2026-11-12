@@ -129,6 +129,27 @@ class GameHostTests(TransactionTestCase):
 
         async_to_sync(run)()
 
+    def test_slow_start_does_not_hold_up_the_receive_loop(self):
+        async def run():
+            host = self.host()
+            release = asyncio.Event()
+
+            async def slow_take(game_id):
+                await release.wait()
+
+            host.take = slow_take
+            loop = asyncio.create_task(host.receive_loop())
+            reply = await self.layer.new_channel()
+            await self.layer.send(host.channel, {"type": "game.start", "game_id": 1})
+            await self.layer.send(host.channel, {"type": "game.intent", "game_id": 2, "seat": 0, "cid": "x",
+                                                 "payload": {"a": "build"}, "reply_channel": reply})
+            msg = (await self.recv(reply))["msg"]
+            self.assertEqual(msg["code"], "game.not_running")   # answered while the start still waits
+            release.set()
+            loop.cancel()
+
+        async_to_sync(run)()
+
     def test_restore_after_crash_reproduces_state(self):
         game = started_lobby_game(3)
 

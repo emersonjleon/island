@@ -28,7 +28,8 @@
     "finished": "The game is over",
     "player_count": "Wrong number of players for this game",
     "time_backwards": "Clock error, please reload the page",
-    "not_running": "The game isn't running"
+    "not_running": "The game isn't running",
+    "busy": "The server is busy, try that again"
   },
   "movement": {
     "not_land": "Settlers can only walk on land",

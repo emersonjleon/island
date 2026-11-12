@@ -28,7 +28,8 @@
     "finished": "La partida ha terminado",
     "player_count": "Número de jugadores incorrecto para esta partida",
     "time_backwards": "Error de reloj, recarga la página",
-    "not_running": "La partida no está en marcha"
+    "not_running": "La partida no está en marcha",
+    "busy": "El servidor está ocupado, inténtalo de nuevo"
   },
   "movement": {
     "not_land": "Los colonos solo pueden caminar por tierra",
