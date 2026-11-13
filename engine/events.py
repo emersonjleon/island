@@ -32,7 +32,7 @@ __all__ = [
     "ClockStarted", "DiceRolled", "Produced", "RobberStole", "RobberMoved", "Hand", "SettlerLanded",
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
-    "Points", "Buildable", "GameOver",
+    "Points", "LongestRoad", "Buildable", "GameOver",
 ]
 
 ResMap = dict[Resource, int]
@@ -248,6 +248,14 @@ class Points(Event):
     points: int
 
 
+class LongestRoad(Event):
+    """Road lengths or the Longest Road holder changed (``seat`` None: nobody holds it)."""
+    k: Literal["longest_road"] = "longest_road"
+    seat: int | None
+    previous: int | None
+    lengths: dict[int, int]
+
+
 class Buildable(Event):
     """Legal build spots of ``seat`` (sent only to that seat, when they change)."""
     k: Literal["buildable"] = "buildable"
@@ -268,14 +276,14 @@ class GameOver(Event):
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
-    SetupComplete, StartingResources, StartingMaterials, Traded, Points, Buildable, GameOver,
+    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, Buildable, GameOver,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
 AnyEvent = Annotated[
     ClockStarted | DiceRolled | Produced | RobberStole | RobberMoved | Hand | SettlerLanded | SettlerPath
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
-    | SetupComplete | StartingResources | StartingMaterials | Traded | Points | Buildable | GameOver,
+    | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | Buildable | GameOver,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

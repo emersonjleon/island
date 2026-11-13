@@ -130,6 +130,12 @@ describe("texts", () => {
       .toBe("ben: building stopped (someone else built there first)");
     expect(logLine(t, { k: "game_over", winner: 1, points: {} }, name, 0)!.text).toBe("ben won the game");
     expect(logLine(t, { k: "game_over", winner: 0, points: {} }, name, 0)!.text).toBe("You won the game");
+    const lr = (seat: number | null, previous: number | null) =>
+      logLine(t, { k: "longest_road", seat, previous, lengths: { "0": 3, "1": 6 } }, name, 0);
+    expect(lr(1, null)!.text).toBe("ben has the Longest Road (6 roads)");
+    expect(lr(0, 1)!.text).toBe("You have the Longest Road (3 roads)");
+    expect(lr(null, 1)!.text).toBe("Nobody holds the Longest Road now");
+    expect(lr(1, 1)).toBeNull();
     expect(logLine(t, { k: "starting_resources", seat: 0, gained: {} }, name, 0)).toBeNull();
     expect(logLine(t, { k: "settler_step" }, name, 0)).toBeNull();
     // Every event kind either has a line or is deliberately skipped, never throws.

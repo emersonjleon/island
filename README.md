@@ -7,7 +7,12 @@ An online strategy game: Settlers of Catan ideas played in real time, like Age o
 
 ## Status
 
-Stage 1 in progress. The rules engine (`engine/`, pure Python) is complete through simulation and replay. The Django site has its skeleton and accounts (sign-up, login, password reset, profile, English/Spanish, key-binding storage) and a lobby (create a game with a few settings, join, colours, ready, start, live seat updates) and the game host that runs started games; the game WebSocket and the game page come next.
+Stage 1 (playable core) is complete: accounts, lobby, the game host, the 2D game page with
+keyboard, mouse and touch controls, the HUD, English and Spanish, computer players, browser and
+load tests, and a Railway deployment ([deploy/RAILWAY.md](deploy/RAILWAY.md)).
+
+Stage 2 (full base game) has started: Longest Road is in. Development cards, Largest Army, the
+player trading board and reconnecting after a dropped connection come next.
 
 ## Running the engine tests
 

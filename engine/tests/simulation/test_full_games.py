@@ -44,7 +44,9 @@ class GreedyGamesTest(unittest.TestCase):
 
     def test_megacities_unblock_crowded_board(self) -> None:
         """On a 7-hex island the spots run out; upgrading to megacities still reaches the target."""
-        s = parse_settings({"board": {"land_hexes": 7}})
+        # Without Longest Road's points, so the target needs the megacities.
+        s = parse_settings({"board": {"land_hexes": 7}, "victory": {"longest_road": {"points": 0}}},
+                           implemented_stage=2)
         for seed in (0, 1, 2):
             with self.subTest(seed=seed):
                 r = run_game(s, make_seats(3), seed, ["greedy"] * 3, MAX_MS)

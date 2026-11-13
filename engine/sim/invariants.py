@@ -7,6 +7,7 @@ Conservation needs the per-resource total of the game, taken once with
 """
 from __future__ import annotations
 
+from engine.rules import longest_road
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -88,6 +89,11 @@ def _board(state: GameState) -> list[str]:
                             frontier.append(w)
         for e in sorted(own - anchored):
             out.append(f"road.unconnected.{seat}: {e}")
+    if state.phase != "finished":
+        # The award follows the roads on the board (it freezes when the game ends).
+        lengths = {p.seat: longest_road.road_length(state, p.seat) for p in state.players}
+        if any(lengths.values()) and lengths != longest_road.lengths(state):
+            out.append(f"longest_road.lengths: cached {longest_road.lengths(state)} != {lengths}")
     return out
 
 
@@ -97,6 +103,8 @@ def _points(state: GameState) -> list[str]:
     for p in state.players:
         per = {BuildKind.SETTLEMENT: bp.settlement, BuildKind.CITY: bp.city, BuildKind.MEGACITY: bp.megacity}
         pts = sum(per[b.kind] for b in state.buildings.values() if b.seat == p.seat)
+        if longest_road.holder(state) == p.seat:
+            pts += state.settings.victory.longest_road.points
         if pts != p.points:
             out.append(f"points.{p.seat}: cached {p.points} != {pts}")
     if state.phase == "finished":

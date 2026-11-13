@@ -115,6 +115,12 @@ export function logLine(
     case "traded": return {
       text: t("events:traded", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat,
     };
+    case "longest_road": {
+      if (ev.seat === ev.previous) return null;          // only the lengths changed
+      if (seat === null) return { text: t("events:longest_road_none"), seat: null };
+      const length = (ev.lengths as Record<string, number> | undefined)?.[String(seat)] ?? 0;
+      return { text: t(seat === viewer ? "events:longest_road_you" : "events:longest_road", { who, count: length }), seat };
+    }
     case "game_over": return {
       text: ev.winner === null ? t("events:game_over_none")
         : ev.winner === viewer ? t("events:game_over_you") : t("events:game_over", { who: name(ev.winner as number) }),

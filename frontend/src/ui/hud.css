@@ -24,6 +24,7 @@
 .hud-scores li.me .name { font-weight: 700; }
 .hud-scores .cards { grid-column: 2 / 4; font-size: 0.75rem; color: #c9c3b3; }
 .hud-scores small { color: #c9c3b3; font-weight: 400; }
+.hud-scores .award { color: #f2c94c; font-weight: 700; }
 .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1px solid #1d2a30; }
 
 /* Bottom row: log | hand (centred) | camera buttons. */

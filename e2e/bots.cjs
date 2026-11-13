@@ -29,7 +29,7 @@ async function addBot(page, level) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.E2E_CHROMIUM ? { executablePath: process.env.E2E_CHROMIUM } : {});
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
   page.on("pageerror", (e) => { console.error("page error:", e.message); process.exitCode = 1; });
   try {

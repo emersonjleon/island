@@ -16,7 +16,8 @@
     "close": "Cerrar"
   },
   "dice": { "next": "Próxima tirada", "last": "Última tirada", "history": "Tiradas recientes", "waiting": "Los dados empiezan tras el primer poblado" },
-  "scores": { "title": "Jugadores", "points": "{{points}} / {{target}}", "cards": "{{count}} cartas", "you": "(tú)" },
+  "scores": { "title": "Jugadores", "points": "{{points}} / {{target}}", "cards": "{{count}} cartas", "you": "(tú)",
+    "road": "camino {{count}}", "longest_road": "Gran Ruta" },
   "camera": { "center": "Centrar en mi colono", "fit": "Ver toda la isla" },
   "log": { "title": "Qué ha pasado" },
   "over": { "title": "Fin de la partida", "winner": "¡Gana {{name}}!", "youWin": "¡Has ganado!", "noWinner": "Sin ganador", "back": "Volver a la sala" },
