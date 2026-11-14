@@ -54,6 +54,8 @@ export interface GameStateView {
   dice_history: number[];
   winner: number | null;
   finished_at: number | null;
+  /** Stage 2. Lengths are keyed by seat (as a string). */
+  longest_road?: { holder: number | null; lengths: Record<string, number> };
   buildable?: BuildableSets;
 }
 

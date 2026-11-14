@@ -119,4 +119,12 @@ describe("GameStore reducers", () => {
     applyEvent(state, { k: "built", seat: 0, kind: "road", target: 10, points_after: 1 });
     expect(state.players[0]!.setup.remaining.road).toBe(1);
   });
+
+  it("tracks the Longest Road holder and lengths", () => {
+    const state = baseState();
+    applyEvent(state, { k: "longest_road", seat: 1, previous: null, lengths: { "0": 2, "1": 5 } });
+    expect(state.longest_road).toEqual({ holder: 1, lengths: { "0": 2, "1": 5 } });
+    applyEvent(state, { k: "longest_road", seat: null, previous: 1, lengths: { "0": 2, "1": 3 } });
+    expect(state.longest_road!.holder).toBeNull();
+  });
 });

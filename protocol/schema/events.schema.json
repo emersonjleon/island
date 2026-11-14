@@ -372,6 +372,59 @@
       "title": "Hand",
       "type": "object"
     },
+    "LongestRoad": {
+      "additionalProperties": false,
+      "description": "Road lengths or the Longest Road holder changed (``seat`` None: nobody holds it).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "longest_road",
+          "default": "longest_road",
+          "title": "K",
+          "type": "string"
+        },
+        "lengths": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Lengths",
+          "type": "object"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Previous"
+        },
+        "seat": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seat"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "previous",
+        "lengths"
+      ],
+      "title": "LongestRoad",
+      "type": "object"
+    },
     "Points": {
       "additionalProperties": false,
       "properties": {
@@ -886,6 +939,7 @@
       "dice_rolled": "#/$defs/DiceRolled",
       "game_over": "#/$defs/GameOver",
       "hand": "#/$defs/Hand",
+      "longest_road": "#/$defs/LongestRoad",
       "points": "#/$defs/Points",
       "produced": "#/$defs/Produced",
       "robber_moved": "#/$defs/RobberMoved",
@@ -959,6 +1013,9 @@
     },
     {
       "$ref": "#/$defs/Points"
+    },
+    {
+      "$ref": "#/$defs/LongestRoad"
     },
     {
       "$ref": "#/$defs/Buildable"

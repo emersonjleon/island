@@ -71,6 +71,13 @@ def _buildable(state: GameState, viewer: int) -> dict[str, list[int]] | None:
     return None if cached is None else dict(cached)
 
 
+def _longest_road_view(state: GameState) -> dict[str, Any]:
+    """Holder and road lengths (kept by rules.longest_road in ``ext``; read here without
+    importing the rules, which import this module)."""
+    lr = state.ext.get("longest_road", {})
+    return {"holder": lr.get("holder"), "lengths": dict(sorted(lr.get("lengths", {}).items(), key=lambda kv: int(kv[0])))}
+
+
 def project_state(state: GameState, viewer: int | None) -> dict[str, Any]:
     """The ``state`` payload of the protocol for ``viewer`` (JSON-safe)."""
     out: dict[str, Any] = {
@@ -91,6 +98,7 @@ def project_state(state: GameState, viewer: int | None) -> dict[str, Any]:
         "players": [_player_view(state, p, viewer) for p in state.players],
         "winner": state.winner,
         "finished_at": state.finished_at,
+        "longest_road": _longest_road_view(state),
     }
     if viewer is not None and state.has_seat(viewer):
         b = _buildable(state, viewer)

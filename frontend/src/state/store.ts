@@ -105,6 +105,9 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
     case "points":
       setPlayer(state, num(ev.seat), { points: num(ev.points) });
       break;
+    case "longest_road":
+      state.longest_road = { holder: ev.seat as number | null, lengths: { ...(ev.lengths as Record<string, number>) } };
+      break;
     case "settler_landed": {
       const s: SettlerView = { id: num(ev.settler), seat: num(ev.seat), vertex: num(ev.vertex), path: [], step: null };
       state.settlers = [...state.settlers.filter((x) => x.id !== s.id), s];

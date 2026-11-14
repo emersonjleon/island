@@ -56,6 +56,14 @@
       2,
       1
     ],
+    "longest_road": {
+      "holder": null,
+      "lengths": {
+        "0": 1,
+        "1": 2,
+        "2": 2
+      }
+    },
     "next_roll_at": 131000,
     "now": 111000,
     "phase": "running",

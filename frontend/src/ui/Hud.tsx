@@ -206,6 +206,8 @@ function Scores({ store, t }: HudProps) {
       <ul>
         {s.players.map((p) => {
           const cards = p.hand ? handTotal(p.hand) : p.hand_count;
+          const road = s.longest_road?.lengths[String(p.seat)] ?? 0;
+          const holds = s.longest_road?.holder === p.seat;
           return (
             <li key={p.seat} class={p.seat === store.seat ? "me" : ""}>
               <Swatch colour={p.colour} />
@@ -213,7 +215,13 @@ function Scores({ store, t }: HudProps) {
               {p.points !== undefined && (
                 <span class="points">{target ? t("hud:scores.points", { points: p.points, target }) : p.points}</span>
               )}
-              {cards !== undefined && <span class="cards">{t("hud:scores.cards", { count: cards })}</span>}
+              {cards !== undefined && (
+                <span class="cards">
+                  {t("hud:scores.cards", { count: cards })}
+                  {road > 0 && <> · {t("hud:scores.road", { count: road })}</>}
+                  {holds && <> · <strong class="award">{t("hud:scores.longest_road")}</strong></>}
+                </span>
+              )}
             </li>
           );
         })}
