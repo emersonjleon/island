@@ -24,7 +24,7 @@ from typing import Annotated, Any, ClassVar, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
-from engine.settings.enums import BuildKind, InfoVisibility, ProductionLog, Resource
+from engine.settings.enums import BuildKind, DevCardKind, InfoVisibility, ProductionLog, Resource
 from engine.settings.models import VisibilitySettings
 
 __all__ = [
@@ -32,7 +32,7 @@ __all__ = [
     "ClockStarted", "DiceRolled", "Produced", "RobberStole", "RobberMoved", "Hand", "SettlerLanded",
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
-    "Points", "LongestRoad", "Buildable", "GameOver",
+    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "Buildable", "GameOver",
 ]
 
 ResMap = dict[Resource, int]
@@ -256,6 +256,49 @@ class LongestRoad(Event):
     lengths: dict[int, int]
 
 
+# -------------------------------------------------------------- dev cards
+class DevCardBought(Event):
+    """``seat`` bought ``card``. Others see it per ``visibility.dev_cards``: ``open``
+    the card, ``counts`` the purchase without the card, ``hidden`` nothing."""
+    k: Literal["dev_card_bought"] = "dev_card_bought"
+    audience: ClassVar[Literal["public", "private"]] = "private"
+    seat: int
+    card: DevCardKind
+    deck_left: int
+
+    def redacted(self, vis: VisibilitySettings) -> dict[str, Any] | None:
+        if vis.dev_cards is InfoVisibility.OPEN:
+            return self.to_dict()
+        if vis.dev_cards is InfoVisibility.COUNTS:
+            d = self.to_dict()
+            del d["card"]
+            return d
+        return None
+
+
+class DevCardPlayed(Event):
+    """``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),
+    ``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).
+    Year of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count)."""
+    k: Literal["dev_card_played"] = "dev_card_played"
+    seat: int
+    card: DevCardKind
+    hex: int | None = None
+    victim: int | None = None
+    stolen: int = 0
+    took: ResMap = Field(default_factory=dict)
+    resource: Resource | None = None
+    taken: dict[int, int] = Field(default_factory=dict)
+
+
+class LargestArmy(Event):
+    """Knights played or the Largest Army holder changed (``seat`` None: nobody)."""
+    k: Literal["largest_army"] = "largest_army"
+    seat: int | None
+    previous: int | None
+    knights: dict[int, int]
+
+
 class Buildable(Event):
     """Legal build spots of ``seat`` (sent only to that seat, when they change)."""
     k: Literal["buildable"] = "buildable"
@@ -276,14 +319,15 @@ class GameOver(Event):
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
-    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, Buildable, GameOver,
+    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, Buildable, GameOver,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
 AnyEvent = Annotated[
     ClockStarted | DiceRolled | Produced | RobberStole | RobberMoved | Hand | SettlerLanded | SettlerPath
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
-    | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | Buildable | GameOver,
+    | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
+    | Buildable | GameOver,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

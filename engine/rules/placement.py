@@ -41,7 +41,7 @@ from engine.views import register_buildable_provider
 
 __all__ = [
     "Mode", "SETUP", "NETWORK", "BUILDABLE_ORDER",
-    "cost_of", "missing_resources", "can_afford", "pending_setup", "build_mode", "mode_error",
+    "cost_of", "free_roads", "build_cost", "missing_resources", "can_afford", "pending_setup", "build_mode", "mode_error",
     "road_connected", "settlement_error", "road_error", "city_error", "megacity_error", "placement_error",
     "build_error", "check_build", "legal_targets", "buildable", "buildable_view", "update_buildable",
 ]
@@ -64,6 +64,19 @@ def cost_of(state: GameState, kind: BuildKind) -> dict[Resource, int]:
     """Full resource map of the cost of ``kind`` (``settings.economy.costs``)."""
     cost = getattr(state.settings.economy.costs, kind.value)
     return {r: int(cost.get(r, 0)) for r in Resource}
+
+
+def free_roads(state: GameState, seat: int) -> int:
+    """Roads ``seat`` may still build at no cost (road building card; kept by
+    rules.devcards in ``ext``, read here without importing it)."""
+    return int(state.ext.get("devcards", {}).get("free_roads", {}).get(str(seat), 0))
+
+
+def build_cost(state: GameState, seat: int, kind: BuildKind) -> dict[Resource, int]:
+    """What ``seat`` pays to start building ``kind`` now (a free road costs nothing)."""
+    if kind is BuildKind.ROAD and free_roads(state, seat) > 0:
+        return {r: 0 for r in Resource}
+    return cost_of(state, kind)
 
 
 def missing_resources(hand: dict[Resource, int], cost: dict[Resource, int]) -> dict[str, int]:
@@ -210,7 +223,7 @@ def _resource_error(state: GameState, seat: int, kind: BuildKind, target: int | 
     p = state.player(seat)
     if p.pieces_left.get(kind, 0) <= 0:
         return _err("build.no_piece", kind, target)
-    missing = missing_resources(p.hand, cost_of(state, kind))
+    missing = missing_resources(p.hand, build_cost(state, seat, kind))
     if missing:
         return _err("build.cannot_afford", kind, target, missing=missing)
     return None

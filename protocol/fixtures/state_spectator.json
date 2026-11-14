@@ -3,23 +3,18 @@
   "seq": 1,
   "state": {
     "bank": {
-      "brick": 17,
+      "brick": 19,
       "fish": 19,
-      "grain": 16,
-      "lumber": 18,
-      "ore": 11,
-      "wool": 15
+      "grain": 14,
+      "lumber": 15,
+      "ore": 15,
+      "wool": 17
     },
     "buildings": [
       {
         "kind": "settlement",
         "seat": 1,
         "vertex": 30
-      },
-      {
-        "kind": "settlement",
-        "seat": 1,
-        "vertex": 32
       },
       {
         "kind": "settlement",
@@ -44,24 +39,42 @@
     ],
     "clock_started": true,
     "constructions": [],
+    "dev_cards": {
+      "army": null,
+      "deck_left": 24,
+      "players": {
+        "0": {
+          "count": 0,
+          "knights": 0
+        },
+        "1": {
+          "count": 0,
+          "knights": 0
+        },
+        "2": {
+          "count": 0,
+          "knights": 0
+        }
+      }
+    },
     "dice_history": [
-      8,
-      8,
-      4,
       7,
-      3
+      9,
+      9,
+      6,
+      5
     ],
     "finished_at": null,
     "last_roll": [
       2,
-      1
+      3
     ],
     "longest_road": {
       "holder": null,
       "lengths": {
-        "0": 1,
-        "1": 2,
-        "2": 2
+        "0": 2,
+        "1": 1,
+        "2": 1
       }
     },
     "next_roll_at": 131000,
@@ -70,12 +83,12 @@
     "players": [
       {
         "colour": "red",
-        "hand_count": 6,
+        "hand_count": 5,
         "name": "p0",
         "pieces": {
           "city": 4,
           "megacity": 4,
-          "road": 13,
+          "road": 12,
           "settlement": 3
         },
         "points": 2,
@@ -92,24 +105,26 @@
       },
       {
         "colour": "blue",
-        "hand_count": 6,
+        "hand_count": 4,
         "name": "p1",
         "pieces": {
           "city": 4,
           "megacity": 4,
-          "road": 12,
-          "settlement": 3
+          "road": 14,
+          "settlement": 4
         },
-        "points": 2,
+        "points": 1,
         "seat": 1,
-        "settlers": [],
+        "settlers": [
+          2
+        ],
         "setup": {
-          "done": true,
+          "done": false,
           "remaining": {
-            "road": 0,
-            "settlement": 0
+            "road": 1,
+            "settlement": 1
           },
-          "settlements_built": 2
+          "settlements_built": 1
         }
       },
       {
@@ -119,7 +134,7 @@
         "pieces": {
           "city": 4,
           "megacity": 4,
-          "road": 12,
+          "road": 13,
           "settlement": 3
         },
         "points": 2,
@@ -145,18 +160,6 @@
         "seat": 0
       },
       {
-        "edge": 49,
-        "seat": 1
-      },
-      {
-        "edge": 51,
-        "seat": 1
-      },
-      {
-        "edge": 72,
-        "seat": 2
-      },
-      {
         "edge": 76,
         "seat": 2
       },
@@ -165,12 +168,24 @@
         "seat": 0
       },
       {
+        "edge": 79,
+        "seat": 0
+      },
+      {
         "edge": 88,
         "seat": 2
       }
     ],
-    "robber": 8,
-    "settlers": [],
+    "robber": 5,
+    "settlers": [
+      {
+        "id": 2,
+        "path": [],
+        "seat": 1,
+        "step": null,
+        "vertex": 30
+      }
+    ],
     "viewer": null,
     "winner": null
   },
