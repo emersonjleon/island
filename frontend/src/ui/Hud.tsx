@@ -12,6 +12,7 @@ import { playerColour } from "../render2d/palette";
 import type { GameStore } from "../state/store";
 import "./hud.css";
 import { Dialog, useEscape } from "./Dialog";
+import { Die, ResIcon } from "./icons";
 import { KeySettings } from "./KeySettings";
 import {
   RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
@@ -168,8 +169,8 @@ function DiceClock(props: HudProps & { feed: HudFeed }) {
         <Ring share={share} label={String(secs)} title={t("hud:dice.next")} />
         {s.last_roll && (
           <span class="hud-dice" title={t("hud:dice.last")}>
-            {s.last_roll.map((d, i) => <span key={i} class="die">{d}</span>)}
-            <strong>= {s.last_roll.reduce((a, b) => a + b, 0)}</strong>
+            {s.last_roll.map((d, i) => <Die key={i} value={d} />)}
+            <strong class="hud-sum">{s.last_roll.reduce((a, b) => a + b, 0)}</strong>
           </span>
         )}
         {s.dice_history.length > 1 && (
@@ -255,6 +256,7 @@ function HandBar({ store, t, controls, touch, onTrade, onKeys }: HudProps & { on
       <div class="cards" aria-label={t("hud:hand")}>
         {RESOURCES.map((r) => (
           <span key={r} class={`card res-${r}${(hand[r] ?? 0) === 0 ? " empty" : ""}`} title={t(`hud:res.${r}`)}>
+            <ResIcon res={r} />
             <span class="count">{hand[r] ?? 0}</span>
             <span class="label">{t(`hud:res.${r}`)}</span>
           </span>
@@ -316,6 +318,7 @@ function TradeDialog({ store, t, send, onClose }: HudProps & { onClose(): void }
         <div class="choices">
           {RESOURCES.map((r) => (
             <button key={r} type="button" aria-pressed={give === r} class={`card res-${r}`} onClick={() => setGive(r)}>
+              <ResIcon res={r} />
               <span class="count">{hand[r] ?? 0}</span>
               <span class="label">{t(`hud:res.${r}`)}</span>
               <small>{t("hud:trade.ratio", { ratio: checkTrade(store.settings, store.board!, s, seat, r, get, 1).ratio })}</small>
@@ -326,6 +329,7 @@ function TradeDialog({ store, t, send, onClose }: HudProps & { onClose(): void }
         <div class="choices">
           {RESOURCES.map((r) => (
             <button key={r} type="button" aria-pressed={get === r} class={`card res-${r}`} onClick={() => setGet(r)}>
+              <ResIcon res={r} />
               <span class="label">{t(`hud:res.${r}`)}</span>
             </button>
           ))}
@@ -351,14 +355,22 @@ function GameOver({ store, t, lobbyUrl }: HudProps) {
   const ranked = [...s.players].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
   return (
     <div class="hud-overlay" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
-      <div class="hud-dialog">
+      <div class="hud-dialog hud-over">
+        <svg class="trophy" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
+          <path d="M18 8h28v14a14 14 0 0 1-28 0z" fill="#f0c94f" stroke="#a67c1a" stroke-width="2.5" />
+          <path d="M18 13H9v4a9 9 0 0 0 9 9M46 13h9v4a9 9 0 0 1-9 9" fill="none" stroke="#a67c1a" stroke-width="3" />
+          <path d="M28 36h8v10h-8z" fill="#d9a92f" /><rect x="20" y="46" width="24" height="8" rx="2" fill="#7a5232" />
+          <path d="M26 14v8" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.6" />
+        </svg>
         <h2 id="game-over-title">{t("hud:over.title")}</h2>
         <p class="winner">
           {!winner ? t("hud:over.noWinner") : winner.seat === store.seat ? t("hud:over.youWin") : t("hud:over.winner", { name: winner.name })}
         </p>
         <ol class="final">
           {ranked.map((p) => (
-            <li key={p.seat}><Swatch colour={p.colour} /> {p.name} <strong>{p.points ?? "–"}</strong></li>
+            <li key={p.seat} class={p.seat === s.winner ? "first" : ""}>
+              <Swatch colour={p.colour} /> <span class="name">{p.name}</span> <strong>{p.points ?? "–"}</strong>
+            </li>
           ))}
         </ol>
         <a class="button primary" href={lobbyUrl}>{t("hud:over.back")}</a>

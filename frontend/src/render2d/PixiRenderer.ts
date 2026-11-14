@@ -3,17 +3,22 @@
 // panBy / zoomAt / centerOn.
 import { Application, Container, Graphics, Text } from "pixi.js";
 
-import { BoardGeometry, hexCorners, type Pt } from "../board/geometry";
-import type { BoardMsg } from "../protocol/types";
+import { BoardGeometry, hexCenter, hexCorners, type Pt } from "../board/geometry";
+import type { BoardMsg, Resource } from "../protocol/types";
 import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
 import type { GameStore } from "../state/store";
+import { drawBuilding } from "./buildings";
+import { drawTerrainDecor, drawWaves } from "./decor";
+import { drawHarbor } from "./harbor";
 import * as P from "./palette";
 
 const UNIT = 60;
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 4;
 const MAX_RESOLUTION = 2;
+/** Largest side of the cached board texture, in pixels (safe on phones). */
+const MAX_CACHE_PX = 4096;
 
 export class PixiRenderer implements Renderer {
   private app = new Application();
@@ -27,6 +32,8 @@ export class PixiRenderer implements Renderer {
   private geo: BoardGeometry | null = null;
   private board: BoardMsg | null = null;
   private drawnVersion = -1;
+  /** Resolution the static board is cached at (0 = not cached yet). */
+  private cacheRes = 0;
   private overlays: Overlays = {};
   private store: GameStore | null = null;
   private lastNow = 0;
@@ -36,7 +43,8 @@ export class PixiRenderer implements Renderer {
   async mount(el: HTMLElement): Promise<void> {
     // Phones: no MSAA and at most 2x pixels, which keeps the frame rate up and the battery cool.
     const coarse = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
-    await this.app.init({ resizeTo: el, background: P.SEA, antialias: !coarse, autoDensity: true,
+    // The sea around the board is the page's own gradient behind a transparent canvas.
+    await this.app.init({ resizeTo: el, backgroundAlpha: 0, antialias: !coarse, autoDensity: true,
                           resolution: Math.min(window.devicePixelRatio || 1, MAX_RESOLUTION),
                           ...(coarse ? { powerPreference: "low-power" as const } : {}) });
     el.appendChild(this.app.canvas);
@@ -53,6 +61,7 @@ export class PixiRenderer implements Renderer {
       this.board = store.board;
       this.geo = new BoardGeometry(store.board);
       this.drawBoard();
+      this.cacheRes = 0;
       this.fit();
       this.drawnVersion = -1;
     }
@@ -63,6 +72,7 @@ export class PixiRenderer implements Renderer {
       this.drawnVersion = store.version;
     }
     this.drawMoving(store, now);
+    this.cacheBoard();
   }
 
   // ------------------------------------------------------------------ board
@@ -70,14 +80,35 @@ export class PixiRenderer implements Renderer {
     const geo = this.geo!;
     const board = this.board!;
     this.boardLayer.removeChildren().forEach((c) => c.destroy());
-    const tiles = new Graphics();
     const fishing = new Map(board.fishing.map((f) => [f.hex, f.token]));
+    const land = board.hexes.filter((h) => h.land && h.terrain);
+
+    // Sea: a faint grid, darker fishing grounds and a few waves.
+    const sea = new Graphics();
     for (const h of board.hexes) {
-      const pts = hexCorners(h.q, h.r).flatMap((p) => [p.x * UNIT, p.y * UNIT]);
-      const fill = h.land && h.terrain ? P.TERRAIN[h.terrain] : fishing.has(h.id) ? P.FISHING : P.SEA;
-      tiles.poly(pts).fill(fill).stroke({ width: h.land ? 2 : 1, color: h.land ? P.OUTLINE : P.SEA_EDGE });
+      if (h.land) continue;
+      const c = geo.hex[h.id]!;
+      const fish = fishing.has(h.id);
+      sea.poly(this.hexPts(h.q, h.r, 0.97)).fill({ color: fish ? P.FISHING : P.SEA, alpha: fish ? 0.9 : 0.3 })
+        .stroke({ width: 1, color: P.SEA_EDGE, alpha: fish ? 0.9 : 0.35 });
+      drawWaves(sea, h.id, c.x * UNIT, c.y * UNIT, UNIT, P.WAVE, fish ? 0.35 : 0.22);
     }
-    this.boardLayer.addChild(tiles);
+    // Coast: shallow water, then a sandy beach, under every land hex.
+    const coast = new Graphics();
+    for (const h of land) coast.poly(this.hexPts(h.q, h.r, 1.3)).fill({ color: P.SHALLOWS, alpha: 0.55 });
+    for (const h of land) coast.poly(this.hexPts(h.q, h.r, 1.12)).fill(P.SAND);
+    for (const h of land) coast.poly(this.hexPts(h.q, h.r, 1.12)).stroke({ width: 1.5, color: P.SAND_EDGE, alpha: 0.6 });
+    // Land: each hex with a darker rim, a lighter top and its details.
+    const tiles = new Graphics();
+    for (const h of land) {
+      const terrain = h.terrain!;
+      const c = geo.hex[h.id]!;
+      tiles.poly(this.hexPts(h.q, h.r, 0.985)).fill(P.TERRAIN_EDGE[terrain]);
+      tiles.poly(this.hexPts(h.q, h.r, 0.9)).fill(P.TERRAIN[terrain]);
+      tiles.poly(this.hexPts(h.q, h.r, 0.9)).stroke({ width: 2, color: 0xffffff, alpha: 0.18 });
+      drawTerrainDecor(tiles, terrain, h.id, c.x * UNIT, c.y * UNIT, UNIT);
+    }
+    this.boardLayer.addChild(sea, coast, tiles);
 
     for (const h of board.hexes) {
       const token = h.land ? h.token : fishing.get(h.id) ?? null;
@@ -86,12 +117,20 @@ export class PixiRenderer implements Renderer {
     for (const hb of board.harbors) this.boardLayer.addChild(this.harbor(hb.vertices, hb.ratio, hb.resource));
   }
 
+  private hexPts(q: number, r: number, k: number): number[] {
+    const c = hexCenter(q, r);
+    return hexCorners(q, r).flatMap((p) => [(c.x + (p.x - c.x) * k) * UNIT, (c.y + (p.y - c.y) * k) * UNIT]);
+  }
+
   private token(c: Pt, value: number, fish: boolean): Container {
     const box = new Container();
     box.position.set(c.x * UNIT, c.y * UNIT);
     const red = value === 6 || value === 8;
-    const g = new Graphics().circle(0, 0, UNIT * 0.3).fill(P.TOKEN_BG).stroke({ width: 1.5, color: fish ? P.FISHING : P.OUTLINE });
-    const label = new Text({ text: String(value), style: { fontFamily: "system-ui, sans-serif", fontSize: UNIT * 0.26,
+    const g = new Graphics()
+      .circle(UNIT * 0.02, UNIT * 0.035, UNIT * 0.3).fill({ color: P.SHADOW, alpha: 0.3 })
+      .circle(0, 0, UNIT * 0.3).fill(P.TOKEN_BG).stroke({ width: 2, color: fish ? P.WAVE : P.TOKEN_RING })
+      .circle(0, 0, UNIT * 0.25).stroke({ width: 1, color: P.TOKEN_RING, alpha: 0.5 });
+    const label = new Text({ text: String(value), style: { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: UNIT * 0.27,
       fontWeight: "700", fill: red ? P.TOKEN_RED : P.TOKEN_TEXT } });
     label.anchor.set(0.5, 0.62);
     const dots = new Graphics();
@@ -100,35 +139,28 @@ export class PixiRenderer implements Renderer {
     dots.fill(red ? P.TOKEN_RED : P.TOKEN_TEXT);
     box.addChild(g, label, dots);
     if (fish) {
-      const fishMark = new Text({ text: "🐟", style: { fontSize: UNIT * 0.22 } });
-      fishMark.anchor.set(0.5);
-      fishMark.position.set(0, -UNIT * 0.45);
+      // A little fish above the token marks a fishing ground.
+      const y = -UNIT * 0.45;
+      const fishMark = new Graphics()
+        .ellipse(0, y, UNIT * 0.09, UNIT * 0.045)
+        .poly([UNIT * 0.07, y, UNIT * 0.14, y - UNIT * 0.045, UNIT * 0.14, y + UNIT * 0.045])
+        .fill(P.WAVE)
+        .circle(-UNIT * 0.045, y - UNIT * 0.01, UNIT * 0.012).fill(P.SEA);
       box.addChild(fishMark);
     }
     return box;
   }
 
-  private harbor(vertices: number[], ratio: number, resource: string | null): Container {
+  private harbor(vertices: number[], ratio: number, resource: Resource | null): Container {
     const geo = this.geo!;
     const a = geo.vertex[vertices[0]!]!;
     const b = geo.vertex[vertices[1]!]!;
     const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
-    // Push the marker out to sea: away from the centre of the land hexes next to the edge.
+    // Push the medallion out to sea: away from the centre of the land hexes next to the edge.
     const out = this.seaward(mid);
-    const pos = { x: mid.x + out.x * 0.45, y: mid.y + out.y * 0.45 };
-    const box = new Container();
-    const lines = new Graphics()
-      .moveTo(a.x * UNIT, a.y * UNIT).lineTo(pos.x * UNIT, pos.y * UNIT)
-      .moveTo(b.x * UNIT, b.y * UNIT).lineTo(pos.x * UNIT, pos.y * UNIT)
-      .stroke({ width: 3, color: 0x6d4c2f });
-    const colour = resource ? P.RESOURCE[resource as keyof typeof P.RESOURCE] : 0xffffff;
-    const badge = new Graphics().circle(pos.x * UNIT, pos.y * UNIT, UNIT * 0.2).fill(colour).stroke({ width: 1.5, color: P.OUTLINE });
-    const label = new Text({ text: `${ratio}:1`, style: { fontFamily: "system-ui, sans-serif", fontSize: UNIT * 0.16,
-      fontWeight: "700", fill: P.TOKEN_TEXT } });
-    label.anchor.set(0.5);
-    label.position.set(pos.x * UNIT, pos.y * UNIT);
-    box.addChild(lines, badge, label);
-    return box;
+    const pos = { x: mid.x + out.x * 0.55, y: mid.y + out.y * 0.55 };
+    const px = (p: Pt) => ({ x: p.x * UNIT, y: p.y * UNIT });
+    return drawHarbor(px(a), px(b), px(pos), ratio, resource, UNIT);
   }
 
   private seaward(p: Pt): Pt {
@@ -148,6 +180,22 @@ export class PixiRenderer implements Renderer {
     return { x: sx / len, y: sy / len };
   }
 
+  /** The board never changes during a game, so it is drawn once into a texture and
+   * re-cached only when the zoom moves far enough to make it look soft. Drawing all
+   * the sea, beaches and details every frame is too slow on weak phones. */
+  private cacheBoard(): void {
+    const b = this.boardLayer.getLocalBounds();
+    const side = Math.max(b.width, b.height, 1);
+    const want = this.world.scale.x * this.app.renderer.resolution;
+    // Steps of √2 so small zooms don't re-cache; never larger than the texture limit.
+    const step = Math.SQRT2 ** Math.ceil(Math.log(Math.max(want, 0.25)) / Math.log(Math.SQRT2));
+    const res = Math.min(step, MAX_CACHE_PX / side);
+    if (Math.abs(res - this.cacheRes) < 1e-6) return;
+    this.cacheRes = res;
+    this.boardLayer.cacheAsTexture(false);
+    this.boardLayer.cacheAsTexture({ resolution: res, antialias: true });
+  }
+
   // ------------------------------------------------------------------ pieces
   private drawPieces(store: GameStore): void {
     const geo = this.geo!;
@@ -164,7 +212,11 @@ export class PixiRenderer implements Renderer {
     const r = this.robberLayer.clear();
     if (s.robber !== null && geo.hex[s.robber]) {
       const c = geo.hex[s.robber]!;
-      r.ellipse(c.x * UNIT + UNIT * 0.42, c.y * UNIT, UNIT * 0.11, UNIT * 0.2).fill(0x222222).stroke({ width: 1, color: 0xffffff });
+      const x = c.x * UNIT + UNIT * 0.42;
+      const y = c.y * UNIT;
+      r.ellipse(x + 2, y + UNIT * 0.2, UNIT * 0.13, UNIT * 0.04).fill({ color: P.SHADOW, alpha: 0.4 });
+      r.poly([x - UNIT * 0.11, y + UNIT * 0.19, x - UNIT * 0.06, y - UNIT * 0.04, x + UNIT * 0.06, y - UNIT * 0.04, x + UNIT * 0.11, y + UNIT * 0.19])
+        .circle(x, y - UNIT * 0.1, UNIT * 0.075).fill(0x2a2a2e).stroke({ width: 1.5, color: 0xe8e2d0 });
     }
   }
 
@@ -173,23 +225,15 @@ export class PixiRenderer implements Renderer {
     const t = 0.18;
     const a2 = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
     const b2 = { x: b.x + (a.x - b.x) * t, y: b.y + (a.y - b.y) * t };
-    g.moveTo(a2.x * UNIT, a2.y * UNIT).lineTo(b2.x * UNIT, b2.y * UNIT).stroke({ width: 9, color: P.OUTLINE, alpha, cap: "round" });
-    g.moveTo(a2.x * UNIT, a2.y * UNIT).lineTo(b2.x * UNIT, b2.y * UNIT).stroke({ width: 6, color: colour, alpha, cap: "round" });
+    const line = (dx: number, dy: number) => g.moveTo(a2.x * UNIT + dx, a2.y * UNIT + dy).lineTo(b2.x * UNIT + dx, b2.y * UNIT + dy);
+    line(1.5, 2.5).stroke({ width: 10, color: P.SHADOW, alpha: 0.3 * alpha, cap: "round" });
+    line(0, 0).stroke({ width: 10, color: P.OUTLINE, alpha, cap: "round" });
+    line(0, 0).stroke({ width: 7, color: colour, alpha, cap: "round" });
+    line(0, -1.5).stroke({ width: 2, color: 0xffffff, alpha: 0.3 * alpha, cap: "round" });
   }
 
   private building(g: Graphics, p: Pt, kind: string, colour: number, alpha: number): void {
-    const x = p.x * UNIT;
-    const y = p.y * UNIT;
-    const s = UNIT * (kind === "settlement" ? 0.15 : kind === "city" ? 0.2 : 0.25);
-    if (kind === "settlement") {
-      g.poly([x - s, y + s, x - s, y - s * 0.3, x, y - s * 1.2, x + s, y - s * 0.3, x + s, y + s]);
-    } else {
-      // city / megacity: a house with a tower
-      g.poly([x - s * 1.3, y + s, x - s * 1.3, y - s * 0.2, x - s * 0.2, y - s * 0.2, x - s * 0.2, y - s,
-              x + s * 0.45, y - s * 1.6, x + s * 1.1, y - s, x + s * 1.1, y + s]);
-    }
-    g.fill({ color: colour, alpha }).stroke({ width: 2, color: P.OUTLINE, alpha });
-    if (kind === "megacity") g.circle(x, y - s * 1.9, s * 0.35).fill({ color: 0xffd54f, alpha }).stroke({ width: 1.5, color: P.OUTLINE, alpha });
+    drawBuilding(g, kind, p.x * UNIT, p.y * UNIT, UNIT, colour, alpha);
   }
 
   private drawOverlays(): void {
@@ -224,16 +268,23 @@ export class PixiRenderer implements Renderer {
       const w = UNIT * 0.5;
       const x = p.x * UNIT - w / 2;
       const y = p.y * UNIT + UNIT * 0.22;
-      prog.rect(x, y, w, 6).fill(0x000000).rect(x, y, w * constructionProgress(c, now), 6)
-        .fill(P.playerColour(store.colourOf(c.seat)));
+      prog.roundRect(x - 1.5, y - 1.5, w + 3, 9, 4.5).fill({ color: P.OUTLINE, alpha: 0.85 })
+        .roundRect(x, y, Math.max(6, w * constructionProgress(c, now)), 6, 3).fill(P.playerColour(store.colourOf(c.seat)));
     }
     const g = this.settlerLayer.clear();
     for (const settler of s.settlers) {
       const p = settlerPosition(geo, settler, now);
       const colour = P.playerColour(store.colourOf(settler.seat));
       const selected = this.overlays.selectedSettlers?.includes(settler.id) ?? false;
-      g.circle(p.x * UNIT, p.y * UNIT, UNIT * 0.16).fill(colour).stroke({ width: selected ? 4 : 2, color: selected ? P.HIGHLIGHT : P.OUTLINE });
-      g.circle(p.x * UNIT, p.y * UNIT - UNIT * 0.05, UNIT * 0.06).fill(P.OUTLINE);
+      const x = p.x * UNIT;
+      const y = p.y * UNIT;
+      if (selected) g.circle(x, y, UNIT * 0.24).fill({ color: P.HIGHLIGHT, alpha: 0.35 });
+      g.ellipse(x + 2, y + UNIT * 0.14, UNIT * 0.15, UNIT * 0.05).fill({ color: P.SHADOW, alpha: 0.4 });
+      g.circle(x, y, UNIT * 0.16).fill(colour).stroke({ width: selected ? 4 : 2, color: selected ? P.HIGHLIGHT : P.OUTLINE });
+      g.circle(x - UNIT * 0.05, y - UNIT * 0.06, UNIT * 0.05).fill({ color: 0xffffff, alpha: 0.35 });
+      // A tiny figure on the token: head and shoulders.
+      g.circle(x, y - UNIT * 0.05, UNIT * 0.045).fill(P.OUTLINE);
+      g.ellipse(x, y + UNIT * 0.05, UNIT * 0.075, UNIT * 0.045).fill(P.OUTLINE);
       if (settler.path.length) {
         let prev = settler.step ? geo.vertex[settler.step.to_v]! : p;
         for (const v of settler.path) {
