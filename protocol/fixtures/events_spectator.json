@@ -59,6 +59,7 @@
       "hex": null,
       "k": "dev_card_played",
       "resource": null,
+      "roads": 0,
       "seat": 0,
       "stolen": 0,
       "taken": {},

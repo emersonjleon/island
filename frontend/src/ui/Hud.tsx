@@ -11,6 +11,8 @@ import type { BuildKind, Intent, Resource } from "../protocol/types";
 import { playerColour } from "../render2d/palette";
 import type { GameStore } from "../state/store";
 import "./hud.css";
+import { cardCount, devPlayer, knightVictims } from "../state/devcards";
+import { DevCardsDialog, VictimDialog } from "./DevCards";
 import { Dialog, useEscape } from "./Dialog";
 import { Die, ResIcon } from "./icons";
 import { KeySettings } from "./KeySettings";
@@ -27,6 +29,8 @@ export interface HudControls {
   setBindings(b: Bindings): void;
   /** Show the whole island. */
   fitView(): void;
+  /** Knight card: let the player pick the robber's hex on the board. */
+  startRobber(): void;
 }
 
 export interface HudProps {
@@ -53,6 +57,10 @@ export interface HudHandle {
   setMode(mode: ModeInfo | null): void;
   notify(code: string, params?: Record<string, unknown>): void;
   openTrade(): void;
+  /** The player picked the robber's hex for a knight: play it (asking whom to rob if needed). */
+  robberPicked(hex: number): void;
+  /** Buy a development card (keyboard shortcut). */
+  buyCard(): void;
 }
 
 const LOG_KEEP = 50;
@@ -62,7 +70,9 @@ const TICK_MS = 200;
 type Notice = { id: number; text: string };
 
 export function mountHud(el: HTMLElement, props: HudProps): HudHandle {
-  const handle: HudHandle = { setLink: () => {}, setMode: () => {}, notify: () => {}, openTrade: () => {} };
+  const handle: HudHandle = {
+    setLink: () => {}, setMode: () => {}, notify: () => {}, openTrade: () => {}, robberPicked: () => {}, buyCard: () => {},
+  };
   render(<Hud {...props} handle={handle} />, el);
   return handle;
 }
@@ -74,7 +84,8 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const [feed, setFeed] = useState<HudFeed>({ link: "connecting", mode: null });
   const [log, setLog] = useState<LogLine[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [dialog, setDialog] = useState<"trade" | "keys" | null>(null);
+  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | null>(null);
+  const [victim, setVictim] = useState<{ hex: number; victims: number[] } | null>(null);
   const [bindings, setBindings] = useState(props.bindings);
 
   useEffect(() => {
@@ -102,9 +113,18 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), NOTICE_MS);
     };
     handle.openTrade = () => setDialog((d) => (d === "trade" ? null : "trade"));
-  }, [handle, t]);
+    handle.buyCard = () => props.send({ a: "buy_dev_card" });
+    handle.robberPicked = (hex) => {
+      const s = store.state;
+      const seat = store.seat;
+      if (!s || seat === null || !store.board) return;
+      const robbable = knightVictims(store.board, s, hex, seat).filter((v) => (store.player(v)?.hand_count ?? 1) > 0);
+      if (robbable.length > 1) setVictim({ hex, victims: robbable });
+      else props.send({ a: "play_dev_card", card: "knight", hex, ...(robbable.length ? { victim: robbable[0] } : {}) });
+    };
+  }, [handle, t, store, props]);
 
-  useEffect(() => props.controls.setPaused(dialog !== null), [dialog, props.controls]);
+  useEffect(() => props.controls.setPaused(dialog !== null || victim !== null), [dialog, victim, props.controls]);
 
   const s = store.state;
   const seated = store.seat !== null;
@@ -117,7 +137,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         <div class="hud-slot-log">{s && <Log t={t} lines={log} />}</div>
         <div class="hud-slot-hand">
           {s && seated && !finished && (
-            <HandBar {...props} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} />
+            <HandBar {...props} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} onDev={() => setDialog("dev")} />
           )}
           {!seated && s && <div class="hud-spectator">{t("hud:spectator")}</div>}
         </div>
@@ -127,6 +147,13 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
       {dialog === "trade" && s && seated && <TradeDialog {...props} onClose={() => setDialog(null)} />}
+      {dialog === "dev" && s && seated && (
+        <DevCardsDialog store={store} t={t} now={props.now} send={props.send}
+                        startRobber={() => props.controls.startRobber()} onClose={() => setDialog(null)} />
+      )}
+      {victim && s && (
+        <VictimDialog store={store} t={t} hex={victim.hex} victims={victim.victims} send={props.send} onClose={() => setVictim(null)} />
+      )}
       {dialog === "keys" && (
         <KeySettings
           t={t} bindings={bindings} csrfToken={props.csrfToken}
@@ -149,7 +176,8 @@ function DiceClock(props: HudProps & { feed: HudFeed }) {
   } else if (!s) {
     body = <span>{t("loading")}</span>;
   } else if (feed.mode) {
-    const help = !feed.mode.count ? "input:mode.none" : props.touch ? "input:mode.touchHelp" : "input:mode.help";
+    const help = !feed.mode.count ? "input:mode.none" : feed.mode.kind === "robber" ? "input:mode.robberHelp"
+      : props.touch ? "input:mode.touchHelp" : "input:mode.help";
     body = (
       <>
         <span class="hud-mode"><strong>{t(`input:mode.${feed.mode.kind}`)}</strong> <span>{t(help)}</span></span>
@@ -208,6 +236,8 @@ function Scores({ store, t }: HudProps) {
           const cards = p.hand ? handTotal(p.hand) : p.hand_count;
           const road = s.longest_road?.lengths[String(p.seat)] ?? 0;
           const holds = s.longest_road?.holder === p.seat;
+          const dev = s.dev_cards?.players[String(p.seat)];
+          const army = s.dev_cards?.army === p.seat;
           return (
             <li key={p.seat} class={p.seat === store.seat ? "me" : ""}>
               <Swatch colour={p.colour} />
@@ -220,6 +250,9 @@ function Scores({ store, t }: HudProps) {
                   {t("hud:scores.cards", { count: cards })}
                   {road > 0 && <> · {t("hud:scores.road", { count: road })}</>}
                   {holds && <> · <strong class="award">{t("hud:scores.longest_road")}</strong></>}
+                  {p.seat !== store.seat && cardCount(dev) > 0 && <> · {t("hud:scores.dev", { count: cardCount(dev) })}</>}
+                  {(dev?.knights ?? 0) > 0 && <> · {t("hud:scores.knights", { count: dev!.knights })}</>}
+                  {army && <> · <strong class="award">{t("hud:scores.largest_army")}</strong></>}
                 </span>
               )}
             </li>
@@ -248,9 +281,13 @@ const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Acti
   { kind: "city", action: "build_city" },
 ];
 
-function HandBar({ store, t, controls, touch, onTrade, onKeys }: HudProps & { onTrade(): void; onKeys(): void }) {
+function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
+  HudProps & { onTrade(): void; onKeys(): void; onDev(): void }) {
   const me = store.player(store.seat!);
   const hand = me?.hand ?? {};
+  const cardCost = costOf(store.settings, "dev_card" as BuildKind);
+  const myCards = cardCount(devPlayer(store.state, store.seat));
+  const deckLeft = store.state?.dev_cards?.deck_left ?? 0;
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -273,7 +310,13 @@ function HandBar({ store, t, controls, touch, onTrade, onKeys }: HudProps & { on
             </button>
           );
         })}
-        <button type="button" onClick={onTrade}>{t("hud:trade.open")}</button>
+        <button type="button" class={canAfford(hand, cardCost) && deckLeft > 0 ? "buy-card" : "buy-card short"}
+                onClick={() => send({ a: "buy_dev_card" })}
+                title={t("hud:dev.buyCost", { res: formatRes(t, cardCost), left: deckLeft })}>
+          {t("hud:dev.buy")}
+        </button>
+        {myCards > 0 && <button type="button" class="dev-open" onClick={onDev}>{t("hud:dev.open", { count: myCards })}</button>}
+        <button type="button" class="trade-open" onClick={onTrade}>{t("hud:trade.open")}</button>
         {!touch && <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>}
       </div>
     </div>

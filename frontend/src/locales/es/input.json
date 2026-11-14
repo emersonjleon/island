@@ -6,6 +6,8 @@
     "city": "Construir ciudad"
   },
   "mode": {
+    "robber": "Mover el ladrón",
+    "robberHelp": "Haz clic o toca un hexágono resaltado, Esc para cancelar",
     "road": "Construir un camino",
     "settlement": "Construir un poblado",
     "city": "Construir una ciudad",

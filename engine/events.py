@@ -279,7 +279,8 @@ class DevCardBought(Event):
 class DevCardPlayed(Event):
     """``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),
     ``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).
-    Year of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count)."""
+    Year of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count). Road building:
+    ``roads`` free roads."""
     k: Literal["dev_card_played"] = "dev_card_played"
     seat: int
     card: DevCardKind
@@ -289,6 +290,7 @@ class DevCardPlayed(Event):
     took: ResMap = Field(default_factory=dict)
     resource: Resource | None = None
     taken: dict[int, int] = Field(default_factory=dict)
+    roads: int = 0
 
 
 class LargestArmy(Event):

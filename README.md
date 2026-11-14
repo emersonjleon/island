@@ -11,8 +11,8 @@ Stage 1 (playable core) is complete: accounts, lobby, the game host, the 2D game
 keyboard, mouse and touch controls, the HUD, English and Spanish, computer players, browser and
 load tests, and a Railway deployment ([deploy/RAILWAY.md](deploy/RAILWAY.md)).
 
-Stage 2 (full base game) has started: Longest Road is in. Development cards, Largest Army, the
-player trading board and reconnecting after a dropped connection come next.
+Stage 2 (full base game) is under way: Longest Road, development cards and Largest Army are in.
+The player trading board and reconnecting after a dropped connection come next.
 
 ## Running the engine tests
 

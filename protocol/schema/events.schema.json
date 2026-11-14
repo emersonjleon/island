@@ -298,7 +298,7 @@
     },
     "DevCardPlayed": {
       "additionalProperties": false,
-      "description": "``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),\n``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).\nYear of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count).",
+      "description": "``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),\n``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).\nYear of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count). Road building:\n``roads`` free roads.",
       "properties": {
         "at": {
           "title": "At",
@@ -335,6 +335,11 @@
             }
           ],
           "default": null
+        },
+        "roads": {
+          "default": 0,
+          "title": "Roads",
+          "type": "integer"
         },
         "seat": {
           "title": "Seat",

@@ -120,6 +120,27 @@ describe("GameStore reducers", () => {
     expect(state.players[0]!.setup.remaining.road).toBe(1);
   });
 
+  it("tracks development cards, plays and the Largest Army", () => {
+    const state = baseState();
+    state.dice_history = [8];
+    applyEvent(state, { k: "dev_card_bought", at: 100, seat: 0, card: "knight", deck_left: 24 });
+    applyEvent(state, { k: "dev_card_bought", at: 120, seat: 1, deck_left: 23 });
+    expect(state.dev_cards!.players["0"]!.cards).toEqual([{ kind: "knight", at: 100, roll: 1 }]);
+    expect(state.dev_cards!.players["1"]!.count).toBe(1);
+    expect(state.dev_cards!.deck_left).toBe(23);
+    state.dice_history = [8, 6];
+    applyEvent(state, { k: "dev_card_played", at: 300, seat: 0, card: "knight", hex: 4, victim: 1, stolen: 1 });
+    expect(state.dev_cards!.players["0"]!.cards).toEqual([]);
+    expect(state.dev_cards!.players["0"]!.last_play).toEqual({ at: 300, roll: 2 });
+    applyEvent(state, { k: "largest_army", seat: 0, previous: null, knights: { "0": 3, "1": 0 } });
+    expect(state.dev_cards!.army).toBe(0);
+    expect(state.dev_cards!.players["0"]!.knights).toBe(3);
+    applyEvent(state, { k: "dev_card_played", at: 400, seat: 0, card: "road_building", roads: 2 });
+    expect(state.dev_cards!.players["0"]!.free_roads).toBe(2);
+    applyEvent(state, { k: "construction_started", id: 1, seat: 0, kind: "road", target: 3, builder: null, t0: 0, t1: 1, paid: {} });
+    expect(state.dev_cards!.players["0"]!.free_roads).toBe(1);
+  });
+
   it("tracks the Longest Road holder and lengths", () => {
     const state = baseState();
     applyEvent(state, { k: "longest_road", seat: 1, previous: null, lengths: { "0": 2, "1": 5 } });

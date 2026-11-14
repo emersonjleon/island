@@ -284,7 +284,7 @@ def on_play(state: GameState, seat: int, cmd: PlayDevCard, now_ms: int) -> list[
     if kind is ROADS:
         n = state.settings.dev_cards.road_building_roads
         ext["free_roads"][str(seat)] = ext["free_roads"].get(str(seat), 0) + n
-        return [DevCardPlayed(at=now_ms, seat=seat, card=kind)]
+        return [DevCardPlayed(at=now_ms, seat=seat, card=kind, roads=n)]
     if kind is PLENTY:
         assert plenty is not None
         p = state.player(seat)
