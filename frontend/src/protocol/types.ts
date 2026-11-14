@@ -56,6 +56,8 @@ export interface GameStateView {
   finished_at: number | null;
   /** Stage 2. Lengths are keyed by seat (as a string). */
   longest_road?: { holder: number | null; lengths: Record<string, number> };
+  /** Stage 2: development cards and Largest Army. */
+  dev_cards?: DevCardsView;
   buildable?: BuildableSets;
 }
 
@@ -76,7 +78,21 @@ export type Intent =
   | { a: "move_settler"; settler: number; to_vertex: number; mode: "replace" | "append" }
   | { a: "build"; kind: BuildKind; vertex?: number; edge?: number; settler?: number }
   | { a: "cancel_build"; construction: number }
-  | { a: "bank_trade"; give: ResMap; get: ResMap };
+  | { a: "bank_trade"; give: ResMap; get: ResMap }
+  | { a: "buy_dev_card" }
+  | { a: "play_dev_card"; card: DevCardKind; hex?: number; victim?: number; resources?: Resource[]; resource?: Resource };
+
+export type DevCardKind = "knight" | "victory_point" | "road_building" | "year_of_plenty" | "monopoly";
+/** One of the viewer's own cards: when it was bought (game ms, and dice rolls so far). */
+export interface DevCard { kind: DevCardKind; at?: number; roll?: number }
+export interface DevCardsPlayer {
+  knights: number;
+  count?: number;
+  cards?: DevCard[];
+  last_play?: { at: number; roll: number } | null;
+  free_roads?: number;
+}
+export interface DevCardsView { deck_left: number; army: number | null; players: Record<string, DevCardsPlayer> }
 
 const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong"]);
 

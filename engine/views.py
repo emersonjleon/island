@@ -15,7 +15,8 @@ from engine.settings.enums import InfoVisibility, Resource, ScoreVisibility
 from engine.settings.models import VisibilitySettings
 from engine.state import Construction, GameState, PlayerState, Settler
 
-__all__ = ["project_state", "filter_events", "register_buildable_provider", "BuildableProvider"]
+__all__ = ["project_state", "filter_events", "register_buildable_provider", "BuildableProvider",
+           "register_state_extension", "StateExtension"]
 
 BuildableProvider = Callable[[GameState, int], dict[str, list[int]]]
 _buildable_provider: BuildableProvider | None = None
@@ -26,6 +27,19 @@ def register_buildable_provider(fn: BuildableProvider | None) -> None:
     ``None`` unregisters. Without a provider, ``state.buildable_cache[seat]`` is used."""
     global _buildable_provider
     _buildable_provider = fn
+
+
+StateExtension = Callable[[GameState, int | None], dict[str, Any]]
+_extensions: dict[str, StateExtension] = {}
+
+
+def register_state_extension(name: str, fn: StateExtension | None) -> None:
+    """A rule module adds ``fn(state, viewer) -> dict`` under ``name`` in the state
+    projection (rules import views, so views cannot import them). ``None`` removes it."""
+    if fn is None:
+        _extensions.pop(name, None)
+    else:
+        _extensions[name] = fn
 
 
 def _res(m: dict[Resource, int]) -> dict[str, int]:
@@ -100,6 +114,8 @@ def project_state(state: GameState, viewer: int | None) -> dict[str, Any]:
         "finished_at": state.finished_at,
         "longest_road": _longest_road_view(state),
     }
+    for name, fn in sorted(_extensions.items()):
+        out[name] = fn(state, viewer)
     if viewer is not None and state.has_seat(viewer):
         b = _buildable(state, viewer)
         if b is not None:

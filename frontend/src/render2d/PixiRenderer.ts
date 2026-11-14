@@ -247,6 +247,13 @@ export class PixiRenderer implements Renderer {
       const [a, b] = geo.edgeEnds(e);
       g.moveTo(a.x * UNIT, a.y * UNIT).lineTo(b.x * UNIT, b.y * UNIT).stroke({ width: 4, color: P.HIGHLIGHT, alpha: 0.8 });
     }
+    for (const h of this.overlays.hexes ?? []) {
+      const p = geo.hex[h];
+      if (p) g.circle(p.x * UNIT, p.y * UNIT, UNIT * 0.42).stroke({ width: 3, color: P.HIGHLIGHT, alpha: 0.8 });
+    }
+    const fh = this.overlays.focusHex;
+    const hp = fh == null ? undefined : geo.hex[fh];
+    if (hp) g.circle(hp.x * UNIT, hp.y * UNIT, UNIT * 0.5).fill({ color: P.HIGHLIGHT, alpha: 0.25 }).stroke({ width: 5, color: P.HIGHLIGHT });
     const fv = this.overlays.focusVertex;
     const fp = fv == null ? undefined : geo.vertex[fv];
     if (fp) g.circle(fp.x * UNIT, fp.y * UNIT, UNIT * 0.2).fill({ color: P.HIGHLIGHT, alpha: 0.45 }).stroke({ width: 4, color: P.HIGHLIGHT });

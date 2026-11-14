@@ -15,8 +15,9 @@ from __future__ import annotations
 from typing import Any
 
 from engine.rng import Rng
-from engine.rules import movement, placement, trade
-from engine.settings.enums import BuildKind, Resource
+from engine.board import coords
+from engine.rules import devcards, movement, placement, trade
+from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
 __all__ = ["Bot", "RandomBot", "GreedyBot", "BOT_TYPES", "make_bot", "pips", "vertex_score"]
@@ -180,7 +181,83 @@ class GreedyBot(Bot):
         best = max(score(e) for e in options)
         return self.rng.choice([e for e in options if score(e) == best])
 
+    # ------------------------------------------------------------ dev cards
+    def dev_card_plays(self, state: GameState) -> list[Intent]:
+        """Play the first playable card that does something useful now."""
+        for c in devcards.hand(state, self.seat):
+            if devcards.playable(state, self.seat, c, state.now_ms):
+                intent = self._play(state, DevCardKind(c["kind"]))
+                if intent is not None:
+                    return [intent]
+        return []
+
+    def _play(self, state: GameState, kind: DevCardKind) -> Intent | None:
+        play: Intent = {"a": "play_dev_card", "card": kind.value}
+        if kind is DevCardKind.KNIGHT:
+            return self._knight(state, play)
+        if kind is DevCardKind.ROAD_BUILDING:
+            return play if placement.legal_targets(state, self.seat, ROAD) else None
+        if kind is DevCardKind.YEAR_OF_PLENTY:
+            p = state.player(self.seat)
+            want: list[str] = []
+            for k in (CITY, SETTLEMENT, ROAD):
+                cost = placement.cost_of(state, k)
+                want += [r.value for r in Resource for _ in range(max(0, cost[r] - p.hand[r]))]
+            n = state.settings.dev_cards.year_of_plenty_cards
+            play["resources"] = (want + [Resource.GRAIN.value] * n)[:n]
+            return play
+        if kind is DevCardKind.MONOPOLY:
+            totals = {r: sum(q.hand[r] for q in state.players if q.seat != self.seat) for r in Resource}
+            best = max(totals, key=lambda r: (totals[r], -list(Resource).index(r)))
+            if totals[best] == 0:
+                return None
+            play["resource"] = best.value
+            return play
+        return play                                              # victory point
+
+    def _knight(self, state: GameState, play: Intent) -> Intent | None:
+        start = state.robber_hex
+        if start is None or not state.settings.robber.enabled:
+            return None
+        board = state.board.board
+        limit = state.settings.robber.knight_max_distance
+        best: tuple[int, int] | None = None
+        for h in range(len(board.hexes)):
+            if not board.is_land(h):
+                continue
+            if h == start or coords.hex_distance(board.hexes[start], board.hexes[h]) > limit:
+                continue
+            seats = [b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None]
+            if self.seat in seats or not seats:
+                continue
+            score = len(seats) * 10 + pips(state.board.token[h], state)
+            if best is None or score > best[0]:
+                best = (score, h)
+        if best is None:
+            return None
+        h = best[1]
+        near = {b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None}
+        play["hex"] = h
+        play["victim"] = max(sorted(near), key=lambda s: state.player(s).hand_count)
+        return play
+
+    def _buy_card(self, state: GameState) -> Intent | None:
+        cost = state.settings.economy.costs.dev_card
+        p = state.player(self.seat)
+        if sum(devcards.deck_left(state).values()) and all(p.hand[r] >= n for r, n in cost.items()):
+            return {"a": "buy_dev_card"}
+        return None
+
     def network(self, state: GameState) -> list[Intent]:
+        plays = self.dev_card_plays(state)
+        builds = self.network_builds(state)
+        if not builds or builds[0]["a"] == "bank_trade":
+            buy = self._buy_card(state)
+            if buy is not None:
+                builds = [buy]
+        return plays + builds
+
+    def network_builds(self, state: GameState) -> list[Intent]:
         megas = placement.legal_targets(state, self.seat, MEGACITY)
         if megas:
             return [_build(MEGACITY, self.pick_vertex(state, megas))]

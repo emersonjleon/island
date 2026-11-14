@@ -111,6 +111,20 @@
       "title": "BuildKind",
       "type": "string"
     },
+    "BuyDevCard": {
+      "additionalProperties": false,
+      "description": "Buy the top card of the development deck (stage 2).",
+      "properties": {
+        "a": {
+          "const": "buy_dev_card",
+          "default": "buy_dev_card",
+          "title": "A",
+          "type": "string"
+        }
+      },
+      "title": "BuyDevCard",
+      "type": "object"
+    },
     "CancelBuild": {
       "additionalProperties": false,
       "properties": {
@@ -131,6 +145,17 @@
       ],
       "title": "CancelBuild",
       "type": "object"
+    },
+    "DevCardKind": {
+      "enum": [
+        "knight",
+        "victory_point",
+        "road_building",
+        "year_of_plenty",
+        "monopoly"
+      ],
+      "title": "DevCardKind",
+      "type": "string"
     },
     "MoveSettler": {
       "additionalProperties": false,
@@ -169,6 +194,79 @@
       "title": "MoveSettler",
       "type": "object"
     },
+    "PlayDevCard": {
+      "additionalProperties": false,
+      "description": "Play a development card (stage 2). Fields by card:\n\n* ``knight``: ``hex`` (where the robber goes) and, when several players could be\n  robbed there, ``victim``;\n* ``year_of_plenty``: ``resources`` (one entry per card taken, repeats allowed);\n* ``monopoly``: ``resource``;\n* ``victory_point`` / ``road_building``: nothing else.\n\nWhether the right fields are given for the card is a rule check (``dev.*`` codes).",
+      "properties": {
+        "a": {
+          "const": "play_dev_card",
+          "default": "play_dev_card",
+          "title": "A",
+          "type": "string"
+        },
+        "card": {
+          "$ref": "#/$defs/DevCardKind"
+        },
+        "hex": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hex"
+        },
+        "resource": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "resources": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/Resource"
+              },
+              "maxItems": 20,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Resources"
+        },
+        "victim": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Victim"
+        }
+      },
+      "required": [
+        "card"
+      ],
+      "title": "PlayDevCard",
+      "type": "object"
+    },
     "Resource": {
       "enum": [
         "lumber",
@@ -186,8 +284,10 @@
     "mapping": {
       "bank_trade": "#/$defs/BankTrade",
       "build": "#/$defs/Build",
+      "buy_dev_card": "#/$defs/BuyDevCard",
       "cancel_build": "#/$defs/CancelBuild",
-      "move_settler": "#/$defs/MoveSettler"
+      "move_settler": "#/$defs/MoveSettler",
+      "play_dev_card": "#/$defs/PlayDevCard"
     },
     "propertyName": "a"
   },
@@ -203,6 +303,12 @@
     },
     {
       "$ref": "#/$defs/BankTrade"
+    },
+    {
+      "$ref": "#/$defs/BuyDevCard"
+    },
+    {
+      "$ref": "#/$defs/PlayDevCard"
     }
   ]
 }

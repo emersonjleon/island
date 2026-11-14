@@ -17,7 +17,7 @@
   },
   "dice": { "next": "Next roll", "last": "Last roll", "history": "Recent rolls", "waiting": "The dice start after the first settlement" },
   "scores": { "title": "Players", "points": "{{points}} / {{target}}", "cards": "{{count}} cards", "you": "(you)",
-    "road": "road {{count}}", "longest_road": "Longest Road" },
+    "road": "road {{count}}", "longest_road": "Longest Road", "dev": "{{count}} dev cards", "knights": "{{count}} knights", "largest_army": "Largest Army" },
   "camera": { "center": "Centre on my settler", "fit": "Show the whole island" },
   "log": { "title": "What happened" },
   "over": { "title": "Game over", "winner": "{{name}} wins!", "youWin": "You win!", "noWinner": "No winner", "back": "Back to the lobby" },
@@ -43,5 +43,7 @@
     "zoom_in": "Zoom in", "zoom_out": "Zoom out", "center_selected": "Centre on settler",
     "buy_dev_card": "Buy development card", "open_trade": "Open trade"
   },
-  "spectator": "You are watching this game"
+  "spectator": "You are watching this game",
+  "youObject": "you",
+  "dev": {"buy": "Card", "buyCost": "Development card: costs {{res}} ({{left}} left)", "open": "Cards ({{count}})", "title": "Your development cards", "none": "You have no development cards.", "play": "Play", "close": "Close", "take": "Take", "pickPlenty": "Choose {{count}} resources to take from the bank", "pickMonopoly": "Choose the resource to take from everyone", "victimTitle": "Whom do you rob?", "kind": {"knight": "Knight", "victory_point": "Victory point", "road_building": "Road building", "year_of_plenty": "Year of plenty", "monopoly": "Monopoly"}, "help": {"knight": "Move the robber up to 3 hexes and steal a card", "victory_point": "Worth a point when played", "road_building": "Build 2 roads for free", "year_of_plenty": "Take 2 resources from the bank", "monopoly": "Take one resource from every player"}}
 }

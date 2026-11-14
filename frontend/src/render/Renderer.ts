@@ -17,6 +17,9 @@ export interface Overlays {
   /** The one candidate the player is about to choose (drawn stronger). */
   focusVertex?: number | null;
   focusEdge?: number | null;
+  /** Robber mode (knight card): hexes it may go to, and the one about to be chosen. */
+  hexes?: number[];
+  focusHex?: number | null;
   selectedSettlers?: number[];
 }
 

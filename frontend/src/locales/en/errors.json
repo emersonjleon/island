@@ -54,5 +54,23 @@
     "invalid": "The server didn't understand that message",
     "too_large": "That message was too large"
   },
-  "proto": { "unsupported": "Please reload the page to get the latest version" }
+  "proto": { "unsupported": "Please reload the page to get the latest version" },
+  "dev": {
+    "setup_not_done": "Finish your setup first",
+    "deck_empty": "No development cards left",
+    "cannot_afford": "You can't afford a development card",
+    "no_card": "You don't have that card",
+    "too_new": "A new card can be played after the next dice roll",
+    "cooldown": "One card per dice roll: wait for the next roll",
+    "not_playable": "That card counts by itself and isn't played",
+    "no_robber": "There is no robber in this game",
+    "need_hex": "Choose where the robber goes",
+    "bad_hex": "The robber can't go there",
+    "too_far": "Too far: the robber moves up to {{max}} hexes",
+    "need_victim": "Choose whom to rob",
+    "bad_victim": "That player has no building next to that hex",
+    "need_resources": "Choose {{count}} resources",
+    "bank_short": "The bank doesn't have those resources",
+    "need_resource": "Choose a resource"
+  }
 }

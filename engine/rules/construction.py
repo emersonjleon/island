@@ -125,7 +125,11 @@ def start_construction(state: GameState, seat: int, kind: BuildKind, target: int
     """Pay into escrow, reserve the piece, schedule completion (or complete now).
     Assumes every check passed."""
     p = state.player(seat)
-    cost = _placement().cost_of(state, kind)
+    pl = _placement()
+    cost = pl.build_cost(state, seat, kind)
+    if kind is BuildKind.ROAD and pl.free_roads(state, seat) > 0:
+        free = state.ext["devcards"]["free_roads"]
+        free[str(seat)] -= 1                 # used up even if the build is cancelled later
     for r in Resource:
         p.hand[r] -= cost[r]
     p.pieces_left[kind] -= 1
