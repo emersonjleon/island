@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 16:56+0000\n"
+"POT-Creation-Date: 2026-11-11 22:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -197,8 +197,8 @@ msgstr "Cancelada"
 #: templates/accounts/login.html:2 templates/accounts/login.html:4
 #: templates/accounts/login.html:10
 #: templates/accounts/password_reset_complete.html:5
-#: templates/accounts/signup.html:11 templates/base.html:21
-#: templates/home.html:12
+#: templates/accounts/signup.html:11 templates/base.html:22
+#: templates/home.html:15
 msgid "Log in"
 msgstr "Iniciar sesión"
 
@@ -211,8 +211,8 @@ msgid "New here?"
 msgstr "¿Eres nuevo?"
 
 #: templates/accounts/login.html:13 templates/accounts/signup.html:2
-#: templates/accounts/signup.html:4 templates/base.html:22
-#: templates/home.html:11
+#: templates/accounts/signup.html:4 templates/base.html:23
+#: templates/home.html:14
 msgid "Sign up"
 msgstr "Registrarse"
 
@@ -315,19 +315,19 @@ msgstr "Crear cuenta"
 msgid "Already have an account?"
 msgstr "¿Ya tienes cuenta?"
 
-#: templates/base.html:7 templates/base.html:13 templates/home.html:3
+#: templates/base.html:8 templates/base.html:14 templates/home.html:5
 msgid "Ages of the Island"
 msgstr "Ages of the Island"
 
-#: templates/base.html:18
+#: templates/base.html:19
 msgid "Log out"
 msgstr "Cerrar sesión"
 
-#: templates/base.html:27
+#: templates/base.html:28
 msgid "Language"
 msgstr "Idioma"
 
-#: templates/base.html:34 templates/lobby/_seats.html:40
+#: templates/base.html:35 templates/lobby/_seats.html:40
 msgid "Change"
 msgstr "Cambiar"
 
@@ -349,7 +349,7 @@ msgstr "Estás mirando como espectador."
 msgid "The game needs JavaScript."
 msgstr "El juego necesita JavaScript."
 
-#: templates/home.html:4
+#: templates/home.html:6
 msgid ""
 "Settle an island in real time. The clock rolls the dice for everyone, and "
 "your settlements collect what the land gives."
@@ -357,9 +357,33 @@ msgstr ""
 "Coloniza una isla en tiempo real. El reloj lanza los dados para todos y tus "
 "poblados recogen lo que da la tierra."
 
-#: templates/home.html:9
+#: templates/home.html:12
 msgid "Go to the lobby"
 msgstr "Ir a la sala de espera"
+
+#: templates/home.html:22
+msgid "The clock rolls the dice"
+msgstr "El reloj tira los dados"
+
+#: templates/home.html:23
+msgid "Every few seconds the dice roll for everyone. No waiting for turns."
+msgstr "Cada pocos segundos se lanzan los dados para todos. Sin esperar turnos."
+
+#: templates/home.html:24
+msgid "Walk and build"
+msgstr "Camina y construye"
+
+#: templates/home.html:25
+msgid "Your settlers walk the island and build roads, settlements and cities."
+msgstr "Tus colonos recorren la isla y construyen caminos, poblados y ciudades."
+
+#: templates/home.html:26
+msgid "Play anywhere"
+msgstr "Juega donde quieras"
+
+#: templates/home.html:27
+msgid "On a computer or a phone, with friends or against bots."
+msgstr "En el ordenador o en el móvil, con amigos o contra bots."
 
 #: templates/lobby/_seats.html:2
 msgid "Status:"

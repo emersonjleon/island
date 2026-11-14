@@ -23,21 +23,29 @@ function touchFirst(): boolean {
   return matchMedia("(pointer: coarse)").matches && !matchMedia("(any-pointer: fine)").matches;
 }
 
-/** How far the top and bottom HUD panels reach into the canvas (phones have little room to spare). */
+/** How far the HUD panels reach into the canvas (phones have little room to spare).
+ * A panel across the middle of the screen pushes the island down or up; a corner panel
+ * either does that or narrows the island from both sides, whichever costs less room.
+ * The small round camera buttons may sit over the sea. */
 function hudInsets(canvas: HTMLElement, hud: HTMLElement) {
   const box = canvas.getBoundingClientRect();
   let top = 0;
   let bottom = 0;
-  for (const el of hud.querySelectorAll<HTMLElement>(".hud-clock, .hud-scores")) {
-    top = Math.max(top, el.getBoundingClientRect().bottom - box.top);
+  let side = 0;
+  const panels = hud.querySelectorAll<HTMLElement>(
+    ".hud-clock, .hud-scores, .hud-bottom .hud-panel, .hud-bottom .hud-spectator");
+  for (const el of panels) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    const upper = r.top + r.height / 2 < box.top + box.height / 2;
+    const down = upper ? r.bottom - box.top : box.bottom - r.top;
+    const across = r.left - box.left < box.width / 3 && box.right - r.right < box.width / 3;
+    const fromSide = Math.min(r.right - box.left, box.right - r.left);
+    if (!across && fromSide / box.width < down / box.height) side = Math.max(side, fromSide);
+    else if (upper) top = Math.max(top, down);
+    else bottom = Math.max(bottom, down);
   }
-  const low = hud.querySelector<HTMLElement>(".hud-bottom");
-  if (low) {
-    const kids = [...low.querySelectorAll<HTMLElement>(".hud-panel, .hud-spectator, .hud-camera button")];
-    const tops = kids.map((el) => el.getBoundingClientRect().top).filter((y) => y > 0);
-    if (tops.length) bottom = Math.max(0, box.bottom - Math.min(...tops));
-  }
-  return { top, right: 0, bottom, left: 0 };
+  return { top, right: side, bottom, left: side };
 }
 
 async function main(): Promise<void> {
