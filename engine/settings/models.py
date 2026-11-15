@@ -410,6 +410,8 @@ class DevCardSettings(_Group):
     cooldown: Cooldown = setting(Cooldown.PER_ROLL, label="settings.dev_cards.cooldown")
     cooldown_ms: int | None = setting(None, label="settings.dev_cards.cooldown_ms", ge=0, le=600000)
     vp_cards_must_be_played: bool = setting(True, label="settings.dev_cards.vp_cards_must_be_played")
+    """Off: a victory point card counts as soon as it is bought (and is never played)."""
+    victory_point_points: int = setting(1, label="settings.dev_cards.victory_point_points", ge=0, le=10)
     road_building_roads: int = setting(2, label="settings.dev_cards.road_building_roads", ge=0, le=10)
     year_of_plenty_cards: int = setting(2, label="settings.dev_cards.year_of_plenty_cards", ge=0, le=10)
 

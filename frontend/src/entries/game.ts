@@ -85,7 +85,11 @@ async function main(): Promise<void> {
     store, renderer, bindings, now: () => connection.clock.now(),
     send: (intent) => connection.send(intent),
     onMode: (m) => hud?.setMode(m),
-    onAction: (a) => { if (a === "open_trade") hud?.openTrade(); },
+    onAction: (a) => {
+      if (a === "open_trade") hud?.openTrade();
+      if (a === "buy_dev_card") hud?.buyCard();
+    },
+    onRobber: (hex) => hud?.robberPicked(hex),
     showMenu: menuFactory(canvasHost, t),
   });
   input = controller;
@@ -98,6 +102,7 @@ async function main(): Promise<void> {
       setPaused: (p) => controller.setPaused(p),
       setBindings: (b) => controller.setBindings(b),
       fitView: () => renderer.fit(),
+      startRobber: () => controller.startRobber(),
     },
     touch: touchFirst(),
     bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/",

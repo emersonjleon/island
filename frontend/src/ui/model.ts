@@ -121,6 +121,30 @@ export function logLine(
       const length = (ev.lengths as Record<string, number> | undefined)?.[String(seat)] ?? 0;
       return { text: t(seat === viewer ? "events:longest_road_you" : "events:longest_road", { who, count: length }), seat };
     }
+    case "dev_card_bought":
+      if (seat === viewer && ev.card) return { text: t("events:dev_bought_you", { card: t(`hud:dev.kind.${String(ev.card)}`) }), seat };
+      return { text: t("events:dev_bought", { who }), seat };
+    case "dev_card_played": {
+      const victim = typeof ev.victim === "number" ? (ev.victim === viewer ? t("hud:youObject") : name(ev.victim)) : null;
+      switch (ev.card) {
+        case "knight":
+          return { text: victim ? t("events:dev_knight_robbed", { who, victim }) : t("events:dev_knight", { who }), seat };
+        case "victory_point": return { text: t("events:dev_victory_point", { who }), seat };
+        case "road_building": return { text: t("events:dev_road_building", { who, count: ev.roads ?? 0 }), seat };
+        case "year_of_plenty": return { text: t("events:dev_year_of_plenty", { who, res: formatRes(t, ev.took as ResMap) }), seat };
+        case "monopoly": {
+          const total = Object.values((ev.taken ?? {}) as Record<string, number>).reduce((a, n) => a + n, 0);
+          return { text: t("events:dev_monopoly", { who, res: t(`hud:res.${String(ev.resource)}`), count: total }), seat };
+        }
+        default: return null;
+      }
+    }
+    case "largest_army": {
+      if (ev.seat === ev.previous) return null;
+      if (seat === null) return { text: t("events:largest_army_none"), seat: null };
+      const knights = (ev.knights as Record<string, number> | undefined)?.[String(seat)] ?? 0;
+      return { text: t(seat === viewer ? "events:largest_army_you" : "events:largest_army", { who, count: knights }), seat };
+    }
     case "game_over": return {
       text: ev.winner === null ? t("events:game_over_none")
         : ev.winner === viewer ? t("events:game_over_you") : t("events:game_over", { who: name(ev.winner as number) }),

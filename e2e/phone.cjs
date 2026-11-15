@@ -228,7 +228,7 @@ async function checkFits(page, what) {
     await checkFits(phone, "landscape");
 
     log("trade dialog on the phone");
-    await phone.tap(".hud-hand .actions button:nth-child(4)");
+    await phone.tap(".hud-hand .actions button.trade-open");
     await phone.waitForSelector(".hud-dialog");
     await phone.screenshot({ path: `${OUT}/phone-landscape-trade.png` });
     await phone.tap(".hud-dialog header button");

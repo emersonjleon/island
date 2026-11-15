@@ -609,8 +609,18 @@
           "title": "Road Building Roads",
           "type": "integer"
         },
+        "victory_point_points": {
+          "default": 1,
+          "label": "settings.dev_cards.victory_point_points",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Victory Point Points",
+          "type": "integer"
+        },
         "vp_cards_must_be_played": {
           "default": true,
+          "description": "Off: a victory point card counts as soon as it is bought (and is never played).",
           "label": "settings.dev_cards.vp_cards_must_be_played",
           "stage": 1,
           "title": "Vp Cards Must Be Played",

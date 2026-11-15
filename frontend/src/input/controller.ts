@@ -9,10 +9,13 @@ import type { GameStore } from "../state/store";
 import { type Action, type Bindings, comboOf, keymap } from "./bindings";
 import { heldDirection, neighbourToward } from "./directions";
 import { TouchGestures } from "./touch";
+import { knightHexes } from "../state/devcards";
 
 export type BuildChoice = "road" | "settlement" | "city";
+/** What a pick mode places: a building, or the robber (knight card). */
+export type ModeKind = BuildChoice | "robber";
 
-export interface ModeInfo { kind: BuildChoice; count: number }
+export interface ModeInfo { kind: ModeKind; count: number }
 
 export interface MenuItem { label: BuildChoice | "walk"; run: () => void }
 
@@ -25,6 +28,8 @@ export interface InputOptions {
   bindings: Bindings;
   /** Build mode changed (null = left build mode). */
   onMode?: (mode: ModeInfo | null) => void;
+  /** Robber mode picked a hex (knight card). */
+  onRobber?: (hex: number) => void;
   /** Actions the HUD owns (open_trade, buy_dev_card). */
   onAction?: (action: Action) => void;
   /** Show a right-click menu at a screen point; returns a close function. */
@@ -50,6 +55,8 @@ export const FEEL = {
   touchTapMs: 600,
   /** Touch: fingers are blunt, so taps hit things up to this far away (screen px). */
   touchPickPx: 26,
+  /** Robber mode: a click or tap this close (screen px) to a hex centre picks that hex. */
+  hexPickPx: 48,
 } as const;
 
 const DIRS: ReadonlySet<Action> = new Set(["move_up", "move_down", "move_left", "move_right"]);
@@ -68,7 +75,7 @@ export class InputController {
   selected: number[] = [];
   /** True while a HUD dialog is open: keys go to the dialog, not the game. */
   paused = false;
-  mode: { kind: BuildChoice; focus: number | null } | null = null;
+  mode: { kind: ModeKind; focus: number | null } | null = null;
   private keys: Map<string, Action>;
   private held = new Set<Action>();
   private lean = new Map<number, number>();
@@ -296,12 +303,17 @@ export class InputController {
   }
 
   // ------------------------------------------------------------------ build mode
-  private candidates(kind: BuildChoice): number[] {
+  private candidates(kind: ModeKind): number[] {
+    if (kind === "robber") {
+      const board = this.opts.store.board;
+      return board && this.state ? knightHexes(board, this.state, this.opts.store.settings) : [];
+    }
     return this.state?.buildable?.[BUILDABLE_FIELD[kind]] ?? [];
   }
 
-  private spotPos(kind: BuildChoice, id: number): Pt | undefined {
+  private spotPos(kind: ModeKind, id: number): Pt | undefined {
     const geo = this.geometry();
+    if (kind === "robber") return geo?.hex[id];
     return kind === "road" ? geo?.edgeMid[id] : geo?.vertex[id];
   }
 
@@ -310,14 +322,14 @@ export class InputController {
     return s && this.geometry() ? this.settlerAt(s) : null;
   }
 
-  private toggleMode(kind: BuildChoice): void {
+  private toggleMode(kind: ModeKind): void {
     if (this.mode?.kind === kind) { this.setMode(null); return; }
     if (this.opts.store.seat === null || !this.state || this.state.phase === "finished") return;
     const focus = this.nearest(kind, this.candidates(kind));
     this.setMode({ kind, focus });
   }
 
-  private setMode(mode: { kind: BuildChoice; focus: number | null } | null): void {
+  private setMode(mode: { kind: ModeKind; focus: number | null } | null): void {
     this.mode = mode;
     this.modeCount = mode ? this.candidates(mode.kind).length : -1;
     this.opts.onMode?.(mode && { kind: mode.kind, count: this.modeCount });
@@ -336,7 +348,7 @@ export class InputController {
     }
   }
 
-  private nearest(kind: BuildChoice, cands: number[]): number | null {
+  private nearest(kind: ModeKind, cands: number[]): number | null {
     const ref = this.reference();
     if (!ref) return cands[0] ?? null;
     let focus: number | null = null;
@@ -395,8 +407,15 @@ export class InputController {
   }
 
   /** Build ``kind`` at ``target``: build now if a settler stands there, else walk one there first. */
-  build(kind: BuildChoice, target: number): void {
+  /** Knight card: pick the hex the robber goes to (the HUD then plays the card). */
+  startRobber(): void {
+    if (this.mode?.kind === "robber") return;
+    this.toggleMode("robber");
+  }
+
+  build(kind: ModeKind, target: number): void {
     this.setMode(null);
+    if (kind === "robber") { this.opts.onRobber?.(target); return; }
     const geo = this.geometry();
     const board = this.opts.store.board;
     if (!geo || !board) return;
@@ -513,6 +532,11 @@ export class InputController {
 
   private leftClick(p: Pt, shift: boolean): void {
     const hit = this.opts.renderer.pick(p.x, p.y);
+    if (this.mode?.kind === "robber") {
+      const h = this.nearestOnScreen("robber", p, FEEL.hexPickPx);
+      if (h !== null) this.build("robber", h);
+      return;
+    }
     if (this.mode && hit && (hit.kind === "vertex" || hit.kind === "edge")) {
       const want = this.mode.kind === "road" ? "edge" : "vertex";
       if (hit.kind === want && this.candidates(this.mode.kind).includes(hit.id)) {
@@ -542,7 +566,7 @@ export class InputController {
   tap(p: Pt): void {
     if (this.paused) return;
     if (this.mode) {
-      const spot = this.nearestOnScreen(this.mode.kind, p, FEEL.touchPickPx);
+      const spot = this.nearestOnScreen(this.mode.kind, p, this.mode.kind === "robber" ? FEEL.hexPickPx : FEEL.touchPickPx);
       if (spot !== null) this.build(this.mode.kind, spot);
       return;
     }
@@ -555,7 +579,7 @@ export class InputController {
   }
 
   /** The build candidate nearest a screen point, if within ``maxPx``. */
-  private nearestOnScreen(kind: BuildChoice, p: Pt, maxPx: number): number | null {
+  private nearestOnScreen(kind: ModeKind, p: Pt, maxPx: number): number | null {
     let best: number | null = null;
     let bestD = maxPx * maxPx;
     for (const c of this.candidates(kind)) {
@@ -677,7 +701,8 @@ export class InputController {
     const o: Overlays = { selectedSettlers: this.selected };
     if (this.mode) {
       const cands = this.candidates(this.mode.kind);
-      if (this.mode.kind === "road") { o.edges = cands; o.focusEdge = this.mode.focus; }
+      if (this.mode.kind === "robber") { o.hexes = cands; o.focusHex = this.mode.focus; }
+      else if (this.mode.kind === "road") { o.edges = cands; o.focusEdge = this.mode.focus; }
       else { o.vertices = cands; o.focusVertex = this.mode.focus; }
     }
     const key = JSON.stringify(o);

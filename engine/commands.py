@@ -12,10 +12,10 @@ from typing import Annotated, Any, Literal, Self
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError, model_validator
 
 from engine.errors import RuleError
-from engine.settings.enums import BuildKind, Resource
+from engine.settings.enums import BuildKind, DevCardKind, Resource
 
 __all__ = [
-    "MoveSettler", "Build", "CancelBuild", "BankTrade", "Command", "COMMAND_TYPES",
+    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "Command", "COMMAND_TYPES",
     "parse_command", "command_json_schema", "ENVELOPE_KEYS",
 ]
 
@@ -86,14 +86,40 @@ class BankTrade(_Cmd):
         return self
 
 
-Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade, Field(discriminator="a")]
+class BuyDevCard(_Cmd):
+    """Buy the top card of the development deck (stage 2)."""
+    a: Literal["buy_dev_card"] = "buy_dev_card"
+
+
+class PlayDevCard(_Cmd):
+    """Play a development card (stage 2). Fields by card:
+
+    * ``knight``: ``hex`` (where the robber goes) and, when several players could be
+      robbed there, ``victim``;
+    * ``year_of_plenty``: ``resources`` (one entry per card taken, repeats allowed);
+    * ``monopoly``: ``resource``;
+    * ``victory_point`` / ``road_building``: nothing else.
+
+    Whether the right fields are given for the card is a rule check (``dev.*`` codes).
+    """
+    a: Literal["play_dev_card"] = "play_dev_card"
+    card: DevCardKind
+    hex: Id | None = None
+    victim: Id | None = None
+    resources: list[Resource] | None = Field(default=None, max_length=20)
+    resource: Resource | None = None
+
+
+Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard,
+                    Field(discriminator="a")]
 COMMAND_TYPES: dict[str, type[_Cmd]] = {
     "move_settler": MoveSettler, "build": Build, "cancel_build": CancelBuild, "bank_trade": BankTrade,
+    "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard,
 }
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(Command)
 
 
-def parse_command(raw: Any) -> MoveSettler | Build | CancelBuild | BankTrade:
+def parse_command(raw: Any) -> MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard:
     """Validate a raw intent dict. Raises ``RuleError("command.invalid", {...})``.
 
     params: ``{"action": <a or None>, "errors": [{"loc": "dotted.path", "type": "..."}]}``.

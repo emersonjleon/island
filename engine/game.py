@@ -76,7 +76,7 @@ victory (points), longest_road (road lengths, award)."""
 
 RULE_MODULES: tuple[str, ...] = (
     "setup", "movement", "placement", "construction", "dice", "production", "robber", "trade", "victory",
-    "longest_road",
+    "longest_road", "devcards",
 )
 
 

@@ -7,7 +7,7 @@ Conservation needs the per-resource total of the game, taken once with
 """
 from __future__ import annotations
 
-from engine.rules import longest_road
+from engine.rules import devcards, longest_road
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -97,6 +97,22 @@ def _board(state: GameState) -> list[str]:
     return out
 
 
+def _dev_cards(state: GameState) -> list[str]:
+    """Every card is in the deck, in a hand or played."""
+    view = state.ext.get(devcards.EXT_KEY, {})
+    count = {k: n for k, n in devcards.deck_left(state).items()}
+    for cards in view.get("hands", {}).values():
+        for c in cards:
+            count[c["kind"]] = count.get(c["kind"], 0) + 1
+    for played in view.get("played", {}).values():
+        for k, n in played.items():
+            count[k] = count.get(k, 0) + n
+    want = {k.value: n for k, n in state.settings.dev_cards.deck.items()}
+    if {k: n for k, n in count.items() if n} != {k: n for k, n in want.items() if n}:
+        return [f"dev_cards.total: {count} != {want}"]
+    return []
+
+
 def _points(state: GameState) -> list[str]:
     out: list[str] = []
     bp = state.settings.victory.building_points
@@ -105,6 +121,9 @@ def _points(state: GameState) -> list[str]:
         pts = sum(per[b.kind] for b in state.buildings.values() if b.seat == p.seat)
         if longest_road.holder(state) == p.seat:
             pts += state.settings.victory.longest_road.points
+        if devcards.army_holder(state) == p.seat:
+            pts += state.settings.victory.largest_army.points
+        pts += devcards.vp_points(state, p.seat)
         if pts != p.points:
             out.append(f"points.{p.seat}: cached {p.points} != {pts}")
     if state.phase == "finished":
@@ -140,7 +159,8 @@ def _timers(state: GameState) -> list[str]:
 
 
 def violations(state: GameState, totals: dict[Resource, int]) -> list[str]:
-    return [*_conservation(state, totals), *_pieces(state), *_board(state), *_points(state), *_timers(state)]
+    return [*_conservation(state, totals), *_pieces(state), *_board(state), *_points(state),
+            *_dev_cards(state), *_timers(state)]
 
 
 def check(state: GameState, totals: dict[Resource, int]) -> None:

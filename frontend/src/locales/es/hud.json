@@ -17,7 +17,7 @@
   },
   "dice": { "next": "Próxima tirada", "last": "Última tirada", "history": "Tiradas recientes", "waiting": "Los dados empiezan tras el primer poblado" },
   "scores": { "title": "Jugadores", "points": "{{points}} / {{target}}", "cards": "{{count}} cartas", "you": "(tú)",
-    "road": "camino {{count}}", "longest_road": "Gran Ruta" },
+    "road": "camino {{count}}", "longest_road": "Gran Ruta", "dev": "{{count}} cartas de desarrollo", "knights": "{{count}} caballeros", "largest_army": "Gran Ejército" },
   "camera": { "center": "Centrar en mi colono", "fit": "Ver toda la isla" },
   "log": { "title": "Qué ha pasado" },
   "over": { "title": "Fin de la partida", "winner": "¡Gana {{name}}!", "youWin": "¡Has ganado!", "noWinner": "Sin ganador", "back": "Volver a la sala" },
@@ -43,5 +43,7 @@
     "zoom_in": "Acercar", "zoom_out": "Alejar", "center_selected": "Centrar en el colono",
     "buy_dev_card": "Comprar carta de desarrollo", "open_trade": "Abrir comercio"
   },
-  "spectator": "Estás mirando esta partida"
+  "spectator": "Estás mirando esta partida",
+  "youObject": "ti",
+  "dev": {"buy": "Carta", "buyCost": "Carta de desarrollo: cuesta {{res}} (quedan {{left}})", "open": "Cartas ({{count}})", "title": "Tus cartas de desarrollo", "none": "No tienes cartas de desarrollo.", "play": "Jugar", "close": "Cerrar", "take": "Tomar", "pickPlenty": "Elige {{count}} recursos para tomar del banco", "pickMonopoly": "Elige el recurso que les quitas a todos", "victimTitle": "¿A quién le robas?", "kind": {"knight": "Caballero", "victory_point": "Punto de victoria", "road_building": "Construcción de caminos", "year_of_plenty": "Año de abundancia", "monopoly": "Monopolio"}, "help": {"knight": "Mueve el ladrón hasta 3 hexágonos y roba una carta", "victory_point": "Vale un punto al jugarla", "road_building": "Construye 2 caminos gratis", "year_of_plenty": "Toma 2 recursos del banco", "monopoly": "Quítales un recurso a todos los jugadores"}}
 }

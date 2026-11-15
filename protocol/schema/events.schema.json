@@ -250,6 +250,144 @@
       "title": "ConstructionStarted",
       "type": "object"
     },
+    "DevCardBought": {
+      "additionalProperties": false,
+      "description": "``seat`` bought ``card``. Others see it per ``visibility.dev_cards``: ``open``\nthe card, ``counts`` the purchase without the card, ``hidden`` nothing.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "card": {
+          "$ref": "#/$defs/DevCardKind"
+        },
+        "deck_left": {
+          "title": "Deck Left",
+          "type": "integer"
+        },
+        "k": {
+          "const": "dev_card_bought",
+          "default": "dev_card_bought",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "card",
+        "deck_left"
+      ],
+      "title": "DevCardBought",
+      "type": "object"
+    },
+    "DevCardKind": {
+      "enum": [
+        "knight",
+        "victory_point",
+        "road_building",
+        "year_of_plenty",
+        "monopoly"
+      ],
+      "title": "DevCardKind",
+      "type": "string"
+    },
+    "DevCardPlayed": {
+      "additionalProperties": false,
+      "description": "``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),\n``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).\nYear of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count). Road building:\n``roads`` free roads.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "card": {
+          "$ref": "#/$defs/DevCardKind"
+        },
+        "hex": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hex"
+        },
+        "k": {
+          "const": "dev_card_played",
+          "default": "dev_card_played",
+          "title": "K",
+          "type": "string"
+        },
+        "resource": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Resource"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "roads": {
+          "default": 0,
+          "title": "Roads",
+          "type": "integer"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "stolen": {
+          "default": 0,
+          "title": "Stolen",
+          "type": "integer"
+        },
+        "taken": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Taken",
+          "type": "object"
+        },
+        "took": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Took",
+          "type": "object"
+        },
+        "victim": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Victim"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "card"
+      ],
+      "title": "DevCardPlayed",
+      "type": "object"
+    },
     "DiceRolled": {
       "additionalProperties": false,
       "properties": {
@@ -370,6 +508,59 @@
         "hand"
       ],
       "title": "Hand",
+      "type": "object"
+    },
+    "LargestArmy": {
+      "additionalProperties": false,
+      "description": "Knights played or the Largest Army holder changed (``seat`` None: nobody).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "largest_army",
+          "default": "largest_army",
+          "title": "K",
+          "type": "string"
+        },
+        "knights": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Knights",
+          "type": "object"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Previous"
+        },
+        "seat": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seat"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "previous",
+        "knights"
+      ],
+      "title": "LargestArmy",
       "type": "object"
     },
     "LongestRoad": {
@@ -936,9 +1127,12 @@
       "clock_started": "#/$defs/ClockStarted",
       "construction_cancelled": "#/$defs/ConstructionCancelled",
       "construction_started": "#/$defs/ConstructionStarted",
+      "dev_card_bought": "#/$defs/DevCardBought",
+      "dev_card_played": "#/$defs/DevCardPlayed",
       "dice_rolled": "#/$defs/DiceRolled",
       "game_over": "#/$defs/GameOver",
       "hand": "#/$defs/Hand",
+      "largest_army": "#/$defs/LargestArmy",
       "longest_road": "#/$defs/LongestRoad",
       "points": "#/$defs/Points",
       "produced": "#/$defs/Produced",
@@ -1016,6 +1210,15 @@
     },
     {
       "$ref": "#/$defs/LongestRoad"
+    },
+    {
+      "$ref": "#/$defs/DevCardBought"
+    },
+    {
+      "$ref": "#/$defs/DevCardPlayed"
+    },
+    {
+      "$ref": "#/$defs/LargestArmy"
     },
     {
       "$ref": "#/$defs/Buildable"

@@ -136,6 +136,14 @@ describe("texts", () => {
     expect(lr(0, 1)!.text).toBe("You have the Longest Road (3 roads)");
     expect(lr(null, 1)!.text).toBe("Nobody holds the Longest Road now");
     expect(lr(1, 1)).toBeNull();
+    expect(logLine(t, { k: "dev_card_bought", seat: 0, card: "knight", deck_left: 3 }, name, 0)!.text).toBe("You bought a card: Knight");
+    expect(logLine(t, { k: "dev_card_bought", seat: 1, deck_left: 3 }, name, 0)!.text).toBe("ben bought a development card");
+    expect(logLine(t, { k: "dev_card_played", seat: 1, card: "knight", hex: 3, victim: 0, stolen: 1 }, name, 0)!.text)
+      .toBe("ben played a knight and robbed you");
+    expect(logLine(t, { k: "dev_card_played", seat: 0, card: "monopoly", resource: "ore", taken: { "1": 3 } }, name, 0)!.text)
+      .toBe("You took every ore (3) with a monopoly");
+    expect(logLine(t, { k: "largest_army", seat: 1, previous: 0, knights: { "1": 4 } }, name, 0)!.text)
+      .toBe("ben has the Largest Army (4 knights)");
     expect(logLine(t, { k: "starting_resources", seat: 0, gained: {} }, name, 0)).toBeNull();
     expect(logLine(t, { k: "settler_step" }, name, 0)).toBeNull();
     // Every event kind either has a line or is deliberately skipped, never throws.

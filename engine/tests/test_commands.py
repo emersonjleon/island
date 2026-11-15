@@ -63,7 +63,8 @@ class ParseTest(unittest.TestCase):
         text = json.dumps(schema)
         for name in COMMAND_TYPES:
             self.assertIn(name, text)
-        self.assertEqual(set(COMMAND_TYPES), {"move_settler", "build", "cancel_build", "bank_trade"})
+        self.assertEqual(set(COMMAND_TYPES), {"move_settler", "build", "cancel_build", "bank_trade",
+                                                  "buy_dev_card", "play_dev_card"})
 
 
 if __name__ == "__main__":

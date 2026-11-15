@@ -6,6 +6,8 @@
     "city": "Build city"
   },
   "mode": {
+    "robber": "Move the robber",
+    "robberHelp": "Click or tap a highlighted hex, Esc to cancel",
     "road": "Build a road",
     "settlement": "Build a settlement",
     "city": "Build a city",

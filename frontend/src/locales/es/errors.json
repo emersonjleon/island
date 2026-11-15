@@ -54,5 +54,23 @@
     "invalid": "El servidor no entendió ese mensaje",
     "too_large": "Ese mensaje era demasiado grande"
   },
-  "proto": { "unsupported": "Recarga la página para obtener la última versión" }
+  "proto": { "unsupported": "Recarga la página para obtener la última versión" },
+  "dev": {
+    "setup_not_done": "Primero termina tu preparación",
+    "deck_empty": "No quedan cartas de desarrollo",
+    "cannot_afford": "No te alcanza para una carta de desarrollo",
+    "no_card": "No tienes esa carta",
+    "too_new": "Una carta nueva se puede jugar después de la próxima tirada",
+    "cooldown": "Una carta por tirada: espera la próxima",
+    "not_playable": "Esa carta cuenta sola y no se juega",
+    "no_robber": "En esta partida no hay ladrón",
+    "need_hex": "Elige adónde va el ladrón",
+    "bad_hex": "El ladrón no puede ir ahí",
+    "too_far": "Muy lejos: el ladrón se mueve hasta {{max}} hexágonos",
+    "need_victim": "Elige a quién robar",
+    "bad_victim": "Ese jugador no tiene construcciones junto a ese hexágono",
+    "need_resources": "Elige {{count}} recursos",
+    "bank_short": "El banco no tiene esos recursos",
+    "need_resource": "Elige un recurso"
+  }
 }

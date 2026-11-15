@@ -2,7 +2,8 @@
 // resulting values that events carry; no game rule lives here. No DOM or Pixi
 // imports, so a later 3D renderer reuses it unchanged.
 import type {
-  BoardMsg, BuildKind, ConstructionView, GameEvent, GameStateView, PlayerView, ResMap, ServerMsg, SettlerView,
+  BoardMsg, BuildKind, ConstructionView, DevCardKind, DevCardsPlayer, DevCardsView, GameEvent, GameStateView, PlayerView,
+  ResMap, ServerMsg, SettlerView,
 } from "../protocol/types";
 
 export type Listener = (store: GameStore) => void;
@@ -145,7 +146,16 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       if (p) p.settlers = p.settlers.filter((x) => x !== id);
       break;
     }
+    case "dev_card_bought":
+    case "dev_card_played":
+    case "largest_army":
+      applyDevCardEvent(state, ev);
+      break;
     case "construction_started": {
+      if (ev.kind === "road" && ev.seat === state.viewer && !Object.values((ev.paid ?? {}) as ResMap).some((n) => n)) {
+        const me = state.dev_cards?.players[String(ev.seat)];
+        if (me?.free_roads) me.free_roads -= 1;           // a road building card's free road
+      }
       const c: ConstructionView = {
         id: num(ev.id), seat: num(ev.seat), kind: ev.kind as BuildKind, target: num(ev.target),
         builder: ev.builder as number | null, t0: num(ev.t0), t1: num(ev.t1), paid: (ev.paid ?? {}) as ResMap,
@@ -208,4 +218,47 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
 
 function sum(m: ResMap): number {
   return Object.values(m).reduce((a, b) => a + (b ?? 0), 0);
+}
+
+function devState(state: GameStateView): DevCardsView {
+  state.dev_cards ??= { deck_left: 0, army: null, players: {} };
+  return state.dev_cards;
+}
+
+function devPlayerOf(dc: DevCardsView, seat: number): DevCardsPlayer {
+  dc.players[String(seat)] ??= { knights: 0 };
+  return dc.players[String(seat)]!;
+}
+
+/** Development card events (stage 2). */
+function applyDevCardEvent(state: GameStateView, ev: GameEvent): void {
+  const dc = devState(state);
+  if (ev.k === "largest_army") {
+    dc.army = ev.seat as number | null;
+    for (const [seat, n] of Object.entries((ev.knights ?? {}) as Record<string, number>)) devPlayerOf(dc, Number(seat)).knights = n;
+    return;
+  }
+  const seat = num(ev.seat);
+  const p = devPlayerOf(dc, seat);
+  const own = seat === state.viewer;
+  if (ev.k === "dev_card_bought") {
+    dc.deck_left = num(ev.deck_left);
+    if (own || ev.card) {
+      p.cards = [...(p.cards ?? []), { kind: ev.card as DevCardKind, at: num(ev.at), roll: state.dice_history.length }];
+    }
+    if (p.count !== undefined || !own) p.count = (p.count ?? 0) + 1;
+    return;
+  }
+  // dev_card_played
+  const kind = ev.card as DevCardKind;
+  if (p.cards) {
+    const i = p.cards.findIndex((c) => c.kind === kind && (c.roll ?? 0) < state.dice_history.length);
+    const j = i >= 0 ? i : p.cards.findIndex((c) => c.kind === kind);
+    if (j >= 0) p.cards = p.cards.filter((_, k) => k !== j);
+  }
+  if (p.count) p.count -= 1;
+  if (own) {
+    p.last_play = { at: num(ev.at), roll: state.dice_history.length };
+    if (kind === "road_building") p.free_roads = (p.free_roads ?? 0) + num(ev.roads ?? 0);
+  }
 }

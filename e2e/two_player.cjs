@@ -87,6 +87,39 @@ async function playSetup(page, who) {
   }
 }
 
+/** Development cards through the HUD: buy one, wait for the next roll, play it. */
+async function buyAndPlayCard(page) {
+  const cards = () => page.evaluate(() => {
+    const st = window.island.store;
+    return st.state.dev_cards?.players[String(st.seat)]?.cards ?? [];
+  });
+  await page.click(".hud-hand .actions button.buy-card");
+  await waitFor(async () => (await cards()).length > 0, "a bought development card");
+  const rolls = await page.evaluate(() => window.island.store.state.dice_history.length);
+  await waitFor(() => page.evaluate((n) => window.island.store.state.dice_history.length > n, rolls), "the next dice roll");
+  const played = () => page.evaluate(() => window.island.store.lastEvents.some((e) => e.k === "dev_card_played")
+    || window.island.store.state.dev_cards.players[String(window.island.store.seat)].last_play != null);
+  const [card] = await cards();
+  await page.click(".hud-hand .actions button.dev-open");
+  const why = await page.textContent(".dev-cards .dev-help");
+  if (await page.isDisabled(".dev-cards button.primary")) {
+    // e2e/fast_game.json turns the robber off, so a knight can't be played there.
+    await page.keyboard.press("Escape");
+    return `${card.kind} (not playable here: ${why.trim()})`;
+  }
+  await page.click(".dev-cards button.primary");
+  if (card.kind === "knight") {
+    await page.waitForTimeout(150);
+    await page.keyboard.press("Enter");                       // the highlighted robber hex
+    const who = await page.waitForSelector(".hud-dialog .choices button", { timeout: 1000 }).catch(() => null);
+    if (who) await who.click();
+  } else if (card.kind === "year_of_plenty" || card.kind === "monopoly") {
+    await page.click(".dev-pick button[type=submit]");
+  }
+  await waitFor(played, `playing the ${card.kind} card`);
+  return card.kind;
+}
+
 /** Main game: city if possible, else a settlement, else a road; until the game ends. */
 async function playToWin(page, who) {
   for (;;) {
@@ -159,6 +192,9 @@ async function playToWin(page, who) {
     log("waiting for a dice roll");
     await waitFor(async () => (await me(a)).lastRoll, "a dice roll");
     await a.waitForSelector(".hud-dice", { timeout: STEP_TIMEOUT_MS });
+
+    log("ana buys a development card and plays it after the next roll");
+    log("ana played:", await buyAndPlayCard(a));
 
     log("building until someone reaches the target");
     const race = Promise.all([playToWin(a, "ana"), playToWin(b, "ben")]);
