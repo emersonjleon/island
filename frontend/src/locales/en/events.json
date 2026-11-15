@@ -30,6 +30,9 @@
   "reason": {
     "builder_left": "the settler walked away",
     "cancelled": "cancelled",
-    "conflict": "someone else built there first"
-  }
+    "conflict": "someone else built there first",
+    "resigned": "resigned"
+  },
+  "resigned": "{{who}} resigned",
+  "resigned_you": "You resigned"
 }

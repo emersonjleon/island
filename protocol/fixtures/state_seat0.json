@@ -76,6 +76,7 @@
       6,
       5
     ],
+    "end_reason": null,
     "finished_at": null,
     "last_roll": [
       2,
@@ -112,6 +113,7 @@
           "settlement": 3
         },
         "points": 2,
+        "resigned": false,
         "seat": 0,
         "settlers": [],
         "setup": {
@@ -134,6 +136,7 @@
           "settlement": 4
         },
         "points": 1,
+        "resigned": false,
         "seat": 1,
         "settlers": [
           2
@@ -158,6 +161,7 @@
           "settlement": 3
         },
         "points": 2,
+        "resigned": false,
         "seat": 2,
         "settlers": [],
         "setup": {
@@ -206,6 +210,62 @@
         "vertex": 30
       }
     ],
+    "stats": {
+      "produced": {
+        "0": {
+          "grain": 1,
+          "wool": 4
+        },
+        "1": {
+          "lumber": 1
+        },
+        "2": {
+          "grain": 2,
+          "lumber": 1,
+          "ore": 1
+        }
+      },
+      "timeline": {
+        "0": [
+          [
+            0,
+            0
+          ],
+          [
+            13000,
+            1
+          ],
+          [
+            27000,
+            2
+          ]
+        ],
+        "1": [
+          [
+            0,
+            0
+          ],
+          [
+            41000,
+            1
+          ]
+        ],
+        "2": [
+          [
+            0,
+            0
+          ],
+          [
+            11000,
+            1
+          ],
+          [
+            68000,
+            2
+          ]
+        ]
+      }
+    },
     "viewer": 0,
     "winner": null
   },

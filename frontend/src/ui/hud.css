@@ -138,6 +138,71 @@ table.keys td { padding: 4px 0; }
 .key.clash { border-color: #d64545; background: #fde8e8; }
 .game-hud .key button.quiet { padding: 0 4px; text-decoration: none; }
 
+/* Sticky dialog header (before the phone rules, which shrink its padding and margins). */
+.hud-dialog header { position: sticky; top: -16px; margin: -16px -20px 0; padding: 16px 20px 4px; background: #fbf6e9; z-index: 1; }
+
+/* Players panel: stats and resign buttons. */
+.score-actions { display: flex; gap: 6px; margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.game-hud .score-actions button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 4px 8px; font-size: 0.78rem; background: rgba(255, 255, 255, 0.08); color: #f4f1e8;
+  border: 1px solid rgba(240, 201, 79, 0.25); box-shadow: none; }
+.game-hud .score-actions button.resign-open { flex: none; color: #ffb4a8; border-color: rgba(255, 138, 128, 0.35); }
+.hud-scores li.resigned { opacity: 0.55; }
+.hud-scores li.resigned .name { text-decoration: line-through; }
+.hud-scores .tag { margin-left: 4px; color: #ff8a80; }
+.hud-resigned a { color: #f0c94f; margin-left: 6px; }
+.game-hud .hud-dialog button.danger { background: linear-gradient(180deg, #e0634f, #b83b28); color: #fff; }
+.resign-body { max-width: 420px; line-height: 1.45; margin: 4px 0 0; }
+
+/* Statistics (in a dialog and on the game-over screen). */
+.stats { text-align: left; width: min(560px, 100%); }
+.stats section + section { margin-top: 4px; }
+.stats-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 8px; padding: 0; font-size: 0.78rem; color: #4d4637; }
+.stats-legend li { display: inline-flex; align-items: center; gap: 5px; }
+.stats-legend .chip { width: 12px; height: 12px; border-radius: 3px; }
+.stats-players { list-style: none; margin: 0; padding: 0; }
+.stats-players li { padding: 6px 0; }
+.stats-players li + li { border-top: 1px solid #ebe1c8; }
+.stats-players li.resigned { opacity: 0.6; }
+.stats-players .who { display: flex; align-items: center; gap: 8px; }
+.stats-players .who .name { flex: 1; font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stats-players .who .tag { color: #a33; }
+.stats-players .who .total { font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.stats .swatch { border-color: #fff; flex: none; }
+.stats-bar { position: relative; display: flex; height: 12px; margin: 5px 0 3px; border-radius: 6px; background: #ece3cc; overflow: hidden; }
+.stats-bar span { height: 100%; }
+.stats-bar span + span:not(.target) { box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.7); }
+.stats-bar .target { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -2px; background: #1d2a30; opacity: 0.45; }
+.stats .parts, .stats .muted { margin: 0; font-size: 0.8rem; color: #6b6253; }
+.src-settlement { background: #7cb342; }
+.src-city { background: #3f86c4; }
+.src-megacity { background: #7e57c2; }
+.src-road { background: #d77448; }
+.src-army { background: #b3261e; }
+.src-vp { background: #e9b824; }
+.stats-chart { display: block; width: 100%; height: auto; max-height: 220px; }
+.stats-chart text { font-size: 9px; fill: #6b6253; }
+.stats-chart .grid { stroke: #e6dcc3; stroke-width: 1; }
+.stats-chart .goal { stroke: #8a6d24; stroke-width: 1.2; stroke-dasharray: 4 3; }
+.stats-chart .line { fill: none; stroke-width: 2.5; stroke-linejoin: round; }
+.stats-chart .line-under { fill: none; stroke: rgba(29, 42, 48, 0.55); stroke-width: 4.5; stroke-linejoin: round; }
+.stats-chart .goal-label { fill: #8a6d24; font-weight: 700; }
+.stats-chart .line.resigned { stroke-dasharray: 5 3; }
+.stats-produced { list-style: none; margin: 0; padding: 0; }
+.stats-produced li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.stats-produced li + li { border-top: 1px solid #ebe1c8; }
+.stats-produced .name { width: 7em; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stats-produced .res { flex: 1; display: flex; flex-wrap: wrap; gap: 4px; }
+.stats-produced .mini { display: inline-flex; align-items: center; gap: 2px; padding: 1px 5px 1px 3px; border-radius: 6px;
+  background: var(--res-bg); font-size: 0.78rem; font-weight: 700; }
+.stats-produced .mini .res-icon { width: 13px; height: 13px; }
+.over-reason { margin: -6px 0 10px; color: #6b5a33; }
+.over-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 14px; }
+/* The results can be long on a phone: keep the buttons in reach while it scrolls. */
+.hud-over .over-buttons { position: sticky; bottom: -16px; margin: 14px -20px -16px; padding: 10px 20px 14px; background: #fbf6e9;
+  border-top: 1px solid #ebe1c8; }
+.game-hud .hud-clock button.primary { padding: 4px 12px; }
+
 /* Touch screens: bigger targets. */
 .hud.touch button { min-height: 44px; }
 .hud.touch .hud-hand .actions button { min-width: 44px; }
@@ -165,7 +230,7 @@ table.keys td { padding: 4px 0; }
   .hud-hand .card .label { font-size: 0.62rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
   .hud-hand .card .res-icon { width: 15px; height: 15px; }
   .hud-hand .actions { width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 4px; }
-  .game-hud .hud-hand .actions button { padding: 6px 4px; }
+  .game-hud .hud-hand .actions button { padding: 6px 4px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .hud-slot-hand { justify-self: stretch; }
   .hud-spectator { text-align: center; }
   .hud-notices { top: 30%; left: 8px; right: 8px; transform: none; }
@@ -173,6 +238,16 @@ table.keys td { padding: 4px 0; }
   .hud-dialog { padding: 12px 14px; max-width: calc(100% - 16px); max-height: calc(100% - 16px); }
   .hud-dialog header { margin: -12px -14px 0; padding: 12px 14px 4px; top: -12px; }
   .game-hud .hud-dialog .card { min-width: 0; flex: 1 0 calc(33% - 6px); }
+  .score-actions span { display: none; }
+  .game-hud .score-actions button { padding: 2px 6px; }
+  .game-hud .score-actions button.resign-open { flex: 1; }
+  .hud-camera { flex-direction: row; }
+  .hud.touch .hud-camera button { width: 42px; height: 42px; }
+  .hud-over { padding-top: 12px; }
+  .hud-over .over-buttons { bottom: -12px; margin: 12px -14px -12px; padding: 8px 14px 12px; }
+  .hud-over .trophy { width: 44px; height: 44px; }
+  .winner { font-size: 1.2rem; margin-bottom: 8px; }
+  .stats-produced .name { width: 5.5em; }
 }
 
 /* Phones, landscape: very little height, so the hand bar becomes one row and the
@@ -202,5 +277,11 @@ table.keys td { padding: 4px 0; }
   .hud-notices { top: 25%; }
   .hud-dialog { padding: 10px 14px; max-height: calc(100% - 12px); }
   .hud-dialog header { margin: -10px -14px 0; padding: 10px 14px 4px; top: -10px; }
+  .score-actions span { display: none; }
+  .score-actions { margin-top: 4px; padding-top: 4px; }
+  .game-hud .score-actions button { padding: 2px 6px; }
+  .hud.touch .score-actions button { min-height: 32px; }
+  .hud-over .trophy { display: none; }
+  .hud-over .over-buttons { bottom: -10px; margin: 10px -14px -10px; padding: 6px 14px 10px; }
+  .stats-chart { max-height: 160px; }
 }
-.hud-dialog header { position: sticky; top: -16px; margin: -16px -20px 0; padding: 16px 20px 4px; background: #fbf6e9; z-index: 1; }

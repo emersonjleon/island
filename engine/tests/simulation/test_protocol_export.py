@@ -33,7 +33,7 @@ class ProtocolExportTest(unittest.TestCase):
         self.assertIn("movement.unreachable", c["errors"])
         self.assertTrue(all("." in code and " " not in code for code in c["errors"]))
         self.assertEqual(c["events"], sorted(EVENT_TYPES))
-        self.assertEqual(c["reasons"]["construction_cancelled"], ["builder_left", "cancelled", "conflict"])
+        self.assertEqual(c["reasons"]["construction_cancelled"], ["builder_left", "cancelled", "conflict", "resigned"])
 
     def test_owner_fixtures_parse_as_events(self) -> None:
         ev = json.loads(self.files["fixtures/events_seat0.json"])["events"]

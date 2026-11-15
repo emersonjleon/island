@@ -50,7 +50,7 @@ __all__ = [
     "new_game", "apply", "advance", "next_wakeup", "temporary_registry", "set_check_rejects",
     "derive_seeds", "RULE_MODULES",
     "TIMER_DICE_ROLL", "TIMER_SETTLER_ARRIVE", "TIMER_CONSTRUCTION_DONE",
-    "SIG_SETTLER_DEPARTING", "SIG_BUILT",
+    "SIG_SETTLER_DEPARTING", "SIG_BUILT", "SIG_PRODUCED",
 ]
 
 CommandHandler = Callable[[GameState, int, Any, int], list[Event]]
@@ -74,9 +74,13 @@ kwargs: ``seat: int, kind: BuildKind, target: int, setup: bool, construction: in
 Listeners: setup (setup counters, starting resources, clock start, settler leaves),
 victory (points), longest_road (road lengths, award)."""
 
+SIG_PRODUCED = "produced"
+"""Emitted by production after a roll paid out. kwargs: ``gains: dict[int, dict[Resource, int]]``
+(seat -> cards received, non-zero only). Listener: stats (totals per player)."""
+
 RULE_MODULES: tuple[str, ...] = (
     "setup", "movement", "placement", "construction", "dice", "production", "robber", "trade", "victory",
-    "longest_road", "devcards",
+    "longest_road", "devcards", "resign", "stats",
 )
 
 
@@ -241,13 +245,15 @@ def new_game(settings: GameSettings, seats: list[SeatInfo], seed: int,
 def apply(state: GameState, seat: int, raw_or_cmd: Any, now_ms: int) -> list[Event]:
     """Apply one player command at game time ``now_ms``. Raises ``RuleError`` on reject
     (state unchanged). Codes: ``game.finished``, ``game.time_backwards``,
-    ``command.unknown_seat``, ``command.invalid``, ``command.unsupported`` + handler codes."""
+    ``command.unknown_seat``, ``game.resigned``, ``command.invalid``, ``command.unsupported`` + handler codes."""
     if state.phase == "finished":
         raise RuleError("game.finished")
     if now_ms < state.now_ms:
         raise RuleError("game.time_backwards", {"now": now_ms, "state_now": state.now_ms})
     if not state.has_seat(seat):
         raise RuleError("command.unknown_seat", {"seat": seat})
+    if state.players[seat].resigned:
+        raise RuleError("game.resigned", {"seat": seat})
     cmd = parse_command(raw_or_cmd)
     handler = _REG.commands.get(cmd.a)
     if handler is None:

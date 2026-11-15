@@ -16,6 +16,7 @@ import { DevCardsDialog, VictimDialog } from "./DevCards";
 import { Dialog, useEscape } from "./Dialog";
 import { Die, ResIcon } from "./icons";
 import { KeySettings } from "./KeySettings";
+import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import {
   RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
   rollInterval, victoryTarget, type LogLine,
@@ -84,7 +85,8 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const [feed, setFeed] = useState<HudFeed>({ link: "connecting", mode: null });
   const [log, setLog] = useState<LogLine[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | null>(null);
+  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | "stats" | "resign" | "fullscreen" | null>(null);
+  const [overHidden, setOverHidden] = useState(false);
   const [victim, setVictim] = useState<{ hex: number; victims: number[] } | null>(null);
   const [bindings, setBindings] = useState(props.bindings);
 
@@ -129,25 +131,39 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const s = store.state;
   const seated = store.seat !== null;
   const finished = s?.phase === "finished";
+  const resigned = seated && !!store.player(store.seat!)?.resigned;
+  const playing = seated && !finished && !resigned;
   return (
     <div class={props.touch ? "hud touch" : "hud"}>
-      <DiceClock {...props} feed={feed} />
-      {s && <Scores {...props} />}
+      <DiceClock {...props} feed={feed} onResults={finished && overHidden ? () => setOverHidden(false) : undefined} />
+      {s && (
+        <Scores {...props} onStats={() => setDialog("stats")} onResign={playing ? () => setDialog("resign") : undefined} />
+      )}
       <div class="hud-bottom">
         <div class="hud-slot-log">{s && <Log t={t} lines={log} />}</div>
         <div class="hud-slot-hand">
-          {s && seated && !finished && (
+          {s && playing && (
             <HandBar {...props} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} onDev={() => setDialog("dev")} />
+          )}
+          {s && resigned && !finished && (
+            <div class="hud-spectator hud-resigned">
+              {t("hud:resign.done")} <a href={props.lobbyUrl}>{t("hud:resign.back")}</a>
+            </div>
           )}
           {!seated && s && <div class="hud-spectator">{t("hud:spectator")}</div>}
         </div>
-        <div class="hud-slot-camera">{s && <CameraButtons {...props} />}</div>
+        <div class="hud-slot-camera">{s && <CameraButtons {...props} onFullscreenHelp={() => setDialog("fullscreen")} />}</div>
       </div>
       <div class="hud-notices" aria-live="polite">
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
-      {dialog === "trade" && s && seated && <TradeDialog {...props} onClose={() => setDialog(null)} />}
-      {dialog === "dev" && s && seated && (
+      {dialog === "fullscreen" && <FullscreenHelp t={t} onClose={() => setDialog(null)} />}
+      {dialog === "stats" && s && <StatsDialog store={store} t={t} now={props.now} onClose={() => setDialog(null)} />}
+      {dialog === "resign" && s && playing && (
+        <ResignDialog t={t} onClose={() => setDialog(null)} onConfirm={() => { props.send({ a: "resign" }); setDialog(null); }} />
+      )}
+      {dialog === "trade" && s && playing && <TradeDialog {...props} onClose={() => setDialog(null)} />}
+      {dialog === "dev" && s && playing && (
         <DevCardsDialog store={store} t={t} now={props.now} send={props.send}
                         startRobber={() => props.controls.startRobber()} onClose={() => setDialog(null)} />
       )}
@@ -161,13 +177,13 @@ function Hud(props: HudProps & { handle: HudHandle }) {
           onClose={() => setDialog(null)}
         />
       )}
-      {finished && <GameOver {...props} />}
+      {finished && !overHidden && <GameOver {...props} onHide={() => setOverHidden(true)} />}
     </div>
   );
 }
 
 // ------------------------------------------------------------------ dice clock
-function DiceClock(props: HudProps & { feed: HudFeed }) {
+function DiceClock(props: HudProps & { feed: HudFeed; onResults?: () => void }) {
   const { store, t, now, feed } = props;
   const s = store.state;
   let body;
@@ -185,7 +201,12 @@ function DiceClock(props: HudProps & { feed: HudFeed }) {
       </>
     );
   } else if (s.phase === "finished") {
-    body = <span>{t("status.finished")}</span>;
+    body = (
+      <>
+        <span>{t("status.finished")}</span>
+        {props.onResults && <button type="button" class="primary" onClick={props.onResults}>{t("hud:over.results")}</button>}
+      </>
+    );
   } else if (!s.clock_started) {
     body = <span>{t("status.setup")}</span>;
   } else {
@@ -225,7 +246,7 @@ function Ring({ share, label, title }: { share: number; label: string; title: st
 }
 
 // ------------------------------------------------------------------ players
-function Scores({ store, t }: HudProps) {
+function Scores({ store, t, onStats, onResign }: HudProps & { onStats(): void; onResign?: () => void }) {
   const s = store.state!;
   const target = victoryTarget(store.settings);
   return (
@@ -239,9 +260,12 @@ function Scores({ store, t }: HudProps) {
           const dev = s.dev_cards?.players[String(p.seat)];
           const army = s.dev_cards?.army === p.seat;
           return (
-            <li key={p.seat} class={p.seat === store.seat ? "me" : ""}>
+            <li key={p.seat} class={`${p.seat === store.seat ? "me" : ""}${p.resigned ? " resigned" : ""}`}>
               <Swatch colour={p.colour} />
-              <span class="name">{p.name} {p.seat === store.seat && <small>{t("hud:scores.you")}</small>}</span>
+              <span class="name">
+                {p.name} {p.seat === store.seat && <small>{t("hud:scores.you")}</small>}
+                {p.resigned && <small class="tag" title={t("hud:scores.resigned")}>⚑</small>}
+              </span>
               {p.points !== undefined && (
                 <span class="points">{target ? t("hud:scores.points", { points: p.points, target }) : p.points}</span>
               )}
@@ -259,6 +283,18 @@ function Scores({ store, t }: HudProps) {
           );
         })}
       </ul>
+      <div class="score-actions">
+        <button type="button" class="stats-open" onClick={onStats} aria-label={t("hud:stats.open")} title={t("hud:stats.open")}>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
+          <span>{t("hud:stats.open")}</span>
+        </button>
+        {onResign && (
+          <button type="button" class="resign-open" onClick={onResign} aria-label={t("hud:resign.open")} title={t("hud:resign.open")}>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 22V3M5 4h12l-3 4 3 4H5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" /></svg>
+            <span>{t("hud:resign.open")}</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -325,9 +361,25 @@ function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
 
 // ------------------------------------------------------------------ camera
 /** Buttons for what keys and the wheel do on a desktop: centre on the settler, show the island. */
-function CameraButtons({ store, t, controls }: HudProps) {
+function CameraButtons({ store, t, controls, touch, onFullscreenHelp }: HudProps & { onFullscreenHelp(): void }) {
+  const full = useFullscreen();
+  const toggle = () => {
+    if (full.supported) full.toggle();
+    else onFullscreenHelp();
+  };
   return (
     <div class="hud-camera">
+      {(full.supported || (touch && !full.standalone)) && (
+        <button type="button" class="fullscreen" onClick={toggle} aria-pressed={full.active}
+                aria-label={t(full.active ? "hud:camera.exitFullscreen" : "hud:camera.fullscreen")}
+                title={t(full.active ? "hud:camera.exitFullscreen" : "hud:camera.fullscreen")}>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d={full.active ? "M10 8.5v3H7M14 15.5v-3h3" : "M7 11.5v-3h3M17 12.5v3h-3"}
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      )}
       {store.seat !== null && (
         <button type="button" onClick={() => controls.action("center_selected")} aria-label={t("hud:camera.center")} title={t("hud:camera.center")}>
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" /><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
@@ -337,6 +389,47 @@ function CameraButtons({ store, t, controls }: HudProps) {
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none" stroke="currentColor" stroke-width="2" /></svg>
       </button>
     </div>
+  );
+}
+
+// ------------------------------------------------------------------ full screen
+type FsDoc = Document & { webkitFullscreenEnabled?: boolean; webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => void };
+type FsEl = HTMLElement & { webkitRequestFullscreen?: () => void };
+
+/** Full screen hides the browser's own bars, which on phones cover part of the game. */
+function useFullscreen() {
+  const doc = document as FsDoc;
+  const supported = !!(doc.fullscreenEnabled || doc.webkitFullscreenEnabled);
+  const current = () => !!(doc.fullscreenElement || doc.webkitFullscreenElement);
+  const [active, setActive] = useState(current());
+  useEffect(() => {
+    const on = () => setActive(current());
+    document.addEventListener("fullscreenchange", on);
+    document.addEventListener("webkitfullscreenchange", on);
+    return () => { document.removeEventListener("fullscreenchange", on); document.removeEventListener("webkitfullscreenchange", on); };
+  }, []);
+  const toggle = () => {
+    if (current()) {
+      if (doc.exitFullscreen) void doc.exitFullscreen().catch(() => {});
+      else doc.webkitExitFullscreen?.();
+      return;
+    }
+    const el = document.documentElement as FsEl;
+    if (el.requestFullscreen) void el.requestFullscreen({ navigationUI: "hide" }).catch(() => {});
+    else el.webkitRequestFullscreen?.();
+  };
+  const standalone = matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches
+    || (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  return { supported, active, toggle, standalone };
+}
+
+/** Phones without the full screen API (iPhone): the game can be added to the home screen. */
+function FullscreenHelp({ t, onClose }: { t: TFunction; onClose(): void }) {
+  useEscape(onClose);
+  return (
+    <Dialog title={t("hud:fullscreen.title")} t={t} closeKey="hud:stats.close" onClose={onClose}>
+      <p class="resign-body">{t("hud:fullscreen.body")}</p>
+    </Dialog>
   );
 }
 
@@ -392,10 +485,9 @@ function TradeDialog({ store, t, send, onClose }: HudProps & { onClose(): void }
 }
 
 // ------------------------------------------------------------------ game over
-function GameOver({ store, t, lobbyUrl }: HudProps) {
+function GameOver({ store, t, lobbyUrl, now, onHide }: HudProps & { onHide(): void }) {
   const s = store.state!;
   const winner = s.winner === null ? undefined : store.player(s.winner);
-  const ranked = [...s.players].sort((a, b) => (b.points ?? 0) - (a.points ?? 0));
   return (
     <div class="hud-overlay" role="dialog" aria-modal="true" aria-labelledby="game-over-title">
       <div class="hud-dialog hud-over">
@@ -409,14 +501,12 @@ function GameOver({ store, t, lobbyUrl }: HudProps) {
         <p class="winner">
           {!winner ? t("hud:over.noWinner") : winner.seat === store.seat ? t("hud:over.youWin") : t("hud:over.winner", { name: winner.name })}
         </p>
-        <ol class="final">
-          {ranked.map((p) => (
-            <li key={p.seat} class={p.seat === s.winner ? "first" : ""}>
-              <Swatch colour={p.colour} /> <span class="name">{p.name}</span> <strong>{p.points ?? "–"}</strong>
-            </li>
-          ))}
-        </ol>
-        <a class="button primary" href={lobbyUrl}>{t("hud:over.back")}</a>
+        {s.end_reason === "resign" && <p class="over-reason">{t("hud:over.byResign")}</p>}
+        <StatsPanel store={store} t={t} now={now} />
+        <div class="over-buttons">
+          <button type="button" onClick={onHide}>{t("hud:over.showBoard")}</button>
+          <a class="button primary" href={lobbyUrl}>{t("hud:over.back")}</a>
+        </div>
       </div>
     </div>
   );

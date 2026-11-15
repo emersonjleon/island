@@ -15,7 +15,7 @@ from engine.errors import RuleError
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 
 __all__ = [
-    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "Command", "COMMAND_TYPES",
+    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "Resign", "Command", "COMMAND_TYPES",
     "parse_command", "command_json_schema", "ENVELOPE_KEYS",
 ]
 
@@ -110,16 +110,21 @@ class PlayDevCard(_Cmd):
     resource: Resource | None = None
 
 
-Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard,
+class Resign(_Cmd):
+    """Give up: the player leaves the game for good (see :mod:`engine.rules.resign`)."""
+    a: Literal["resign"] = "resign"
+
+
+Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | Resign,
                     Field(discriminator="a")]
 COMMAND_TYPES: dict[str, type[_Cmd]] = {
     "move_settler": MoveSettler, "build": Build, "cancel_build": CancelBuild, "bank_trade": BankTrade,
-    "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard,
+    "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard, "resign": Resign,
 }
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(Command)
 
 
-def parse_command(raw: Any) -> MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard:
+def parse_command(raw: Any) -> MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | Resign:
     """Validate a raw intent dict. Raises ``RuleError("command.invalid", {...})``.
 
     params: ``{"action": <a or None>, "errors": [{"loc": "dotted.path", "type": "..."}]}``.

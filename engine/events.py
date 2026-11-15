@@ -32,7 +32,7 @@ __all__ = [
     "ClockStarted", "DiceRolled", "Produced", "RobberStole", "RobberMoved", "Hand", "SettlerLanded",
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
-    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "Buildable", "GameOver",
+    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "Buildable", "Resigned", "GameOver",
 ]
 
 ResMap = dict[Resource, int]
@@ -312,16 +312,27 @@ class Buildable(Event):
     megacities: list[int] = Field(default_factory=list)
 
 
+class Resigned(Event):
+    """``seat`` gave up. Their pieces stay on the board but no longer produce; ``returned``
+    is what went back to the bank (their hand and unfinished builds)."""
+    k: Literal["resigned"] = "resigned"
+    seat: int
+    returned: ResMap
+
+
 class GameOver(Event):
+    """``reason``: ``"target"`` (someone reached the victory target) or ``"resign"``
+    (too few players left after a resignation)."""
     k: Literal["game_over"] = "game_over"
     winner: int | None
     points: dict[int, int]
+    reason: Literal["target", "resign"] = "target"
 
 
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
-    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, Buildable, GameOver,
+    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, Buildable, Resigned, GameOver,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
@@ -329,7 +340,7 @@ AnyEvent = Annotated[
     ClockStarted | DiceRolled | Produced | RobberStole | RobberMoved | Hand | SettlerLanded | SettlerPath
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
     | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
-    | Buildable | GameOver,
+    | Buildable | Resigned | GameOver,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

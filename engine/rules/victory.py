@@ -17,8 +17,9 @@ the dice timer (``roll_timer_id`` and ``next_roll_at`` become None).
 
 Winner rule: the first player to reach the target. When several players are at or
 above the target in the same check (only possible via :func:`check_victory`), the
-one with the most points wins, ties broken by the lowest seat.
-Later: Longest Road / Largest Army hooks.
+one with the most points wins, ties broken by the lowest seat. Players who resigned
+(:mod:`engine.rules.resign`) can no longer win; resign ends the game itself with
+``finish(..., reason="resign")``.
 """
 from __future__ import annotations
 
@@ -26,6 +27,7 @@ from typing import Any
 
 from engine.events import Event, GameOver, Points
 from engine.game import SIG_BUILT, after_step, connect
+from engine.rules import stats
 from engine.settings.enums import BuildKind
 from engine.state import GameState
 
@@ -36,8 +38,10 @@ __all__ = [
     "building_points",
     "check_victory",
     "finish",
+    "leader",
     "leader_at_target",
     "on_built",
+    "points_changed",
 ]
 
 BUILT_ORDER = 100
@@ -57,26 +61,41 @@ def building_points(state: GameState, kind: BuildKind) -> int:
     return 0
 
 
-def leader_at_target(state: GameState) -> int | None:
-    """Seat with the most points among those at or above the target (lowest seat on ties)."""
-    target = state.settings.victory.target
+def leader(state: GameState, min_points: int = 0) -> int | None:
+    """Seat with the most points among the players still in the game with at least
+    ``min_points`` (lowest seat on ties), or None."""
     best: int | None = None
     for p in state.players:
-        if p.points >= target and (best is None or p.points > state.players[best].points):
+        if p.resigned or p.points < min_points:
+            continue
+        if best is None or p.points > state.players[best].points:
             best = p.seat
     return best
 
 
-def finish(state: GameState, winner: int | None, now_ms: int) -> None:
+def leader_at_target(state: GameState) -> int | None:
+    """Seat with the most points among those at or above the target (lowest seat on ties)."""
+    return leader(state, state.settings.victory.target)
+
+
+def finish(state: GameState, winner: int | None, now_ms: int, reason: str = "target") -> None:
     """End the game now (idempotent: does nothing if already finished)."""
     if state.phase == "finished":
         return
+    _ext(state)["reason"] = reason
     state.phase = "finished"
     state.winner = winner
     state.finished_at = now_ms
     state.timers.cancel(state.roll_timer_id)
     state.roll_timer_id = None
     state.next_roll_at = None
+
+
+def points_changed(state: GameState, seat: int, now_ms: int) -> Points:
+    """Call after changing ``seat``'s points: records the score history and returns the event."""
+    points = state.player(seat).points
+    stats.record_points(state, seat, now_ms, points)
+    return Points(at=now_ms, seat=seat, points=points)
 
 
 def _ext(state: GameState) -> dict[str, Any]:
@@ -91,9 +110,9 @@ def on_built(state: GameState, now_ms: int, *, seat: int, kind: BuildKind, targe
         return []
     player = state.player(seat)
     player.points += delta
-    if player.points >= state.settings.victory.target:
+    if player.points >= state.settings.victory.target and not player.resigned:
         finish(state, seat, now_ms)
-    return [Points(at=now_ms, seat=seat, points=player.points)]
+    return [points_changed(state, seat, now_ms)]
 
 
 @after_step(order=AFTER_STEP_ORDER)
@@ -108,4 +127,5 @@ def check_victory(state: GameState, now_ms: int) -> list[Event]:
         return []
     ext["announced"] = True
     at = state.finished_at if state.finished_at is not None else now_ms
-    return [GameOver(at=at, winner=state.winner, points={p.seat: p.points for p in state.players})]
+    reason = "resign" if ext.get("reason") == "resign" else "target"
+    return [GameOver(at=at, winner=state.winner, points={p.seat: p.points for p in state.players}, reason=reason)]
