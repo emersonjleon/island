@@ -48,7 +48,18 @@ function hudInsets(canvas: HTMLElement, hud: HTMLElement) {
   return { top, right: side, bottom, left: side };
 }
 
+/** Size the page to the part of the screen the browser really shows: on phones its
+ * bars can cover the bottom of a 100vh page (older browsers without dvh units). */
+function trackViewportHeight(): void {
+  const set = () => document.documentElement.style.setProperty("--app-height", `${window.innerHeight}px`);
+  set();
+  window.addEventListener("resize", set);
+  window.visualViewport?.addEventListener("resize", set);
+  document.addEventListener("fullscreenchange", () => setTimeout(set, 100));
+}
+
 async function main(): Promise<void> {
+  trackViewportHeight();
   const root = document.getElementById("game-root");
   const configEl = document.getElementById("game-config");
   if (!root || !configEl) return;

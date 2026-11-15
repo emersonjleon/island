@@ -29,7 +29,8 @@
     "player_count": "Wrong number of players for this game",
     "time_backwards": "Clock error, please reload the page",
     "not_running": "The game isn't running",
-    "busy": "The server is busy, try that again"
+    "busy": "The server is busy, try that again",
+    "resigned": "You resigned: you can no longer play in this game"
   },
   "movement": {
     "not_land": "Settlers can only walk on land",
@@ -54,7 +55,9 @@
     "invalid": "The server didn't understand that message",
     "too_large": "That message was too large"
   },
-  "proto": { "unsupported": "Please reload the page to get the latest version" },
+  "proto": {
+    "unsupported": "Please reload the page to get the latest version"
+  },
   "dev": {
     "setup_not_done": "Finish your setup first",
     "deck_empty": "No development cards left",

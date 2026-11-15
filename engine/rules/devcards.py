@@ -48,7 +48,7 @@ from typing import Any
 from engine.board import coords
 from engine.commands import BuyDevCard, PlayDevCard
 from engine.errors import RuleError
-from engine.events import DevCardBought, DevCardPlayed, Event, Hand, LargestArmy, Points, RobberMoved
+from engine.events import DevCardBought, DevCardPlayed, Event, Hand, LargestArmy, RobberMoved
 from engine.game import command_handler
 from engine.rules import longest_road, placement, robber, victory
 from engine.settings.enums import Cooldown, DevCardKind, InfoVisibility, Resource, Terrain
@@ -141,9 +141,9 @@ def _add_points(state: GameState, seat: int, delta: int, now_ms: int) -> list[Ev
         return []
     p = state.player(seat)
     p.points += delta
-    if p.points >= state.settings.victory.target:
+    if p.points >= state.settings.victory.target and not p.resigned:
         victory.finish(state, seat, now_ms)
-    return [Points(at=now_ms, seat=seat, points=p.points)]
+    return [victory.points_changed(state, seat, now_ms)]
 
 
 def _hand_event(state: GameState, seat: int, now_ms: int) -> Hand:

@@ -267,6 +267,20 @@
       "title": "PlayDevCard",
       "type": "object"
     },
+    "Resign": {
+      "additionalProperties": false,
+      "description": "Give up: the player leaves the game for good (see :mod:`engine.rules.resign`).",
+      "properties": {
+        "a": {
+          "const": "resign",
+          "default": "resign",
+          "title": "A",
+          "type": "string"
+        }
+      },
+      "title": "Resign",
+      "type": "object"
+    },
     "Resource": {
       "enum": [
         "lumber",
@@ -287,7 +301,8 @@
       "buy_dev_card": "#/$defs/BuyDevCard",
       "cancel_build": "#/$defs/CancelBuild",
       "move_settler": "#/$defs/MoveSettler",
-      "play_dev_card": "#/$defs/PlayDevCard"
+      "play_dev_card": "#/$defs/PlayDevCard",
+      "resign": "#/$defs/Resign"
     },
     "propertyName": "a"
   },
@@ -309,6 +324,9 @@
     },
     {
       "$ref": "#/$defs/PlayDevCard"
+    },
+    {
+      "$ref": "#/$defs/Resign"
     }
   ]
 }

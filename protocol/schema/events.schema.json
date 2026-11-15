@@ -435,6 +435,7 @@
     },
     "GameOver": {
       "additionalProperties": false,
+      "description": "``reason``: ``\"target\"`` (someone reached the victory target) or ``\"resign\"``\n(too few players left after a resignation).",
       "properties": {
         "at": {
           "title": "At",
@@ -452,6 +453,15 @@
           },
           "title": "Points",
           "type": "object"
+        },
+        "reason": {
+          "default": "target",
+          "enum": [
+            "target",
+            "resign"
+          ],
+          "title": "Reason",
+          "type": "string"
         },
         "winner": {
           "anyOf": [
@@ -694,6 +704,43 @@
         "gains"
       ],
       "title": "Produced",
+      "type": "object"
+    },
+    "Resigned": {
+      "additionalProperties": false,
+      "description": "``seat`` gave up. Their pieces stay on the board but no longer produce; ``returned``\nis what went back to the bank (their hand and unfinished builds).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "resigned",
+          "default": "resigned",
+          "title": "K",
+          "type": "string"
+        },
+        "returned": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Returned",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "returned"
+      ],
+      "title": "Resigned",
       "type": "object"
     },
     "Resource": {
@@ -1136,6 +1183,7 @@
       "longest_road": "#/$defs/LongestRoad",
       "points": "#/$defs/Points",
       "produced": "#/$defs/Produced",
+      "resigned": "#/$defs/Resigned",
       "robber_moved": "#/$defs/RobberMoved",
       "robber_stole": "#/$defs/RobberStole",
       "settler_arrived": "#/$defs/SettlerArrived",
@@ -1222,6 +1270,9 @@
     },
     {
       "$ref": "#/$defs/Buildable"
+    },
+    {
+      "$ref": "#/$defs/Resigned"
     },
     {
       "$ref": "#/$defs/GameOver"

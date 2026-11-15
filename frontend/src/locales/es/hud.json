@@ -1,10 +1,28 @@
 {
-  "res": { "lumber": "madera", "brick": "ladrillo", "wool": "lana", "grain": "trigo", "ore": "mineral", "fish": "pescado" },
+  "res": {
+    "lumber": "madera",
+    "brick": "ladrillo",
+    "wool": "lana",
+    "grain": "trigo",
+    "ore": "mineral",
+    "fish": "pescado"
+  },
   "resCount": "{{count}} de {{res}}",
-  "kind": { "road": "camino", "settlement": "poblado", "city": "ciudad", "megacity": "metrópolis" },
+  "kind": {
+    "road": "camino",
+    "settlement": "poblado",
+    "city": "ciudad",
+    "megacity": "metrópolis"
+  },
   "you": "Tú",
   "hand": "Tu mano",
-  "build": { "road": "Camino", "settlement": "Poblado", "city": "Ciudad", "cost": "Cuesta {{res}}", "free": "Gratis" },
+  "build": {
+    "road": "Camino",
+    "settlement": "Poblado",
+    "city": "Ciudad",
+    "cost": "Cuesta {{res}}",
+    "free": "Gratis"
+  },
   "trade": {
     "open": "Comerciar",
     "title": "Comerciar con el banco",
@@ -15,12 +33,43 @@
     "confirm": "Comerciar",
     "close": "Cerrar"
   },
-  "dice": { "next": "Próxima tirada", "last": "Última tirada", "history": "Tiradas recientes", "waiting": "Los dados empiezan tras el primer poblado" },
-  "scores": { "title": "Jugadores", "points": "{{points}} / {{target}}", "cards": "{{count}} cartas", "you": "(tú)",
-    "road": "camino {{count}}", "longest_road": "Gran Ruta", "dev": "{{count}} cartas de desarrollo", "knights": "{{count}} caballeros", "largest_army": "Gran Ejército" },
-  "camera": { "center": "Centrar en mi colono", "fit": "Ver toda la isla" },
-  "log": { "title": "Qué ha pasado" },
-  "over": { "title": "Fin de la partida", "winner": "¡Gana {{name}}!", "youWin": "¡Has ganado!", "noWinner": "Sin ganador", "back": "Volver a la sala" },
+  "dice": {
+    "next": "Próxima tirada",
+    "last": "Última tirada",
+    "history": "Tiradas recientes",
+    "waiting": "Los dados empiezan tras el primer poblado"
+  },
+  "scores": {
+    "title": "Jugadores",
+    "points": "{{points}} / {{target}}",
+    "cards": "{{count}} cartas",
+    "you": "(tú)",
+    "road": "camino {{count}}",
+    "longest_road": "Gran Ruta",
+    "dev": "{{count}} cartas de desarrollo",
+    "knights": "{{count}} caballeros",
+    "largest_army": "Gran Ejército",
+    "resigned": "Se rindió"
+  },
+  "camera": {
+    "center": "Centrar en mi colono",
+    "fit": "Ver toda la isla",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa"
+  },
+  "log": {
+    "title": "Qué ha pasado"
+  },
+  "over": {
+    "title": "Fin de la partida",
+    "winner": "¡Gana {{name}}!",
+    "youWin": "¡Has ganado!",
+    "noWinner": "Sin ganador",
+    "back": "Volver a la sala",
+    "byResign": "Los demás jugadores se rindieron",
+    "showBoard": "Ver el tablero",
+    "results": "Resultados"
+  },
   "keys": {
     "open": "Teclas",
     "title": "Controles de teclado",
@@ -35,15 +84,103 @@
     "close": "Cerrar"
   },
   "action": {
-    "move_up": "Caminar arriba", "move_down": "Caminar abajo", "move_left": "Caminar a la izquierda", "move_right": "Caminar a la derecha",
-    "select_next": "Siguiente colono", "select_1": "Colono 1", "select_2": "Colono 2", "select_3": "Colono 3",
-    "build_road": "Construir camino", "build_settlement": "Construir poblado", "build_city": "Construir ciudad",
-    "confirm": "Confirmar", "cancel": "Cancelar",
-    "camera_up": "Cámara arriba", "camera_down": "Cámara abajo", "camera_left": "Cámara a la izquierda", "camera_right": "Cámara a la derecha",
-    "zoom_in": "Acercar", "zoom_out": "Alejar", "center_selected": "Centrar en el colono",
-    "buy_dev_card": "Comprar carta de desarrollo", "open_trade": "Abrir comercio"
+    "move_up": "Caminar arriba",
+    "move_down": "Caminar abajo",
+    "move_left": "Caminar a la izquierda",
+    "move_right": "Caminar a la derecha",
+    "select_next": "Siguiente colono",
+    "select_1": "Colono 1",
+    "select_2": "Colono 2",
+    "select_3": "Colono 3",
+    "build_road": "Construir camino",
+    "build_settlement": "Construir poblado",
+    "build_city": "Construir ciudad",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "camera_up": "Cámara arriba",
+    "camera_down": "Cámara abajo",
+    "camera_left": "Cámara a la izquierda",
+    "camera_right": "Cámara a la derecha",
+    "zoom_in": "Acercar",
+    "zoom_out": "Alejar",
+    "center_selected": "Centrar en el colono",
+    "buy_dev_card": "Comprar carta de desarrollo",
+    "open_trade": "Abrir comercio"
   },
   "spectator": "Estás mirando esta partida",
   "youObject": "ti",
-  "dev": {"buy": "Carta", "buyCost": "Carta de desarrollo: cuesta {{res}} (quedan {{left}})", "open": "Cartas ({{count}})", "title": "Tus cartas de desarrollo", "none": "No tienes cartas de desarrollo.", "play": "Jugar", "close": "Cerrar", "take": "Tomar", "pickPlenty": "Elige {{count}} recursos para tomar del banco", "pickMonopoly": "Elige el recurso que les quitas a todos", "victimTitle": "¿A quién le robas?", "kind": {"knight": "Caballero", "victory_point": "Punto de victoria", "road_building": "Construcción de caminos", "year_of_plenty": "Año de abundancia", "monopoly": "Monopolio"}, "help": {"knight": "Mueve el ladrón hasta 3 hexágonos y roba una carta", "victory_point": "Vale un punto al jugarla", "road_building": "Construye 2 caminos gratis", "year_of_plenty": "Toma 2 recursos del banco", "monopoly": "Quítales un recurso a todos los jugadores"}}
+  "dev": {
+    "buy": "Carta",
+    "buyCost": "Carta de desarrollo: cuesta {{res}} (quedan {{left}})",
+    "open": "Cartas ({{count}})",
+    "title": "Tus cartas de desarrollo",
+    "none": "No tienes cartas de desarrollo.",
+    "play": "Jugar",
+    "close": "Cerrar",
+    "take": "Tomar",
+    "pickPlenty": "Elige {{count}} recursos para tomar del banco",
+    "pickMonopoly": "Elige el recurso que les quitas a todos",
+    "victimTitle": "¿A quién le robas?",
+    "kind": {
+      "knight": "Caballero",
+      "victory_point": "Punto de victoria",
+      "road_building": "Construcción de caminos",
+      "year_of_plenty": "Año de abundancia",
+      "monopoly": "Monopolio"
+    },
+    "help": {
+      "knight": "Mueve el ladrón hasta 3 hexágonos y roba una carta",
+      "victory_point": "Vale un punto al jugarla",
+      "road_building": "Construye 2 caminos gratis",
+      "year_of_plenty": "Toma 2 recursos del banco",
+      "monopoly": "Quítales un recurso a todos los jugadores"
+    }
+  },
+  "stats": {
+    "open": "Estadísticas",
+    "title": "Estadísticas de la partida",
+    "close": "Cerrar",
+    "points": "Cómo se lograron los puntos",
+    "timeline": "Puntos a lo largo de la partida",
+    "produced": "Recursos que dieron los dados",
+    "resigned": "se rindió",
+    "hidden": "Sus puntos se verán al final de la partida",
+    "noPoints": "Todavía sin puntos",
+    "pointsOf": "{{name}}: {{count}} puntos",
+    "label": {
+      "settlement": "Poblados",
+      "city": "Ciudades",
+      "megacity": "Metrópolis",
+      "longest_road": "Gran Ruta",
+      "largest_army": "Gran Ejército",
+      "victory_point": "Cartas de punto"
+    },
+    "part": {
+      "settlement_one": "{{count}} poblado ({{points}})",
+      "settlement_other": "{{count}} poblados ({{points}})",
+      "city_one": "{{count}} ciudad ({{points}})",
+      "city_other": "{{count}} ciudades ({{points}})",
+      "megacity_one": "{{count}} metrópolis ({{points}})",
+      "megacity_other": "{{count}} metrópolis ({{points}})",
+      "longest_road_one": "Gran Ruta ({{points}})",
+      "longest_road_other": "Gran Ruta ({{points}})",
+      "largest_army_one": "Gran Ejército ({{points}})",
+      "largest_army_other": "Gran Ejército ({{points}})",
+      "victory_point_one": "{{count}} carta de punto ({{points}})",
+      "victory_point_other": "{{count}} cartas de punto ({{points}})"
+    }
+  },
+  "resign": {
+    "open": "Rendirse",
+    "title": "¿Rendirte?",
+    "body": "Dejas la partida para siempre: tus caminos y edificios se quedan en el mapa pero ya no producen, tus recursos vuelven al banco y ya no puedes ganar. Puedes seguir mirando hasta el final.",
+    "confirm": "Sí, me rindo",
+    "cancel": "Seguir jugando",
+    "done": "Te rendiste y sigues mirando la partida.",
+    "back": "Volver a la sala"
+  },
+  "fullscreen": {
+    "title": "Jugar a pantalla completa",
+    "body": "Este navegador no deja ocultar sus barras desde la página. En iPhone, toca Compartir y luego «Añadir a pantalla de inicio»: al abrir el juego desde ese icono se ve a pantalla completa, sin la barra del navegador."
+  }
 }

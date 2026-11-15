@@ -179,8 +179,12 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 /* ------------------------------------------------------------------ game page */
 /* The game fills the screen below the header: no page scroll, no browser pinch-zoom or
    pull-to-refresh on the board (the game handles touch itself). */
-body.game-page { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; overscroll-behavior: none;
-  background: #1f5f8b; }
+body.game-page { display: flex; flex-direction: column; height: 100vh; height: 100dvh; height: var(--app-height, 100dvh);
+  overflow: hidden; overscroll-behavior: none; background: #1f5f8b; }
+/* In full screen on a phone every pixel goes to the board. */
+@media (max-width: 720px), (max-height: 500px) {
+  html:fullscreen body.game-page .site-header { display: none; }
+}
 .game-main { padding: 0; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .game-root { position: relative; flex: 1; min-height: 0; touch-action: none;
   background: radial-gradient(ellipse at center, #2a74a3 0%, #1f5f8b 55%, #123f5e 100%); }

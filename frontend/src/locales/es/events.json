@@ -30,6 +30,9 @@
   "reason": {
     "builder_left": "el colono se fue",
     "cancelled": "cancelada",
-    "conflict": "alguien construyó ahí primero"
-  }
+    "conflict": "alguien construyó ahí primero",
+    "resigned": "se rindió"
+  },
+  "resigned": "{{who}} se rindió",
+  "resigned_you": "Te rendiste"
 }

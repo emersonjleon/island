@@ -34,6 +34,8 @@ export interface PlayerView {
   setup: { remaining: Partial<Record<BuildKind, number>>; done: boolean; settlements_built: number };
   settlers: number[];
   hand?: ResMap; hand_count?: number; points?: number;
+  /** Stage 2: the player gave up (their pieces stay, they no longer play). */
+  resigned?: boolean;
 }
 export interface BuildableSets { roads: number[]; settlements: number[]; cities: number[]; megacities?: number[] }
 
@@ -58,8 +60,15 @@ export interface GameStateView {
   longest_road?: { holder: number | null; lengths: Record<string, number> };
   /** Stage 2: development cards and Largest Army. */
   dev_cards?: DevCardsView;
+  /** Stage 2: score history and dice production per seat (as a string), where visible. */
+  stats?: StatsView;
+  /** Why the game ended (set once finished). */
+  end_reason?: "target" | "resign" | null;
   buildable?: BuildableSets;
 }
+
+/** ``timeline``: [game ms, points] whenever the score changed; ``produced``: cards from dice. */
+export interface StatsView { timeline: Record<string, [number, number][]>; produced: Record<string, ResMap> }
 
 /** One engine event as the server sends it to this audience (already redacted). */
 export type GameEvent = { k: string; at?: number; [field: string]: unknown };
@@ -80,7 +89,8 @@ export type Intent =
   | { a: "cancel_build"; construction: number }
   | { a: "bank_trade"; give: ResMap; get: ResMap }
   | { a: "buy_dev_card" }
-  | { a: "play_dev_card"; card: DevCardKind; hex?: number; victim?: number; resources?: Resource[]; resource?: Resource };
+  | { a: "play_dev_card"; card: DevCardKind; hex?: number; victim?: number; resources?: Resource[]; resource?: Resource }
+  | { a: "resign" };
 
 export type DevCardKind = "knight" | "victory_point" | "road_building" | "year_of_plenty" | "monopoly";
 /** One of the viewer's own cards: when it was bought (game ms, and dice rolls so far). */

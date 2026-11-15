@@ -59,6 +59,11 @@ class PlayerState:
     setup_settlements_built: int = 0
     points: int = 0                             # cached; victory keeps it up to date
     settler_ids: list[int] = field(default_factory=list)
+    resigned_at: int | None = None              # game ms when the player resigned (rules.resign)
+
+    @property
+    def resigned(self) -> bool:
+        return self.resigned_at is not None
 
     @property
     def hand_count(self) -> int:

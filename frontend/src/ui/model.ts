@@ -145,6 +145,7 @@ export function logLine(
       const knights = (ev.knights as Record<string, number> | undefined)?.[String(seat)] ?? 0;
       return { text: t(seat === viewer ? "events:largest_army_you" : "events:largest_army", { who, count: knights }), seat };
     }
+    case "resigned": return { text: t(seat === viewer ? "events:resigned_you" : "events:resigned", { who }), seat };
     case "game_over": return {
       text: ev.winner === null ? t("events:game_over_none")
         : ev.winner === viewer ? t("events:game_over_you") : t("events:game_over", { who: name(ev.winner as number) }),

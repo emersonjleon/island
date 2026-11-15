@@ -27,7 +27,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine import views  # noqa: E402
+from engine import game, views  # noqa: E402
 from engine.commands import command_json_schema  # noqa: E402
 from engine.errors import RuleError  # noqa: E402
 from engine.events import EVENT_TYPES, event_json_schema  # noqa: E402
@@ -42,6 +42,8 @@ ERROR_CALLS = {"RuleError", "_err"}
 CANCEL_CALLS = {"cancel_construction": 2, "cancel_builder_constructions": 2}
 FIXTURE_SEED = 3
 FIXTURE_SEATS = 3
+RESIGN_SEAT = 1           # this seat resigns once the dice have rolled RESIGN_AT_ROLL times
+RESIGN_AT_ROLL = 50
 
 
 # ------------------------------------------------------------------- codes
@@ -98,6 +100,9 @@ def fixtures() -> dict[str, Any]:
     mid: dict[str, Any] | None = None
     while not sim.state.finished and sim.state.now_ms < 4 * 3600 * 1000:
         sim.step()
+        st = sim.state
+        if not st.finished and not st.players[RESIGN_SEAT].resigned and len(st.dice_history) >= RESIGN_AT_ROLL:
+            batches.append(game.apply(st, RESIGN_SEAT, {"a": "resign"}, st.now_ms))
         if mid is None and sim.state.dice_history and len(sim.state.dice_history) >= 5:
             mid = {str(v): views.project_state(sim.state, v) for v in (0, None)}
     assert mid is not None

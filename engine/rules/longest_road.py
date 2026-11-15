@@ -25,7 +25,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from engine.events import Event, LongestRoad, Points
+from engine.events import Event, LongestRoad
 from engine.game import SIG_BUILT, connect
 from engine.rules import victory
 from engine.settings.enums import BuildKind
@@ -106,11 +106,11 @@ def on_built(state: GameState, now_ms: int, *, seat: int, kind: BuildKind, targe
     if old_holder is not None:
         p = state.player(old_holder)
         p.points -= cfg.points
-        events.append(Points(at=now_ms, seat=old_holder, points=p.points))
+        events.append(victory.points_changed(state, old_holder, now_ms))
     if new_holder is not None:
         p = state.player(new_holder)
         p.points += cfg.points
-        events.append(Points(at=now_ms, seat=new_holder, points=p.points))
-        if p.points >= state.settings.victory.target:
+        events.append(victory.points_changed(state, new_holder, now_ms))
+        if p.points >= state.settings.victory.target and not p.resigned:
             victory.finish(state, new_holder, now_ms)
     return events

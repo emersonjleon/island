@@ -84,7 +84,7 @@ def _dump_player(p: PlayerState) -> dict[str, Any]:
         "hand": _res(p.hand), "pieces_left": _kinds(p.pieces_left), "setup_remaining": _kinds(p.setup_remaining),
         "setup_done": p.setup_done, "last_setup_settlement": p.last_setup_settlement,
         "setup_settlements_built": p.setup_settlements_built, "points": p.points,
-        "settler_ids": list(p.settler_ids),
+        "settler_ids": list(p.settler_ids), "resigned_at": p.resigned_at,
     }
 
 
@@ -94,7 +94,7 @@ def _load_player(d: dict[str, Any]) -> PlayerState:
         pieces_left=_unkinds(d["pieces_left"]), setup_remaining=_unkinds(d["setup_remaining"]),
         setup_done=d["setup_done"], last_setup_settlement=d["last_setup_settlement"],
         setup_settlements_built=d["setup_settlements_built"], points=d["points"],
-        settler_ids=list(d["settler_ids"]),
+        settler_ids=list(d["settler_ids"]), resigned_at=d.get("resigned_at"),
     )
 
 

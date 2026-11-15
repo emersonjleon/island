@@ -3,7 +3,7 @@
 // imports, so a later 3D renderer reuses it unchanged.
 import type {
   BoardMsg, BuildKind, ConstructionView, DevCardKind, DevCardsPlayer, DevCardsView, GameEvent, GameStateView, PlayerView,
-  ResMap, ServerMsg, SettlerView,
+  ResMap, Resource, ServerMsg, SettlerView, StatsView,
 } from "../protocol/types";
 
 export type Listener = (store: GameStore) => void;
@@ -105,6 +105,13 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       break;
     case "points":
       setPlayer(state, num(ev.seat), { points: num(ev.points) });
+      pushPoints(state, num(ev.seat), num(ev.at ?? state.now), num(ev.points));
+      break;
+    case "produced":
+      addProduced(state, (ev.gains ?? {}) as Record<string, ResMap>);
+      break;
+    case "resigned":
+      setPlayer(state, num(ev.seat), { resigned: true });
       break;
     case "longest_road":
       state.longest_road = { holder: ev.seat as number | null, lengths: { ...(ev.lengths as Record<string, number>) } };
@@ -176,6 +183,7 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       if (kind === "road") state.roads = [...state.roads, { edge: target, seat }];
       else state.buildings = [...state.buildings.filter((b) => b.vertex !== target), { kind, seat, vertex: target }];
       setPlayer(state, seat, { points: num(ev.points_after) });
+      pushPoints(state, seat, num(ev.at ?? state.now), num(ev.points_after));
       // Mirror engine/rules/setup.py on_built: before a player's setup is done, their
       // settlements and roads use up setup slots (the server sends no event for this).
       const p = state.players.find((x) => x.seat === seat);
@@ -206,14 +214,37 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       state.phase = "finished";
       state.winner = ev.winner as number | null;
       state.finished_at = (ev.at as number | undefined) ?? state.now;
+      state.end_reason = ev.reason === "resign" ? "resign" : "target";
       for (const [seat, pts] of Object.entries(ev.points as Record<string, number>)) {
         setPlayer(state, Number(seat), { points: pts });
+        pushPoints(state, Number(seat), state.finished_at, pts);
       }
       break;
     default:
       break;
   }
   if (state.phase === "setup" && state.clock_started) state.phase = "running";
+}
+
+function statsOf(state: GameStateView): StatsView {
+  state.stats ??= { timeline: {}, produced: {} };
+  return state.stats;
+}
+
+/** Mirror engine/rules/stats.py: a timeline entry whenever a seat's score changes. */
+function pushPoints(state: GameStateView, seat: number, at: number, points: number): void {
+  const tl = statsOf(state).timeline;
+  const line = (tl[String(seat)] ??= []);
+  const last = line[line.length - 1];
+  if (!last || last[1] !== points) line.push([Math.max(at, last?.[0] ?? 0), points]);
+}
+
+function addProduced(state: GameStateView, gains: Record<string, ResMap>): void {
+  const prod = statsOf(state).produced;
+  for (const [seat, got] of Object.entries(gains)) {
+    const mine = (prod[seat] ??= {});
+    for (const [r, n] of Object.entries(got)) mine[r as Resource] = (mine[r as Resource] ?? 0) + (n ?? 0);
+  }
 }
 
 function sum(m: ResMap): number {

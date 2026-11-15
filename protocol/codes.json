@@ -38,6 +38,7 @@
     "dev.too_new",
     "game.finished",
     "game.player_count",
+    "game.resigned",
     "game.time_backwards",
     "movement.not_land",
     "movement.not_your_settler",
@@ -65,6 +66,7 @@
     "longest_road",
     "points",
     "produced",
+    "resigned",
     "robber_moved",
     "robber_stole",
     "settler_arrived",
@@ -81,7 +83,8 @@
     "construction_cancelled": [
       "builder_left",
       "cancelled",
-      "conflict"
+      "conflict",
+      "resigned"
     ],
     "produced_skipped": [
       "bank_partial",

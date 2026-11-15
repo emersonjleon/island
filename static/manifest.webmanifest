@@ -1,0 +1,17 @@
+{
+  "name": "Ages of the Island",
+  "short_name": "Island",
+  "start_url": "/lobby/",
+  "scope": "/",
+  "display": "fullscreen",
+  "background_color": "#1f5f8b",
+  "theme_color": "#0f3d55",
+  "icons": [
+    {
+      "src": "img/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

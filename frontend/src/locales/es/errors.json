@@ -29,7 +29,8 @@
     "player_count": "Número de jugadores incorrecto para esta partida",
     "time_backwards": "Error de reloj, recarga la página",
     "not_running": "La partida no está en marcha",
-    "busy": "El servidor está ocupado, inténtalo de nuevo"
+    "busy": "El servidor está ocupado, inténtalo de nuevo",
+    "resigned": "Te rendiste: ya no puedes jugar en esta partida"
   },
   "movement": {
     "not_land": "Los colonos solo pueden caminar por tierra",
@@ -54,7 +55,9 @@
     "invalid": "El servidor no entendió ese mensaje",
     "too_large": "Ese mensaje era demasiado grande"
   },
-  "proto": { "unsupported": "Recarga la página para obtener la última versión" },
+  "proto": {
+    "unsupported": "Recarga la página para obtener la última versión"
+  },
   "dev": {
     "setup_not_done": "Primero termina tu preparación",
     "deck_empty": "No quedan cartas de desarrollo",

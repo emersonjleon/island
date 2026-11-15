@@ -54,6 +54,7 @@ def _player_view(state: GameState, p: PlayerState, viewer: int | None) -> dict[s
         "setup": {"remaining": {k.value: v for k, v in p.setup_remaining.items()}, "done": p.setup_done,
                   "settlements_built": p.setup_settlements_built},
         "settlers": list(p.settler_ids),
+        "resigned": p.resigned,
     }
     own = viewer is not None and viewer == p.seat
     if own or vis.hands is InfoVisibility.OPEN:
@@ -112,6 +113,7 @@ def project_state(state: GameState, viewer: int | None) -> dict[str, Any]:
         "players": [_player_view(state, p, viewer) for p in state.players],
         "winner": state.winner,
         "finished_at": state.finished_at,
+        "end_reason": state.ext.get("victory", {}).get("reason", "target") if state.phase == "finished" else None,
         "longest_road": _longest_road_view(state),
     }
     for name, fn in sorted(_extensions.items()):

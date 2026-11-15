@@ -11,11 +11,14 @@
 * one ``Produced`` event (``gains``: seat -> non-zero resources received;
   ``skipped``: resource -> reason, see ``SKIP_*``), then one private ``Hand`` per
   seat that received something, in seat order. ``Produced`` is emitted even when
-  nothing is produced.
+  nothing is produced;
+* buildings of players who resigned produce nothing;
+* ``SIG_PRODUCED`` (``gains``) tells listeners (stats) what was paid out.
 """
 from __future__ import annotations
 
 from engine.events import Event, Hand, Produced
+from engine.game import SIG_PRODUCED, emit
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -47,7 +50,7 @@ def _hex_owed(state: GameState, hex_id: int) -> dict[int, int]:
     out: dict[int, int] = {}
     for v in state.board.board.hex_vertices[hex_id]:
         b = state.buildings.get(v)
-        if b is None:
+        if b is None or state.players[b.seat].resigned:
             continue
         n = _amount(state, b.kind)
         if n > 0:
@@ -115,4 +118,4 @@ def produce(state: GameState, roll: int, now_ms: int) -> list[Event]:
     events: list[Event] = [Produced(at=now_ms, roll=roll, gains=gains_sorted, skipped=skipped_sorted)]
     for seat in gains_sorted:
         events.append(Hand(at=now_ms, seat=seat, hand=dict(state.players[seat].hand)))
-    return events
+    return events + emit(state, SIG_PRODUCED, now_ms, gains=gains_sorted)
