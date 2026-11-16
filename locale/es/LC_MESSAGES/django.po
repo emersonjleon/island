@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 04:23+0000\n"
+"POT-Creation-Date: 2026-11-16 14:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -500,9 +500,9 @@ msgstr "El ladrón"
 msgid "Trading"
 msgstr "Comercio"
 
-#: templates/how_to_play.html:14
-msgid "Cards and awards"
-msgstr "Cartas y premios"
+#: templates/how_to_play.html:14 templates/how_to_play.html:88
+msgid "Developments and awards"
+msgstr "Desarrollos y premios"
 
 #: templates/how_to_play.html:14 templates/how_to_play.html:108
 msgid "Controls"
@@ -516,10 +516,10 @@ msgstr "Consejos"
 #, python-format
 msgid ""
 "The first player to reach <strong>%(target)s points</strong> wins. You earn "
-"points with settlements, cities, awards and some development cards."
+"points with settlements, cities, awards and some developments."
 msgstr ""
 "Gana el primer jugador que llegue a <strong>%(target)s puntos</strong>. Ganas"
-" puntos con poblados, ciudades, premios y algunas cartas de desarrollo."
+" puntos con poblados, ciudades, premios y algunos desarrollos."
 
 #: templates/how_to_play.html:27
 msgid "The start: your settler"
@@ -554,10 +554,10 @@ msgstr ""
 
 #: templates/how_to_play.html:35
 msgid ""
-"Each of your first two settlements gives you one card from every hex around "
-"it."
+"Each of your first two settlements gives you one resource from every hex "
+"around it."
 msgstr ""
-"Cada uno de tus dos primeros poblados te da una carta de cada hexágono a su "
+"Cada uno de tus dos primeros poblados te da un recurso de cada hexágono a su "
 "alrededor."
 
 #: templates/how_to_play.html:36
@@ -649,49 +649,45 @@ msgstr ""
 #, python-format
 msgid ""
 "When the dice show a 7 nothing is produced. The robber takes %(pct)s%% of the"
-" cards of everyone holding more than %(limit)s cards, then moves by itself to"
-" a neighbouring hex. The hex where it stands produces nothing."
+" resources of everyone holding more than %(limit)s, then moves by itself to a"
+" neighbouring hex. The hex where it stands produces nothing."
 msgstr ""
 "Cuando los dados suman 7 no se produce nada. El ladrón se lleva el %(pct)s%% "
-"de las cartas de cada jugador con más de %(limit)s cartas y luego se mueve "
-"solo a un hexágono vecino. El hexágono donde está no produce."
+"de los recursos de cada jugador con más de %(limit)s y luego se mueve solo a "
+"un hexágono vecino. El hexágono donde está no produce."
 
 #: templates/how_to_play.html:76
-msgid "Tip: spend or trade your cards before a 7 comes."
-msgstr "Consejo: gasta o cambia tus cartas antes de que salga un 7."
+msgid "Tip: spend or trade your resources before a 7 comes."
+msgstr "Consejo: gasta o cambia tus recursos antes de que salga un 7."
 
 #: templates/how_to_play.html:81
 #, python-format
 msgid ""
-"Trade %(ratio)s cards of one kind with the bank for 1 card of any other. With"
-" a settlement or city on a harbor you trade at %(generic)s:1, or "
+"Trade %(ratio)s resources of one kind with the bank for 1 of any other. With "
+"a settlement or city on a harbor you trade at %(generic)s:1, or "
 "%(specific)s:1 for that harbor's resource."
 msgstr ""
-"Cambia %(ratio)s cartas iguales con el banco por 1 carta de cualquier otro "
-"tipo. Con un poblado o ciudad en un puerto cambias a %(generic)s:1, o a "
+"Cambia %(ratio)s recursos iguales con el banco por 1 de cualquier otro tipo. "
+"Con un poblado o ciudad en un puerto cambias a %(generic)s:1, o a "
 "%(specific)s:1 con el recurso de ese puerto."
-
-#: templates/how_to_play.html:88
-msgid "Development cards and awards"
-msgstr "Cartas de desarrollo y premios"
 
 #: templates/how_to_play.html:89
 #, python-format
 msgid ""
-"A development card costs %(cost)s. You can play a card from the roll after "
-"you bought it, one card per roll."
+"A development costs %(cost)s. It is drawn at random and can be used from the "
+"roll after you bought it, one per roll. They never run out."
 msgstr ""
-"Una carta de desarrollo cuesta %(cost)s. Puedes jugarla desde la tirada "
-"siguiente a su compra, una carta por tirada."
+"Un desarrollo cuesta %(cost)s. Sale al azar y se puede usar desde la tirada "
+"siguiente a su compra, uno por tirada. Nunca se acaban."
 
 #: templates/how_to_play.html:93
 #, python-format
 msgid ""
 "<strong>Knight</strong>: move the robber up to %(dist)s hexes and steal a "
-"card from a player there."
+"resource from a player there."
 msgstr ""
 "<strong>Caballero</strong>: mueve al ladrón hasta %(dist)s hexágonos y roba "
-"una carta a un jugador de allí."
+"un recurso a un jugador de allí."
 
 #: templates/how_to_play.html:96
 msgid "<strong>Road building</strong>: two free roads."
@@ -704,14 +700,12 @@ msgstr ""
 "<strong>Año de abundancia</strong>: dos recursos a tu elección del banco."
 
 #: templates/how_to_play.html:98
-msgid "<strong>Monopoly</strong>: every card of one resource from all players."
-msgstr ""
-"<strong>Monopolio</strong>: todas las cartas de un recurso de todos los "
-"jugadores."
+msgid "<strong>Monopoly</strong>: all of one resource from every player."
+msgstr "<strong>Monopolio</strong>: todo un recurso de todos los jugadores."
 
 #: templates/how_to_play.html:99
-msgid "<strong>Victory point</strong>: one point when played."
-msgstr "<strong>Punto de victoria</strong>: un punto al jugarla."
+msgid "<strong>Victory point</strong>: one point when used."
+msgstr "<strong>Punto de victoria</strong>: un punto al usarlo."
 
 #: templates/how_to_play.html:101
 #, python-format

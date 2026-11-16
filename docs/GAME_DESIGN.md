@@ -56,7 +56,7 @@ The default preset copies the Catan base game for 3–4 players. Each value belo
 
 **Megacities.** A very expensive upgrade of a city that produces 4 cards per roll and is worth 3 points. They keep the game moving when the island is full: once a player has no room left for new settlements, they can still grow by upgrading, so a game cannot get stuck below the target. Cost, production, points, pieces and build time are settings; 0 megacity pieces turns them off.
 
-**Development cards.** The deck has 25 cards:
+**Development cards** (called "developments" in the game, since nothing here is a physical card). The deck has 25 cards, and it never runs out: when it is empty a fresh deck is shuffled in (`dev_cards.refill`, on by default):
 
 - 14 knights. Playing one lets that player move the robber up to 3 hexes away and steal 1 card (adjustable) from a player there. This is the only time a player controls the robber.
 - 5 victory point cards. Each counts only once played, and playing one follows the same cooldown as any other card.

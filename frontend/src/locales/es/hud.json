@@ -42,11 +42,11 @@
   "scores": {
     "title": "Jugadores",
     "points": "{{points}} / {{target}}",
-    "cards": "{{count}} cartas",
+    "cards": "{{count}} recursos",
     "you": "(tú)",
     "road": "camino {{count}}",
     "longest_road": "Gran Ruta",
-    "dev": "{{count}} cartas de desarrollo",
+    "dev": "{{count}} desarrollos",
     "knights": "{{count}} caballeros",
     "largest_army": "Gran Ejército",
     "resigned": "Se rindió",
@@ -106,18 +106,18 @@
     "zoom_in": "Acercar",
     "zoom_out": "Alejar",
     "center_selected": "Centrar en el colono",
-    "buy_dev_card": "Comprar carta de desarrollo",
+    "buy_dev_card": "Comprar desarrollo",
     "open_trade": "Abrir comercio"
   },
   "spectator": "Estás mirando esta partida",
   "youObject": "ti",
   "dev": {
-    "buy": "Carta",
-    "buyCost": "Carta de desarrollo: cuesta {{res}} (quedan {{left}})",
-    "open": "Cartas ({{count}})",
-    "title": "Tus cartas de desarrollo",
-    "none": "No tienes cartas de desarrollo.",
-    "play": "Jugar",
+    "buy": "Desarrollo",
+    "buyCost": "Desarrollo: cuesta {{res}}",
+    "open": "Desarrollos ({{count}})",
+    "title": "Tus desarrollos",
+    "none": "No tienes desarrollos.",
+    "play": "Usar",
     "close": "Cerrar",
     "take": "Tomar",
     "pickPlenty": "Elige {{count}} recursos para tomar del banco",
@@ -131,7 +131,7 @@
       "monopoly": "Monopolio"
     },
     "help": {
-      "knight": "Mueve el ladrón hasta 3 hexágonos y roba una carta",
+      "knight": "Mueve el ladrón hasta 3 hexágonos y roba un recurso",
       "victory_point": "Vale un punto al jugarla",
       "road_building": "Construye 2 caminos gratis",
       "year_of_plenty": "Toma 2 recursos del banco",
@@ -155,7 +155,7 @@
       "megacity": "Metrópolis",
       "longest_road": "Gran Ruta",
       "largest_army": "Gran Ejército",
-      "victory_point": "Cartas de punto"
+      "victory_point": "Puntos de victoria"
     },
     "part": {
       "settlement_one": "{{count}} poblado ({{points}})",
@@ -168,8 +168,8 @@
       "longest_road_other": "Gran Ruta ({{points}})",
       "largest_army_one": "Gran Ejército ({{points}})",
       "largest_army_other": "Gran Ejército ({{points}})",
-      "victory_point_one": "{{count}} carta de punto ({{points}})",
-      "victory_point_other": "{{count}} cartas de punto ({{points}})"
+      "victory_point_one": "{{count}} desarrollo de punto ({{points}})",
+      "victory_point_other": "{{count}} desarrollos de punto ({{points}})"
     }
   },
   "resign": {
@@ -197,13 +197,13 @@
     "keys": "Teclas: WASD o flechas para caminar, clic derecho en un lugar para construir, R camino, E poblado, C ciudad.",
     "touch": "Toca un lugar del mapa para caminar o construir. Arrastra para mover el mapa y pellizca para acercar.",
     "tips": {
-      "produce": "Cada pocos segundos se tiran los dados. Cada hexágono cuyo número sale da una carta a cada poblado vecino (2 a una ciudad).",
+      "produce": "Cada pocos segundos se tiran los dados. Cada hexágono cuyo número sale da un recurso a cada poblado vecino (2 a una ciudad).",
       "roads": "Construye caminos desde tu red para llegar a nuevas esquinas; los poblados nuevos deben tocar uno de tus caminos.",
       "settle": "Un poblado cuesta {{settlement}} y vale 1 punto. Las esquinas junto al 6 y el 8 producen más seguido.",
       "city": "Mejora un poblado a ciudad ({{city}}): produce el doble y vale 2 puntos.",
       "trade": "¿Te sobra un recurso? Cambia {{ratio}} iguales con el banco por cualquier otro, o mejor en un puerto.",
-      "robber": "Con un 7 no se produce nada y el ladrón se lleva la mitad de las cartas de quien tenga más de {{limit}}. ¡Gasta antes del 7!",
-      "cards": "Las cartas de desarrollo ({{card}}) dan caballeros, caminos gratis, recursos o puntos ocultos.",
+      "robber": "Con un 7 no se produce nada y el ladrón se lleva la mitad de los recursos de quien tenga más de {{limit}}. ¡Gasta antes del 7!",
+      "cards": "Los desarrollos ({{card}}) dan caballeros, caminos gratis, recursos o puntos ocultos.",
       "goal": "Gana quien llegue primero a {{target}} puntos. El camino más largo y el ejército más grande dan puntos extra."
     }
   },
@@ -214,9 +214,9 @@
     "dice": "No hay turnos. Cada {{seconds}} segundos el reloj tira dos dados para todos; los hexágonos con ese número dan recursos a los poblados y ciudades a su alrededor.",
     "setup": "Al comienzo tu colono recorre la isla y construye gratis tus 2 primeros poblados y 2 caminos. A quien aún está en esto nunca le roban.",
     "build": "Costos: camino {{road}} · poblado {{settlement}} · ciudad {{city}}. Las construcciones tardan unos segundos en terminar.",
-    "robber": "Con un 7 no se produce nada, el ladrón se lleva la mitad de las cartas de quien tenga más de {{limit}} y luego pasa a un hexágono vecino, que no produce mientras siga allí.",
+    "robber": "Con un 7 no se produce nada, el ladrón se lleva la mitad de los recursos de quien tenga más de {{limit}} y luego pasa a un hexágono vecino, que no produce mientras siga allí.",
     "trade": "Comercia con el banco a {{ratio}}:1, o a 3:1 y 2:1 en los puertos donde tengas un poblado.",
-    "cards": "Las cartas de desarrollo cuestan {{card}}: los caballeros mueven al ladrón y roban; las demás dan caminos, recursos o puntos.",
+    "cards": "Los desarrollos cuestan {{card}}: los caballeros mueven al ladrón y roban; los demás dan caminos, recursos o puntos.",
     "controls": "Controles",
     "keys": "WASD o flechas: caminar · clic derecho: caminar o construir · R camino · E poblado · C ciudad · T comerciar · Shift+WASD cámara.",
     "touch": "Toca el mapa para caminar o construir · arrastra para mover el mapa · pellizca para acercar · los botones de abajo construyen y comercian.",

@@ -11,7 +11,7 @@
   <a href="#goal">{% translate "Goal" %}</a> · <a href="#start">{% translate "The start" %}</a> ·
   <a href="#dice">{% translate "Dice and resources" %}</a> · <a href="#build">{% translate "Building" %}</a> ·
   <a href="#robber">{% translate "The robber" %}</a> · <a href="#trade">{% translate "Trading" %}</a> ·
-  <a href="#cards">{% translate "Cards and awards" %}</a> · <a href="#controls">{% translate "Controls" %}</a> ·
+  <a href="#cards">{% translate "Developments and awards" %}</a> · <a href="#controls">{% translate "Controls" %}</a> ·
   <a href="#tips">{% translate "Tips" %}</a>
 </nav>
 
@@ -19,7 +19,7 @@
   <h2>{% translate "Goal" %}</h2>
   <p>{% blocktranslate trimmed with target=s.victory.target %}
     The first player to reach <strong>{{ target }} points</strong> wins. You earn points with settlements,
-    cities, awards and some development cards.
+    cities, awards and some developments.
   {% endblocktranslate %}</p>
 </section>
 
@@ -32,7 +32,7 @@
       and each road goes next to the settlement you just built.
     {% endblocktranslate %}</li>
     <li>{% translate "A settlement needs a free corner: no other settlement may stand on a neighbouring corner." %}</li>
-    <li>{% translate "Each of your first two settlements gives you one card from every hex around it." %}</li>
+    <li>{% translate "Each of your first two settlements gives you one resource from every hex around it." %}</li>
     <li>{% translate "If someone finishes building on that corner first, your build is cancelled and refunded. Be quick!" %}</li>
   </ol>
   <p class="muted">{% translate "While a player is still building their starting settlements and roads, the robber never steals from them." %}</p>
@@ -70,33 +70,33 @@
 <section id="robber">
   <h2>{% translate "The robber" %}</h2>
   <p>{% blocktranslate trimmed with limit=s.robber.card_limit pct=s.robber.steal_pct %}
-    When the dice show a 7 nothing is produced. The robber takes {{ pct }}% of the cards of everyone holding
-    more than {{ limit }} cards, then moves by itself to a neighbouring hex. The hex where it stands produces nothing.
+    When the dice show a 7 nothing is produced. The robber takes {{ pct }}% of the resources of everyone holding
+    more than {{ limit }}, then moves by itself to a neighbouring hex. The hex where it stands produces nothing.
   {% endblocktranslate %}</p>
-  <p class="muted">{% translate "Tip: spend or trade your cards before a 7 comes." %}</p>
+  <p class="muted">{% translate "Tip: spend or trade your resources before a 7 comes." %}</p>
 </section>
 
 <section id="trade">
   <h2>{% translate "Trading" %}</h2>
   <p>{% blocktranslate trimmed with ratio=s.economy.trade.bank_ratio generic=s.board.harbors.generic_ratio specific=s.board.harbors.specific_ratio %}
-    Trade {{ ratio }} cards of one kind with the bank for 1 card of any other. With a settlement or city on a harbor
+    Trade {{ ratio }} resources of one kind with the bank for 1 of any other. With a settlement or city on a harbor
     you trade at {{ generic }}:1, or {{ specific }}:1 for that harbor's resource.
   {% endblocktranslate %}</p>
 </section>
 
 <section id="cards">
-  <h2>{% translate "Development cards and awards" %}</h2>
+  <h2>{% translate "Developments and awards" %}</h2>
   <p>{% blocktranslate trimmed with cost=dev_card_cost %}
-    A development card costs {{ cost }}. You can play a card from the roll after you bought it, one card per roll.
+    A development costs {{ cost }}. It is drawn at random and can be used from the roll after you bought it, one per roll. They never run out.
   {% endblocktranslate %}</p>
   <ul>
     <li>{% blocktranslate trimmed with dist=s.robber.knight_max_distance %}
-      <strong>Knight</strong>: move the robber up to {{ dist }} hexes and steal a card from a player there.
+      <strong>Knight</strong>: move the robber up to {{ dist }} hexes and steal a resource from a player there.
     {% endblocktranslate %}</li>
     <li>{% translate "<strong>Road building</strong>: two free roads." %}</li>
     <li>{% translate "<strong>Year of plenty</strong>: two resources of your choice from the bank." %}</li>
-    <li>{% translate "<strong>Monopoly</strong>: every card of one resource from all players." %}</li>
-    <li>{% translate "<strong>Victory point</strong>: one point when played." %}</li>
+    <li>{% translate "<strong>Monopoly</strong>: all of one resource from every player." %}</li>
+    <li>{% translate "<strong>Victory point</strong>: one point when used." %}</li>
   </ul>
   <p>{% blocktranslate trimmed with road=s.victory.longest_road.min road_points=s.victory.longest_road.points army=s.victory.largest_army.min army_points=s.victory.largest_army.points %}
     The longest road (at least {{ road }} segments) is worth {{ road_points }} points, and the largest army
