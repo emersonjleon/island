@@ -14,3 +14,4 @@ staticfiles/
 *.mo
 static/dist/
 e2e/out/
+dump.rdb

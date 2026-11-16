@@ -58,7 +58,16 @@ class DevCardTest(unittest.TestCase):
         self.assertEqual((bought[0].card, bought[0].deck_left), (DevCardKind.MONOPOLY, 1))
         self.assertEqual([c["kind"] for c in devcards.hand(s, 0)], ["monopoly"])
         self.buy(s, 1)
-        self.assertEqual(self.code(self.buy, s, 2), "dev.deck_empty")
+        bought = [e for e in self.buy(s, 2) if isinstance(e, DevCardBought)]     # a fresh deck
+        self.assertEqual((bought[0].card, bought[0].deck_left), (DevCardKind.MONOPOLY, 1))
+        self.assertEqual(s.ext[devcards.EXT_KEY]["refills"], 1)
+
+    def test_deck_without_refill_runs_out(self) -> None:
+        over = deck_of("knight", 1)
+        over["dev_cards"]["refill"] = False
+        s = self.state(over)
+        self.buy(s, 0)
+        self.assertEqual(self.code(self.buy, s, 1), "dev.deck_empty")
 
     def test_buy_refusals(self) -> None:
         s = self.state()

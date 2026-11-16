@@ -346,6 +346,7 @@ function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
   const cardCost = costOf(store.settings, "dev_card" as BuildKind);
   const myCards = cardCount(devPlayer(store.state, store.seat));
   const deckLeft = store.state?.dev_cards?.deck_left ?? 0;
+  const refill = (store.settings["dev_cards"] as { refill?: boolean } | undefined)?.refill !== false;
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -368,7 +369,7 @@ function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
             </button>
           );
         })}
-        <button type="button" class={canAfford(hand, cardCost) && deckLeft > 0 ? "buy-card" : "buy-card short"}
+        <button type="button" class={canAfford(hand, cardCost) && (deckLeft > 0 || refill) ? "buy-card" : "buy-card short"}
                 onClick={() => send({ a: "buy_dev_card" })}
                 title={t("hud:dev.buyCost", { res: formatRes(t, cardCost), left: deckLeft })}>
           {t("hud:dev.buy")}

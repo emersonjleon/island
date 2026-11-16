@@ -415,6 +415,8 @@ class DevCardSettings(_Group):
         {DevCardKind.KNIGHT: 14, DevCardKind.VICTORY_POINT: 5, DevCardKind.ROAD_BUILDING: 2,
          DevCardKind.YEAR_OF_PLENTY: 2, DevCardKind.MONOPOLY: 2},
         label="settings.dev_cards.deck")
+    refill: bool = setting(True, label="settings.dev_cards.refill")
+    """A fresh copy of ``deck`` is shuffled in when it runs out, so cards never run out."""
     cooldown: Cooldown = setting(Cooldown.PER_ROLL, label="settings.dev_cards.cooldown")
     cooldown_ms: int | None = setting(None, label="settings.dev_cards.cooldown_ms", ge=0, le=600000)
     vp_cards_must_be_played: bool = setting(True, label="settings.dev_cards.vp_cards_must_be_played")

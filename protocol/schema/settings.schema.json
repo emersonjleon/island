@@ -600,6 +600,14 @@
           "title": "Deck",
           "type": "object"
         },
+        "refill": {
+          "default": true,
+          "description": "A fresh copy of ``deck`` is shuffled in when it runs out, so cards never run out.",
+          "label": "settings.dev_cards.refill",
+          "stage": 1,
+          "title": "Refill",
+          "type": "boolean"
+        },
         "road_building_roads": {
           "default": 2,
           "label": "settings.dev_cards.road_building_roads",
