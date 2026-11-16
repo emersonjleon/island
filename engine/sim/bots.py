@@ -8,7 +8,8 @@ a game can be replayed from its command log alone.
 
 * :class:`RandomBot` -- picks uniformly among legal moves.
 * :class:`GreedyBot` -- prefers high-yield spots, cities over settlements over
-  roads, saves for settlements and trades with the bank for what it lacks.
+  roads, saves for settlements, trades with the bank for what it lacks, offers
+  1:1 swaps on the trade board and takes other players' offers that help it.
 """
 from __future__ import annotations
 
@@ -16,7 +17,7 @@ from typing import Any
 
 from engine.rng import Rng
 from engine.board import coords
-from engine.rules import devcards, movement, placement, robber, trade
+from engine.rules import devcards, movement, placement, robber, trade, trade_board
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
@@ -252,14 +253,55 @@ class GreedyBot(Bot):
             return {"a": "buy_dev_card"}
         return None
 
+    # ----------------------------------------------------------- trade board
+    def _goal(self, state: GameState) -> dict[Resource, int]:
+        """Cost of what the bot saves for: a city when it has a settlement, else a settlement."""
+        p = state.player(self.seat)
+        has_settlement = any(b.seat == self.seat and b.kind is SETTLEMENT for b in state.buildings.values())
+        kind = CITY if has_settlement and p.pieces_left.get(CITY, 0) > 0 else SETTLEMENT
+        return placement.cost_of(state, kind)
+
+    def board_trades(self, state: GameState) -> list[Intent]:
+        """Take a helpful offer, or keep one 1:1 offer of a spare card for a missing one."""
+        if not state.settings.trading.player_trades:
+            return []
+        p = state.player(self.seat)
+        cost = self._goal(state)
+        need = {r for r in Resource if p.hand[r] < cost[r]}
+        spare = {r: p.hand[r] - cost[r] for r in Resource if p.hand[r] > cost[r]}
+        mine = None
+        for oid, o in trade_board.offers(state).items():
+            if o["seat"] == self.seat:
+                mine = (oid, o)
+                continue
+            helps = any(r in need for r in o["give"])
+            affordable = all(spare.get(r, 0) >= n for r, n in o["get"].items())
+            if helps and affordable and not trade_board.missing(state, o["seat"], o["give"]):
+                return [{"a": "accept_offer", "offer": oid}]
+        if mine is not None:
+            oid, o = mine
+            (give, _), = o["give"].items()
+            (get, _), = o["get"].items()
+            if get not in need or spare.get(give, 0) < 1:
+                return [{"a": "cancel_offer", "offer": oid}]
+            return []
+        if len(need) == 1 and spare:
+            want = next(iter(need))
+            give = max(sorted(spare, key=lambda r: r.value), key=lambda r: spare[r])
+            return [{"a": "post_offer", "give": {give.value: 1}, "get": {want.value: 1}}]
+        return []
+
     def network(self, state: GameState) -> list[Intent]:
         plays = self.dev_card_plays(state)
+        swaps = self.board_trades(state)
+        if swaps and swaps[0]["a"] == "accept_offer":
+            return plays + swaps
         builds = self.network_builds(state)
         if not builds or builds[0]["a"] == "bank_trade":
             buy = self._buy_card(state)
             if buy is not None:
                 builds = [buy]
-        return plays + builds
+        return plays + swaps + builds
 
     def network_builds(self, state: GameState) -> list[Intent]:
         megas = placement.legal_targets(state, self.seat, MEGACITY)

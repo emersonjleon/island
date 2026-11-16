@@ -626,6 +626,145 @@
       "title": "LongestRoad",
       "type": "object"
     },
+    "OfferClosed": {
+      "additionalProperties": false,
+      "description": "Offer ``offer`` of ``seat`` left the board. ``reason``: ``\"accepted\"`` (``by``\ntook it; the cards moved, see ``Hand``), ``\"cancelled\"``, ``\"expired\"`` or\n``\"resigned\"`` (its poster left the game).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "by": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "By"
+        },
+        "get": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Get",
+          "type": "object"
+        },
+        "give": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Give",
+          "type": "object"
+        },
+        "k": {
+          "const": "offer_closed",
+          "default": "offer_closed",
+          "title": "K",
+          "type": "string"
+        },
+        "offer": {
+          "title": "Offer",
+          "type": "integer"
+        },
+        "reason": {
+          "enum": [
+            "accepted",
+            "cancelled",
+            "expired",
+            "resigned"
+          ],
+          "title": "Reason",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "offer",
+        "seat",
+        "reason"
+      ],
+      "title": "OfferClosed",
+      "type": "object"
+    },
+    "OfferPosted": {
+      "additionalProperties": false,
+      "description": "``seat`` put offer ``offer`` on the trade board: they give ``give`` for ``get``.\n``expires_at``: game ms when it is taken down, or None (stays until taken).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "get": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Get",
+          "type": "object"
+        },
+        "give": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Give",
+          "type": "object"
+        },
+        "k": {
+          "const": "offer_posted",
+          "default": "offer_posted",
+          "title": "K",
+          "type": "string"
+        },
+        "offer": {
+          "title": "Offer",
+          "type": "integer"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "offer",
+        "seat",
+        "give",
+        "get"
+      ],
+      "title": "OfferPosted",
+      "type": "object"
+    },
     "Points": {
       "additionalProperties": false,
       "properties": {
@@ -1181,6 +1320,8 @@
       "hand": "#/$defs/Hand",
       "largest_army": "#/$defs/LargestArmy",
       "longest_road": "#/$defs/LongestRoad",
+      "offer_closed": "#/$defs/OfferClosed",
+      "offer_posted": "#/$defs/OfferPosted",
       "points": "#/$defs/Points",
       "produced": "#/$defs/Produced",
       "resigned": "#/$defs/Resigned",
@@ -1267,6 +1408,12 @@
     },
     {
       "$ref": "#/$defs/LargestArmy"
+    },
+    {
+      "$ref": "#/$defs/OfferPosted"
+    },
+    {
+      "$ref": "#/$defs/OfferClosed"
     },
     {
       "$ref": "#/$defs/Buildable"

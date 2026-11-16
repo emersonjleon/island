@@ -15,7 +15,7 @@ from engine.errors import RuleError
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 
 __all__ = [
-    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "Resign", "Command", "COMMAND_TYPES",
+    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "PostOffer", "CancelOffer", "AcceptOffer", "Resign", "Command", "COMMAND_TYPES",
     "parse_command", "command_json_schema", "ENVELOPE_KEYS",
 ]
 
@@ -110,21 +110,52 @@ class PlayDevCard(_Cmd):
     resource: Resource | None = None
 
 
+class PostOffer(_Cmd):
+    """Put an offer on the trade board (stage 2): the poster gives ``give`` and gets
+    ``get`` from whoever accepts. Both name at least one resource, never the same one."""
+    a: Literal["post_offer"] = "post_offer"
+    give: dict[Resource, Amount]
+    get: dict[Resource, Amount]
+
+    @model_validator(mode="after")
+    def _sides(self) -> Self:
+        if not self.give or not self.get:
+            raise ValueError("give and get must each name at least one resource")
+        if set(self.give) & set(self.get):
+            raise ValueError("give and get must not share a resource")
+        return self
+
+
+class CancelOffer(_Cmd):
+    """Take one's own offer off the trade board."""
+    a: Literal["cancel_offer"] = "cancel_offer"
+    offer: Id
+
+
+class AcceptOffer(_Cmd):
+    """Accept another player's offer: the trade happens at once."""
+    a: Literal["accept_offer"] = "accept_offer"
+    offer: Id
+
+
 class Resign(_Cmd):
     """Give up: the player leaves the game for good (see :mod:`engine.rules.resign`)."""
     a: Literal["resign"] = "resign"
 
 
-Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | Resign,
+Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | PostOffer | CancelOffer
+                    | AcceptOffer | Resign,
                     Field(discriminator="a")]
 COMMAND_TYPES: dict[str, type[_Cmd]] = {
     "move_settler": MoveSettler, "build": Build, "cancel_build": CancelBuild, "bank_trade": BankTrade,
-    "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard, "resign": Resign,
+    "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard, "post_offer": PostOffer, "cancel_offer": CancelOffer,
+    "accept_offer": AcceptOffer, "resign": Resign,
 }
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(Command)
 
 
-def parse_command(raw: Any) -> MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | Resign:
+def parse_command(raw: Any) -> (MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard
+                                | PostOffer | CancelOffer | AcceptOffer | Resign):
     """Validate a raw intent dict. Raises ``RuleError("command.invalid", {...})``.
 
     params: ``{"action": <a or None>, "errors": [{"loc": "dotted.path", "type": "..."}]}``.

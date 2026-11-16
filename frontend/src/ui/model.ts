@@ -115,6 +115,16 @@ export function logLine(
     case "traded": return {
       text: t("events:traded", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat,
     };
+    case "offer_posted":
+      return { text: t("events:offer_posted", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat };
+    case "offer_closed": {
+      if (ev.reason === "accepted") {
+        const by = ev.by === viewer ? t("hud:youObject") : name(ev.by as number);
+        return { text: t("events:offer_accepted", { who, by, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat };
+      }
+      if (ev.reason === "expired") return { text: t("events:offer_expired", { who }), seat };
+      return null;                                        // withdrawn, or its player left: the board shows it
+    }
     case "longest_road": {
       if (ev.seat === ev.previous) return null;          // only the lengths changed
       if (seat === null) return { text: t("events:longest_road_none"), seat: null };

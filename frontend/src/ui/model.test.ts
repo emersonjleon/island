@@ -144,6 +144,11 @@ describe("texts", () => {
       .toBe("You took every ore (3) with a monopoly");
     expect(logLine(t, { k: "largest_army", seat: 1, previous: 0, knights: { "1": 4 } }, name, 0)!.text)
       .toBe("ben has the Largest Army (4 knights)");
+    expect(logLine(t, { k: "offer_posted", seat: 1, offer: 2, give: { brick: 2 }, get: { ore: 1 } }, name, 0)!.text)
+      .toBe("ben offers 2 brick for 1 ore");
+    expect(logLine(t, { k: "offer_closed", seat: 1, offer: 2, reason: "accepted", by: 0, give: { brick: 2 }, get: { ore: 1 } },
+      name, 0)!.text).toBe("ben traded 2 brick to you for 1 ore");
+    expect(logLine(t, { k: "offer_closed", seat: 1, offer: 2, reason: "cancelled" }, name, 0)).toBeNull();
     expect(logLine(t, { k: "starting_resources", seat: 0, gained: {} }, name, 0)).toBeNull();
     expect(logLine(t, { k: "settler_step" }, name, 0)).toBeNull();
     // Every event kind either has a line or is deliberately skipped, never throws.
