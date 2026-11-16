@@ -6,7 +6,7 @@
 
 <dl class="settings-summary">
   <dt>{% translate "Preset" %}</dt><dd>{{ game.preset|title }}</dd>
-  <dt>{% translate "Island size (land hexes)" %}</dt><dd>{{ settings.board.land_hexes }}</dd>
+  <dt>{% translate "Island size (land hexes)" %}</dt><dd>{{ settings.board.land_hexes }}{% if settings.players.max > settings.players.sized_for and settings.players.scale_for_more %} <span class="muted">{% blocktranslate with players=settings.players.max %}(for {{ players }} players; smaller if fewer join){% endblocktranslate %}</span>{% endif %}</dd>
   <dt>{% translate "Seconds between dice rolls" %}</dt><dd>{{ roll_seconds }}</dd>
   <dt>{% translate "Points to win" %}</dt><dd>{{ settings.victory.target }}</dd>
   <dt>{% translate "Players" %}</dt><dd>{{ seats|length }} / {{ settings.players.max }}</dd>

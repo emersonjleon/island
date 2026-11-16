@@ -14,7 +14,8 @@
   Cards: **knight** moves the robber to ``hex`` (a legal robber hex at distance
   1..``robber.knight_max_distance``) and steals ``robber.knight_steal`` random cards
   from ``victim``, a player with a building on that hex (the card's player picks;
-  a single possible victim is picked for them); **victory point** adds
+  a single possible victim is picked for them; players still in setup are spared
+  with ``robber.spare_setup``); **victory point** adds
   ``dev_cards.victory_point_points``; **road building** gives
   ``dev_cards.road_building_roads`` free roads (built normally, at no cost; see
   :func:`engine.rules.placement.build_cost`); **year of plenty** takes
@@ -236,7 +237,8 @@ def _knight_target(state: GameState, seat: int, cmd: PlayDevCard) -> tuple[int, 
     limit = state.settings.robber.knight_max_distance
     if coords.hex_distance(board.hexes[start], board.hexes[h]) > limit:
         raise RuleError("dev.too_far", {"hex": h, "max": limit})
-    near = sorted({b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None} - {seat})
+    owners = {b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None}
+    near = sorted(s for s in owners if s != seat and not robber.is_spared(state, s))
     if cmd.victim is not None:
         if cmd.victim not in near:
             raise RuleError("dev.bad_victim", {"victim": cmd.victim})

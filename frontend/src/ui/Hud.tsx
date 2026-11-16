@@ -14,12 +14,13 @@ import "./hud.css";
 import { cardCount, devPlayer, knightVictims } from "../state/devcards";
 import { DevCardsDialog, VictimDialog } from "./DevCards";
 import { Dialog, useEscape } from "./Dialog";
+import { GuidePanel, HelpDialog } from "./Guide";
 import { Die, ResIcon } from "./icons";
 import { KeySettings } from "./KeySettings";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import {
-  RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
-  rollInterval, victoryTarget, type LogLine,
+  MANY_PLAYERS, RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
+  rollInterval, victoryTarget, visibleScoreSeats, type LogLine,
 } from "./model";
 
 export interface HudControls {
@@ -43,6 +44,8 @@ export interface HudProps {
   bindings: Bindings;
   csrfToken: string;
   lobbyUrl: string;
+  /** The full rules page ("How to play"). */
+  helpUrl?: string;
   /** A touch screen is the main pointer: show touch help, hide keyboard-only bits. */
   touch?: boolean;
 }
@@ -85,7 +88,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const [feed, setFeed] = useState<HudFeed>({ link: "connecting", mode: null });
   const [log, setLog] = useState<LogLine[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | "stats" | "resign" | "fullscreen" | null>(null);
+  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | "stats" | "resign" | "fullscreen" | "help" | null>(null);
   const [overHidden, setOverHidden] = useState(false);
   const [victim, setVictim] = useState<{ hex: number; victims: number[] } | null>(null);
   const [bindings, setBindings] = useState(props.bindings);
@@ -120,7 +123,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       const s = store.state;
       const seat = store.seat;
       if (!s || seat === null || !store.board) return;
-      const robbable = knightVictims(store.board, s, hex, seat).filter((v) => (store.player(v)?.hand_count ?? 1) > 0);
+      const robbable = knightVictims(store.board, s, hex, seat, store.settings).filter((v) => (store.player(v)?.hand_count ?? 1) > 0);
       if (robbable.length > 1) setVictim({ hex, victims: robbable });
       else props.send({ a: "play_dev_card", card: "knight", hex, ...(robbable.length ? { victim: robbable[0] } : {}) });
     };
@@ -135,7 +138,10 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const playing = seated && !finished && !resigned;
   return (
     <div class={props.touch ? "hud touch" : "hud"}>
-      <DiceClock {...props} feed={feed} onResults={finished && overHidden ? () => setOverHidden(false) : undefined} />
+      <div class="hud-top-left">
+        <DiceClock {...props} feed={feed} onResults={finished && overHidden ? () => setOverHidden(false) : undefined} />
+        {s && <GuidePanel store={store} t={t} touch={!!props.touch} onHelp={() => setDialog("help")} />}
+      </div>
       {s && (
         <Scores {...props} onStats={() => setDialog("stats")} onResign={playing ? () => setDialog("resign") : undefined} />
       )}
@@ -158,6 +164,9 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
       {dialog === "fullscreen" && <FullscreenHelp t={t} onClose={() => setDialog(null)} />}
+      {dialog === "help" && s && (
+        <HelpDialog store={store} t={t} touch={!!props.touch} helpUrl={props.helpUrl ?? "/how-to-play/"} onClose={() => setDialog(null)} />
+      )}
       {dialog === "stats" && s && <StatsDialog store={store} t={t} now={props.now} onClose={() => setDialog(null)} />}
       {dialog === "resign" && s && playing && (
         <ResignDialog t={t} onClose={() => setDialog(null)} onConfirm={() => { props.send({ a: "resign" }); setDialog(null); }} />
@@ -246,14 +255,22 @@ function Ring({ share, label, title }: { share: number; label: string; title: st
 }
 
 // ------------------------------------------------------------------ players
+function smallScreen(): boolean {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function"
+    && window.matchMedia("(max-width: 720px), (max-height: 500px)").matches;
+}
+
 function Scores({ store, t, onStats, onResign }: HudProps & { onStats(): void; onResign?: () => void }) {
   const s = store.state!;
   const target = victoryTarget(store.settings);
+  const many = s.players.length > MANY_PLAYERS;
+  const [folded, setFolded] = useState(smallScreen);
+  const shown = new Set(visibleScoreSeats(s.players, store.seat, many && folded));
   return (
-    <div class="hud-panel hud-scores">
+    <div class={`hud-panel hud-scores${many ? " many" : ""}`}>
       <h2>{t("hud:scores.title")}</h2>
       <ul>
-        {s.players.map((p) => {
+        {s.players.filter((p) => shown.has(p.seat)).map((p) => {
           const cards = p.hand ? handTotal(p.hand) : p.hand_count;
           const road = s.longest_road?.lengths[String(p.seat)] ?? 0;
           const holds = s.longest_road?.holder === p.seat;
@@ -283,6 +300,11 @@ function Scores({ store, t, onStats, onResign }: HudProps & { onStats(): void; o
           );
         })}
       </ul>
+      {many && (
+        <button type="button" class="scores-fold" aria-expanded={!folded} onClick={() => setFolded((f) => !f)}>
+          {folded ? t("hud:scores.show_all", { count: s.players.length }) : t("hud:scores.show_less")}
+        </button>
+      )}
       <div class="score-actions">
         <button type="button" class="stats-open" onClick={onStats} aria-label={t("hud:stats.open")} title={t("hud:stats.open")}>
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>

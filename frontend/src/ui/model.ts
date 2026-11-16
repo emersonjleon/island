@@ -185,3 +185,22 @@ export function csrfFromCookie(cookie: string): string {
   const m = cookie.split(/;\s*/).find((c) => c.startsWith("csrftoken="));
   return m ? decodeURIComponent(m.slice("csrftoken=".length)) : "";
 }
+
+/** Above this many players the score list can fold to the leaders and you. */
+export const MANY_PLAYERS = 6;
+/** Leaders shown (besides you) while a long score list is folded. */
+export const FOLDED_LEADERS = 3;
+
+/** Seats shown in the score list, in seat order: everyone, or (folded) the
+ * ``FOLDED_LEADERS`` players with the most points plus your own seat. */
+export function visibleScoreSeats(
+  players: { seat: number; points?: number }[], mySeat: number | null, folded: boolean,
+): number[] {
+  const all = players.map((p) => p.seat);
+  if (!folded || players.length <= MANY_PLAYERS) return all;
+  const leaders = [...players].sort((a, b) => (b.points ?? 0) - (a.points ?? 0) || a.seat - b.seat)
+    .slice(0, FOLDED_LEADERS).map((p) => p.seat);
+  const keep = new Set(leaders);
+  if (mySeat !== null) keep.add(mySeat);
+  return all.filter((s) => keep.has(s));
+}

@@ -37,6 +37,16 @@ class ViteTagTests(SimpleTestCase):
 
 
 class SiteTests(TestCase):
+    def test_how_to_play_shows_rules_from_settings(self):
+        response = self.client.get(reverse("how_to_play"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "10 points")
+        self.assertContains(response, "20 seconds")
+        self.assertContains(response, "1 brick, 1 lumber")
+        self.assertContains(response, "never steals")
+        response = self.client.get(reverse("how_to_play"), HTTP_ACCEPT_LANGUAGE="es")
+        self.assertContains(response, "Cómo jugar")
+
     def test_home_renders(self):
         response = self.client.get(reverse("home"))
         self.assertContains(response, "Ages of the Island")

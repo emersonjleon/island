@@ -30,7 +30,7 @@ describe("GameStore contract with the Python fixtures", () => {
       const state = baseState();
       for (const ev of msg.events) applyEvent(state, ev);
       expect(state.phase).toBe("finished");
-      expect(state.winner).toBe(2);
+      expect(state.winner).toBe(0);
     }
   });
 });

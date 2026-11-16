@@ -16,6 +16,12 @@ COLOURS = [
     ("orange", _("Orange")),
     ("green", _("Green")),
     ("brown", _("Brown")),
+    ("purple", _("Purple")),
+    ("teal", _("Teal")),
+    ("pink", _("Pink")),
+    ("yellow", _("Yellow")),
+    ("black", _("Black")),
+    ("navy", _("Navy")),
 ]
 COLOUR_VALUES = [c for c, _label in COLOURS]
 
@@ -26,7 +32,7 @@ BOT_LEVELS = [
     ("hard", _("Hard")),
 ]
 # Names given to bots in seat-adding order (the same in every language).
-BOT_NAMES = ["Ada", "Bruno", "Clara", "Diego", "Elena", "Felix"]
+BOT_NAMES = ["Ada", "Bruno", "Clara", "Diego", "Elena", "Felix", "Gala", "Hugo", "Iris", "Jonas", "Kira", "Lucas"]
 
 
 def new_code() -> str:

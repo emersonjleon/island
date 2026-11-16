@@ -14,6 +14,7 @@
       <a class="button gold" href="{% url 'accounts:signup' %}">{% translate "Sign up" %}</a>
       <a href="{% url 'accounts:login' %}">{% translate "Log in" %}</a>
     {% endif %}
+      <a href="{% url 'how_to_play' %}">{% translate "How to play" %}</a>
     </p>
   </div>
   <img class="hero-art" src="{% static 'img/island.svg' %}" alt="" width="400" height="330">

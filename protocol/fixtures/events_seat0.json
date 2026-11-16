@@ -144,15 +144,15 @@
       "sum": 7
     },
     {
-      "at": 1379000,
+      "at": 1380000,
       "k": "game_over",
       "points": {
-        "0": 5,
+        "0": 10,
         "1": 2,
-        "2": 10
+        "2": 7
       },
       "reason": "target",
-      "winner": 2
+      "winner": 0
     },
     {
       "at": 0,
@@ -168,12 +168,12 @@
       "seat": 0
     },
     {
-      "at": 311000,
+      "at": 71000,
       "k": "largest_army",
       "knights": {
-        "0": 1,
+        "0": 0,
         "1": 0,
-        "2": 0
+        "2": 1
       },
       "previous": null,
       "seat": null
@@ -197,25 +197,20 @@
     },
     {
       "at": 51000,
-      "gains": {
-        "0": {
-          "wool": 2
-        },
-        "2": {
-          "grain": 1
-        }
-      },
+      "gains": {},
       "k": "produced",
-      "roll": 9,
-      "skipped": {}
+      "roll": 4,
+      "skipped": {
+        "ore": "robber"
+      }
     },
     {
       "at": 1011000,
       "k": "resigned",
       "returned": {
-        "brick": 1,
-        "grain": 1,
-        "lumber": 3
+        "brick": 3,
+        "lumber": 4,
+        "wool": 1
       },
       "seat": 1
     },
@@ -223,21 +218,14 @@
       "at": 31000,
       "from_hex": 9,
       "k": "robber_moved",
-      "to_hex": 5
+      "to_hex": 10
     },
     {
-      "at": 31000,
-      "k": "robber_stole",
-      "lost_count": 6,
-      "seat": 1
-    },
-    {
-      "at": 251000,
+      "at": 511000,
       "k": "robber_stole",
       "lost": {
-        "grain": 1,
-        "lumber": 1,
-        "wool": 2
+        "grain": 3,
+        "lumber": 1
       },
       "seat": 0
     },
@@ -304,20 +292,20 @@
       "seat": 2
     },
     {
-      "at": 71000,
+      "at": 231000,
       "get": {
-        "brick": 1
+        "wool": 1
       },
       "give": {
-        "wool": 4
+        "ore": 4
       },
       "k": "traded",
       "ratio": 4,
-      "seat": 0,
+      "seat": 2,
       "via": "bank"
     }
   ],
-  "now": 1379000,
+  "now": 1380000,
   "seq": 2,
   "t": "events"
 }

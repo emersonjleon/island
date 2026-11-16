@@ -16,7 +16,7 @@ from typing import Any
 
 from engine.rng import Rng
 from engine.board import coords
-from engine.rules import devcards, movement, placement, trade
+from engine.rules import devcards, movement, placement, robber, trade
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
@@ -228,7 +228,10 @@ class GreedyBot(Bot):
             if h == start or coords.hex_distance(board.hexes[start], board.hexes[h]) > limit:
                 continue
             seats = [b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None]
-            if self.seat in seats or not seats:
+            if self.seat in seats:
+                continue
+            seats = [s for s in seats if not robber.is_spared(state, s)]
+            if not seats:
                 continue
             score = len(seats) * 10 + pips(state.board.token[h], state)
             if best is None or score > best[0]:
@@ -236,7 +239,8 @@ class GreedyBot(Bot):
         if best is None:
             return None
         h = best[1]
-        near = {b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None}
+        owners = {b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None}
+        near = {s for s in owners if not robber.is_spared(state, s)}
         play["hex"] = h
         play["victim"] = max(sorted(near), key=lambda s: state.player(s).hand_count)
         return play

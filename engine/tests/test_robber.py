@@ -56,6 +56,23 @@ class RobberTest(unittest.TestCase):
         for e in of_kind(events, Hand):
             self.assertEqual(e.hand, s.players[e.seat].hand)
 
+    def test_seven_spares_players_still_in_setup(self) -> None:
+        s = make_state(n=3, rolls=[[3, 4]])
+        for seat in range(3):
+            set_hand(s, seat, lumber=10)
+        s.players[1].setup_done = False
+        self.assertEqual(robber.targets(s, s.robber_hex), [0, 2])
+        events = game.advance(s, INTERVAL)
+        self.assertEqual([e.seat for e in of_kind(events, RobberStole)], [0, 2])
+        self.assertEqual(s.players[1].hand_count, 10)
+
+    def test_spare_setup_off_robs_everyone(self) -> None:
+        s = make_state(n=3, overrides={"robber": {"spare_setup": False}})
+        for seat in range(3):
+            set_hand(s, seat, lumber=10)
+        s.players[1].setup_done = False
+        self.assertEqual(robber.targets(s, s.robber_hex), [0, 1, 2])
+
     def test_steal_count_rounding(self) -> None:
         s = make_state()
         self.assertEqual([robber.steal_count(s, n) for n in (0, 1, 7, 8, 9, 15)], [0, 0, 3, 4, 4, 7])

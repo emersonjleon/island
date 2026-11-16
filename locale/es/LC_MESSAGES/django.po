@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-11 22:01+0000\n"
+"POT-Creation-Date: 2026-11-16 04:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,6 +41,46 @@ msgstr "preferencias de interfaz"
 msgid "Profile saved."
 msgstr "Perfil guardado."
 
+#: common/views.py:9
+msgid "lumber"
+msgstr "madera"
+
+#: common/views.py:10
+msgid "brick"
+msgstr "ladrillo"
+
+#: common/views.py:11
+msgid "wool"
+msgstr "lana"
+
+#: common/views.py:12
+msgid "grain"
+msgstr "trigo"
+
+#: common/views.py:13
+msgid "ore"
+msgstr "mineral"
+
+#: common/views.py:14
+msgid "fish"
+msgstr "pescado"
+
+#: common/views.py:32
+msgid "Road"
+msgstr "Camino"
+
+#: common/views.py:33
+msgid "Settlement"
+msgstr "Poblado"
+
+#: common/views.py:35
+msgid "City"
+msgstr "Ciudad"
+
+#: common/views.py:36
+msgid "Megacity"
+msgstr "Metrópolis"
+
 #: config/settings/base.py:110
 msgid "English"
 msgstr "English"
@@ -49,36 +89,42 @@ msgstr "English"
 msgid "Español"
 msgstr "Español"
 
-#: lobby/forms.py:14 templates/lobby/detail.html:8 templates/lobby/list.html:21
+#: lobby/forms.py:15 templates/lobby/detail.html:8 templates/lobby/list.html:24
 msgid "Preset"
 msgstr "Preajuste"
 
-#: lobby/forms.py:16 templates/lobby/detail.html:12
-#: templates/lobby/list.html:21
+#: lobby/forms.py:17 templates/lobby/detail.html:12
+#: templates/lobby/list.html:24
 msgid "Players"
 msgstr "Jugadores"
 
-#: lobby/forms.py:19 templates/lobby/detail.html:9
+#: lobby/forms.py:18
+msgid "More than 4 players get a bigger island and bank automatically."
+msgstr "Con más de 4 jugadores la isla y el banco crecen automáticamente."
+
+#: lobby/forms.py:21 templates/lobby/detail.html:9
 msgid "Island size (land hexes)"
 msgstr "Tamaño de la isla (hexágonos de tierra)"
 
-#: lobby/forms.py:20
-msgid "Blank keeps the preset (19 in Classic)."
-msgstr "En blanco mantiene el preajuste (19 en Clásico)."
+#: lobby/forms.py:22
+msgid "Blank keeps the preset (19 in Classic, larger for more than 4 players)."
+msgstr ""
+"En blanco se usa el valor del modo (19 en Clásico, más grande con más de 4 "
+"jugadores)."
 
-#: lobby/forms.py:23 templates/lobby/detail.html:10
+#: lobby/forms.py:25 templates/lobby/detail.html:10
 msgid "Seconds between dice rolls"
 msgstr "Segundos entre tiradas de dados"
 
-#: lobby/forms.py:24
+#: lobby/forms.py:26
 msgid "Blank keeps the preset (20 in Classic)."
 msgstr "En blanco mantiene el preajuste (20 en Clásico)."
 
-#: lobby/forms.py:27 templates/lobby/detail.html:11
+#: lobby/forms.py:29 templates/lobby/detail.html:11
 msgid "Points to win"
 msgstr "Puntos para ganar"
 
-#: lobby/forms.py:28
+#: lobby/forms.py:30
 msgid "Blank keeps the preset (10 in Classic)."
 msgstr "En blanco mantiene el preajuste (10 en Clásico)."
 
@@ -162,42 +208,66 @@ msgstr "Verde"
 msgid "Brown"
 msgstr "Marrón"
 
+#: lobby/models.py:19
+msgid "Purple"
+msgstr "Morado"
+
+#: lobby/models.py:20
+msgid "Teal"
+msgstr "Turquesa"
+
+#: lobby/models.py:21
+msgid "Pink"
+msgstr "Rosado"
+
+#: lobby/models.py:22
+msgid "Yellow"
+msgstr "Amarillo"
+
+#: lobby/models.py:23
+msgid "Black"
+msgstr "Negro"
+
 #: lobby/models.py:24
+msgid "Navy"
+msgstr "Azul marino"
+
+#: lobby/models.py:30
 msgid "Easy"
 msgstr "Fácil"
 
-#: lobby/models.py:25
+#: lobby/models.py:31
 msgid "Medium"
 msgstr "Media"
 
-#: lobby/models.py:26
+#: lobby/models.py:32
 msgid "Hard"
 msgstr "Difícil"
 
-#: lobby/models.py:37
+#: lobby/models.py:43
 msgid "Waiting for players"
 msgstr "Esperando jugadores"
 
-#: lobby/models.py:38
+#: lobby/models.py:44
 msgid "Starting"
 msgstr "Iniciando"
 
-#: lobby/models.py:39
+#: lobby/models.py:45
 msgid "Running"
 msgstr "En curso"
 
-#: lobby/models.py:40
+#: lobby/models.py:46
 msgid "Finished"
 msgstr "Terminada"
 
-#: lobby/models.py:41
+#: lobby/models.py:47
 msgid "Cancelled"
 msgstr "Cancelada"
 
 #: templates/accounts/login.html:2 templates/accounts/login.html:4
 #: templates/accounts/login.html:10
 #: templates/accounts/password_reset_complete.html:5
-#: templates/accounts/signup.html:11 templates/base.html:22
+#: templates/accounts/signup.html:11 templates/base.html:28
 #: templates/home.html:15
 msgid "Log in"
 msgstr "Iniciar sesión"
@@ -211,7 +281,7 @@ msgid "New here?"
 msgstr "¿Eres nuevo?"
 
 #: templates/accounts/login.html:13 templates/accounts/signup.html:2
-#: templates/accounts/signup.html:4 templates/base.html:23
+#: templates/accounts/signup.html:4 templates/base.html:29
 #: templates/home.html:14
 msgid "Sign up"
 msgstr "Registrarse"
@@ -279,8 +349,8 @@ msgstr "Revisa tu correo"
 #: templates/accounts/password_reset_done.html:5
 msgid "If an account uses that address, we sent a link to reset its password."
 msgstr ""
-"Si alguna cuenta usa esa dirección, le enviamos un enlace para restablecer "
-"la contraseña."
+"Si alguna cuenta usa esa dirección, le enviamos un enlace para restablecer la"
+" contraseña."
 
 #: templates/accounts/password_reset_email.txt:1
 #, python-format
@@ -315,19 +385,24 @@ msgstr "Crear cuenta"
 msgid "Already have an account?"
 msgstr "¿Ya tienes cuenta?"
 
-#: templates/base.html:8 templates/base.html:14 templates/home.html:5
+#: templates/base.html:13 templates/base.html:19 templates/home.html:5
 msgid "Ages of the Island"
 msgstr "Ages of the Island"
 
-#: templates/base.html:19
+#: templates/base.html:21 templates/home.html:17 templates/how_to_play.html:2
+#: templates/how_to_play.html:4
+msgid "How to play"
+msgstr "Cómo jugar"
+
+#: templates/base.html:25
 msgid "Log out"
 msgstr "Cerrar sesión"
 
-#: templates/base.html:28
+#: templates/base.html:34
 msgid "Language"
 msgstr "Idioma"
 
-#: templates/base.html:35 templates/lobby/_seats.html:40
+#: templates/base.html:41 templates/lobby/_seats.html:40
 msgid "Change"
 msgstr "Cambiar"
 
@@ -361,29 +436,379 @@ msgstr ""
 msgid "Go to the lobby"
 msgstr "Ir a la sala de espera"
 
-#: templates/home.html:22
+#: templates/home.html:23
 msgid "The clock rolls the dice"
 msgstr "El reloj tira los dados"
 
-#: templates/home.html:23
-msgid "Every few seconds the dice roll for everyone. No waiting for turns."
-msgstr "Cada pocos segundos se lanzan los dados para todos. Sin esperar turnos."
-
 #: templates/home.html:24
+msgid "Every few seconds the dice roll for everyone. No waiting for turns."
+msgstr ""
+"Cada pocos segundos se lanzan los dados para todos. Sin esperar turnos."
+
+#: templates/home.html:25
 msgid "Walk and build"
 msgstr "Camina y construye"
 
-#: templates/home.html:25
-msgid "Your settlers walk the island and build roads, settlements and cities."
-msgstr "Tus colonos recorren la isla y construyen caminos, poblados y ciudades."
-
 #: templates/home.html:26
+msgid "Your settlers walk the island and build roads, settlements and cities."
+msgstr ""
+"Tus colonos recorren la isla y construyen caminos, poblados y ciudades."
+
+#: templates/home.html:27
 msgid "Play anywhere"
 msgstr "Juega donde quieras"
 
-#: templates/home.html:27
+#: templates/home.html:28
 msgid "On a computer or a phone, with friends or against bots."
 msgstr "En el ordenador o en el móvil, con amigos o contra bots."
+
+#: templates/how_to_play.html:5
+msgid ""
+"Ages of the Island is a race to build on an island, in real time. There are "
+"no turns: everyone plays at once while a clock rolls the dice for all."
+msgstr ""
+"Ages of the Island es una carrera por construir en una isla, en tiempo real. "
+"No hay turnos: todos juegan a la vez mientras un reloj tira los dados para "
+"todos."
+
+#: templates/how_to_play.html:10
+msgid "Contents"
+msgstr "Contenido"
+
+#: templates/how_to_play.html:11 templates/how_to_play.html:19
+msgid "Goal"
+msgstr "Objetivo"
+
+#: templates/how_to_play.html:11
+msgid "The start"
+msgstr "El comienzo"
+
+#: templates/how_to_play.html:12 templates/how_to_play.html:42
+msgid "Dice and resources"
+msgstr "Dados y recursos"
+
+#: templates/how_to_play.html:12 templates/how_to_play.html:52
+#: templates/how_to_play.html:54
+msgid "Building"
+msgstr "Construir"
+
+#: templates/how_to_play.html:13 templates/how_to_play.html:71
+msgid "The robber"
+msgstr "El ladrón"
+
+#: templates/how_to_play.html:13 templates/how_to_play.html:80
+msgid "Trading"
+msgstr "Comercio"
+
+#: templates/how_to_play.html:14
+msgid "Cards and awards"
+msgstr "Cartas y premios"
+
+#: templates/how_to_play.html:14 templates/how_to_play.html:108
+msgid "Controls"
+msgstr "Controles"
+
+#: templates/how_to_play.html:15
+msgid "Tips"
+msgstr "Consejos"
+
+#: templates/how_to_play.html:20
+#, python-format
+msgid ""
+"The first player to reach <strong>%(target)s points</strong> wins. You earn "
+"points with settlements, cities, awards and some development cards."
+msgstr ""
+"Gana el primer jugador que llegue a <strong>%(target)s puntos</strong>. Ganas"
+" puntos con poblados, ciudades, premios y algunas cartas de desarrollo."
+
+#: templates/how_to_play.html:27
+msgid "The start: your settler"
+msgstr "El comienzo: tu colono"
+
+#: templates/how_to_play.html:29
+msgid ""
+"Your settler lands on the coast. Walk it from corner to corner to the spot "
+"you like."
+msgstr ""
+"Tu colono desembarca en la costa. Llévalo de esquina en esquina hasta el "
+"lugar que te guste."
+
+#: templates/how_to_play.html:30
+#, python-format
+msgid ""
+"Build your first %(settlements)s settlements and %(roads)s roads. You already"
+" have the materials for them, and each road goes next to the settlement you "
+"just built."
+msgstr ""
+"Construye tus primeros %(settlements)s poblados y %(roads)s caminos. Ya "
+"tienes los materiales para ellos, y cada camino va junto al poblado que "
+"acabas de construir."
+
+#: templates/how_to_play.html:34
+msgid ""
+"A settlement needs a free corner: no other settlement may stand on a "
+"neighbouring corner."
+msgstr ""
+"Un poblado necesita una esquina libre: no puede haber otro poblado en una "
+"esquina vecina."
+
+#: templates/how_to_play.html:35
+msgid ""
+"Each of your first two settlements gives you one card from every hex around "
+"it."
+msgstr ""
+"Cada uno de tus dos primeros poblados te da una carta de cada hexágono a su "
+"alrededor."
+
+#: templates/how_to_play.html:36
+msgid ""
+"If someone finishes building on that corner first, your build is cancelled "
+"and refunded. Be quick!"
+msgstr ""
+"Si alguien termina de construir primero en esa esquina, tu construcción se "
+"cancela y se te devuelve lo pagado. ¡Sé rápido!"
+
+#: templates/how_to_play.html:38
+msgid ""
+"While a player is still building their starting settlements and roads, the "
+"robber never steals from them."
+msgstr ""
+"Mientras un jugador sigue construyendo sus poblados y caminos iniciales, el "
+"ladrón nunca le roba."
+
+#: templates/how_to_play.html:43
+#, python-format
+msgid ""
+"The clock starts with the first settlement and rolls two dice every "
+"<strong>%(seconds)s seconds</strong>. Every hex showing the rolled number "
+"gives its resource to each settlement around it (2 to a city)."
+msgstr ""
+"El reloj arranca con el primer poblado y tira dos dados cada "
+"<strong>%(seconds)s segundos</strong>. Cada hexágono con el número que salió "
+"da su recurso a cada poblado a su alrededor (2 a una ciudad)."
+
+#: templates/how_to_play.html:47
+msgid ""
+"Forests give lumber, hills brick, pastures wool, fields grain, mountains ore "
+"and fishing grounds fish. The desert gives nothing."
+msgstr ""
+"Los bosques dan madera, las colinas ladrillo, los pastos lana, los campos "
+"trigo, las montañas mineral y los bancos de pesca pescado. El desierto no da "
+"nada."
+
+#: templates/how_to_play.html:48
+msgid ""
+"6 and 8 come up most often; 2 and 12 rarely. The dots under each number show "
+"how likely it is."
+msgstr ""
+"El 6 y el 8 salen más seguido; el 2 y el 12 casi nunca. Los puntos bajo cada "
+"número muestran qué tan probable es."
+
+#: templates/how_to_play.html:54
+msgid "Cost"
+msgstr "Costo"
+
+#: templates/how_to_play.html:54
+msgid "Points"
+msgstr "Puntos"
+
+#: templates/how_to_play.html:54
+msgid "Time"
+msgstr "Tiempo"
+
+#: templates/how_to_play.html:57
+#, python-format
+msgid "%(n)s s"
+msgstr "%(n)s s"
+
+#: templates/how_to_play.html:62
+msgid ""
+"After the start, new roads and settlements must connect to your own roads."
+msgstr ""
+"Después del comienzo, los caminos y poblados nuevos deben conectarse con tus "
+"propios caminos."
+
+#: templates/how_to_play.html:63
+msgid ""
+"A city replaces one of your settlements and a megacity replaces one of your "
+"cities."
+msgstr ""
+"Una ciudad reemplaza a uno de tus poblados y una metrópolis a una de tus "
+"ciudades."
+
+#: templates/how_to_play.html:64
+#, python-format
+msgid ""
+"Each player has %(roads)s roads, %(settlements)s settlements and %(cities)s "
+"cities."
+msgstr ""
+"Cada jugador tiene %(roads)s caminos, %(settlements)s poblados y %(cities)s "
+"ciudades."
+
+#: templates/how_to_play.html:72
+#, python-format
+msgid ""
+"When the dice show a 7 nothing is produced. The robber takes %(pct)s%% of the"
+" cards of everyone holding more than %(limit)s cards, then moves by itself to"
+" a neighbouring hex. The hex where it stands produces nothing."
+msgstr ""
+"Cuando los dados suman 7 no se produce nada. El ladrón se lleva el %(pct)s%% "
+"de las cartas de cada jugador con más de %(limit)s cartas y luego se mueve "
+"solo a un hexágono vecino. El hexágono donde está no produce."
+
+#: templates/how_to_play.html:76
+msgid "Tip: spend or trade your cards before a 7 comes."
+msgstr "Consejo: gasta o cambia tus cartas antes de que salga un 7."
+
+#: templates/how_to_play.html:81
+#, python-format
+msgid ""
+"Trade %(ratio)s cards of one kind with the bank for 1 card of any other. With"
+" a settlement or city on a harbor you trade at %(generic)s:1, or "
+"%(specific)s:1 for that harbor's resource."
+msgstr ""
+"Cambia %(ratio)s cartas iguales con el banco por 1 carta de cualquier otro "
+"tipo. Con un poblado o ciudad en un puerto cambias a %(generic)s:1, o a "
+"%(specific)s:1 con el recurso de ese puerto."
+
+#: templates/how_to_play.html:88
+msgid "Development cards and awards"
+msgstr "Cartas de desarrollo y premios"
+
+#: templates/how_to_play.html:89
+#, python-format
+msgid ""
+"A development card costs %(cost)s. You can play a card from the roll after "
+"you bought it, one card per roll."
+msgstr ""
+"Una carta de desarrollo cuesta %(cost)s. Puedes jugarla desde la tirada "
+"siguiente a su compra, una carta por tirada."
+
+#: templates/how_to_play.html:93
+#, python-format
+msgid ""
+"<strong>Knight</strong>: move the robber up to %(dist)s hexes and steal a "
+"card from a player there."
+msgstr ""
+"<strong>Caballero</strong>: mueve al ladrón hasta %(dist)s hexágonos y roba "
+"una carta a un jugador de allí."
+
+#: templates/how_to_play.html:96
+msgid "<strong>Road building</strong>: two free roads."
+msgstr "<strong>Construcción de caminos</strong>: dos caminos gratis."
+
+#: templates/how_to_play.html:97
+msgid ""
+"<strong>Year of plenty</strong>: two resources of your choice from the bank."
+msgstr ""
+"<strong>Año de abundancia</strong>: dos recursos a tu elección del banco."
+
+#: templates/how_to_play.html:98
+msgid "<strong>Monopoly</strong>: every card of one resource from all players."
+msgstr ""
+"<strong>Monopolio</strong>: todas las cartas de un recurso de todos los "
+"jugadores."
+
+#: templates/how_to_play.html:99
+msgid "<strong>Victory point</strong>: one point when played."
+msgstr "<strong>Punto de victoria</strong>: un punto al jugarla."
+
+#: templates/how_to_play.html:101
+#, python-format
+msgid ""
+"The longest road (at least %(road)s segments) is worth %(road_points)s "
+"points, and the largest army (at least %(army)s knights played) another "
+"%(army_points)s."
+msgstr ""
+"El camino más largo (al menos %(road)s tramos) vale %(road_points)s puntos, y"
+" el ejército más grande (al menos %(army)s caballeros jugados) otros "
+"%(army_points)s."
+
+#: templates/how_to_play.html:109
+msgid "Computer"
+msgstr "Computador"
+
+#: templates/how_to_play.html:111
+msgid ""
+"WASD or the arrow keys walk your settler; Shift + WASD moves the camera; the "
+"mouse wheel zooms."
+msgstr ""
+"WASD o las flechas mueven a tu colono; Shift + WASD mueve la cámara; la rueda"
+" del ratón acerca y aleja."
+
+#: templates/how_to_play.html:112
+msgid "Right-click a corner or edge to walk there or build."
+msgstr ""
+"Haz clic derecho en una esquina o arista para caminar hasta allí o construir."
+
+#: templates/how_to_play.html:113
+msgid ""
+"R builds a road, E a settlement, C a city; T opens trading. You can change "
+"the keys in the game."
+msgstr ""
+"R construye un camino, E un poblado, C una ciudad; T abre el comercio. Puedes"
+" cambiar las teclas en la partida."
+
+#: templates/how_to_play.html:115
+msgid "Phone or tablet"
+msgstr "Teléfono o tableta"
+
+#: templates/how_to_play.html:117
+msgid "Tap a spot on the map to walk there or build."
+msgstr "Toca un lugar del mapa para caminar hasta allí o construir."
+
+#: templates/how_to_play.html:118
+msgid ""
+"Drag to move the map, pinch to zoom; the buttons at the bottom build and "
+"trade."
+msgstr ""
+"Arrastra para mover el mapa y pellizca para acercar; los botones de abajo "
+"construyen y comercian."
+
+#: templates/how_to_play.html:120
+msgid ""
+"In the game, the Guide panel under the dice clock tells you the next step, "
+"and the ? button repeats these rules."
+msgstr ""
+"En la partida, el panel Guía bajo el reloj de dados te dice el siguiente "
+"paso, y el botón ? repite estas reglas."
+
+#: templates/how_to_play.html:124
+msgid "Tips for your first game"
+msgstr "Consejos para tu primera partida"
+
+#: templates/how_to_play.html:126
+msgid ""
+"Choose corners touching different resources and numbers like 5, 6, 8 and 9."
+msgstr ""
+"Elige esquinas que toquen recursos distintos y números como 5, 6, 8 y 9."
+
+#: templates/how_to_play.html:127
+msgid ""
+"Brick and lumber build roads; grain and ore build cities. You need both "
+"kinds."
+msgstr ""
+"Ladrillo y madera construyen caminos; trigo y mineral construyen ciudades. "
+"Necesitas de ambos."
+
+#: templates/how_to_play.html:128
+msgid "Build roads toward free corners before someone else takes them."
+msgstr "Construye caminos hacia esquinas libres antes de que otro las tome."
+
+#: templates/how_to_play.html:129
+msgid "Play against bots first: the host can add them in the game room."
+msgstr ""
+"Juega primero contra bots: el anfitrión puede agregarlos en la sala de la "
+"partida."
+
+#: templates/how_to_play.html:131
+#, python-format
+msgid ""
+"Games take 2 to %(max)s players. With more than %(sized)s players the island "
+"and the bank grow automatically."
+msgstr ""
+"Las partidas son de 2 a %(max)s jugadores. Con más de %(sized)s jugadores la "
+"isla y el banco crecen automáticamente."
 
 #: templates/lobby/_seats.html:2
 msgid "Status:"
@@ -460,6 +885,11 @@ msgstr "Ir a la partida"
 msgid "Share this code so friends can join."
 msgstr "Comparte este código para que tus amigos se unan."
 
+#: templates/lobby/detail.html:9
+#, python-format
+msgid "(for %(players)s players; smaller if fewer join)"
+msgstr "(para %(players)s jugadores; más pequeña si se unen menos)"
+
 #: templates/lobby/detail.html:18
 msgid "Back to the lobby"
 msgstr "Volver a la sala de espera"
@@ -468,30 +898,39 @@ msgstr "Volver a la sala de espera"
 msgid "Lobby"
 msgstr "Sala de espera"
 
-#: templates/lobby/list.html:8
+#: templates/lobby/list.html:5
+#, python-format
+msgid ""
+"New to the island? Read <a href=\"%(help_url)s\">how to play</a>, then start "
+"a game against bots."
+msgstr ""
+"¿Nuevo en la isla? Lee <a href=\"%(help_url)s\">cómo jugar</a> y luego "
+"empieza una partida contra bots."
+
+#: templates/lobby/list.html:11
 msgid "Your games"
 msgstr "Tus partidas"
 
-#: templates/lobby/list.html:18
+#: templates/lobby/list.html:21
 msgid "Open games"
 msgstr "Partidas abiertas"
 
-#: templates/lobby/list.html:21
+#: templates/lobby/list.html:24
 msgid "Code"
 msgstr "Código"
 
-#: templates/lobby/list.html:21
+#: templates/lobby/list.html:24
 msgid "Host"
 msgstr "Anfitrión"
 
-#: templates/lobby/list.html:34
+#: templates/lobby/list.html:37
 msgid "No open games. Create one below."
 msgstr "No hay partidas abiertas. Crea una abajo."
 
-#: templates/lobby/list.html:39
+#: templates/lobby/list.html:42
 msgid "Create a game"
 msgstr "Crear una partida"
 
-#: templates/lobby/list.html:43
+#: templates/lobby/list.html:46
 msgid "Create game"
 msgstr "Crear partida"

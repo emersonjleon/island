@@ -226,9 +226,16 @@ class StageTest(unittest.TestCase):
                 GameSettings.model_validate(raw)
             self.assertEqual(error_types(ctx.exception), ["settings.later_stage"])
 
-    def test_later_stage_numeric_limit(self) -> None:
+    def test_big_tables_allowed(self) -> None:
+        s = GameSettings.model_validate({"players": {"max": 12}, "board": {"land_hexes": 57},
+                                         "economy": {"bank": {"per_resource": 57}}})
+        self.assertEqual(s.players.max, 12)
         with self.assertRaises(ValidationError):
-            GameSettings.model_validate({"players": {"max": 5}, "economy": {"bank": {"per_resource": 30}}})
+            GameSettings.model_validate({"players": {"max": 13}})
+        with self.assertRaises(ValidationError) as ctx:
+            GameSettings.model_validate({"players": {"max": 8}, "board": {"land_hexes": 31},
+                                         "economy": {"bank": {"per_resource": 40}}})
+        self.assertEqual(error_types(ctx.exception), ["settings.board.too_small_for_players"])
 
     def test_stage_one_values_allowed(self) -> None:
         s = GameSettings.model_validate({
@@ -242,9 +249,9 @@ class StageTest(unittest.TestCase):
         GameSettings.model_validate({"dev_cards": {"road_building_roads": 2}, "trading": {"player_trades": True}})
 
     def test_context_raises_implemented_stage(self) -> None:
-        s = parse_settings({"board": {"layout": "beginner"}, "players": {"max": 6},
+        s = parse_settings({"board": {"layout": "beginner"}, "players": {"max": 3},
                             "economy": {"bank": {"per_resource": 30}}}, implemented_stage=3)
-        self.assertEqual(s.players.max, 6)
+        self.assertEqual(s.players.max, 3)
         with self.assertRaises(ValidationError):
             parse_settings({"board": {"shape": "custom"}}, implemented_stage=3)
 
@@ -345,3 +352,31 @@ class SchemaTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PlayerScalingTest(unittest.TestCase):
+    def test_classic_scales_island_and_bank_for_big_tables(self) -> None:
+        from engine.settings import load_preset
+        expected = {2: 19, 4: 19, 5: 24, 6: 29, 8: 38, 10: 48, 12: 57}
+        for players, land in expected.items():
+            with self.subTest(players=players):
+                s = load_preset("classic", {"players": {"max": players}})
+                self.assertEqual(s.board.land_hexes, land)
+                self.assertEqual(set(s.economy.bank.per_resource.values()), {land})
+
+    def test_real_table_size_at_start(self) -> None:
+        from engine.settings import load_preset
+        s = load_preset("classic", {"players": {"max": 8}}, players=3)
+        self.assertEqual((s.players.max, s.board.land_hexes), (3, 19))
+        s = load_preset("classic", {"players": {"max": 8}}, players=7)
+        self.assertEqual((s.players.max, s.board.land_hexes), (7, 34))
+
+    def test_explicit_values_win_and_switch_off(self) -> None:
+        from engine.settings import load_preset, scale_for_players
+        s = load_preset("classic", {"players": {"max": 8}, "board": {"land_hexes": 45}})
+        self.assertEqual((s.board.land_hexes, s.economy.bank.per_resource[Resource.ORE]), (45, 38))
+        raw = scale_for_players({"players": {"max": 8, "scale_for_more": False}})
+        self.assertNotIn("board", raw)
+        raw = scale_for_players({"players": {"max": 6}, "economy": {"bank": {"per_resource": 50}}})
+        self.assertEqual(raw["economy"]["bank"]["per_resource"], 50)
+        self.assertEqual(raw["board"]["land_hexes"], 29)

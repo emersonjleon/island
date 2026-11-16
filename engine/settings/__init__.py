@@ -29,6 +29,7 @@ from .resolve import (
     STANDARD_FISHING_GROUNDS, STANDARD_GENERIC_HARBORS, STANDARD_LAND_HEXES, STANDARD_NUMBER_TOKENS,
     STANDARD_TERRAIN_COUNTS, ResolvedBoardCounts, resolve_board_counts, scale_counts, scale_round,
 )
+from .scaling import scale_for_players, scaled_count
 from .schema import export_json_schema
 
 __all__ = [
@@ -52,5 +53,5 @@ __all__ = [
     # loading
     "parse_settings", "merge_overrides", "migrate", "MIGRATIONS", "MigrationError",
     "load_preset", "available_presets", "preset_overrides", "UnknownPresetError",
-    "export_json_schema",
+    "export_json_schema", "scale_for_players", "scaled_count",
 ]

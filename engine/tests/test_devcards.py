@@ -179,6 +179,20 @@ class DevCardTest(unittest.TestCase):
         self.assertEqual((s.players[0].hand[Resource.BRICK], s.players[1].hand[Resource.BRICK]), (1, 1))
         self.assertEqual(devcards.knights(s)[0], 1)
 
+    def test_knight_spares_players_in_setup(self) -> None:
+        s = self.state(ALL_KNIGHTS)
+        self.knight_ready(s)
+        h = self.hex_at(s, 1)
+        verts = s.board.board.hex_vertices[h]
+        place(s, 1, verts[0])
+        place(s, 2, verts[3])
+        set_hand(s, 1, ore=1)
+        set_hand(s, 2, ore=1)
+        s.players[1].setup_done = False
+        self.assertEqual(self.code(self.play, s, 0, "knight", hex=h, victim=1), "dev.bad_victim")
+        played = next(e for e in self.play(s, 0, "knight", hex=h) if isinstance(e, DevCardPlayed))
+        self.assertEqual((played.victim, s.players[1].hand_count), (2, 1))
+
     def test_knight_refusals(self) -> None:
         s = self.state(ALL_KNIGHTS)
         self.knight_ready(s)

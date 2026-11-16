@@ -49,7 +49,9 @@
     "dev": "{{count}} dev cards",
     "knights": "{{count}} knights",
     "largest_army": "Largest Army",
-    "resigned": "Resigned"
+    "resigned": "Resigned",
+    "show_all": "Show all {{count}}",
+    "show_less": "Show fewer"
   },
   "camera": {
     "center": "Centre on my settler",
@@ -182,5 +184,42 @@
   "fullscreen": {
     "title": "Play in full screen",
     "body": "This browser does not let the page hide its bars. On an iPhone, tap Share and then “Add to Home Screen”: opened from that icon the game fills the screen, without the browser bar."
+  },
+  "guide": {
+    "title": "Guide",
+    "hide": "Hide the guide",
+    "show": "Guide",
+    "help": "How to play",
+    "setup_settlement": "Step {{step}} of {{total}}: walk your settler to a free corner (no settlement on a neighbouring corner) and build a settlement there.",
+    "setup_road": "Step {{step}} of {{total}}: build a road on an edge next to your new settlement.",
+    "building": "Building your {{kind}}… your settler must stay until it is finished.",
+    "wait_clock": "Setup done! The dice clock starts with the first settlement; soon your settlements will collect resources.",
+    "keys": "Keys: WASD or arrows walk, right-click a spot to build, R road, E settlement, C city.",
+    "touch": "Tap a spot on the map to walk there or build. Drag to move the map, pinch to zoom.",
+    "tips": {
+      "produce": "Every few seconds the dice roll. Each hex whose number comes up gives a card to every settlement next to it (2 for a city).",
+      "roads": "Build roads from your network to reach new corners; new settlements must touch one of your roads.",
+      "settle": "A settlement costs {{settlement}} and is worth 1 point. Spots on 6 and 8 produce most often.",
+      "city": "Upgrade a settlement to a city ({{city}}): it produces double and is worth 2 points.",
+      "trade": "Too much of one resource? Trade {{ratio}} of the same kind with the bank for any other, or better at a harbor.",
+      "robber": "On a 7 nothing is produced and the robber takes half the cards of everyone holding more than {{limit}}. Spend before the 7!",
+      "cards": "Development cards ({{card}}) give knights, free roads, resources or hidden points.",
+      "goal": "The first player to reach {{target}} points wins. The longest road and the largest army give extra points."
+    }
+  },
+  "help": {
+    "title": "How to play",
+    "close": "Close",
+    "goal": "Goal: be the first to reach {{target}} points. Settlements are worth 1, cities 2.",
+    "dice": "There are no turns. Every {{seconds}} seconds the clock rolls two dice for everyone; hexes with that number give resources to the settlements and cities around them.",
+    "setup": "At the start your settler walks the island and builds your first 2 settlements and 2 roads for free. Players still doing this are never robbed.",
+    "build": "Costs: road {{road}} · settlement {{settlement}} · city {{city}}. Buildings take a few seconds to finish.",
+    "robber": "On a 7 nothing is produced, the robber takes half the cards of anyone holding more than {{limit}}, and then it moves to a neighbouring hex, which produces nothing while it stays there.",
+    "trade": "Trade with the bank at {{ratio}}:1, or 3:1 and 2:1 at harbors where you have a settlement.",
+    "cards": "Development cards cost {{card}}: knights move the robber and steal, others give roads, resources or points.",
+    "controls": "Controls",
+    "keys": "WASD or arrows walk · right-click: walk or build · R road · E settlement · C city · T trade · Shift+WASD camera.",
+    "touch": "Tap the map to walk or build · drag to move the map · pinch to zoom · buttons below build and trade.",
+    "full": "Full rules"
   }
 }

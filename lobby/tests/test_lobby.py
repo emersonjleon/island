@@ -64,7 +64,7 @@ class ServiceTests(TestCase):
             services.set_colour(game, self.bo, "red")
         self.assertEqual(ctx.exception.code, "lobby.colour_taken")
         with self.assertRaises(LobbyError):
-            services.set_colour(game, self.bo, "purple")
+            services.set_colour(game, self.bo, "magenta")
         with self.assertRaises(LobbyError) as ctx:
             services.set_colour(game, self.cy, "white")
         self.assertEqual(ctx.exception.code, "lobby.not_joined")
@@ -113,6 +113,28 @@ class ServiceTests(TestCase):
         with self.assertRaises(LobbyError) as ctx:
             services.join_game(game, user("dee"))
         self.assertEqual(ctx.exception.code, "lobby.not_open")
+
+    def test_big_table_scales_island_to_the_seats_taken(self):
+        game = self.make({"players": {"max": 12}})
+        for level in ["easy"] * 7:
+            services.add_bot(game, self.host, level)
+        self.assertEqual(game.players.count(), 8)
+        self.assertEqual(len(set(game.players.values_list("colour", flat=True))), 8)
+        services.start_game(game, self.host)
+        game.refresh_from_db()
+        settings = GameSettings.model_validate(game.settings)
+        self.assertEqual((settings.players.max, settings.board.land_hexes), (8, 38))
+        self.assertEqual(settings.economy.bank.per_resource["brick"], 38)
+
+    def test_twelve_seats_have_twelve_colours_and_bot_names(self):
+        game = self.make({"players": {"max": 12}})
+        for _ in range(11):
+            services.add_bot(game, self.host, "easy")
+        self.assertEqual(len(set(game.players.values_list("colour", flat=True))), 12)
+        self.assertEqual(len(set(game.players.filter(user=None).values_list("bot_name", flat=True))), 11)
+        with self.assertRaises(LobbyError) as ctx:
+            services.add_bot(game, self.host, "easy")
+        self.assertEqual(ctx.exception.code, "lobby.full")
 
     def test_host_seat_order_keeps_join_order(self):
         game = self.make({"players": {"max": 3, "seat_order": "host"}})

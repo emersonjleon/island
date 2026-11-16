@@ -2,6 +2,9 @@
 {% block title %}{% translate "Lobby" %} · {{ block.super }}{% endblock %}
 {% block content %}
 <h1>{% translate "Lobby" %}</h1>
+<p class="muted">{% url 'how_to_play' as help_url %}{% blocktranslate trimmed %}
+  New to the island? Read <a href="{{ help_url }}">how to play</a>, then start a game against bots.
+{% endblocktranslate %}</p>
 
 {% if my_games %}
 <section>

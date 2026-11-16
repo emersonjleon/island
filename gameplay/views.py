@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import get_language
 
 from lobby.models import Game, GameStatus
@@ -23,5 +24,6 @@ def play(request: HttpRequest, code: str) -> HttpResponse:
         "keybindingsUrl": "/accounts/keybindings/",
         "uiPrefs": request.user.ui_prefs,
         "lobbyUrl": f"/lobby/{game.code}/",
+        "helpUrl": reverse("how_to_play"),
     }
     return render(request, "gameplay/game.html", {"game": game, "config": config, "seat": seat})

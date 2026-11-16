@@ -3,18 +3,23 @@
   "seq": 1,
   "state": {
     "bank": {
-      "brick": 19,
+      "brick": 18,
       "fish": 19,
-      "grain": 14,
-      "lumber": 15,
+      "grain": 18,
+      "lumber": 16,
       "ore": 15,
-      "wool": 17
+      "wool": 18
     },
     "buildings": [
       {
         "kind": "settlement",
         "seat": 1,
         "vertex": 30
+      },
+      {
+        "kind": "settlement",
+        "seat": 1,
+        "vertex": 32
       },
       {
         "kind": "settlement",
@@ -41,11 +46,11 @@
     "constructions": [],
     "dev_cards": {
       "army": null,
-      "deck_left": 24,
+      "deck_left": 22,
       "players": {
         "0": {
           "count": 0,
-          "knights": 0
+          "knights": 1
         },
         "1": {
           "count": 0,
@@ -53,29 +58,29 @@
         },
         "2": {
           "count": 0,
-          "knights": 0
+          "knights": 1
         }
       }
     },
     "dice_history": [
       7,
-      9,
-      9,
-      6,
-      5
+      4,
+      11,
+      4,
+      12
     ],
     "end_reason": null,
     "finished_at": null,
     "last_roll": [
-      2,
-      3
+      6,
+      6
     ],
     "longest_road": {
       "holder": null,
       "lengths": {
-        "0": 2,
-        "1": 1,
-        "2": 1
+        "0": 1,
+        "1": 2,
+        "2": 2
       }
     },
     "next_roll_at": 131000,
@@ -84,12 +89,12 @@
     "players": [
       {
         "colour": "red",
-        "hand_count": 5,
+        "hand_count": 3,
         "name": "p0",
         "pieces": {
           "city": 4,
           "megacity": 4,
-          "road": 12,
+          "road": 13,
           "settlement": 3
         },
         "points": 2,
@@ -107,37 +112,35 @@
       },
       {
         "colour": "blue",
-        "hand_count": 4,
+        "hand_count": 3,
         "name": "p1",
         "pieces": {
           "city": 4,
           "megacity": 4,
-          "road": 14,
-          "settlement": 4
+          "road": 12,
+          "settlement": 3
         },
-        "points": 1,
+        "points": 2,
         "resigned": false,
         "seat": 1,
-        "settlers": [
-          2
-        ],
+        "settlers": [],
         "setup": {
-          "done": false,
+          "done": true,
           "remaining": {
-            "road": 1,
-            "settlement": 1
+            "road": 0,
+            "settlement": 0
           },
-          "settlements_built": 1
+          "settlements_built": 2
         }
       },
       {
         "colour": "white",
-        "hand_count": 6,
+        "hand_count": 4,
         "name": "p2",
         "pieces": {
           "city": 4,
           "megacity": 4,
-          "road": 13,
+          "road": 12,
           "settlement": 3
         },
         "points": 2,
@@ -164,6 +167,18 @@
         "seat": 0
       },
       {
+        "edge": 49,
+        "seat": 1
+      },
+      {
+        "edge": 51,
+        "seat": 1
+      },
+      {
+        "edge": 72,
+        "seat": 2
+      },
+      {
         "edge": 76,
         "seat": 2
       },
@@ -172,36 +187,20 @@
         "seat": 0
       },
       {
-        "edge": 79,
-        "seat": 0
-      },
-      {
         "edge": 88,
         "seat": 2
       }
     ],
-    "robber": 5,
-    "settlers": [
-      {
-        "id": 2,
-        "path": [],
-        "seat": 1,
-        "step": null,
-        "vertex": 30
-      }
-    ],
+    "robber": 4,
+    "settlers": [],
     "stats": {
       "produced": {
         "0": {
-          "grain": 1,
-          "wool": 4
+          "ore": 1
         },
-        "1": {
-          "lumber": 1
-        },
+        "1": {},
         "2": {
-          "grain": 2,
-          "lumber": 1,
+          "brick": 1,
           "ore": 1
         }
       },
@@ -228,6 +227,10 @@
           [
             41000,
             1
+          ],
+          [
+            72000,
+            2
           ]
         ],
         "2": [
@@ -240,7 +243,7 @@
             1
           ],
           [
-            68000,
+            58000,
             2
           ]
         ]

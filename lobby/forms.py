@@ -6,6 +6,7 @@ from engine.settings import available_presets
 from .models import COLOURS
 
 MS_PER_SECOND = 1000
+MAX_PLAYERS = len(COLOURS)
 
 
 class CreateGameForm(forms.Form):
@@ -13,11 +14,12 @@ class CreateGameForm(forms.Form):
 
     preset = forms.ChoiceField(label=_("Preset"))
     max_players = forms.TypedChoiceField(
-        label=_("Players"), coerce=int, choices=[(n, n) for n in (2, 3, 4)], initial=4
+        label=_("Players"), coerce=int, choices=[(n, n) for n in range(2, MAX_PLAYERS + 1)], initial=4,
+        help_text=_("More than 4 players get a bigger island and bank automatically."),
     )
     land_hexes = forms.IntegerField(
         label=_("Island size (land hexes)"), required=False, min_value=7, max_value=250,
-        help_text=_("Blank keeps the preset (19 in Classic)."),
+        help_text=_("Blank keeps the preset (19 in Classic, larger for more than 4 players)."),
     )
     roll_interval = forms.IntegerField(
         label=_("Seconds between dice rolls"), required=False, min_value=5, max_value=120,

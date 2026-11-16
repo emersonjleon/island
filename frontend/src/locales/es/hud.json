@@ -49,7 +49,9 @@
     "dev": "{{count}} cartas de desarrollo",
     "knights": "{{count}} caballeros",
     "largest_army": "Gran Ejército",
-    "resigned": "Se rindió"
+    "resigned": "Se rindió",
+    "show_all": "Ver los {{count}}",
+    "show_less": "Ver menos"
   },
   "camera": {
     "center": "Centrar en mi colono",
@@ -182,5 +184,42 @@
   "fullscreen": {
     "title": "Jugar a pantalla completa",
     "body": "Este navegador no deja ocultar sus barras desde la página. En iPhone, toca Compartir y luego «Añadir a pantalla de inicio»: al abrir el juego desde ese icono se ve a pantalla completa, sin la barra del navegador."
+  },
+  "guide": {
+    "title": "Guía",
+    "hide": "Ocultar la guía",
+    "show": "Guía",
+    "help": "Cómo jugar",
+    "setup_settlement": "Paso {{step}} de {{total}}: lleva a tu colono a una esquina libre (sin poblados en una esquina vecina) y construye un poblado allí.",
+    "setup_road": "Paso {{step}} de {{total}}: construye un camino en una arista junto a tu nuevo poblado.",
+    "building": "Construyendo tu {{kind}}… tu colono debe quedarse hasta que termine.",
+    "wait_clock": "¡Preparación lista! El reloj de dados arranca con el primer poblado; pronto tus poblados recibirán recursos.",
+    "keys": "Teclas: WASD o flechas para caminar, clic derecho en un lugar para construir, R camino, E poblado, C ciudad.",
+    "touch": "Toca un lugar del mapa para caminar o construir. Arrastra para mover el mapa y pellizca para acercar.",
+    "tips": {
+      "produce": "Cada pocos segundos se tiran los dados. Cada hexágono cuyo número sale da una carta a cada poblado vecino (2 a una ciudad).",
+      "roads": "Construye caminos desde tu red para llegar a nuevas esquinas; los poblados nuevos deben tocar uno de tus caminos.",
+      "settle": "Un poblado cuesta {{settlement}} y vale 1 punto. Las esquinas junto al 6 y el 8 producen más seguido.",
+      "city": "Mejora un poblado a ciudad ({{city}}): produce el doble y vale 2 puntos.",
+      "trade": "¿Te sobra un recurso? Cambia {{ratio}} iguales con el banco por cualquier otro, o mejor en un puerto.",
+      "robber": "Con un 7 no se produce nada y el ladrón se lleva la mitad de las cartas de quien tenga más de {{limit}}. ¡Gasta antes del 7!",
+      "cards": "Las cartas de desarrollo ({{card}}) dan caballeros, caminos gratis, recursos o puntos ocultos.",
+      "goal": "Gana quien llegue primero a {{target}} puntos. El camino más largo y el ejército más grande dan puntos extra."
+    }
+  },
+  "help": {
+    "title": "Cómo jugar",
+    "close": "Cerrar",
+    "goal": "Objetivo: ser el primero en llegar a {{target}} puntos. Los poblados valen 1 y las ciudades 2.",
+    "dice": "No hay turnos. Cada {{seconds}} segundos el reloj tira dos dados para todos; los hexágonos con ese número dan recursos a los poblados y ciudades a su alrededor.",
+    "setup": "Al comienzo tu colono recorre la isla y construye gratis tus 2 primeros poblados y 2 caminos. A quien aún está en esto nunca le roban.",
+    "build": "Costos: camino {{road}} · poblado {{settlement}} · ciudad {{city}}. Las construcciones tardan unos segundos en terminar.",
+    "robber": "Con un 7 no se produce nada, el ladrón se lleva la mitad de las cartas de quien tenga más de {{limit}} y luego pasa a un hexágono vecino, que no produce mientras siga allí.",
+    "trade": "Comercia con el banco a {{ratio}}:1, o a 3:1 y 2:1 en los puertos donde tengas un poblado.",
+    "cards": "Las cartas de desarrollo cuestan {{card}}: los caballeros mueven al ladrón y roban; las demás dan caminos, recursos o puntos.",
+    "controls": "Controles",
+    "keys": "WASD o flechas: caminar · clic derecho: caminar o construir · R camino · E poblado · C ciudad · T comerciar · Shift+WASD cámara.",
+    "touch": "Toca el mapa para caminar o construir · arrastra para mover el mapa · pellizca para acercar · los botones de abajo construyen y comercian.",
+    "full": "Reglas completas"
   }
 }

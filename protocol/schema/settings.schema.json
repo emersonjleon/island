@@ -962,11 +962,7 @@
         "max": {
           "default": 4,
           "label": "settings.players.max",
-          "later_stage_above": {
-            "stage": 3,
-            "value": 4
-          },
-          "maximum": 6,
+          "maximum": 12,
           "minimum": 2,
           "stage": 1,
           "title": "Max",
@@ -975,21 +971,45 @@
         "min": {
           "default": 2,
           "label": "settings.players.min",
-          "later_stage_above": {
-            "stage": 3,
-            "value": 4
-          },
-          "maximum": 6,
+          "maximum": 12,
           "minimum": 2,
           "stage": 1,
           "title": "Min",
           "type": "integer"
+        },
+        "min_land_per_player": {
+          "default": 4,
+          "description": "Games with more than ``sized_for`` players need this many land hexes per player.",
+          "label": "settings.players.min_land_per_player",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Min Land Per Player",
+          "type": "integer"
+        },
+        "scale_for_more": {
+          "default": true,
+          "description": "Bigger games scale the island and bank up (see ``settings.scaling``).",
+          "label": "settings.players.scale_for_more",
+          "stage": 1,
+          "title": "Scale For More",
+          "type": "boolean"
         },
         "seat_order": {
           "$ref": "#/$defs/SeatOrder",
           "default": "random",
           "label": "settings.players.seat_order",
           "stage": 1
+        },
+        "sized_for": {
+          "default": 4,
+          "description": "Player count the board size and bank are written for.",
+          "label": "settings.players.sized_for",
+          "maximum": 12,
+          "minimum": 2,
+          "stage": 1,
+          "title": "Sized For",
+          "type": "integer"
         }
       },
       "title": "PlayersSettings",
@@ -1133,6 +1153,14 @@
           "label": "settings.robber.require_over_limit",
           "stage": 1,
           "title": "Require Over Limit",
+          "type": "boolean"
+        },
+        "spare_setup": {
+          "default": true,
+          "description": "Players still building their setup settlements and roads are never robbed (sevens or knights).",
+          "label": "settings.robber.spare_setup",
+          "stage": 1,
+          "title": "Spare Setup",
           "type": "boolean"
         },
         "steal_pct": {
