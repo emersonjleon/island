@@ -9,7 +9,24 @@
   box-shadow: 0 6px 18px rgba(3, 15, 22, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06); }
 .hud-panel h2 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 6px; color: #f0c94f; font-weight: 700; }
 
-.hud-clock { left: 12px; top: 12px; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 260px); min-height: 24px; }
+.hud-top-left { position: absolute; left: 12px; top: 12px; max-width: calc(100% - 260px); display: flex; flex-direction: column;
+  align-items: flex-start; gap: 8px; pointer-events: none; }
+.hud-top-left > * { pointer-events: auto; }
+.hud-top-left .hud-panel { position: relative; }
+.hud-clock { display: flex; align-items: center; gap: 10px; max-width: 100%; min-height: 24px; }
+/* The guide for new players, under the clock. */
+.hud-guide { max-width: 340px; padding: 6px 10px 8px; font-size: 0.82rem; line-height: 1.35; }
+.hud-guide header { display: flex; align-items: center; gap: 4px; }
+.hud-guide header h2 { flex: 1; margin: 0; }
+.game-hud .hud-guide header button { padding: 0 7px; min-height: 0; line-height: 1.5; font-weight: 700; }
+.hud-guide p { margin: 4px 0 0; }
+.hud-guide .controls { color: #c9c3b3; font-size: 0.76rem; }
+.hud-guide-buttons { display: flex; gap: 6px; }
+.game-hud .hud-guide-buttons button { padding: 2px 10px; font-size: 0.78rem; }
+.game-hud button.help-open { font-weight: 800; }
+.help-rules { margin: 0 0 8px; padding-left: 1.1em; line-height: 1.45; }
+.help-rules li + li { margin-top: 4px; }
+.hud-dialog h3 { font-size: 0.95rem; margin: 10px 0 4px; }
 .hud-mode { display: flex; flex-wrap: wrap; column-gap: 6px; }
 .game-hud button.hud-cancel { flex: none; }
 .hud-ring { flex: none; }
@@ -38,6 +55,11 @@
 .hud-scores .points { font-weight: 700; font-variant-numeric: tabular-nums; color: #fdf8ec; }
 .hud-scores li.me .points { color: #f0c94f; }
 .hud-scores .award { color: #f0c94f; font-weight: 700; }
+/* Big tables: the list scrolls, other players' detail line is hidden, and the
+   list can fold to the leaders and you. */
+.hud-scores.many ul { max-height: calc(100vh - 260px); overflow-y: auto; overscroll-behavior: contain; }
+.hud-scores.many li:not(.me) .cards { display: none; }
+.game-hud .hud-scores button.scores-fold { width: 100%; margin-top: 4px; padding: 2px 6px; font-size: 0.75rem; }
 .dev-cards { list-style: none; margin: 0 0 8px; padding: 0; }
 .dev-cards li { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; align-items: center; padding: 6px 0; }
 .dev-cards li + li { border-top: 1px solid #ebe1c8; }
@@ -212,12 +234,16 @@ table.keys td { padding: 4px 0; }
    a two-line log ticker, then the hand bar across the whole bottom. */
 @media (max-width: 720px) {
   .game-hud { font-size: 0.85rem; }
-  .hud-clock { left: 8px; top: 8px; max-width: calc(100% - 150px); padding: 6px 8px; gap: 8px; }
+  .hud-top-left { left: 8px; top: 8px; max-width: calc(100% - 156px); gap: 6px; }
+  .hud-clock { padding: 6px 8px; gap: 8px; }
+  .hud-guide { font-size: 0.76rem; padding: 4px 8px 6px; }
+  .hud-guide .controls { display: none; }
   .hud-history { display: none; }
   .hud-scores { right: 8px; top: 8px; min-width: 0; max-width: 140px; padding: 6px 8px; font-size: 0.78rem; }
   .hud-scores h2, .hud-scores .cards, .hud-scores small { display: none; }
   .hud-scores li { column-gap: 6px; }
   .hud-scores .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hud-scores.many ul { max-height: 38vh; }
   .hud-bottom { left: 8px; right: 8px; bottom: 8px; gap: 8px; grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas: "log camera" "hand hand"; }
   .hud-log { width: auto; padding: 4px 8px; background: rgba(15, 25, 30, 0.6); }
@@ -254,9 +280,13 @@ table.keys td { padding: 4px 0; }
    log keeps to one line. */
 @media (max-height: 500px) and (min-width: 480px) {
   .game-hud { font-size: 0.8rem; }
-  .hud-clock { left: 8px; top: 8px; padding: 4px 8px; }
+  .hud-top-left { left: 8px; top: 8px; gap: 4px; }
+  .hud-clock { padding: 4px 8px; }
+  .hud-guide { font-size: 0.72rem; padding: 3px 8px 4px; max-width: 300px; }
+  .hud-guide .controls { display: none; }
   .hud-scores { right: 8px; top: 8px; padding: 4px 8px; }
   .hud-scores h2, .hud-scores .cards, .hud-scores small { display: none; }
+  .hud-scores.many ul { max-height: 45vh; }
   .hud-bottom { left: 8px; right: 8px; bottom: 6px; gap: 8px; grid-template-columns: minmax(0, 1fr) auto auto;
     grid-template-areas: "log hand camera"; }
   .hud-log { width: auto; padding: 4px 8px; }

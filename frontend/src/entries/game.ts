@@ -12,7 +12,7 @@ import { addHudCatalogues } from "../ui/i18n";
 import { csrfFromCookie } from "../ui/model";
 import type { TFunction } from "i18next";
 
-interface PageConfig { game: string; wsPath: string; seat: number | null; lang: string; lobbyUrl?: string }
+interface PageConfig { game: string; wsPath: string; seat: number | null; lang: string; lobbyUrl?: string; helpUrl?: string }
 
 function wsUrl(path: string): string {
   return `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}${path}`;
@@ -116,7 +116,7 @@ async function main(): Promise<void> {
       startRobber: () => controller.startRobber(),
     },
     touch: touchFirst(),
-    bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/",
+    bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/", helpUrl: config.helpUrl,
   });
   connection.start();
   // The renderer follows its host's size itself (and keeps the camera centred).

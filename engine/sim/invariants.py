@@ -98,7 +98,7 @@ def _board(state: GameState) -> list[str]:
 
 
 def _dev_cards(state: GameState) -> list[str]:
-    """Every card is in the deck, in a hand or played."""
+    """Every card is in the deck, in a hand or played (one full deck per refill more)."""
     view = state.ext.get(devcards.EXT_KEY, {})
     count = {k: n for k, n in devcards.deck_left(state).items()}
     for cards in view.get("hands", {}).values():
@@ -107,7 +107,8 @@ def _dev_cards(state: GameState) -> list[str]:
     for played in view.get("played", {}).values():
         for k, n in played.items():
             count[k] = count.get(k, 0) + n
-    want = {k.value: n for k, n in state.settings.dev_cards.deck.items()}
+    decks = 1 + int(view.get("refills", 0))
+    want = {k.value: n * decks for k, n in state.settings.dev_cards.deck.items()}
     if {k: n for k, n in count.items() if n} != {k: n for k, n in want.items() if n}:
         return [f"dev_cards.total: {count} != {want}"]
     return []

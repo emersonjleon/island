@@ -58,7 +58,16 @@ class DevCardTest(unittest.TestCase):
         self.assertEqual((bought[0].card, bought[0].deck_left), (DevCardKind.MONOPOLY, 1))
         self.assertEqual([c["kind"] for c in devcards.hand(s, 0)], ["monopoly"])
         self.buy(s, 1)
-        self.assertEqual(self.code(self.buy, s, 2), "dev.deck_empty")
+        bought = [e for e in self.buy(s, 2) if isinstance(e, DevCardBought)]     # a fresh deck
+        self.assertEqual((bought[0].card, bought[0].deck_left), (DevCardKind.MONOPOLY, 1))
+        self.assertEqual(s.ext[devcards.EXT_KEY]["refills"], 1)
+
+    def test_deck_without_refill_runs_out(self) -> None:
+        over = deck_of("knight", 1)
+        over["dev_cards"]["refill"] = False
+        s = self.state(over)
+        self.buy(s, 0)
+        self.assertEqual(self.code(self.buy, s, 1), "dev.deck_empty")
 
     def test_buy_refusals(self) -> None:
         s = self.state()
@@ -178,6 +187,20 @@ class DevCardTest(unittest.TestCase):
         self.assertEqual((played.victim, played.stolen), (1, 1))
         self.assertEqual((s.players[0].hand[Resource.BRICK], s.players[1].hand[Resource.BRICK]), (1, 1))
         self.assertEqual(devcards.knights(s)[0], 1)
+
+    def test_knight_spares_players_in_setup(self) -> None:
+        s = self.state(ALL_KNIGHTS)
+        self.knight_ready(s)
+        h = self.hex_at(s, 1)
+        verts = s.board.board.hex_vertices[h]
+        place(s, 1, verts[0])
+        place(s, 2, verts[3])
+        set_hand(s, 1, ore=1)
+        set_hand(s, 2, ore=1)
+        s.players[1].setup_done = False
+        self.assertEqual(self.code(self.play, s, 0, "knight", hex=h, victim=1), "dev.bad_victim")
+        played = next(e for e in self.play(s, 0, "knight", hex=h) if isinstance(e, DevCardPlayed))
+        self.assertEqual((played.victim, s.players[1].hand_count), (2, 1))
 
     def test_knight_refusals(self) -> None:
         s = self.state(ALL_KNIGHTS)

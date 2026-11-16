@@ -56,7 +56,7 @@ The default preset copies the Catan base game for 3–4 players. Each value belo
 
 **Megacities.** A very expensive upgrade of a city that produces 4 cards per roll and is worth 3 points. They keep the game moving when the island is full: once a player has no room left for new settlements, they can still grow by upgrading, so a game cannot get stuck below the target. Cost, production, points, pieces and build time are settings; 0 megacity pieces turns them off.
 
-**Development cards.** The deck has 25 cards:
+**Development cards** (called "developments" in the game, since nothing here is a physical card). The deck has 25 cards, and it never runs out: when it is empty a fresh deck is shuffled in (`dev_cards.refill`, on by default):
 
 - 14 knights. Playing one lets that player move the robber up to 3 hexes away and steal 1 card (adjustable) from a player there. This is the only time a player controls the robber.
 - 5 victory point cards. Each counts only once played, and playing one follows the same cooldown as any other card.
@@ -64,7 +64,7 @@ The default preset copies the Catan base game for 3–4 players. Each value belo
 - 2 year of plenty, which takes any 2 resources from the bank.
 - 2 monopoly, which takes every card of one named resource from all players.
 
-**Robber and sevens.** On a 7, nothing is produced. The robber takes a random 50% of the cards, rounded down, from every player holding more than 7. The robber then moves by itself to a random neighbouring hex and blocks its production. No player controls the dice or the robber.
+**Robber and sevens.** On a 7, nothing is produced. The robber takes a random 50% of the cards, rounded down, from every player holding more than 7. Players still building their starting settlements and roads are never robbed, by a 7 or by a knight. The robber then moves by itself to a random neighbouring hex and blocks its production. No player controls the dice or the robber.
 
 **Trading.**
 
@@ -194,7 +194,7 @@ Every number in this doc is a customizable variable, and the code never hard-cod
 
 **Setting groups.**
 
-- **Players:** 2–6 players, with the larger board for 5–6. Seat order is random or set by the host.
+- **Players:** 2–12 players. Presets are sized for 4; with more players the island and the bank grow in proportion (a host's explicit island size or bank wins, but a big table needs at least 4 land hexes per player). Seat order is random or set by the host.
 - **Board:**
   - Layout: the beginner layout, random with the 6/8 rule, a fixed seed, or a saved custom map.
   - Number of each terrain, fishing grounds, number tokens and harbors.
@@ -202,7 +202,7 @@ Every number in this doc is a customizable variable, and the code never hard-cod
 - **Dice and clock:** roll interval, two dice or dice deck, pause after a 7, setup pick timer.
 - **Economy:** cost of each build, card and settler, starting materials, starting resources per first settlement, bank size, bank and harbor ratios, hand limit on a 7.
 - **Pieces:** roads, settlements, cities and megacities per player.
-- **Robber:** on or off; on a 7 it randomly steals a percentage of materials (50% by default) from everyone holding more than 7 cards, or only from those with a building next to the robber; cards stolen per knight (1 by default); it moves randomly to neighbouring hexes, or up to 3 hexes when a knight card is used; and a "friendly robber" option that cannot target players with few points.
+- **Robber:** on or off; on a 7 it randomly steals a percentage of materials (50% by default) from everyone holding more than 7 cards, or only from those with a building next to the robber; cards stolen per knight (1 by default); it moves randomly to neighbouring hexes, or up to 3 hexes when a knight card is used; a "friendly robber" option that cannot target players with few points; and sparing players who are still in setup (on by default).
 - **Development cards:** deck contents and play cooldown.
 - **Settlers:** starting count, landing points, maximum, cost of extras, walking speed, road speed bonus, build times and build reach.
 - **Visibility:** the rules in the Visibility section.
@@ -219,7 +219,7 @@ Version 1 is the Classic preset, fully playable online in the 2D view by 2–4 p
 | 2. Full base game | Development cards, Longest Road, Largest Army, player trading board, harbors, reconnecting after a dropped connection |
 | 3. Customization and variations | All lobby settings, presets, share codes, large islands with Growing sight, Settlers variation, Explored and Live fog |
 | 4. 3D view | three.js renderer on the same game state, camera controls |
-| Later | 5–6 players, island shapes, map editor, computer players, ships, combat ("ages"), ranked games, gamepad |
+| Later | island shapes, map editor, computer players, ships, combat ("ages"), ranked games, gamepad |
 
 ## Decisions
 

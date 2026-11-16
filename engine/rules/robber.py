@@ -6,7 +6,8 @@ and ``settings.robber.enabled``. Nothing is produced on that roll.
 1. Targets, in seat order: a player is a target when
    (``require_over_limit`` is off or the hand total > ``card_limit``) and
    (``require_adjacent`` is off or the player has a finished building on a vertex
-   of the robber's hex). Adjacency is judged on the hex before the move
+   of the robber's hex) and (``spare_setup`` is off or the player has finished
+   setup: players still building their setup pieces are never robbed). Adjacency is judged on the hex before the move
    (``adjacency_timing == "before_move"``) or after it (``"after_move"``, stage 3).
 2. Each target loses ``steal_pct`` % of its hand total, rounded per
    ``steal_rounding`` (integer maths), drawn one card at a time uniformly from the
@@ -35,7 +36,7 @@ from engine.settings.enums import (
 )
 from engine.state import GameState
 
-__all__ = ["legal_neighbours", "move_random", "on_seven", "steal_count", "steal_random", "targets"]
+__all__ = ["is_spared", "legal_neighbours", "move_random", "on_seven", "steal_count", "steal_random", "targets"]
 
 
 def _adjacent_seats(state: GameState, hex_id: int | None) -> set[int]:
@@ -49,6 +50,11 @@ def _adjacent_seats(state: GameState, hex_id: int | None) -> set[int]:
     return seats
 
 
+def is_spared(state: GameState, seat: int) -> bool:
+    """True when ``seat`` may not be robbed: ``spare_setup`` is on and its setup is unfinished."""
+    return state.settings.robber.spare_setup and not state.player(seat).setup_done
+
+
 def targets(state: GameState, hex_id: int | None) -> list[int]:
     """Seats the robber steals from, judged with the robber on ``hex_id``."""
     rs = state.settings.robber
@@ -58,6 +64,8 @@ def targets(state: GameState, hex_id: int | None) -> list[int]:
         if rs.require_over_limit and p.hand_count <= rs.card_limit:
             continue
         if rs.require_adjacent and p.seat not in adjacent:
+            continue
+        if is_spared(state, p.seat):
             continue
         out.append(p.seat)
     return out

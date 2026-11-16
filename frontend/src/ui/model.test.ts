@@ -14,7 +14,7 @@ import esEvents from "../locales/es/events.json";
 import esHud from "../locales/es/hud.json";
 import {
   bestRatio, canAfford, checkTrade, costOf, countdownShare, csrfFromCookie, errorText, formatRes, logLine,
-  ownedHarbors, prettyCombo, victoryTarget,
+  ownedHarbors, prettyCombo, victoryTarget, visibleScoreSeats,
 } from "./model";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -136,8 +136,8 @@ describe("texts", () => {
     expect(lr(0, 1)!.text).toBe("You have the Longest Road (3 roads)");
     expect(lr(null, 1)!.text).toBe("Nobody holds the Longest Road now");
     expect(lr(1, 1)).toBeNull();
-    expect(logLine(t, { k: "dev_card_bought", seat: 0, card: "knight", deck_left: 3 }, name, 0)!.text).toBe("You bought a card: Knight");
-    expect(logLine(t, { k: "dev_card_bought", seat: 1, deck_left: 3 }, name, 0)!.text).toBe("ben bought a development card");
+    expect(logLine(t, { k: "dev_card_bought", seat: 0, card: "knight", deck_left: 3 }, name, 0)!.text).toBe("You bought a development: Knight");
+    expect(logLine(t, { k: "dev_card_bought", seat: 1, deck_left: 3 }, name, 0)!.text).toBe("ben bought a development");
     expect(logLine(t, { k: "dev_card_played", seat: 1, card: "knight", hex: 3, victim: 0, stolen: 1 }, name, 0)!.text)
       .toBe("ben played a knight and robbed you");
     expect(logLine(t, { k: "dev_card_played", seat: 0, card: "monopoly", resource: "ore", taken: { "1": 3 } }, name, 0)!.text)
@@ -168,5 +168,18 @@ describe("misc", () => {
   it("reads the CSRF cookie", () => {
     expect(csrfFromCookie("a=1; csrftoken=abc%3D; b=2")).toBe("abc=");
     expect(csrfFromCookie("a=1")).toBe("");
+  });
+});
+
+describe("score list with many players", () => {
+  const players = Array.from({ length: 10 }, (_, i) => ({ seat: i, points: i === 7 ? 9 : i === 2 ? 6 : i === 5 ? 6 : 2 }));
+  it("shows everyone when unfolded or when the table is small", () => {
+    expect(visibleScoreSeats(players, 0, false)).toHaveLength(10);
+    expect(visibleScoreSeats(players.slice(0, 6), 0, true)).toHaveLength(6);
+  });
+  it("folds to the three leaders and me, in seat order", () => {
+    expect(visibleScoreSeats(players, 9, true)).toEqual([2, 5, 7, 9]);
+    expect(visibleScoreSeats(players, 7, true)).toEqual([2, 5, 7]);
+    expect(visibleScoreSeats(players, null, true)).toEqual([2, 5, 7]);
   });
 });

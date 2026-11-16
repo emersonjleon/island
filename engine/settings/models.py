@@ -78,9 +78,15 @@ class _Group(BaseModel):
 
 # --------------------------------------------------------------------- players
 class PlayersSettings(_Group):
-    min: int = setting(2, label="settings.players.min", ge=2, le=6, later_stage_above=(4, 3))
-    max: int = setting(4, label="settings.players.max", ge=2, le=6, later_stage_above=(4, 3))
+    min: int = setting(2, label="settings.players.min", ge=2, le=12)
+    max: int = setting(4, label="settings.players.max", ge=2, le=12)
     seat_order: SeatOrder = setting(SeatOrder.RANDOM, label="settings.players.seat_order")
+    sized_for: int = setting(4, label="settings.players.sized_for", ge=2, le=12)
+    """Player count the board size and bank are written for."""
+    scale_for_more: bool = setting(True, label="settings.players.scale_for_more")
+    """Bigger games scale the island and bank up (see ``settings.scaling``)."""
+    min_land_per_player: int = setting(4, label="settings.players.min_land_per_player", ge=0, le=20)
+    """Games with more than ``sized_for`` players need this many land hexes per player."""
 
     @model_validator(mode="after")
     def _min_le_max(self) -> Self:
@@ -316,6 +322,8 @@ class RobberSettings(_Group):
     knight_max_distance: int = setting(3, label="settings.robber.knight_max_distance", stage=2, ge=1, le=20)
     knight_steal: int = setting(1, label="settings.robber.knight_steal", stage=2, ge=0, le=20)
     friendly_min_points: int = setting(0, label="settings.robber.friendly_min_points", stage=3, ge=0, le=20)
+    spare_setup: bool = setting(True, label="settings.robber.spare_setup")
+    """Players still building their setup settlements and roads are never robbed (sevens or knights)."""
 
 
 # --------------------------------------------------------------------- settlers
@@ -407,6 +415,8 @@ class DevCardSettings(_Group):
         {DevCardKind.KNIGHT: 14, DevCardKind.VICTORY_POINT: 5, DevCardKind.ROAD_BUILDING: 2,
          DevCardKind.YEAR_OF_PLENTY: 2, DevCardKind.MONOPOLY: 2},
         label="settings.dev_cards.deck")
+    refill: bool = setting(True, label="settings.dev_cards.refill")
+    """A fresh copy of ``deck`` is shuffled in when it runs out, so cards never run out."""
     cooldown: Cooldown = setting(Cooldown.PER_ROLL, label="settings.dev_cards.cooldown")
     cooldown_ms: int | None = setting(None, label="settings.dev_cards.cooldown_ms", ge=0, le=600000)
     vp_cards_must_be_played: bool = setting(True, label="settings.dev_cards.vp_cards_must_be_played")
@@ -463,7 +473,16 @@ class GameSettings(_Group):
         self._check_tokens_in_dice_range()
         self._check_pieces_cover_setup()
         self._check_bank_covers_starting_materials()
+        self._check_island_fits_players()
         return self
+
+    def _check_island_fits_players(self) -> None:
+        players = self.players
+        need = players.max * players.min_land_per_player
+        if players.max > players.sized_for and self.board.land_hexes < need:
+            raise _error("settings.board.too_small_for_players",
+                         "{players} players need at least {need} land hexes, the island has {land}",
+                         players=self.players.max, need=need, land=self.board.land_hexes)
 
     def _check_tokens_in_dice_range(self) -> None:
         clock = self.clock

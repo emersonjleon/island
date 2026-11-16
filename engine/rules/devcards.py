@@ -2,7 +2,8 @@
 
 * ``buy_dev_card``: a player whose setup is done pays ``economy.costs.dev_card`` to
   the bank and draws a random card from what is left of ``dev_cards.deck``
-  (``state.rng``, one draw per purchase). Emits ``Hand`` then ``DevCardBought``.
+  (``state.rng``, one draw per purchase). With ``dev_cards.refill`` an empty deck is
+  replaced by a fresh copy of ``dev_cards.deck`` before the draw. Emits ``Hand`` then ``DevCardBought``.
   With ``vp_cards_must_be_played`` off a victory point card counts at once.
 * ``play_dev_card``: the card must be in the hand and playable:
 
@@ -14,7 +15,8 @@
   Cards: **knight** moves the robber to ``hex`` (a legal robber hex at distance
   1..``robber.knight_max_distance``) and steals ``robber.knight_steal`` random cards
   from ``victim``, a player with a building on that hex (the card's player picks;
-  a single possible victim is picked for them); **victory point** adds
+  a single possible victim is picked for them; players still in setup are spared
+  with ``robber.spare_setup``); **victory point** adds
   ``dev_cards.victory_point_points``; **road building** gives
   ``dev_cards.road_building_roads`` free roads (built normally, at no cost; see
   :func:`engine.rules.placement.build_cost`); **year of plenty** takes
@@ -29,7 +31,7 @@ Largest Army (``victory.largest_army``): same award rules as Longest Road
 the holder keeps it on a tie, a strictly larger army takes it.
 
 State, in ``state.ext["devcards"]`` (JSON-safe, string seat keys):
-``deck`` (kind -> cards left), ``hands`` (seat -> [{kind, at, roll}]),
+``deck`` (kind -> cards left), ``refills`` (fresh decks shuffled in), ``hands`` (seat -> [{kind, at, roll}]),
 ``played`` (seat -> {kind: n}), ``last_play`` (seat -> {at, roll}),
 ``free_roads`` (seat -> n), ``vp_points`` (seat -> points from victory point
 cards), ``army`` (holder seat or None).
@@ -169,7 +171,8 @@ def _draw(state: GameState, deck: dict[str, int]) -> DevCardKind:
 @command_handler("buy_dev_card")
 def on_buy(state: GameState, seat: int, cmd: BuyDevCard, now_ms: int) -> list[Event]:
     _check_active(state, seat)
-    if sum(deck_left(state).values()) <= 0:
+    refill = state.settings.dev_cards.refill and sum(state.settings.dev_cards.deck.values()) > 0
+    if sum(deck_left(state).values()) <= 0 and not refill:
         raise RuleError("dev.deck_empty", {})
     p = state.player(seat)
     cost = {r: int(n) for r, n in state.settings.economy.costs.dev_card.items()}
@@ -181,6 +184,9 @@ def on_buy(state: GameState, seat: int, cmd: BuyDevCard, now_ms: int) -> list[Ev
     for r, n in cost.items():
         p.hand[r] -= n
         state.bank[r] += n
+    if sum(ext["deck"].values()) <= 0:
+        ext["deck"] = {k.value: n for k, n in state.settings.dev_cards.deck.items()}
+        ext["refills"] = int(ext.get("refills", 0)) + 1
     kind = _draw(state, ext["deck"])
     ext["deck"][kind.value] -= 1
     ext["hands"].setdefault(str(seat), []).append({"kind": kind.value, "at": now_ms, "roll": roll_index(state)})
@@ -236,7 +242,8 @@ def _knight_target(state: GameState, seat: int, cmd: PlayDevCard) -> tuple[int, 
     limit = state.settings.robber.knight_max_distance
     if coords.hex_distance(board.hexes[start], board.hexes[h]) > limit:
         raise RuleError("dev.too_far", {"hex": h, "max": limit})
-    near = sorted({b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None} - {seat})
+    owners = {b.seat for v in board.hex_vertices[h] if (b := state.buildings.get(v)) is not None}
+    near = sorted(s for s in owners if s != seat and not robber.is_spared(state, s))
     if cmd.victim is not None:
         if cmd.victim not in near:
             raise RuleError("dev.bad_victim", {"victim": cmd.victim})

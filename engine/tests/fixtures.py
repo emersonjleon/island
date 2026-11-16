@@ -22,7 +22,7 @@ F, P, A, H, M, D = (Terrain.FOREST, Terrain.PASTURE, Terrain.FIELDS, Terrain.HIL
 _TERRAIN_BY_KEY_ORDER = (F, P, A, H, M, F, P, A, H, D, M, F, P, A, H, M, F, P, A)
 _TOKENS = (5, 2, 6, 3, 8, 10, 9, 12, 11, 4, 8, 10, 9, 4, 5, 6, 3, 11)
 _FISHING_TOKENS = (4, 10)
-COLOURS = ("red", "blue", "white", "orange", "green", "brown")
+COLOURS = ("red", "blue", "white", "orange", "green", "brown", "purple", "teal", "pink", "yellow", "black", "navy")
 
 
 def standard_board() -> GeneratedBoard:

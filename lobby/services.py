@@ -34,10 +34,14 @@ def gamehost_channel() -> str:
 
 
 # ------------------------------------------------------------------ settings
-def build_settings(preset: str, overrides: dict[str, Any], seed: int = 0) -> GameSettings:
-    """Validate preset + overrides and dry-run the board generator."""
+def build_settings(preset: str, overrides: dict[str, Any], seed: int = 0, players: int | None = None) -> GameSettings:
+    """Validate preset + overrides and dry-run the board generator.
+
+    ``players``: the real table size at the start (the island and bank scale to it);
+    None sizes them for ``players.max``.
+    """
     try:
-        settings = load_preset(preset, overrides)
+        settings = load_preset(preset, overrides, players=players)
     except UnknownPresetError as exc:
         raise LobbyError("lobby.unknown_preset", preset=preset) from exc
     except ValidationError as exc:
@@ -237,13 +241,13 @@ def start_game(game: Game, user) -> Game:
     _require_open(game)
     if game.host_id != user.pk:
         raise LobbyError("lobby.not_host")
-    seed = secrets.randbits(SEED_BITS)
-    settings = build_settings(game.preset, game.overrides, seed)
-    problems = start_problems(game, settings)
+    problems = start_problems(game)
     if problems:
         raise LobbyError(problems[0])
-
     seats = list(game.players.all())
+    seed = secrets.randbits(SEED_BITS)
+    settings = build_settings(game.preset, game.overrides, seed, players=len(seats))
+
     if settings.players.seat_order == SeatOrder.RANDOM:
         Rng(seed).shuffle(seats)
     for number, seat in enumerate(seats):

@@ -42,6 +42,15 @@ class GreedyGamesTest(unittest.TestCase):
                     s = parse_settings({"board": {"land_hexes": n}})
                     self.assert_won(run_game(s, make_seats(players), 0, ["greedy"] * players, MAX_MS), 10)
 
+    def test_big_tables(self) -> None:
+        """8 and 12 players on the island and bank that Classic scales up for them."""
+        for players in (8, 12):
+            with self.subTest(players=players):
+                s = load_preset("classic", {"players": {"max": players}})
+                r = run_game(s, make_seats(players), players, ["greedy"] * players, MAX_MS)
+                self.assert_won(r, 10)
+                self.assertTrue(all(p.setup_done for p in r.state.players))
+
     def test_megacities_unblock_crowded_board(self) -> None:
         """On a 7-hex island the spots run out; upgrading to megacities still reaches the target."""
         # Without the award and card points, so the target needs the megacities.

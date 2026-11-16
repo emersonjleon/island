@@ -9,7 +9,8 @@ from importlib import resources
 from typing import Any
 
 from ..loading import merge_overrides, parse_settings
-from ..models import GameSettings
+from ..models import GameSettings, PlayersSettings
+from ..scaling import scale_for_players
 
 __all__ = ["UnknownPresetError", "available_presets", "preset_overrides", "load_preset"]
 
@@ -46,8 +47,19 @@ def load_preset(
     overrides: Mapping[str, Any] | None = None,
     *,
     implemented_stage: int | None = None,
+    players: int | None = None,
 ) -> GameSettings:
-    """Preset ``name`` with ``overrides`` deep-merged on top (groups merge, values replace)."""
+    """Preset ``name`` with ``overrides`` deep-merged on top (groups merge, values replace),
+    scaled up for ``players`` (default ``players.max``) when that exceeds ``players.sized_for``.
+
+    ``players`` is the real table size at the start of a game: it also becomes
+    ``players.max`` (never below ``players.min``), so the settings describe that table.
+    """
     raw = merge_overrides(preset_overrides(name), overrides)
+    if players is not None:
+        group = dict(raw.get("players") or {})
+        group["max"] = max(players, int(group.get("min", PlayersSettings.model_fields["min"].default)))
+        raw["players"] = group
+    raw = scale_for_players(raw, players)
     raw["preset"] = name
     return parse_settings(raw, implemented_stage=implemented_stage)

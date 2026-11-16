@@ -45,6 +45,7 @@ export const RESOURCE: Record<Resource, number> = {
 
 export const PLAYER: Record<string, number> = {
   red: 0xc8372d, blue: 0x2f5fb3, white: 0xf4f1e8, orange: 0xe58a1f, green: 0x3c8a3f, brown: 0x7a5232,
+  purple: 0x7b3fa0, teal: 0x1f9e93, pink: 0xe06aa8, yellow: 0xf2d43a, black: 0x262626, navy: 0x1d2f6b,
 };
 
 export function playerColour(name: string): number {
