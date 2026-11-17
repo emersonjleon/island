@@ -256,8 +256,8 @@ msgid "The standard island for 3 or 4 players."
 msgstr "La isla de siempre, para 3 o 4 jugadores."
 
 #: lobby/presets.py:24
-msgid "Expanded"
-msgstr "Ampliada"
+msgid "Big"
+msgstr "Grande"
 
 #: lobby/presets.py:24
 msgid ""
@@ -278,8 +278,8 @@ msgid "Custom"
 msgstr "Personalizada"
 
 #: lobby/presets.py:26
-msgid "Start from Classic and choose the rules yourself."
-msgstr "Parte de la Clásica y elige tú las reglas."
+msgid "Start from the game type you chose and change the rules yourself."
+msgstr "Parte del tipo de partida que elegiste y cambia tú las reglas."
 
 #: lobby/presets.py:85
 msgid "Island"
@@ -1108,10 +1108,13 @@ msgid "Custom rules"
 msgstr "Reglas personalizadas"
 
 #: templates/lobby/list.html:81
+#, python-format
 msgid ""
-"Used only by the Custom game type. Blank fields keep the Classic value shown "
-"in grey."
-msgstr "Solo se usan en la partida Personalizada. Los campos en blanco mantienen el valor de la Clásica, que se ve en gris."
+"Starting from <b data-base-label>%(base_label)s</b>. Blank fields keep its "
+"value, shown in grey."
+msgstr ""
+"Partiendo de <b data-base-label>%(base_label)s</b>. Los campos en blanco "
+"mantienen su valor, que se ve en gris."
 
 #: templates/lobby/list.html:101
 msgid "Create game"
@@ -1180,3 +1183,29 @@ msgstr "Copiar enlace"
 #, python-format
 msgid "This code: %(type)s for %(players)s players"
 msgstr "Este código: %(type)s para %(players)s jugadores"
+
+#: lobby/models.py
+#, python-brace-format
+msgid "{type} (custom)"
+msgstr "{type} (personalizada)"
+
+#: templates/lobby/list.html
+msgid "or"
+msgstr "o"
+
+#: templates/lobby/list.html
+msgid "Play now against bots"
+msgstr "Jugar ya contra bots"
+
+#: templates/lobby/list.html
+msgid ""
+"Play now fills every other seat with bots and starts the game straight away."
+msgstr ""
+"Jugar ya llena los demás puestos con bots y empieza la partida de inmediato."
+
+#: templates/lobby/_seats.html
+#, python-format
+msgid "Fill the free seat"
+msgid_plural "Fill the %(free)s free seats"
+msgstr[0] "Llenar el puesto libre"
+msgstr[1] "Llenar los %(free)s puestos libres"

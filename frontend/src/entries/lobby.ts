@@ -43,6 +43,21 @@ function justSubmitted(): boolean {
 const shareBox = document.querySelector<HTMLElement>("[data-share-code]");
 if (shareBox) initCopyButtons(shareBox);
 
+/** The refusal of the last background action, shown above the seats after they refresh. */
+let quickError = "";
+
+async function quickPost(form: HTMLFormElement, body: FormData): Promise<void> {
+  try {
+    const response = await fetch(form.action, {
+      method: "POST", body, credentials: "same-origin",
+      headers: { "X-Lobby-Quick": "1" },
+    });
+    if (!response.ok) quickError = await response.text();
+  } catch {
+    form.submit();
+  }
+}
+
 const root = document.getElementById("lobby-seats");
 if (root) {
   const seatsUrl = root.dataset.seatsUrl ?? "";
@@ -69,6 +84,13 @@ if (root) {
       const response = await fetch(seatsUrl, { credentials: "same-origin" });
       if (!response.ok) return;
       root.innerHTML = await response.text();
+      if (quickError) {
+        const note = document.createElement("p");
+        note.className = "error";
+        note.textContent = quickError;
+        root.prepend(note);
+        quickError = "";
+      }
       const link = root.querySelector<HTMLAnchorElement>("a[data-game-url]");
       if (waiting && link) go(link.href);
       waiting = waiting || root.querySelector("[data-starting]") !== null;
@@ -77,6 +99,17 @@ if (root) {
     chat: (frame: ChatFrame) => { chatLog.receive(frame); },
     notice: (code: string, params: Record<string, unknown>) => { if (code.startsWith("chat.")) chatLog.refused(code, params); },
   };
+  // Bot buttons (data-quick) post in the background and refresh only the seats, so
+  // adding or removing bots does not reload the page.
+  root.addEventListener("submit", (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement) || !form.hasAttribute("data-quick")) return;
+    e.preventDefault();
+    const submitter = e.submitter instanceof HTMLButtonElement ? e.submitter : null;
+    const body = new FormData(form, submitter); // before disabling: a disabled button sends nothing
+    for (const b of form.querySelectorAll("button")) b.disabled = true;
+    void quickPost(form, body).finally(() => void page.refreshSeats());
+  });
   const running = root.querySelector<HTMLAnchorElement>("a[data-game-url]");
   if (waiting && running) go(running.href);
   const socket = connectLobby(wsPath, page);

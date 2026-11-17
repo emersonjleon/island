@@ -273,7 +273,7 @@ class PresetTest(unittest.TestCase):
 
     def test_custom_starts_from_defaults(self) -> None:
         self.assertEqual(load_preset("custom").model_dump(exclude={"preset"}),
-                         GameSettings().model_dump(exclude={"preset"}))
+                         load_preset("classic").model_dump(exclude={"preset"}))
 
     def test_bigger_presets_scale_their_own_island_and_bank(self) -> None:
         cases = {"expanded": (6, 30, 28, 12), "huge": (8, 48, 44, 14)}
@@ -290,18 +290,20 @@ class PresetTest(unittest.TestCase):
                 self.assertEqual((s.board.land_hexes, s.economy.bank.per_resource[Resource.ORE]), (90, 70))
 
     def test_classic_equals_defaults(self) -> None:
-        self.assertEqual(preset_overrides("classic"), {})
-        self.assertEqual(load_preset("classic"), GameSettings())
+        # Classic is the defaults with 15 s dice (Emerson, 2026-11-17).
+        self.assertEqual(preset_overrides("classic"), {"clock": {"roll_interval_ms": 15000}})
+        self.assertEqual(load_preset("classic"),
+                         GameSettings.model_validate({"preset": "classic", "clock": {"roll_interval_ms": 15000}}))
 
     def test_blitz(self) -> None:
         s = load_preset("blitz")
-        self.assertEqual((s.clock.roll_interval_ms, s.victory.target, s.preset), (8000, 7, "blitz"))
+        self.assertEqual((s.clock.roll_interval_ms, s.victory.target, s.preset), (10000, 7, "blitz"))
         self.assertEqual(s.board.land_hexes, 19)
 
     def test_override_merge(self) -> None:
         s = load_preset("blitz", {"clock": {"pause_after_seven_ms": 0}, "victory": {"target": 12},
                                   "economy": {"costs": {"road": {"lumber": 2}}}})
-        self.assertEqual(s.clock.roll_interval_ms, 8000)  # sibling kept
+        self.assertEqual(s.clock.roll_interval_ms, 10000)  # sibling kept
         self.assertEqual(s.victory.target, 12)
         self.assertEqual(s.economy.costs.road, {Resource.LUMBER: 2})  # mapping values replace
         self.assertEqual(s.economy.costs.city, {Resource.GRAIN: 2, Resource.ORE: 3})

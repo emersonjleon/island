@@ -1,4 +1,5 @@
 {
+  "clock": {"roll_interval_ms": 10000},
   "players": {"max": 6, "sized_for": 6},
   "board": {"land_hexes": 30},
   "economy": {"bank": {"per_resource": {"brick": 28, "lumber": 28, "wool": 28, "grain": 28, "ore": 28, "fish": 28}}},

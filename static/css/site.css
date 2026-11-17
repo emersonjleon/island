@@ -219,6 +219,10 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 .create-form.from-code > .preset-picker, .create-form.from-code > .players-field,
 .create-form.from-code > .preset-stats, .create-form.from-code > .custom-settings { opacity: 0.4; pointer-events: none; }
 .create-form:not([data-preset="custom"]) > .preset-stats { display: none; }
+.create-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
+.create-actions .play-bots { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.create-actions select { padding: 8px 10px; }
+#lobby-seats > p.error { color: var(--error); font-weight: 600; margin: 0 0 8px; }
 .share-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .share-row input { flex: 1 1 16rem; min-width: 0; }
 .settings-summary .settings-note { grid-column: 1 / -1; font-weight: normal; font-size: 0.85rem; }
