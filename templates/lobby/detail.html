@@ -5,11 +5,12 @@
 <p class="muted">{% translate "Share this code so friends can join." %}</p>
 
 <dl class="settings-summary">
-  <dt>{% translate "Preset" %}</dt><dd>{{ game.preset|title }}</dd>
-  <dt>{% translate "Island size (land hexes)" %}</dt><dd>{{ settings.board.land_hexes }}{% if settings.players.max > settings.players.sized_for and settings.players.scale_for_more %} <span class="muted">{% blocktranslate with players=settings.players.max %}(for {{ players }} players; smaller if fewer join){% endblocktranslate %}</span>{% endif %}</dd>
-  <dt>{% translate "Seconds between dice rolls" %}</dt><dd>{{ roll_seconds }}</dd>
-  <dt>{% translate "Points to win" %}</dt><dd>{{ settings.victory.target }}</dd>
+  <dt>{% translate "Game type" %}</dt><dd>{{ game.preset_label }}</dd>
   <dt>{% translate "Players" %}</dt><dd>{{ seats|length }} / {{ settings.players.max }}</dd>
+  {% for label, value in stats %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+  {% endfor %}{% for label, value in custom_changes %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+  {% endfor %}{% if settings.players.max > settings.players.sized_for and settings.players.scale_for_more %}
+  <dd class="settings-note muted">{% blocktranslate with players=settings.players.max %}Island and bank are sized for {{ players }} players; smaller if fewer join.{% endblocktranslate %}</dd>{% endif %}
 </dl>
 
 <div id="lobby-seats" data-seats-url="{% url 'lobby:seats' game.code %}" data-ws-path="/ws/lobby/{{ game.code }}/">

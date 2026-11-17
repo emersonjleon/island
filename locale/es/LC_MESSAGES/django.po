@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 14:36+0000\n"
+"POT-Creation-Date: 2026-11-17 02:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,44 +89,19 @@ msgstr "English"
 msgid "Español"
 msgstr "Español"
 
-#: lobby/forms.py:15 templates/lobby/detail.html:8 templates/lobby/list.html:24
-msgid "Preset"
-msgstr "Preajuste"
+#: lobby/forms.py:18 templates/lobby/detail.html:8
+msgid "Game type"
+msgstr "Tipo de partida"
 
-#: lobby/forms.py:17 templates/lobby/detail.html:12
-#: templates/lobby/list.html:24
+#: lobby/forms.py:20 templates/lobby/detail.html:9 templates/lobby/list.html:24
 msgid "Players"
 msgstr "Jugadores"
 
-#: lobby/forms.py:18
-msgid "More than 4 players get a bigger island and bank automatically."
-msgstr "Con más de 4 jugadores la isla y el banco crecen automáticamente."
-
-#: lobby/forms.py:21 templates/lobby/detail.html:9
-msgid "Island size (land hexes)"
-msgstr "Tamaño de la isla (hexágonos de tierra)"
-
-#: lobby/forms.py:22
-msgid "Blank keeps the preset (19 in Classic, larger for more than 4 players)."
-msgstr ""
-"En blanco se usa el valor del modo (19 en Clásico, más grande con más de 4 "
-"jugadores)."
-
-#: lobby/forms.py:25 templates/lobby/detail.html:10
-msgid "Seconds between dice rolls"
-msgstr "Segundos entre tiradas de dados"
-
-#: lobby/forms.py:26
-msgid "Blank keeps the preset (20 in Classic)."
-msgstr "En blanco mantiene el preajuste (20 en Clásico)."
-
-#: lobby/forms.py:29 templates/lobby/detail.html:11
-msgid "Points to win"
-msgstr "Puntos para ganar"
-
-#: lobby/forms.py:30
-msgid "Blank keeps the preset (10 in Classic)."
-msgstr "En blanco mantiene el preajuste (10 en Clásico)."
+#: lobby/forms.py:21
+msgid ""
+"More players than the game type is made for get a bigger island and bank "
+"automatically."
+msgstr "Con más jugadores de los previstos por el tipo de partida, la isla y el banco crecen automáticamente."
 
 #: lobby/messages.py:4
 msgid "That preset does not exist."
@@ -184,85 +159,259 @@ msgstr "Ese bot ya no está en la partida."
 msgid "That action was refused."
 msgstr "Esa acción fue rechazada."
 
-#: lobby/models.py:13
+#: lobby/models.py:15
 msgid "Red"
 msgstr "Rojo"
 
-#: lobby/models.py:14
+#: lobby/models.py:16
 msgid "Blue"
 msgstr "Azul"
 
-#: lobby/models.py:15
+#: lobby/models.py:17
 msgid "White"
 msgstr "Blanco"
 
-#: lobby/models.py:16
+#: lobby/models.py:18
 msgid "Orange"
 msgstr "Naranja"
 
-#: lobby/models.py:17
+#: lobby/models.py:19
 msgid "Green"
 msgstr "Verde"
 
-#: lobby/models.py:18
+#: lobby/models.py:20
 msgid "Brown"
 msgstr "Marrón"
 
-#: lobby/models.py:19
+#: lobby/models.py:21
 msgid "Purple"
 msgstr "Morado"
 
-#: lobby/models.py:20
+#: lobby/models.py:22
 msgid "Teal"
 msgstr "Turquesa"
 
-#: lobby/models.py:21
+#: lobby/models.py:23
 msgid "Pink"
 msgstr "Rosado"
 
-#: lobby/models.py:22
+#: lobby/models.py:24
 msgid "Yellow"
 msgstr "Amarillo"
 
-#: lobby/models.py:23
+#: lobby/models.py:25
 msgid "Black"
 msgstr "Negro"
 
-#: lobby/models.py:24
+#: lobby/models.py:26
 msgid "Navy"
 msgstr "Azul marino"
 
-#: lobby/models.py:30
+#: lobby/models.py:32
 msgid "Easy"
 msgstr "Fácil"
 
-#: lobby/models.py:31
+#: lobby/models.py:33
 msgid "Medium"
 msgstr "Media"
 
-#: lobby/models.py:32
+#: lobby/models.py:34
 msgid "Hard"
 msgstr "Difícil"
 
-#: lobby/models.py:43
+#: lobby/models.py:45
 msgid "Waiting for players"
 msgstr "Esperando jugadores"
 
-#: lobby/models.py:44
+#: lobby/models.py:46
 msgid "Starting"
 msgstr "Iniciando"
 
-#: lobby/models.py:45
+#: lobby/models.py:47
 msgid "Running"
 msgstr "En curso"
 
-#: lobby/models.py:46
+#: lobby/models.py:48
 msgid "Finished"
 msgstr "Terminada"
 
-#: lobby/models.py:47
+#: lobby/models.py:49
 msgid "Cancelled"
 msgstr "Cancelada"
+
+#: lobby/presets.py:22
+msgid "Blitz"
+msgstr "Blitz"
+
+#: lobby/presets.py:22
+msgid "Fast dice, quicker builds and fewer points to win."
+msgstr "Dados rápidos, construcciones más cortas y menos puntos para ganar."
+
+#: lobby/presets.py:23
+msgid "Classic"
+msgstr "Clásica"
+
+#: lobby/presets.py:23
+msgid "The standard island for 3 or 4 players."
+msgstr "La isla de siempre, para 3 o 4 jugadores."
+
+#: lobby/presets.py:24
+msgid "Expanded"
+msgstr "Ampliada"
+
+#: lobby/presets.py:24
+msgid ""
+"A bigger island, bank and set of pieces for 5 or 6 players, and more points "
+"to win."
+msgstr "Isla, banco y piezas más grandes para 5 o 6 jugadores, y más puntos para ganar."
+
+#: lobby/presets.py:25
+msgid "Huge"
+msgstr "Enorme"
+
+#: lobby/presets.py:25
+msgid "A very big island for 7 or more players, and a long game."
+msgstr "Una isla muy grande para 7 o más jugadores, y una partida larga."
+
+#: lobby/presets.py:26
+msgid "Custom"
+msgstr "Personalizada"
+
+#: lobby/presets.py:26
+msgid "Start from Classic and choose the rules yourself."
+msgstr "Parte de la Clásica y elige tú las reglas."
+
+#: lobby/presets.py:85
+msgid "Island"
+msgstr "Isla"
+
+#: lobby/presets.py:86
+msgid "Pace"
+msgstr "Ritmo"
+
+#: lobby/presets.py:87
+msgid "Bank and trade"
+msgstr "Banco y comercio"
+
+#: lobby/presets.py:88
+msgid "Pieces per player"
+msgstr "Piezas por jugador"
+
+#: lobby/presets.py:89
+msgid "Robber"
+msgstr "Ladrón"
+
+#: lobby/presets.py:90
+msgid "Victory"
+msgstr "Victoria"
+
+#: lobby/presets.py:94 lobby/presets.py:129
+msgid "Island size (land hexes)"
+msgstr "Tamaño de la isla (hexágonos de tierra)"
+
+#: lobby/presets.py:95
+msgid "Blank grows the island with the number of players."
+msgstr "En blanco, la isla crece con el número de jugadores."
+
+#: lobby/presets.py:96
+msgid "6 and 8 may be next to each other"
+msgstr "El 6 y el 8 pueden quedar juntos"
+
+#: lobby/presets.py:97
+msgid "Generic harbor trade (cards for 1)"
+msgstr "Puerto genérico (cartas por 1)"
+
+#: lobby/presets.py:99
+msgid "Special harbor trade (cards for 1)"
+msgstr "Puerto especial (cartas por 1)"
+
+#: lobby/presets.py:100 lobby/presets.py:131
+msgid "Seconds between dice rolls"
+msgstr "Segundos entre tiradas de dados"
+
+#: lobby/presets.py:102
+msgid "Seconds to build a road"
+msgstr "Segundos para construir un camino"
+
+#: lobby/presets.py:104
+msgid "Seconds to build a settlement"
+msgstr "Segundos para construir un poblado"
+
+#: lobby/presets.py:106
+msgid "Seconds to build a city"
+msgstr "Segundos para construir una ciudad"
+
+#: lobby/presets.py:108 lobby/presets.py:132
+msgid "Bank cards of each resource"
+msgstr "Cartas del banco por recurso"
+
+#: lobby/presets.py:109
+msgid "Blank grows the bank with the number of players."
+msgstr "En blanco, el banco crece con el número de jugadores."
+
+#: lobby/presets.py:110 lobby/presets.py:135
+msgid "Bank trade (cards for 1)"
+msgstr "Cambio con el banco (cartas por 1)"
+
+#: lobby/presets.py:112
+msgid "Resources a settlement produces"
+msgstr "Recursos que produce un poblado"
+
+#: lobby/presets.py:113
+msgid "Resources a city produces"
+msgstr "Recursos que produce una ciudad"
+
+#: lobby/presets.py:114
+msgid "Roads"
+msgstr "Caminos"
+
+#: lobby/presets.py:115
+msgid "Settlements"
+msgstr "Poblados"
+
+#: lobby/presets.py:116
+msgid "Cities"
+msgstr "Ciudades"
+
+#: lobby/presets.py:117 lobby/presets.py:136
+msgid "Robber on a 7"
+msgstr "Ladrón con el 7"
+
+#: lobby/presets.py:118
+msgid "Safe hand size on a 7"
+msgstr "Mano segura con el 7"
+
+#: lobby/presets.py:119
+msgid "Players holding more cards than this lose some on a 7."
+msgstr "Quien tenga más cartas que esto pierde parte con el 7."
+
+#: lobby/presets.py:120
+msgid "Share of the hand lost on a 7 (%)"
+msgstr "Parte de la mano que se pierde con el 7 (%)"
+
+#: lobby/presets.py:122
+msgid "Spare players still placing their first settlements"
+msgstr "Proteger a quien aún coloca sus primeros poblados"
+
+#: lobby/presets.py:123 lobby/presets.py:130
+msgid "Points to win"
+msgstr "Puntos para ganar"
+
+#: lobby/presets.py:133
+msgid "Roads / settlements / cities"
+msgstr "Caminos / poblados / ciudades"
+
+#: lobby/presets.py:134
+msgid "Seconds to build a road / settlement / city"
+msgstr "Segundos para construir camino / poblado / ciudad"
+
+#: lobby/presets.py:168 templates/lobby/list.html:72
+msgid "Yes"
+msgstr "Sí"
+
+#: lobby/presets.py:168 templates/lobby/list.html:72
+msgid "No"
+msgstr "No"
 
 #: templates/accounts/login.html:2 templates/accounts/login.html:4
 #: templates/accounts/login.html:10
@@ -349,8 +498,8 @@ msgstr "Revisa tu correo"
 #: templates/accounts/password_reset_done.html:5
 msgid "If an account uses that address, we sent a link to reset its password."
 msgstr ""
-"Si alguna cuenta usa esa dirección, le enviamos un enlace para restablecer la"
-" contraseña."
+"Si alguna cuenta usa esa dirección, le enviamos un enlace para restablecer "
+"la contraseña."
 
 #: templates/accounts/password_reset_email.txt:1
 #, python-format
@@ -518,8 +667,8 @@ msgid ""
 "The first player to reach <strong>%(target)s points</strong> wins. You earn "
 "points with settlements, cities, awards and some developments."
 msgstr ""
-"Gana el primer jugador que llegue a <strong>%(target)s puntos</strong>. Ganas"
-" puntos con poblados, ciudades, premios y algunos desarrollos."
+"Gana el primer jugador que llegue a <strong>%(target)s puntos</strong>. "
+"Ganas puntos con poblados, ciudades, premios y algunos desarrollos."
 
 #: templates/how_to_play.html:27
 msgid "The start: your settler"
@@ -536,9 +685,9 @@ msgstr ""
 #: templates/how_to_play.html:30
 #, python-format
 msgid ""
-"Build your first %(settlements)s settlements and %(roads)s roads. You already"
-" have the materials for them, and each road goes next to the settlement you "
-"just built."
+"Build your first %(settlements)s settlements and %(roads)s roads. You "
+"already have the materials for them, and each road goes next to the "
+"settlement you just built."
 msgstr ""
 "Construye tus primeros %(settlements)s poblados y %(roads)s caminos. Ya "
 "tienes los materiales para ellos, y cada camino va junto al poblado que "
@@ -648,9 +797,9 @@ msgstr ""
 #: templates/how_to_play.html:72
 #, python-format
 msgid ""
-"When the dice show a 7 nothing is produced. The robber takes %(pct)s%% of the"
-" resources of everyone holding more than %(limit)s, then moves by itself to a"
-" neighbouring hex. The hex where it stands produces nothing."
+"When the dice show a 7 nothing is produced. The robber takes %(pct)s%% of "
+"the resources of everyone holding more than %(limit)s, then moves by itself "
+"to a neighbouring hex. The hex where it stands produces nothing."
 msgstr ""
 "Cuando los dados suman 7 no se produce nada. El ladrón se lleva el %(pct)s%% "
 "de los recursos de cada jugador con más de %(limit)s y luego se mueve solo a "
@@ -714,8 +863,8 @@ msgid ""
 "points, and the largest army (at least %(army)s knights played) another "
 "%(army_points)s."
 msgstr ""
-"El camino más largo (al menos %(road)s tramos) vale %(road_points)s puntos, y"
-" el ejército más grande (al menos %(army)s caballeros jugados) otros "
+"El camino más largo (al menos %(road)s tramos) vale %(road_points)s puntos, "
+"y el ejército más grande (al menos %(army)s caballeros jugados) otros "
 "%(army_points)s."
 
 #: templates/how_to_play.html:109
@@ -727,8 +876,8 @@ msgid ""
 "WASD or the arrow keys walk your settler; Shift + WASD moves the camera; the "
 "mouse wheel zooms."
 msgstr ""
-"WASD o las flechas mueven a tu colono; Shift + WASD mueve la cámara; la rueda"
-" del ratón acerca y aleja."
+"WASD o las flechas mueven a tu colono; Shift + WASD mueve la cámara; la "
+"rueda del ratón acerca y aleja."
 
 #: templates/how_to_play.html:112
 msgid "Right-click a corner or edge to walk there or build."
@@ -740,8 +889,8 @@ msgid ""
 "R builds a road, E a settlement, C a city; T opens trading. You can change "
 "the keys in the game."
 msgstr ""
-"R construye un camino, E un poblado, C una ciudad; T abre el comercio. Puedes"
-" cambiar las teclas en la partida."
+"R construye un camino, E un poblado, C una ciudad; T abre el comercio. "
+"Puedes cambiar las teclas en la partida."
 
 #: templates/how_to_play.html:115
 msgid "Phone or tablet"
@@ -879,12 +1028,13 @@ msgstr "Ir a la partida"
 msgid "Share this code so friends can join."
 msgstr "Comparte este código para que tus amigos se unan."
 
-#: templates/lobby/detail.html:9
+#: templates/lobby/detail.html:13
 #, python-format
-msgid "(for %(players)s players; smaller if fewer join)"
-msgstr "(para %(players)s jugadores; más pequeña si se unen menos)"
+msgid ""
+"Island and bank are sized for %(players)s players; smaller if fewer join."
+msgstr "La isla y el banco son para %(players)s jugadores; más pequeños si se unen menos."
 
-#: templates/lobby/detail.html:18
+#: templates/lobby/detail.html:19
 msgid "Back to the lobby"
 msgstr "Volver a la sala de espera"
 
@@ -917,6 +1067,10 @@ msgstr "Código"
 msgid "Host"
 msgstr "Anfitrión"
 
+#: templates/lobby/list.html:24
+msgid "Preset"
+msgstr "Preajuste"
+
 #: templates/lobby/list.html:37
 msgid "No open games. Create one below."
 msgstr "No hay partidas abiertas. Crea una abajo."
@@ -925,6 +1079,44 @@ msgstr "No hay partidas abiertas. Crea una abajo."
 msgid "Create a game"
 msgstr "Crear una partida"
 
-#: templates/lobby/list.html:46
+#: templates/lobby/list.html:55
+msgid "hexes"
+msgstr "hexágonos"
+
+#: templates/lobby/list.html:56
+msgid "points"
+msgstr "puntos"
+
+#: templates/lobby/list.html:57
+msgid "dice every"
+msgstr "dados cada"
+
+#: templates/lobby/list.html:71
+msgid "This game"
+msgstr "Esta partida"
+
+#: templates/lobby/list.html:80
+msgid "Custom rules"
+msgstr "Reglas personalizadas"
+
+#: templates/lobby/list.html:81
+msgid ""
+"Used only by the Custom game type. Blank fields keep the Classic value shown "
+"in grey."
+msgstr "Solo se usan en la partida Personalizada. Los campos en blanco mantienen el valor de la Clásica, que se ve en gris."
+
+#: templates/lobby/list.html:101
 msgid "Create game"
 msgstr "Crear partida"
+
+#~ msgid ""
+#~ "Blank keeps the preset (19 in Classic, larger for more than 4 players)."
+#~ msgstr ""
+#~ "En blanco se usa el valor del modo (19 en Clásico, más grande con más de "
+#~ "4 jugadores)."
+
+#~ msgid "Blank keeps the preset (20 in Classic)."
+#~ msgstr "En blanco mantiene el preajuste (20 en Clásico)."
+
+#~ msgid "Blank keeps the preset (10 in Classic)."
+#~ msgstr "En blanco mantiene el preajuste (10 en Clásico)."

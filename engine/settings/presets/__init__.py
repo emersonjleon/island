@@ -51,6 +51,7 @@ def load_preset(
 ) -> GameSettings:
     """Preset ``name`` with ``overrides`` deep-merged on top (groups merge, values replace),
     scaled up for ``players`` (default ``players.max``) when that exceeds ``players.sized_for``.
+    The preset's own island size and bank are scaled too; values in ``overrides`` are not.
 
     ``players`` is the real table size at the start of a game: it also becomes
     ``players.max`` (never below ``players.min``), so the settings describe that table.
@@ -60,6 +61,6 @@ def load_preset(
         group = dict(raw.get("players") or {})
         group["max"] = max(players, int(group.get("min", PlayersSettings.model_fields["min"].default)))
         raw["players"] = group
-    raw = scale_for_players(raw, players)
+    raw = scale_for_players(raw, players, explicit=overrides or {})
     raw["preset"] = name
     return parse_settings(raw, implemented_stage=implemented_stage)
