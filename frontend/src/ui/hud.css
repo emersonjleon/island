@@ -450,3 +450,10 @@ table.keys td { padding: 4px 0; }
   .game-hud .hud-dialog .trade-side .card { padding: 2px; }
   .trade-side .card .label { display: none; }
 }
+
+/* Desktop with the chat open: dialogs centre in the space left of the chat, so the
+   trade dialog and the chat sit side by side instead of overlapping. */
+@media (min-width: 1000px) and (min-height: 501px) {
+  .hud:has(.chat-panel) .hud-overlay { padding-right: 420px; }
+  .hud:has(.chat-panel) .hud-dialog { max-width: min(640px, calc(100% - 32px)); }
+}
