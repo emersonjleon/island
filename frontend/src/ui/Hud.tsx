@@ -12,6 +12,7 @@ import { playerColour } from "../render2d/palette";
 import type { GameStore } from "../state/store";
 import "./hud.css";
 import { cardCount, devPlayer, knightVictims } from "../state/devcards";
+import { ChatPanel, ChatToggle, type GameChat } from "../chat/ChatDock";
 import { DevCardsDialog, VictimDialog } from "./DevCards";
 import { Dialog, useEscape } from "./Dialog";
 import { GuidePanel, HelpDialog } from "./Guide";
@@ -50,6 +51,8 @@ export interface HudProps {
   helpUrl?: string;
   /** A touch screen is the main pointer: show touch help, hide keyboard-only bits. */
   touch?: boolean;
+  /** The players' chat (button by the camera buttons, panel over the board). */
+  chat?: GameChat;
 }
 
 /** What the page feeds the HUD from outside the store. */
@@ -160,8 +163,12 @@ function Hud(props: HudProps & { handle: HudHandle }) {
           )}
           {!seated && s && <div class="hud-spectator">{t("hud:spectator")}</div>}
         </div>
-        <div class="hud-slot-camera">{s && <CameraButtons {...props} onFullscreenHelp={() => setDialog("fullscreen")} />}</div>
+        <div class="hud-slot-camera">
+          {s && <CameraButtons {...props} onFullscreenHelp={() => setDialog("fullscreen")} />}
+          {s && props.chat && <ChatToggle chat={props.chat} t={t} />}
+        </div>
       </div>
+      {s && props.chat && <ChatPanel chat={props.chat} t={t} touch={!!props.touch} />}
       <div class="hud-notices" aria-live="polite">
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>

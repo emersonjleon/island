@@ -1,0 +1,35 @@
+{
+  "title": "Chat",
+  "open": "Chat",
+  "close": "Cerrar",
+  "placeholder": "Escribe un mensaje…",
+  "send": "Enviar",
+  "empty": "Aún no hay mensajes. ¡Saluda!",
+  "watching": "mirando",
+  "you": "tú",
+  "insert": "Añadir {{res}} al mensaje",
+  "unread_one": "{{count}} mensaje nuevo",
+  "unread_other": "{{count}} mensajes nuevos",
+  "previews_off": "No mostrar los mensajes nuevos sobre el juego",
+  "previews_on": "Mostrar los mensajes nuevos sobre el juego",
+  "quick": {
+    "anyone": "¿Alguien cambia?",
+    "deal": "¡Trato hecho!",
+    "no": "No, gracias",
+    "gg": "¡Buena partida!"
+  },
+  "res": {
+    "lumber": "madera",
+    "brick": "ladrillo",
+    "wool": "lana",
+    "grain": "trigo",
+    "ore": "mineral",
+    "fish": "pescado"
+  },
+  "errors": {
+    "empty": "Escribe algo primero.",
+    "too_long": "Demasiado largo: como mucho {{max}} caracteres.",
+    "rate_limited": "Más despacio; inténtalo de nuevo en un momento.",
+    "offline": "Sin conexión ahora mismo. Inténtalo en un momento."
+  }
+}

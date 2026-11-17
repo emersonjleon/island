@@ -258,6 +258,8 @@ Three principles for events:
 2. **Settlers move one edge per event**, with exact `t0`/`t1`. Clients interpolate, and fog can later drop steps outside a player's sight.
 3. **Text is never sent.** Messages carry codes and parameters, and the client translates them.
 
+**Chat (stage 2).** The players' chat rides on the same socket but never reaches the engine or the game host (`chat/` app). The client sends `{"t":"chat","text":"..."}`; everyone on the game page and on its waiting-room page (`/ws/lobby/<code>/`, same frames) receives `{"t":"chat","msgs":[{"id","name","colour","seat","player","text","at"}],"history":false}`, and on connect `history:true` with the latest lines. Refusals are notices with `chat.*` codes (`chat.empty`, `chat.too_long`, `chat.rate_limited`). Chat text is the one place where people's own words are sent; the client shows it as plain text.
+
 The engine computes each seat's `buildable` set and sends it privately whenever it changes. This lets the client highlight legal spots without copying the placement rules.
 
 **Clock sync.** The client sends `ping` about every 5 s and keeps the sample with the lowest round-trip time to estimate the offset. All countdowns and animations use the estimated server game time.

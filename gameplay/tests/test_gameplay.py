@@ -136,7 +136,7 @@ class GameConsumerTests(TransactionTestCase):
             welcome = await self.recv(player)
             self.assertEqual((welcome["t"], welcome["seat"], welcome["game"]), ("welcome", 0, self.game.code))
             self.assertIn("board", welcome["settings"])
-            self.assertEqual((await self.recv(player))["t"], "board")
+            self.assertEqual((await self.recv(player, "board"))["t"], "board")
             state = await self.recv(player)
             self.assertEqual(state["t"], "state")
             self.assertIn("hand", state["state"]["players"][0])

@@ -1,0 +1,105 @@
+/* Chat: the conversation (.chat-view) is shared by the waiting room (light page)
+   and the game (dark panel over the board). Colours come from these tokens. */
+.chat-view { --chat-fg: #1d2a30; --chat-muted: #6b6253; --chat-line: #ebe1c8; --chat-input-bg: #fff; --chat-input-border: #c9bf9f;
+  --chat-chip-bg: #f1ead8; --chat-error: #a33;
+  display: flex; flex-direction: column; min-height: 0; flex: 1; gap: 6px; color: var(--chat-fg); }
+.chat-lines { flex: 1; min-height: 0; margin: 0; padding: 0 2px; list-style: none; overflow-y: auto; overscroll-behavior: contain;
+  touch-action: pan-y; -webkit-user-select: text; user-select: text; line-height: 1.35; overflow-wrap: anywhere; }
+.chat-lines li { padding: 3px 0; }
+.chat-lines li + li { border-top: 1px solid var(--chat-line); }
+.chat-lines .chat-empty { color: var(--chat-muted); font-style: italic; border: 0; }
+.chat-dot { display: inline-block; width: 9px; height: 9px; margin-right: 5px; border-radius: 50%; vertical-align: 1px;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.85), 0 0 0 2.5px rgba(0, 0, 0, 0.3); }
+.chat-who { font-weight: 700; }
+.chat-who::after { content: " "; }
+.chat-tag { color: var(--chat-muted); }
+.chat-time { float: right; margin-left: 8px; color: var(--chat-muted); font-size: 0.72em; font-variant-numeric: tabular-nums; }
+.chat-lines .watcher .chat-text { font-style: italic; }
+.chat-res { display: inline-grid; place-items: center; width: 20px; height: 20px; margin: 0 1px; border-radius: 5px; vertical-align: -5px;
+  background: var(--res-bg, #e9e0c9); color: #1d2a30; box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.18); }
+.chat-error { margin: 0; color: var(--chat-error); font-size: 0.85em; }
+.chat-quick, .chat-res-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.chat-quick button, .chat-res-btn { font: inherit; font-size: 0.8em; border: 1px solid var(--chat-input-border); border-radius: 999px;
+  padding: 3px 10px; background: var(--chat-chip-bg); color: var(--chat-fg); cursor: pointer; touch-action: manipulation; }
+.chat-res-btn { display: inline-grid; place-items: center; width: 34px; height: 28px; padding: 0; border-radius: 8px;
+  background: var(--res-bg, #e9e0c9); color: #1d2a30; }
+.chat-res-btn.res-lumber, .chat-res-btn.res-brick, .chat-res.res-lumber, .chat-res.res-brick { color: #fff; }
+.chat-form { display: flex; gap: 6px; }
+/* 16px text keeps phones from zooming in when the box gets focus. */
+.chat-form input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 7px 10px; border-radius: 8px;
+  border: 1px solid var(--chat-input-border); background: var(--chat-input-bg); color: var(--chat-fg); }
+.chat-form .chat-send { flex: none; }
+
+/* The chat's resource buttons reuse the hand's resource colours. */
+.chat-res-btn.res-lumber, .chat-res.res-lumber { --res-bg: linear-gradient(180deg, #5a9e45, #3f7f30); }
+.chat-res-btn.res-brick, .chat-res.res-brick { --res-bg: linear-gradient(180deg, #d77448, #b2532f); }
+.chat-res-btn.res-wool, .chat-res.res-wool { --res-bg: linear-gradient(180deg, #c6e78f, #a3cf66); }
+.chat-res-btn.res-grain, .chat-res.res-grain { --res-bg: linear-gradient(180deg, #f7d86a, #e9bb36); }
+.chat-res-btn.res-ore, .chat-res.res-ore { --res-bg: linear-gradient(180deg, #b2b9c0, #8b949c); }
+.chat-res-btn.res-fish, .chat-res.res-fish { --res-bg: linear-gradient(180deg, #86c3e3, #5aa3cc); }
+
+/* ---------------------------------------------------------------- game page */
+/* The button sits with the camera buttons; the slot stacks them like the camera group does. */
+.game-hud .hud-slot-camera { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.chat-dock { position: relative; z-index: 21; display: flex; align-items: center; pointer-events: none; }
+.game-hud .chat-dock button { pointer-events: auto; }
+.game-hud .chat-toggle { position: relative; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 50%;
+  background: rgba(10, 26, 36, 0.88); color: #f4f1e8; border: 1px solid rgba(240, 201, 79, 0.22); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); }
+.game-hud .chat-toggle[aria-expanded="true"] { background: #f0c94f; color: #1d2a30; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); }
+.hud.touch .chat-toggle { width: 48px; height: 48px; }
+.chat-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px;
+  background: #c0392b; color: #fff; font-size: 0.7rem; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 0 0 2px rgba(10, 26, 36, 0.9); }
+.game-hud .chat-peek { position: absolute; right: calc(100% + 8px); bottom: 2px; max-width: min(320px, 62vw); padding: 6px 12px;
+  border-radius: 14px 14px 4px 14px; background: #fdf3d2; color: #3b2f0b; border: 1px solid #e9c766; font-weight: 400; text-align: left;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); animation: chat-pop 0.18s ease-out; }
+.game-hud .chat-peek .chat-res { width: 18px; height: 18px; vertical-align: -4px; }
+@keyframes chat-pop { from { transform: translateY(4px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .game-hud .chat-peek { animation: none; } }
+
+.chat-panel { position: absolute; right: 68px; bottom: 12px; z-index: 21; width: 340px; height: min(440px, calc(100% - 120px));
+  display: flex; flex-direction: column; padding: 8px 10px 10px; pointer-events: auto; border-radius: 12px; font-size: 0.9rem;
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.96), rgba(10, 26, 36, 0.96)); border: 1px solid rgba(240, 201, 79, 0.3);
+  box-shadow: 0 10px 28px rgba(3, 15, 22, 0.55); color: #f4f1e8; }
+.hud.touch .chat-panel { right: 76px; }
+.chat-panel header { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.chat-panel h2 { flex: 1; margin: 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #f0c94f; font-weight: 700; }
+.game-hud .chat-panel header button { display: grid; place-items: center; width: 30px; height: 30px; min-height: 0; padding: 0; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08); color: #f4f1e8; border: 1px solid rgba(240, 201, 79, 0.25); box-shadow: none; }
+.game-hud .chat-panel header button[aria-pressed="true"] { box-shadow: none; color: #ffb4a8; }
+.chat-panel .chat-view { --chat-fg: #f4f1e8; --chat-muted: #aab6bb; --chat-line: rgba(255, 255, 255, 0.08); --chat-input-bg: rgba(255, 255, 255, 0.95);
+  --chat-input-border: rgba(240, 201, 79, 0.35); --chat-chip-bg: rgba(255, 255, 255, 0.1); --chat-error: #ffb4a8; }
+.chat-panel .chat-form input { color: #1d2a30; }
+.game-hud .chat-panel .chat-quick button { padding: 3px 10px; min-height: 0; font-weight: 500; background: var(--chat-chip-bg); color: var(--chat-fg);
+  border: 1px solid var(--chat-input-border); box-shadow: none; border-radius: 999px; }
+.game-hud .chat-panel .chat-res-btn { width: 34px; height: 28px; min-height: 0; padding: 0; border-radius: 8px; background: var(--res-bg);
+  border: 1px solid rgba(255, 255, 255, 0.35); }
+.game-hud .chat-panel .chat-send { min-height: 0; }
+.hud.touch .chat-panel .chat-res-btn { width: 40px; height: 34px; }
+.hud.touch .chat-panel .chat-quick button { padding: 6px 12px; }
+
+/* Phones, portrait: a sheet across the bottom, over the hand bar while it is open. */
+@media (max-width: 720px) {
+  .game-hud .hud-slot-camera { flex-direction: row; align-items: flex-end; }
+  .hud.touch .chat-toggle { width: 42px; height: 42px; }
+  .chat-panel, .hud.touch .chat-panel { left: 8px; right: 8px; bottom: 8px; width: auto; height: min(58%, 460px); font-size: 0.88rem; }
+  .game-hud .chat-peek { bottom: calc(100% + 6px); right: 0; max-width: calc(100vw - 24px); }
+}
+/* Phones, landscape: the button goes above the camera row (the bottom row has no width
+   to spare) and the panel is a column on the right, over the players list while open. */
+@media (max-height: 500px) and (min-width: 480px) {
+  .game-hud .hud-slot-camera { flex-direction: column; align-items: flex-end; gap: 6px; }
+  .chat-dock { order: -1; }
+  .hud.touch .chat-toggle { width: 40px; height: 40px; }
+  .chat-panel, .hud.touch .chat-panel { top: 8px; right: 8px; bottom: 8px; left: auto; width: min(360px, 50%); height: auto; padding: 6px 8px 8px; font-size: 0.82rem; }
+  .chat-panel header { margin-bottom: 2px; }
+  .hud.touch .chat-panel .chat-res-btn { width: 36px; height: 30px; }
+  .hud.touch .chat-panel .chat-quick button { padding: 4px 10px; }
+  .game-hud .chat-peek { bottom: 2px; right: calc(100% + 8px); max-width: 50vw; }
+}
+
+/* ---------------------------------------------------------------- waiting room */
+.lobby-chat { margin: 24px 0; padding: 12px 14px; border: 1px solid #e3d6b4; border-radius: 12px; background: #fbf6e9; }
+.lobby-chat h2 { margin: 0 0 8px; }
+.lobby-chat .chat-view { height: 300px; }
+.lobby-chat .chat-lines { background: #fff; border: 1px solid #ebe1c8; border-radius: 8px; padding: 4px 8px; }
+@media (max-width: 600px) { .lobby-chat .chat-view { height: 260px; } }

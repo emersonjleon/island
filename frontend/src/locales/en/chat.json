@@ -1,0 +1,35 @@
+{
+  "title": "Chat",
+  "open": "Chat",
+  "close": "Close",
+  "placeholder": "Write a message…",
+  "send": "Send",
+  "empty": "No messages yet. Say hello!",
+  "watching": "watching",
+  "you": "you",
+  "insert": "Add {{res}} to the message",
+  "unread_one": "{{count}} new message",
+  "unread_other": "{{count}} new messages",
+  "previews_off": "Don't show new messages over the game",
+  "previews_on": "Show new messages over the game",
+  "quick": {
+    "anyone": "Anyone trading?",
+    "deal": "Deal!",
+    "no": "No, thanks",
+    "gg": "Good game!"
+  },
+  "res": {
+    "lumber": "lumber",
+    "brick": "brick",
+    "wool": "wool",
+    "grain": "grain",
+    "ore": "ore",
+    "fish": "fish"
+  },
+  "errors": {
+    "empty": "Write something first.",
+    "too_long": "Too long: at most {{max}} characters.",
+    "rate_limited": "Slow down a little, then try again.",
+    "offline": "Not connected right now. Try again in a moment."
+  }
+}

@@ -44,7 +44,7 @@ jobs:
           python manage.py check
           python manage.py makemigrations --check --dry-run
       - name: Tests
-        run: python manage.py test common accounts lobby gamehost gameplay
+        run: python manage.py test common accounts lobby gamehost gameplay chat
 
   frontend:
     runs-on: ubuntu-latest

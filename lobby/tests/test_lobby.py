@@ -295,6 +295,7 @@ class ConsumerTests(TransactionTestCase):
             comm = self.communicator(self.host)
             connected, _ = await comm.connect()
             self.assertTrue(connected)
+            self.assertEqual(await comm.receive_json_from(), {"t": "chat", "msgs": [], "history": True})
             await comm.send_json_to({"t": "ping"})
             self.assertEqual(await comm.receive_json_from(), {"t": "pong"})
             from channels.db import database_sync_to_async

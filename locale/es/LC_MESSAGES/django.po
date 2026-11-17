@@ -1034,6 +1034,14 @@ msgid ""
 "Island and bank are sized for %(players)s players; smaller if fewer join."
 msgstr "La isla y el banco son para %(players)s jugadores; más pequeños si se unen menos."
 
+#: templates/chat/_lobby_chat.html:3
+msgid "Chat"
+msgstr "Chat"
+
+#: templates/chat/_lobby_chat.html:4
+msgid "The chat opens in a moment…"
+msgstr "El chat se abre en un momento…"
+
 #: templates/lobby/detail.html:19
 msgid "Back to the lobby"
 msgstr "Volver a la sala de espera"
