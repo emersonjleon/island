@@ -118,6 +118,33 @@
       "seat": null
     },
     {
+      "at": 233000,
+      "by": null,
+      "get": {
+        "grain": 1
+      },
+      "give": {
+        "brick": 1
+      },
+      "k": "offer_closed",
+      "offer": 1,
+      "reason": "cancelled",
+      "seat": 2
+    },
+    {
+      "at": 32000,
+      "expires_at": null,
+      "get": {
+        "ore": 1
+      },
+      "give": {
+        "lumber": 1
+      },
+      "k": "offer_posted",
+      "offer": 0,
+      "seat": 0
+    },
+    {
       "at": 11000,
       "k": "points",
       "points": 1,

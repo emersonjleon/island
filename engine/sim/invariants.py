@@ -7,7 +7,7 @@ Conservation needs the per-resource total of the game, taken once with
 """
 from __future__ import annotations
 
-from engine.rules import devcards, longest_road
+from engine.rules import devcards, longest_road, trade_board
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -114,6 +114,23 @@ def _dev_cards(state: GameState) -> list[str]:
     return []
 
 
+def _trade_board(state: GameState) -> list[str]:
+    """Open offers belong to players still in, are not over the cap, and expire on a timer."""
+    out: list[str] = []
+    cap = state.settings.trading.max_open_offers
+    raw = state.ext.get(trade_board.EXT_KEY, {}).get("offers", {})
+    for oid, o in raw.items():
+        if state.player(o["seat"]).resigned:
+            out.append(f"trade_board.resigned: offer {oid} of seat {o['seat']}")
+        timer = state.timers.get(o.get("timer"))
+        if (o.get("expires_at") is None) != (timer is None):
+            out.append(f"trade_board.timer: offer {oid}")
+    for p in state.players:
+        if trade_board.open_count(state, p.seat) > cap:
+            out.append(f"trade_board.cap: seat {p.seat}")
+    return out
+
+
 def _points(state: GameState) -> list[str]:
     out: list[str] = []
     bp = state.settings.victory.building_points
@@ -161,7 +178,7 @@ def _timers(state: GameState) -> list[str]:
 
 def violations(state: GameState, totals: dict[Resource, int]) -> list[str]:
     return [*_conservation(state, totals), *_pieces(state), *_board(state), *_points(state),
-            *_dev_cards(state), *_timers(state)]
+            *_dev_cards(state), *_trade_board(state), *_timers(state)]
 
 
 def check(state: GameState, totals: dict[Resource, int]) -> None:

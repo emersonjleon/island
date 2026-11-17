@@ -39,6 +39,18 @@
     "unknown_vertex": "Ese lugar no existe",
     "unreachable": "Tu colono no puede llegar ahí"
   },
+  "offer": {
+    "disabled": "El comercio entre jugadores está desactivado en esta partida",
+    "setup_not_done": "Termina tu preparación primero",
+    "too_many": "Ya tienes {{max}} ofertas publicadas; retira una primero",
+    "cannot_afford": "No tienes esos recursos",
+    "not_found": "Esa oferta ya no está",
+    "not_yours": "Esa oferta no es tuya",
+    "own": "No puedes tomar tu propia oferta",
+    "poster_short": "Ya no tiene lo que ofreció",
+    "empty": "Elige algo que dar y algo que recibir",
+    "same_resource": "No des y recibas el mismo recurso"
+  },
   "trade": {
     "bad_ratio": "Cantidad incorrecta para ese intercambio",
     "bank_empty": "Al banco se le acabó ese recurso",

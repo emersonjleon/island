@@ -1521,6 +1521,15 @@
           "title": "Harbor Trade",
           "type": "boolean"
         },
+        "max_open_offers": {
+          "default": 3,
+          "label": "settings.trading.max_open_offers",
+          "maximum": 20,
+          "minimum": 1,
+          "stage": 2,
+          "title": "Max Open Offers",
+          "type": "integer"
+        },
         "offer_expiry_ms": {
           "anyOf": [
             {

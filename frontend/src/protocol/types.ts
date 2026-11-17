@@ -60,6 +60,8 @@ export interface GameStateView {
   longest_road?: { holder: number | null; lengths: Record<string, number> };
   /** Stage 2: development cards and Largest Army. */
   dev_cards?: DevCardsView;
+  /** Stage 2: open offers on the player trade board, oldest first. */
+  trade_board?: { offers: TradeOffer[] };
   /** Stage 2: score history and dice production per seat (as a string), where visible. */
   stats?: StatsView;
   /** Why the game ended (set once finished). */
@@ -90,6 +92,9 @@ export type Intent =
   | { a: "bank_trade"; give: ResMap; get: ResMap }
   | { a: "buy_dev_card" }
   | { a: "play_dev_card"; card: DevCardKind; hex?: number; victim?: number; resources?: Resource[]; resource?: Resource }
+  | { a: "post_offer"; give: ResMap; get: ResMap }
+  | { a: "cancel_offer"; offer: number }
+  | { a: "accept_offer"; offer: number }
   | { a: "resign" };
 
 export type DevCardKind = "knight" | "victory_point" | "road_building" | "year_of_plenty" | "monopoly";
@@ -102,6 +107,8 @@ export interface DevCardsPlayer {
   last_play?: { at: number; roll: number } | null;
   free_roads?: number;
 }
+/** An offer on the trade board: ``seat`` gives ``give`` for ``get``. */
+export interface TradeOffer { id: number; seat: number; give: ResMap; get: ResMap; at: number; expires_at: number | null }
 export interface DevCardsView { deck_left: number; army: number | null; players: Record<string, DevCardsPlayer> }
 
 const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong"]);
