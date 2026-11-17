@@ -53,6 +53,13 @@
     "waiting_one": "{{count}} oferta de otros jugadores",
     "waiting_other": "{{count}} ofertas de otros jugadores"
   },
+  "net": {
+    "lost": "Se perdió la conexión.",
+    "trying": "Reconectando…",
+    "retryIn_one": "Nuevo intento en {{count}} segundo (intento {{attempt}}). La partida sigue mientras tanto.",
+    "retryIn_other": "Nuevo intento en {{count}} segundos (intento {{attempt}}). La partida sigue mientras tanto.",
+    "retryNow": "Reintentar ya"
+  },
   "dice": {
     "next": "Próxima tirada",
     "last": "Última tirada",
@@ -60,6 +67,8 @@
     "waiting": "Los dados empiezan tras el primer poblado"
   },
   "scores": {
+    "offline": "desconectado",
+    "offlineHelp": "Perdió la conexión; la partida sigue y puede volver",
     "title": "Jugadores",
     "points": "{{points}} / {{target}}",
     "cards": "{{count}} recursos",

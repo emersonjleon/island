@@ -51,6 +51,10 @@
     "empty": "Choose something to give and something to get",
     "same_resource": "Don't give and get the same resource"
   },
+  "net": {
+    "offline": "No connection: that order was not sent",
+    "reconnected": "Back online, the game is up to date"
+  },
   "trade": {
     "bad_ratio": "Wrong amount for that trade",
     "bank_empty": "The bank has run out of that resource",

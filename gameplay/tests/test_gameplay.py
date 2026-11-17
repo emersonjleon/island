@@ -137,8 +137,7 @@ class GameConsumerTests(TransactionTestCase):
             self.assertEqual((welcome["t"], welcome["seat"], welcome["game"]), ("welcome", 0, self.game.code))
             self.assertIn("board", welcome["settings"])
             self.assertEqual((await self.recv(player, "board"))["t"], "board")
-            state = await self.recv(player)
-            self.assertEqual(state["t"], "state")
+            state = await self.recv(player, "state")
             self.assertIn("hand", state["state"]["players"][0])
 
             await player.send_json_to({"t": "hello", "proto": 1, "lang": "es"})
@@ -177,6 +176,36 @@ class GameConsumerTests(TransactionTestCase):
             await spect.send_json_to({"t": "intent", "cid": "s1", "a": "build", "kind": "road", "edge": 1})
             self.assertEqual((await self.recv(spect, "reject"))["code"], codes.INTENT_SPECTATOR)
             await spect.disconnect()
+            await self.stop_host(host)
+
+        async_to_sync(run)()
+
+    def test_presence_follows_the_players_sockets(self):
+        async def run():
+            host = await self.start_host()
+            ana = await self.connect(self.users[0])
+            self.assertEqual(await self.recv(ana, "presence"), {"t": "presence", "seat": 0, "online": True})
+            ben = await self.connect(self.users[1])
+            seen_by_ben = {(await self.recv(ben, "presence"))["seat"] for _ in range(2)}
+            self.assertEqual(seen_by_ben, {0, 1})                       # ana answered ben's arrival
+            self.assertEqual(await self.recv(ana, "presence"), {"t": "presence", "seat": 1, "online": True})
+            ana2 = await self.connect(self.users[0])                    # a second tab for ana
+            await ana.disconnect()
+            # ben hears ana's first tab go, then her other tab say she is still here
+            async def seat0():
+                while True:
+                    msg = await self.recv(ben, "presence")
+                    if msg["seat"] == 0:
+                        return msg["online"]
+            while await seat0():
+                pass
+            self.assertTrue(await seat0())
+            await ana2.disconnect()
+            while True:
+                msg = await self.recv(ben, "presence")
+                if msg["seat"] == 0 and not msg["online"]:
+                    break
+            await ben.disconnect()
             await self.stop_host(host)
 
         async_to_sync(run)()

@@ -7,6 +7,7 @@ import { useEffect, useState } from "preact/hooks";
 
 import type { Action, Bindings } from "../input/bindings";
 import type { ModeInfo } from "../input/controller";
+import type { LinkInfo } from "../net/connection";
 import type { BuildKind, Intent, Resource } from "../protocol/types";
 import { playerColour } from "../render2d/palette";
 import type { GameStore } from "../state/store";
@@ -49,6 +50,8 @@ export interface HudProps {
   lobbyUrl: string;
   /** The full rules page ("How to play"). */
   helpUrl?: string;
+  /** Reconnect now instead of waiting for the next attempt. */
+  reconnect?: () => void;
   /** A touch screen is the main pointer: show touch help, hide keyboard-only bits. */
   touch?: boolean;
   /** The players' chat (button by the camera buttons, panel over the board). */
@@ -58,11 +61,13 @@ export interface HudProps {
 /** What the page feeds the HUD from outside the store. */
 export interface HudFeed {
   link: string;
+  /** Reconnection attempts and when the next one starts (see net/connection). */
+  linkInfo?: LinkInfo;
   mode: ModeInfo | null;
 }
 
 export interface HudHandle {
-  setLink(link: string): void;
+  setLink(link: string, info?: LinkInfo): void;
   setMode(mode: ModeInfo | null): void;
   notify(code: string, params?: Record<string, unknown>): void;
   openTrade(): void;
@@ -115,7 +120,15 @@ function Hud(props: HudProps & { handle: HudHandle }) {
 
   useEffect(() => {
     let next = 0;
-    handle.setLink = (link) => setFeed((f) => ({ ...f, link }));
+    let lost = false;
+    handle.setLink = (link, info) => {
+      setFeed((f) => ({ ...f, link, linkInfo: info }));
+      if (link === "closed" && store.state) lost = true;
+      if (link === "open" && lost) {
+        lost = false;
+        handle.notify("net.reconnected");
+      }
+    };
     handle.setMode = (mode) => setFeed((f) => ({ ...f, mode }));
     handle.notify = (code, params) => {
       const id = ++next;
@@ -169,6 +182,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         </div>
       </div>
       {s && props.chat && <ChatPanel chat={props.chat} t={t} touch={!!props.touch} />}
+      {s && feed.link !== "open" && <LinkBanner t={t} feed={feed} now={Date.now()} reconnect={props.reconnect} />}
       <div class="hud-notices" aria-live="polite">
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
@@ -196,6 +210,20 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         />
       )}
       {finished && !overHidden && <GameOver {...props} onHide={() => setOverHidden(true)} />}
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ connection
+/** Shown while a game page has lost its connection: the game goes on without you. */
+function LinkBanner({ t, feed, now, reconnect }: { t: TFunction; feed: HudFeed; now: number; reconnect?: () => void }) {
+  const info = feed.linkInfo;
+  const wait = info?.retryAt ? Math.max(0, Math.ceil((info.retryAt - now) / 1000)) : null;
+  return (
+    <div class="hud-offline" role="status">
+      <strong>{t("hud:net.lost")}</strong>{" "}
+      <span>{wait === null ? t("hud:net.trying") : t("hud:net.retryIn", { count: wait, attempt: info?.attempt ?? 1 })}</span>
+      {reconnect && wait !== null && <button type="button" class="primary" onClick={reconnect}>{t("hud:net.retryNow")}</button>}
     </div>
   );
 }
@@ -293,6 +321,9 @@ function Scores({ store, t, onStats, onResign }: HudProps & { onStats(): void; o
               <span class="name">
                 {p.name} {p.seat === store.seat && <small>{t("hud:scores.you")}</small>}
                 {p.resigned && <small class="tag" title={t("hud:scores.resigned")}>⚑</small>}
+                {!p.resigned && store.offline.has(p.seat) && (
+                  <small class="tag offline" title={t("hud:scores.offlineHelp")}>{t("hud:scores.offline")}</small>
+                )}
               </span>
               {p.points !== undefined && (
                 <span class="points">{target ? t("hud:scores.points", { points: p.points, target }) : p.points}</span>

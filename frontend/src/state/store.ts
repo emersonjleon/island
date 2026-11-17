@@ -20,6 +20,10 @@ export class GameStore {
   /** Bumps on every change; renderers redraw static layers when it moves. */
   version = 0;
   lastEvents: GameEvent[] = [];
+  /** Seats whose player has no connection open right now (from presence frames). */
+  offline = new Set<number>();
+  /** Seats that announced a connection at some point (people, never bots). */
+  private connected = new Set<number>();
   private listeners = new Set<Listener>();
 
   subscribe(fn: Listener): () => void {
@@ -31,6 +35,8 @@ export class GameStore {
   apply(msg: ServerMsg): "ok" | "gap" | "ignored" {
     switch (msg.t) {
       case "welcome":
+        // A fresh socket: until the others answer, everyone seen before counts as away.
+        this.offline = new Set([...this.connected].filter((s) => s !== msg.seat));
         this.seat = msg.seat;
         this.settings = msg.settings;
         this.gameCode = msg.game;
@@ -55,6 +61,15 @@ export class GameStore {
       default:
         return "ignored";
     }
+  }
+
+  /** A seat connected or dropped. Seats are taken as online until told otherwise. */
+  setPresence(seat: number, online: boolean): void {
+    if (online) this.connected.add(seat);
+    if (online === !this.offline.has(seat)) return;
+    if (online) this.offline.delete(seat);
+    else this.offline.add(seat);
+    this.changed();
   }
 
   player(seat: number): PlayerView | undefined {

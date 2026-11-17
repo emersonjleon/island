@@ -110,6 +110,11 @@
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.25); }
 .game-hud button[disabled] { opacity: 0.4; cursor: not-allowed; }
 
+.hud-offline { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 15; display: flex; flex-wrap: wrap;
+  align-items: center; justify-content: center; gap: 8px; padding: 8px 14px; border-radius: 12px; max-width: calc(100% - 32px);
+  background: #7a2a1f; color: #fff; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35); }
+.game-hud .hud-offline button.primary { background: linear-gradient(180deg, #f8dc78, #ebbb3a); color: #1d2a30; }
+.hud-scores .tag.offline { color: #c0392b; font-weight: 700; }
 .hud-notices { position: absolute; top: 64px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 6px; align-items: center; pointer-events: none; }
 .hud-notice { background: #fdf3d2; color: #5c4400; padding: 7px 14px; border-radius: 999px; border: 1px solid #e9c766;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); max-width: 480px; text-align: center; font-weight: 600; animation: hud-pop 0.18s ease-out; }

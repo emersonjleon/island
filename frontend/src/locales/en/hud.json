@@ -53,6 +53,13 @@
     "waiting_one": "{{count}} offer from other players",
     "waiting_other": "{{count}} offers from other players"
   },
+  "net": {
+    "lost": "Connection lost.",
+    "trying": "Reconnecting…",
+    "retryIn_one": "Trying again in {{count}} second (attempt {{attempt}}). The game goes on meanwhile.",
+    "retryIn_other": "Trying again in {{count}} seconds (attempt {{attempt}}). The game goes on meanwhile.",
+    "retryNow": "Try now"
+  },
   "dice": {
     "next": "Next roll",
     "last": "Last roll",
@@ -60,6 +67,8 @@
     "waiting": "The dice start after the first settlement"
   },
   "scores": {
+    "offline": "offline",
+    "offlineHelp": "Lost the connection; the game goes on and they can come back",
     "title": "Players",
     "points": "{{points}} / {{target}}",
     "cards": "{{count}} resources",
