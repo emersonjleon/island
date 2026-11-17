@@ -172,8 +172,45 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 .settings-summary { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; }
 .settings-summary dt { color: var(--muted); }
 .settings-summary dd { margin: 0; font-weight: 600; }
+/* Create-game form: game type cards, a live summary, and the custom rules. */
+.create-form fieldset { border: 0; padding: 0; margin: 0 0 14px; min-width: 0; }
+.create-form legend { font-weight: 600; font-size: 0.95rem; padding: 0; margin-bottom: 6px; }
+.create-form h3 { margin: 0 0 8px; font-size: 1rem; }
+.preset-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.preset-picker > legend { grid-column: 1 / -1; }
+.preset-card { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px 10px; cursor: pointer;
+  border: 2px solid var(--border); border-radius: 10px; background: var(--bg); font-weight: normal;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s; }
+.preset-card:hover { border-color: var(--accent); }
+.preset-card input { position: absolute; opacity: 0; pointer-events: none; }
+.preset-card:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(23, 96, 127, 0.25); }
+.preset-card:has(input:checked), .preset-card.selected { border-color: var(--accent); background: var(--panel);
+  box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
+.preset-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.preset-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.35; }
+.preset-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: auto; padding-top: 4px; font-size: 0.78rem; }
+.preset-chips > span { background: var(--bg-deep); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.preset-stats { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.stats-list { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin: 0; font-size: 0.92rem; }
+.stats-list dt { color: var(--muted); }
+.stats-list dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.custom-settings .knob-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px 14px;
+  border-top: 1px solid var(--border); padding-top: 10px; }
+.custom-settings .knob-group > legend { float: left; width: 100%; grid-column: 1 / -1; margin-bottom: 0; color: var(--accent-strong); }
+.knob { display: flex; flex-direction: column; gap: 4px; }
+.knob label { font-size: 0.9rem; font-weight: 600; }
+.knob-check label { display: flex; align-items: flex-start; gap: 8px; font-weight: normal; cursor: pointer; }
+.knob-check input { width: 1.15rem; height: 1.15rem; margin: 1px 0 0; accent-color: var(--accent); flex: none; }
+.create-form.js:not([data-preset="custom"]) .custom-settings { display: none; }
+.settings-summary .settings-note { grid-column: 1 / -1; font-weight: normal; font-size: 0.85rem; }
 @media (max-width: 480px) {
   .settings-summary { grid-template-columns: 1fr auto; }
+  .preset-picker { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .preset-card { padding: 10px; }
+  .preset-desc { font-size: 0.8rem; }
+  .custom-settings .knob-group { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .knob-check, .knob:has(.helptext) { grid-column: 1 / -1; }
+  .knob label { font-size: 0.85rem; }
   .page > section, .page > form.stacked, .settings-summary, #lobby-seats { padding: 14px; }
   table.games th, table.games td, table.seats th, table.seats td { padding: 8px 6px; }
 }

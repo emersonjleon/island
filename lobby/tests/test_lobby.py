@@ -186,14 +186,41 @@ class ViewTests(TestCase):
         self.client.force_login(self.host)
         response = self.client.post(
             reverse("lobby:list"),
-            {"preset": "classic", "max_players": "3", "land_hexes": "37", "roll_interval": "15", "target": ""},
+            {"preset": "custom", "max_players": "3", "land_hexes": "37", "roll_interval": "15", "target": "",
+             "bank_cards": "25", "robber": "on"},
         )
         game = Game.objects.get()
         self.assertRedirects(response, reverse("lobby:detail", args=[game.code]))
+        self.assertEqual(game.preset, "custom")
         self.assertEqual(
             game.overrides,
-            {"players": {"max": 3}, "board": {"land_hexes": 37}, "clock": {"roll_interval_ms": 15000}},
+            {"players": {"max": 3}, "board": {"land_hexes": 37}, "clock": {"roll_interval_ms": 15000},
+             "economy": {"bank": {"per_resource": {r: 25 for r in ("lumber", "brick", "wool", "grain", "ore", "fish")}}},
+             # An unchecked box switches a default-on rule off.
+             "robber": {"spare_setup": False}},
         )
+
+    def test_presets_ignore_custom_fields(self):
+        self.client.force_login(self.host)
+        self.client.post(reverse("lobby:list"), {"preset": "huge", "max_players": "10", "land_hexes": "37"})
+        game = Game.objects.get()
+        self.assertEqual((game.preset, game.overrides), ("huge", {"players": {"max": 10}}))
+        page = self.client.get(reverse("lobby:detail", args=[game.code]))
+        self.assertContains(page, "<dd>60</dd>", html=True)  # 48 land hexes for 8, grown for 10
+
+    def test_create_page_shows_every_game_type_with_stats(self):
+        self.client.force_login(self.host)
+        page = self.client.get(reverse("lobby:list"))
+        for name in ("blitz", "classic", "expanded", "huge", "custom"):
+            self.assertContains(page, f'value="{name}"')
+        self.assertContains(page, 'id="presets-data"')
+        self.assertContains(page, 'name="card_limit"')
+
+    def test_custom_game_lists_changed_rules(self):
+        game = services.create_game(self.host, "custom", {"players": {"max": 4}, "robber": {"card_limit": 9}})
+        self.client.force_login(self.host)
+        page = self.client.get(reverse("lobby:detail", args=[game.code]))
+        self.assertContains(page, "<dd>9</dd>", html=True)
 
     def test_create_form_rejects_out_of_range(self):
         self.client.force_login(self.host)

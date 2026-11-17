@@ -265,7 +265,25 @@ class StageTest(unittest.TestCase):
 
 class PresetTest(unittest.TestCase):
     def test_available(self) -> None:
-        self.assertEqual(available_presets(), ["blitz", "classic"])
+        self.assertEqual(available_presets(), ["blitz", "classic", "custom", "expanded", "huge"])
+
+    def test_custom_starts_from_defaults(self) -> None:
+        self.assertEqual(load_preset("custom").model_dump(exclude={"preset"}),
+                         GameSettings().model_dump(exclude={"preset"}))
+
+    def test_bigger_presets_scale_their_own_island_and_bank(self) -> None:
+        cases = {"expanded": (6, 30, 28, 12), "huge": (8, 48, 44, 14)}
+        for name, (sized_for, land, bank, target) in cases.items():
+            with self.subTest(preset=name):
+                s = load_preset(name)
+                self.assertEqual((s.players.max, s.players.sized_for, s.board.land_hexes), (sized_for, sized_for, land))
+                self.assertEqual((s.economy.bank.per_resource[Resource.ORE], s.victory.target), (bank, target))
+                s = load_preset(name, {"players": {"max": 12}}, players=12)
+                self.assertEqual(s.board.land_hexes, -(-land * 12 // sized_for))
+                self.assertEqual(s.economy.bank.per_resource[Resource.ORE], -(-bank * 12 // sized_for))
+                s = load_preset(name, {"board": {"land_hexes": 90}, "economy": {"bank": {"per_resource": {
+                    r.value: 70 for r in Resource}}}}, players=12)
+                self.assertEqual((s.board.land_hexes, s.economy.bank.per_resource[Resource.ORE]), (90, 70))
 
     def test_classic_equals_defaults(self) -> None:
         self.assertEqual(preset_overrides("classic"), {})

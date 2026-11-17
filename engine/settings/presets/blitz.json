@@ -1,4 +1,5 @@
 {
   "clock": {"roll_interval_ms": 8000},
+  "build": {"time_ms": {"road": 2000, "settlement": 5000, "city": 6000, "megacity": 10000}},
   "victory": {"target": 7}
 }

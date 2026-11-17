@@ -1,49 +1,57 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from engine.settings import available_presets
+from engine.settings import merge_overrides
 
 from .models import COLOURS
+from .presets import CUSTOM, KNOBS, MIN_TABLE, preset_label, preset_names, preset_values
 
-MS_PER_SECOND = 1000
 MAX_PLAYERS = len(COLOURS)
 
 
 class CreateGameForm(forms.Form):
-    """Preset plus the few stage 1 overrides. Blank fields keep the preset's value."""
+    """A game type (preset) and table size; the custom type also takes every ``KNOBS`` setting.
 
-    preset = forms.ChoiceField(label=_("Preset"))
+    Blank custom fields keep the Classic value (scaled to the table size).
+    """
+
+    preset = forms.ChoiceField(label=_("Game type"), widget=forms.RadioSelect)
     max_players = forms.TypedChoiceField(
-        label=_("Players"), coerce=int, choices=[(n, n) for n in range(2, MAX_PLAYERS + 1)], initial=4,
-        help_text=_("More than 4 players get a bigger island and bank automatically."),
-    )
-    land_hexes = forms.IntegerField(
-        label=_("Island size (land hexes)"), required=False, min_value=7, max_value=250,
-        help_text=_("Blank keeps the preset (19 in Classic, larger for more than 4 players)."),
-    )
-    roll_interval = forms.IntegerField(
-        label=_("Seconds between dice rolls"), required=False, min_value=5, max_value=120,
-        help_text=_("Blank keeps the preset (20 in Classic)."),
-    )
-    target = forms.IntegerField(
-        label=_("Points to win"), required=False, min_value=5, max_value=20,
-        help_text=_("Blank keeps the preset (10 in Classic)."),
+        label=_("Players"), coerce=int, choices=[(n, n) for n in range(MIN_TABLE, MAX_PLAYERS + 1)], initial=4,
+        help_text=_("More players than the game type is made for get a bigger island and bank automatically."),
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["preset"].choices = [(p, p.title()) for p in available_presets()]
+        self.fields["preset"].choices = [(p, preset_label(p)) for p in preset_names()]
         self.fields["preset"].initial = "classic"
+        base = preset_values(CUSTOM, 4) if CUSTOM in preset_names() else {}
+        for knob in KNOBS:
+            if knob.boolean:
+                field = forms.BooleanField(label=knob.label, required=False, initial=base.get(knob.name, False))
+            else:
+                field = forms.IntegerField(label=knob.label, required=False, min_value=knob.min, max_value=knob.max)
+                field.widget.attrs.update({"inputmode": "numeric", "placeholder": base.get(knob.name, "")})
+            field.help_text = knob.help
+            field.knob = knob
+            self.fields[knob.name] = field
+
+    def knob_fields(self):
+        return [self[k.name] for k in KNOBS]
 
     def overrides(self) -> dict:
         data = self.cleaned_data
         out: dict = {"players": {"max": data["max_players"]}}
-        if data.get("land_hexes"):
-            out["board"] = {"land_hexes": data["land_hexes"]}
-        if data.get("roll_interval"):
-            out["clock"] = {"roll_interval_ms": data["roll_interval"] * MS_PER_SECOND}
-        if data.get("target"):
-            out["victory"] = {"target": data["target"]}
+        if data["preset"] != CUSTOM:
+            return out
+        base = preset_values(CUSTOM, data["max_players"])
+        for knob in KNOBS:
+            value = data.get(knob.name)
+            if knob.boolean and value == base[knob.name]:
+                continue
+            if value is None:
+                continue
+            out = merge_overrides(out, knob.override(value))
         return out
 
 
