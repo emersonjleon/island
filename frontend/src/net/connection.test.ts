@@ -78,4 +78,67 @@ describe("GameConnection", () => {
     expect(sockets).toHaveLength(2);
     vi.useRealTimers();
   });
+
+  it("refuses orders while the socket is down instead of losing them", () => {
+    vi.useFakeTimers();
+    const { sockets, conn, onReject } = setup();
+    sockets[0]!.close();
+    expect(conn.send({ a: "buy_dev_card" })).toBeNull();
+    expect(onReject).toHaveBeenCalledWith(expect.objectContaining({ code: "net.offline" }), { a: "buy_dev_card" });
+    vi.useRealTimers();
+  });
+
+  it("drops a socket that went quiet and reports the retries", () => {
+    vi.useFakeTimers();
+    const sockets: FakeSocket[] = [];
+    const statuses: [string, number][] = [];
+    const conn = new GameConnection({
+      url: "ws://x/", lang: "es", store: new GameStore(), pingMs: 1000, events: null,
+      onStatus: (st, info) => statuses.push([st, info.attempt]),
+      socketFactory: () => { const s = new FakeSocket(); sockets.push(s); return s; },
+    });
+    conn.start();
+    sockets[0]!.open();
+    vi.advanceTimersByTime(3000);                 // pings answered by nothing...
+    expect(sockets).toHaveLength(1);
+    vi.advanceTimersByTime(1000);                 // ...past three intervals: dropped
+    expect(statuses.at(-1)).toEqual(["closed", 1]);
+    conn.retryNow();                              // no need to wait for the backoff
+    expect(sockets).toHaveLength(2);
+    sockets[1]!.open();
+    expect(statuses.at(-1)).toEqual(["open", 0]);
+    conn.stop();
+    vi.useRealTimers();
+  });
+
+  it("follows the browser's online and offline events", () => {
+    vi.useFakeTimers();
+    const target = new EventTarget();
+    const sockets: FakeSocket[] = [];
+    const conn = new GameConnection({
+      url: "ws://x/", lang: "es", store: new GameStore(), pingMs: 60_000, events: target as unknown as Window,
+      socketFactory: () => { const s = new FakeSocket(); sockets.push(s); return s; },
+    });
+    conn.start();
+    sockets[0]!.open();
+    target.dispatchEvent(new Event("offline"));
+    expect(conn.isOpen).toBe(false);
+    target.dispatchEvent(new Event("online"));
+    expect(sockets).toHaveLength(2);
+    conn.stop();
+    vi.useRealTimers();
+  });
+
+  it("tracks who is connected", () => {
+    const { socket, store } = setup();
+    socket.deliver({ t: "welcome", game: "A", seat: 0, proto: 1, settings: {} });
+    socket.deliver({ t: "presence", seat: 1, online: true });
+    socket.deliver({ t: "presence", seat: 2, online: false });
+    expect([...store.offline]).toEqual([2]);
+    socket.deliver({ t: "presence", seat: 2, online: true });
+    expect([...store.offline]).toEqual([]);
+    // after a reconnect, people seen before count as away until they answer
+    socket.deliver({ t: "welcome", game: "A", seat: 0, proto: 1, settings: {} });
+    expect([...store.offline].sort()).toEqual([1, 2]);
+  });
 });

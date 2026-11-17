@@ -20,6 +20,7 @@ from gamehost.core import PROTO, group_name
 from lobby.models import Game, GameStatus
 
 from . import codes
+from .presence import PresenceMixin
 from .ratelimit import TokenBucket
 
 TRY_AGAIN_LATER = 1013  # WebSocket close code
@@ -32,7 +33,7 @@ CLOSE_PROTO = 4400
 VISIBLE_STATUSES = (GameStatus.STARTING, GameStatus.RUNNING, GameStatus.FINISHED)
 
 
-class GameConsumer(ChatMixin, AsyncWebsocketConsumer):
+class GameConsumer(PresenceMixin, ChatMixin, AsyncWebsocketConsumer):
     async def connect(self):
         user = self.scope.get("user")
         code = self.scope["url_route"]["kwargs"]["code"].upper()
@@ -50,11 +51,13 @@ class GameConsumer(ChatMixin, AsyncWebsocketConsumer):
                               "settings": self.settings})
         await self._to_host("game.sync", seat=self.seat)
         await self.chat_join(self.game_id)
+        await self.presence_join(self.game_id, self.seat)
 
     async def disconnect(self, close_code):
         if hasattr(self, "group"):
             await self.channel_layer.group_discard(self.group, self.channel_name)
         await self.chat_leave()
+        await self.presence_leave()
 
     # ---------------------------------------------------------------- client -> server
     async def receive(self, text_data=None, bytes_data=None):

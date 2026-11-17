@@ -51,6 +51,10 @@
     "empty": "Elige algo que dar y algo que recibir",
     "same_resource": "No des y recibas el mismo recurso"
   },
+  "net": {
+    "offline": "Sin conexión: esa orden no se envió",
+    "reconnected": "Conectado de nuevo, la partida está al día"
+  },
   "trade": {
     "bad_ratio": "Cantidad incorrecta para ese intercambio",
     "bank_empty": "Al banco se le acabó ese recurso",

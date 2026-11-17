@@ -260,6 +260,8 @@ Three principles for events:
 
 **Chat (stage 2).** The players' chat rides on the same socket but never reaches the engine or the game host (`chat/` app). The client sends `{"t":"chat","text":"..."}`; everyone on the game page and on its waiting-room page (`/ws/lobby/<code>/`, same frames) receives `{"t":"chat","msgs":[{"id","name","colour","seat","player","text","at"}],"history":false}`, and on connect `history:true` with the latest lines. Refusals are notices with `chat.*` codes (`chat.empty`, `chat.too_long`, `chat.rate_limited`). Chat text is the one place where people's own words are sent; the client shows it as plain text.
 
+**Reconnection (stage 2).** A dropped socket costs nothing in the game: the game goes on, and a new socket gets `welcome`, the board and the full `state` (with the trade board and the player's settlers and orders) plus the chat history, as on first load. The client reconnects with backoff (0.5 s doubling to 15 s), drops a socket that has sent nothing for three ping intervals, retries at once when the browser comes back online, and refuses orders while it has no socket (local code `net.offline`) instead of losing them. Every socket of a game also hears `{"t":"presence","seat":n,"online":bool}` when a seated player's last socket opens or closes (`gameplay/presence.py`), so the score list can mark players who are away.
+
 The engine computes each seat's `buildable` set and sends it privately whenever it changes. This lets the client highlight legal spots without copying the placement rules.
 
 **Clock sync.** The client sends `ping` about every 5 s and keeps the sample with the lowest round-trip time to estimate the offset. All countdowns and animations use the estimated server game time.

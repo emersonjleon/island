@@ -76,7 +76,7 @@ async function main(): Promise<void> {
   let hud: ReturnType<typeof mountHud> | null = null;
   const connection = new GameConnection({
     url: wsUrl(config.wsPath), lang: config.lang, store,
-    onStatus: (s) => hud?.setLink(s),
+    onStatus: (s, info) => hud?.setLink(s, info),
     onReject: (reject, intent) => {
       input?.rejected(intent);
       hud?.notify(reject.code, reject.params);
@@ -114,6 +114,7 @@ async function main(): Promise<void> {
       startRobber: () => controller.startRobber(),
     },
     touch: touchFirst(),
+    reconnect: () => connection.retryNow(),
     chat: { log: chatLog, send: (text) => connection.say(text) },
     bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/", helpUrl: config.helpUrl,
   });

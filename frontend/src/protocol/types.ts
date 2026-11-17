@@ -85,7 +85,10 @@ export interface PongMsg { t: "pong"; c: number | null; now: number }
 /** Chat lines (not game state): history on connect, then each new line. See src/chat/model.ts. */
 export interface ChatMsg { t: "chat"; msgs: unknown[]; history?: boolean }
 
-export type ServerMsg = WelcomeMsg | BoardMsg | StateMsg | EventsMsg | AckMsg | RejectMsg | NoticeMsg | PongMsg | ChatMsg;
+/** A seat's connection came or went (others' sockets; spectators never count). */
+export interface PresenceMsg { t: "presence"; seat: number; online: boolean }
+export type ServerMsg = WelcomeMsg | BoardMsg | StateMsg | EventsMsg | AckMsg | RejectMsg | NoticeMsg | PongMsg | ChatMsg
+  | PresenceMsg;
 
 export type Intent =
   | { a: "move_settler"; settler: number; to_vertex: number; mode: "replace" | "append" }
@@ -113,7 +116,7 @@ export interface DevCardsPlayer {
 export interface TradeOffer { id: number; seat: number; give: ResMap; get: ResMap; at: number; expires_at: number | null }
 export interface DevCardsView { deck_left: number; army: number | null; players: Record<string, DevCardsPlayer> }
 
-const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong", "chat"]);
+const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong", "chat", "presence"]);
 
 export function parseServerMsg(data: string): ServerMsg | null {
   try {
