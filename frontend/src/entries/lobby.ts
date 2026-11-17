@@ -1,8 +1,17 @@
-// Lobby page entry: live seat updates for /lobby/<code>/.
+// Lobby page entry: live seat updates and the waiting-room chat for /lobby/<code>/.
+import type { TFunction } from "i18next";
+
+import { addChatCatalogue } from "../chat/i18n";
+import { mountLobbyChat } from "../chat/LobbyChat";
+import { ChatLog, type ChatFrame } from "../chat/model";
 import { initI18n, pageLanguage } from "../i18n";
 import { connectLobby } from "../lobby/live";
 
-void initI18n(pageLanguage());
+const ready = initI18n(pageLanguage()).then((i18n) => {
+  addChatCatalogue(i18n);
+  return i18n.t.bind(i18n) as TFunction;
+});
+const chatLog = new ChatLog();
 
 /** While the island is being prepared, re-check this often, in case the
  * "started" message arrived before this page's WebSocket was connected. */
@@ -31,8 +40,14 @@ if (root) {
       waiting = waiting || root.querySelector("[data-starting]") !== null;
     },
     navigate: go,
+    chat: (frame: ChatFrame) => { chatLog.receive(frame); },
+    notice: (code: string, params: Record<string, unknown>) => { if (code.startsWith("chat.")) chatLog.refused(code, params); },
   };
-  connectLobby(wsPath, page);
+  const socket = connectLobby(wsPath, page);
+  const chatRoot = document.getElementById("lobby-chat");
+  if (chatRoot) {
+    void ready.then((t) => mountLobbyChat(chatRoot, chatLog, t, (text) => socket.send({ t: "chat", text })));
+  }
   setInterval(() => {
     if (!leaving && root.querySelector("[data-starting]")) void page.refreshSeats();
   }, STARTING_POLL_MS);

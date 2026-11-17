@@ -9,6 +9,19 @@ describe("lobby live messages", () => {
     expect(parseMessage('{"t":"started","url":"https://evil.example/"}')).toBeNull();
     expect(parseMessage('{"t":"other"}')).toBeNull();
     expect(parseMessage("not json")).toBeNull();
+    expect(parseMessage('{"t":"chat","msgs":[{"id":1,"name":"ana","text":"hola"}],"history":true}')).toEqual({
+      t: "chat", history: true, msgs: [{ id: 1, name: "ana", text: "hola", colour: "", seat: null, player: false, at: 0 }],
+    });
+    expect(parseMessage('{"t":"notice","code":"chat.empty"}')).toEqual({ t: "notice", code: "chat.empty", params: {} });
+  });
+
+  it("passes chat lines and refusals to the page", async () => {
+    const page = { refreshSeats: vi.fn(async () => {}), navigate: vi.fn(), chat: vi.fn(), notice: vi.fn() };
+    await handleMessage(page, { t: "chat", msgs: [], history: false });
+    await handleMessage(page, { t: "notice", code: "chat.rate_limited", params: {} });
+    expect(page.chat).toHaveBeenCalledWith({ t: "chat", msgs: [], history: false });
+    expect(page.notice).toHaveBeenCalledWith("chat.rate_limited", {});
+    expect(page.refreshSeats).not.toHaveBeenCalled();
   });
 
   it("refreshes on change and navigates on start", async () => {

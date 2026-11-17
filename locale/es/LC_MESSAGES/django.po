@@ -884,6 +884,14 @@ msgstr "Comparte este código para que tus amigos se unan."
 msgid "(for %(players)s players; smaller if fewer join)"
 msgstr "(para %(players)s jugadores; más pequeña si se unen menos)"
 
+#: templates/chat/_lobby_chat.html:3
+msgid "Chat"
+msgstr "Chat"
+
+#: templates/chat/_lobby_chat.html:4
+msgid "The chat opens in a moment…"
+msgstr "El chat se abre en un momento…"
+
 #: templates/lobby/detail.html:18
 msgid "Back to the lobby"
 msgstr "Volver a la sala de espera"

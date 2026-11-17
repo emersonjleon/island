@@ -15,6 +15,7 @@
 <div id="lobby-seats" data-seats-url="{% url 'lobby:seats' game.code %}" data-ws-path="/ws/lobby/{{ game.code }}/">
   {% include "lobby/_seats.html" %}
 </div>
+{% include "chat/_lobby_chat.html" %}
 <p><a href="{% url 'lobby:list' %}">{% translate "Back to the lobby" %}</a></p>
 {% endblock %}
 {% block scripts %}{% vite_entry "lobby" %}{% endblock %}

@@ -51,6 +51,22 @@ describe("GameConnection", () => {
     expect(onReject).toHaveBeenCalledWith(expect.objectContaining({ code: "build.not_connected" }), { a: "build", kind: "road", edge: 3 });
   });
 
+  it("passes chat frames on and sends chat lines only while open", () => {
+    const sockets: FakeSocket[] = [];
+    const onChat = vi.fn();
+    const conn = new GameConnection({
+      url: "ws://x/", lang: "es", store: new GameStore(), onChat, pingMs: 60_000,
+      socketFactory: () => { const s = new FakeSocket(); sockets.push(s); return s; },
+    });
+    conn.start();
+    expect(conn.say("hola")).toBe(false);
+    sockets[0]!.open();
+    expect(conn.say("hola")).toBe(true);
+    expect(sockets[0]!.sent.at(-1)).toEqual({ t: "chat", text: "hola" });
+    sockets[0]!.deliver({ t: "chat", msgs: [], history: true });
+    expect(onChat).toHaveBeenCalledWith({ t: "chat", msgs: [], history: true });
+  });
+
   it("reconnects after the socket closes", () => {
     vi.useFakeTimers();
     const { sockets } = setup();

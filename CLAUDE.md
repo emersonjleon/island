@@ -18,7 +18,7 @@ Real-time Catan-style game. Design: `docs/GAME_DESIGN.md`. Architecture and work
 ## Django site
 - Settings: `config/settings/{base,dev,test,prod}.py`. Dev uses SQLite and the in-memory channel layer unless `USE_POSTGRES` / `REDIS_URL` are set.
 - `config/urls.py`, `config/asgi.py` and `INSTALLED_APPS` already include every app; apps fill in their own `urls.py` / `routing.py`.
-- Tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py test common accounts lobby gamehost gameplay`.
+- Tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py test common accounts lobby gamehost gameplay chat`.
 - User-facing strings use gettext; add Spanish to `locale/es/LC_MESSAGES/django.po` (`.mo` files are not committed; run `compilemessages`).
 - Frontend: `frontend/` (Vite + TS); `{% load vite %}{% vite_entry "game" %}` emits the bundle tags.
 

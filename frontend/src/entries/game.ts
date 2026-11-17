@@ -1,4 +1,6 @@
 // Game page entry: store + connection + 2D renderer + input + HUD.
+import { addChatCatalogue } from "../chat/i18n";
+import { ChatLog, parseChatFrame } from "../chat/model";
 import { initI18n, pageLanguage } from "../i18n";
 import { loadBindings } from "../input/bindings";
 import { InputController } from "../input/controller";
@@ -67,6 +69,7 @@ async function main(): Promise<void> {
   const i18n = await initI18n(pageLanguage());
   addInputCatalogue(i18n);
   addHudCatalogues(i18n);
+  addChatCatalogue(i18n);
   const t = i18n.t.bind(i18n) as TFunction;
 
   root.innerHTML = "";
@@ -77,6 +80,7 @@ async function main(): Promise<void> {
   root.append(canvasHost, hudHost);
 
   const store = new GameStore();
+  const chatLog = new ChatLog();
   const bindings = await loadBindings();
   let input: InputController | null = null;
   let hud: ReturnType<typeof mountHud> | null = null;
@@ -87,7 +91,11 @@ async function main(): Promise<void> {
       input?.rejected(intent);
       hud?.notify(reject.code, reject.params);
     },
-    onNotice: (code, params) => hud?.notify(code, params),
+    onNotice: (code, params) => (code.startsWith("chat.") ? chatLog.refused(code, params) : hud?.notify(code, params)),
+    onChat: (msg) => {
+      const frame = parseChatFrame(msg);
+      if (frame) chatLog.receive(frame);
+    },
   });
   const renderer = new PixiRenderer();
   renderer.setFitInsets(() => hudInsets(canvasHost, hudHost));
@@ -116,6 +124,7 @@ async function main(): Promise<void> {
       startRobber: () => controller.startRobber(),
     },
     touch: touchFirst(),
+    chat: { log: chatLog, send: (text) => connection.say(text) },
     bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/", helpUrl: config.helpUrl,
   });
   connection.start();
@@ -136,7 +145,7 @@ async function main(): Promise<void> {
   };
   requestAnimationFrame(frame);
   // For debugging and end-to-end tests.
-  (window as unknown as { island: object }).island = { store, connection, renderer, input: controller };
+  (window as unknown as { island: object }).island = { store, connection, renderer, input: controller, chat: chatLog };
 }
 
 void main();

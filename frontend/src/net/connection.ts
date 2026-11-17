@@ -1,7 +1,7 @@
 // WebSocket client: reconnects with backoff, says hello, keeps the store in sync
 // (asks for a full state when an events batch skips a seq), pings for clock sync
 // and tracks intents by cid so the UI can show rejects.
-import { PROTO, parseServerMsg, type Intent, type RejectMsg, type ServerMsg } from "../protocol/types";
+import { PROTO, parseServerMsg, type ChatMsg, type Intent, type RejectMsg, type ServerMsg } from "../protocol/types";
 import { ServerClock } from "../sim/clock";
 import type { GameStore } from "../state/store";
 
@@ -24,6 +24,8 @@ export interface ConnectionOptions {
   onReject?: (reject: RejectMsg, intent: Intent | undefined) => void;
   onNotice?: (code: string, params: Record<string, unknown>) => void;
   onStatus?: (status: "connecting" | "open" | "closed") => void;
+  /** Chat frames ride on the game socket but never touch the store. */
+  onChat?: (msg: ChatMsg) => void;
 }
 
 const OPEN = 1;
@@ -61,6 +63,13 @@ export class GameConnection {
     return cid;
   }
 
+  /** Send a chat line; false when the socket is not open (nothing is queued). */
+  say(text: string): boolean {
+    if (!this.socket || this.socket.readyState !== OPEN) return false;
+    this.raw({ t: "chat", text });
+    return true;
+  }
+
   sync(): void {
     this.raw({ t: "sync", from_seq: this.opts.store.seq });
   }
@@ -89,6 +98,9 @@ export class GameConnection {
       }
       case "notice":
         this.opts.onNotice?.(msg.code, msg.params);
+        return;
+      case "chat":
+        this.opts.onChat?.(msg);
         return;
       default:
         if (this.opts.store.apply(msg) === "gap") this.sync();

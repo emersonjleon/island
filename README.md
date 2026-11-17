@@ -82,7 +82,7 @@ npm run build   # writes static/dist/ with the manifest Django reads
 npm test
 ```
 
-Django tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py test common accounts lobby gamehost gameplay`
+Django tests: `DJANGO_SETTINGS_MODULE=config.settings.test python3 manage.py test common accounts lobby gamehost gameplay chat`
 
 ## Two-player browser test
 

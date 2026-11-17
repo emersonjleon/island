@@ -80,8 +80,10 @@ export interface AckMsg { t: "ack"; cid: string }
 export interface RejectMsg { t: "reject"; cid: string | null; code: string; params: Record<string, unknown> }
 export interface NoticeMsg { t: "notice"; code: string; params: Record<string, unknown> }
 export interface PongMsg { t: "pong"; c: number | null; now: number }
+/** Chat lines (not game state): history on connect, then each new line. See src/chat/model.ts. */
+export interface ChatMsg { t: "chat"; msgs: unknown[]; history?: boolean }
 
-export type ServerMsg = WelcomeMsg | BoardMsg | StateMsg | EventsMsg | AckMsg | RejectMsg | NoticeMsg | PongMsg;
+export type ServerMsg = WelcomeMsg | BoardMsg | StateMsg | EventsMsg | AckMsg | RejectMsg | NoticeMsg | PongMsg | ChatMsg;
 
 export type Intent =
   | { a: "move_settler"; settler: number; to_vertex: number; mode: "replace" | "append" }
@@ -104,7 +106,7 @@ export interface DevCardsPlayer {
 }
 export interface DevCardsView { deck_left: number; army: number | null; players: Record<string, DevCardsPlayer> }
 
-const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong"]);
+const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong", "chat"]);
 
 export function parseServerMsg(data: string): ServerMsg | null {
   try {
