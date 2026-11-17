@@ -153,7 +153,10 @@ async function openStats(page, shot) {
 (async () => {
   const browser = await chromium.launch(process.env.E2E_CHROMIUM ? { executablePath: process.env.E2E_CHROMIUM } : {});
   const desk = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
-  const phone = await (await browser.newContext({ ...PHONE })).newPage();
+  const phoneCtx = await browser.newContext({ ...PHONE });
+  // This test turns the phone: stay out of full screen (a full-screen window cannot be resized).
+  await phoneCtx.addInitScript(() => localStorage.setItem("island.autoFullscreen", "off"));
+  const phone = await phoneCtx.newPage();
   const idle = await (await browser.newContext({ viewport: { width: 1024, height: 700 } })).newPage();
   for (const [p, n] of [[desk, "eva"], [phone, "fer"], [idle, "gil"]]) {
     p.on("pageerror", (e) => { console.error(`${n} page error:`, e.message); process.exitCode = 1; });

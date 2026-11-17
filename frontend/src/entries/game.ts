@@ -8,6 +8,7 @@ import { GameConnection } from "../net/connection";
 import { PixiRenderer } from "../render2d/PixiRenderer";
 import { GameStore } from "../state/store";
 import { mountHud } from "../ui/Hud";
+import { enterFullscreenOnFirstTap, onFullscreenChange } from "../ui/autoFullscreen";
 import { addHudCatalogues } from "../ui/i18n";
 import { csrfFromCookie } from "../ui/model";
 import type { TFunction } from "i18next";
@@ -48,18 +49,7 @@ function hudInsets(canvas: HTMLElement, hud: HTMLElement) {
   return { top, right: side, bottom, left: side };
 }
 
-/** Size the page to the part of the screen the browser really shows: on phones its
- * bars can cover the bottom of a 100vh page (older browsers without dvh units). */
-function trackViewportHeight(): void {
-  const set = () => document.documentElement.style.setProperty("--app-height", `${window.innerHeight}px`);
-  set();
-  window.addEventListener("resize", set);
-  window.visualViewport?.addEventListener("resize", set);
-  document.addEventListener("fullscreenchange", () => setTimeout(set, 100));
-}
-
 async function main(): Promise<void> {
-  trackViewportHeight();
   const root = document.getElementById("game-root");
   const configEl = document.getElementById("game-config");
   if (!root || !configEl) return;
@@ -119,6 +109,9 @@ async function main(): Promise<void> {
     bindings, csrfToken: csrfFromCookie(document.cookie), lobbyUrl: config.lobbyUrl ?? "/lobby/", helpUrl: config.helpUrl,
   });
   connection.start();
+  // Full screen changes the room for the island a lot (and the HUD moves): show it all again.
+  onFullscreenChange(() => renderer.fit());
+  if (touchFirst()) enterFullscreenOnFirstTap();
   // The renderer follows its host's size itself (and keeps the camera centred).
 
   let lastFrame = performance.now();
