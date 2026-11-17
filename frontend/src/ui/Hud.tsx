@@ -151,7 +151,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         <div class="hud-slot-log">{s && <Log t={t} lines={log} />}</div>
         <div class="hud-slot-hand">
           {s && playing && (
-            <HandBar {...props} mode={feed.mode} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} onDev={() => setDialog("dev")} />
+            <HandBar {...props} mode={feed.mode} devOpen={dialog === "dev"} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} onDev={() => setDialog("dev")} />
           )}
           {s && resigned && !finished && (
             <div class="hud-spectator hud-resigned">
@@ -343,12 +343,13 @@ const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Acti
   { kind: "city", action: "build_city" },
 ];
 
-function HandBar({ store, t, controls, touch, mode, onTrade, onKeys, onDev }:
-  HudProps & { mode: ModeInfo | null; onTrade(): void; onKeys(): void; onDev(): void }) {
+function HandBar({ store, t, controls, touch, mode, devOpen, onTrade, onKeys, onDev }:
+  HudProps & { mode: ModeInfo | null; devOpen: boolean; onTrade(): void; onKeys(): void; onDev(): void }) {
   const me = store.player(store.seat!);
   const hand = me?.hand ?? {};
   const myCards = cardCount(devPlayer(store.state, store.seat));
   const offerCount = othersOffers(store.state, store.seat).length;
+  const devCost = costOf(store.settings, "dev_card" as BuildKind);
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -372,13 +373,11 @@ function HandBar({ store, t, controls, touch, mode, onTrade, onKeys, onDev }:
             </button>
           );
         })}
-        <button type="button" class="dev-open" onClick={onDev} title={t("hud:dev.menuHelp")} aria-label={t("hud:dev.menu")}>
-          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <rect x="3" y="5" width="11" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(-10 8 12)" />
-            <rect x="10" y="3" width="11" height="15" rx="2" fill="currentColor" opacity="0.9" transform="rotate(8 15 10)" />
-          </svg>
-          <span class="btn-text">{t("hud:dev.menu")}</span>
-          {myCards > 0 && <span class="badge count-badge">{myCards}</span>}
+        <button type="button" class={`build dev-open${canAfford(hand, devCost) ? "" : " short"}`} onClick={onDev}
+                aria-pressed={devOpen} title={`${t("hud:dev.menuHelp")} · ${t("hud:build.cost", { res: formatRes(t, devCost) })}`}>
+          <span class="build-name">{t("hud:dev.button")}</span>
+          <CostPips cost={devCost} />
+          {myCards > 0 && <span class="badge count-badge" title={t("hud:dev.yours")}>{myCards}</span>}
         </button>
         <button type="button" class="trade-open" onClick={onTrade} aria-label={t("hud:trade.open")}>
           <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">

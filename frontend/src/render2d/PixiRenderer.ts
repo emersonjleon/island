@@ -31,6 +31,8 @@ const RING_DASHES = 8;
 const ROAD_INSET = 0.18;
 /** One beat of the chosen candidate's glow (ms). */
 const PULSE_MS = 1100;
+/** The chosen spot's preview building is see-through, so it never passes for a built one. */
+const GHOST_ALPHA = 0.5;
 
 /** Dashes from ``a`` to ``b`` (pixels), centred so both ends look the same. */
 function dashedLine(g: Graphics, a: Pt, b: Pt, dash: number, gap: number): void {
@@ -370,13 +372,15 @@ export class PixiRenderer implements Renderer {
     const pulse = 0.5 + 0.5 * Math.sin((now % PULSE_MS) / PULSE_MS * Math.PI * 2);
     const fe = o.focusEdge;
     if (fe != null && geo.edgeMid[fe]) {
+      // Still dashed and see-through: a choice, not a built road (those are solid).
       const [a, b] = this.roadEnds(fe);
-      const line = () => g.moveTo(a.x, a.y).lineTo(b.x, b.y);
-      line().stroke({ width: 20 + 6 * pulse, color: P.HIGHLIGHT, alpha: 0.25 + 0.3 * pulse, cap: "round" });
-      line().stroke({ width: 13, color: 0xffffff, cap: "round" });
-      line().stroke({ width: 10, color: P.OUTLINE, cap: "round" });
-      line().stroke({ width: 7, color: colour, cap: "round" });
-      line().stroke({ width: 2, color: 0xffffff, alpha: 0.35, cap: "round" });
+      g.moveTo(a.x, a.y).lineTo(b.x, b.y)
+        .stroke({ width: 20 + 6 * pulse, color: P.HIGHLIGHT, alpha: 0.25 + 0.3 * pulse, cap: "round" });
+      const halo = isLight(colour) ? P.OUTLINE : 0xffffff;
+      dashedLine(g, a, b, UNIT * DASH * 1.4, UNIT * GAP);
+      g.stroke({ width: CAND_W + 7, color: halo, alpha: 0.9, cap: "round" });
+      dashedLine(g, a, b, UNIT * DASH * 1.4, UNIT * GAP);
+      g.stroke({ width: CAND_W + 3, color: colour, alpha: 0.85, cap: "round" });
     }
     const fv = o.focusVertex;
     const fp = fv == null ? undefined : geo.vertex[fv];
@@ -386,7 +390,7 @@ export class PixiRenderer implements Renderer {
       const r = UNIT * (0.24 + 0.05 * pulse);
       g.circle(x, y, r).fill({ color: P.HIGHLIGHT, alpha: 0.2 + 0.2 * pulse }).stroke({ width: 7, color: P.OUTLINE, alpha: 0.6 });
       g.circle(x, y, r).stroke({ width: 4, color: P.HIGHLIGHT });
-      drawBuilding(g, o.focusKind ?? "settlement", x, y, UNIT, colour, 0.75);
+      drawBuilding(g, o.focusKind ?? "settlement", x, y, UNIT, colour, GHOST_ALPHA);
     }
     const fh = o.focusHex;
     const hp = fh == null ? undefined : geo.hex[fh];

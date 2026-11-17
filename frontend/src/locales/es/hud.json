@@ -157,6 +157,7 @@
     },
     "menu": "Desarrollos",
     "menuHelp": "Compra y usa cartas de desarrollo",
+    "button": "Desarrollo",
     "buyTitle": "Comprar un desarrollo",
     "buyHelp": "Una carta al azar: caballero, caminos, abundancia, monopolio o un punto de victoria",
     "deckLeft_one": "Queda {{count}} carta en el mazo",

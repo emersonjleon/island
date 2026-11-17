@@ -346,16 +346,17 @@ table.keys td { padding: 4px 0; }
 .game-hud .hud-hand .actions button.build[aria-pressed="true"] { background: linear-gradient(180deg, #f8dc78, #ebbb3a); }
 .pips { display: inline-flex; gap: 2px; line-height: 0; }
 .pip { display: inline-block; width: 7px; height: 7px; border-radius: 2px; background: var(--res-bg); box-shadow: 0 0 0 1px rgba(29, 42, 48, 0.55); }
-/* Developments and trade sit apart from the three build buttons. */
-.game-hud .hud-hand .actions button.dev-open { margin-left: 10px; }
-.game-hud .hud-hand .actions button.dev-open, .game-hud .hud-hand .actions button.trade-open { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+/* A development is bought like a building (same button, cost pips); trade sits apart. */
+.game-hud .hud-hand .actions button.dev-open { position: relative; overflow: visible; }
+.hud-hand .actions button.dev-open .badge { position: absolute; top: -7px; right: -6px; margin: 0; }
+.game-hud .hud-hand .actions button.trade-open { margin-left: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-icon { flex: none; }
 /* Camera buttons are toggles too, but stay put: only a gold ring shows full screen is on. */
 .game-hud .hud-camera button[aria-pressed="true"] { transform: none; box-shadow: 0 0 0 2px #f0c94f, 0 4px 12px rgba(0, 0, 0, 0.35); }
 /* Offer counters: dark text on the light dialog; a picked resource takes its colour. */
 .hud-dialog .offer-res { color: #1d2a30; }
 .hud-dialog .offer-res.picked.res-lumber, .hud-dialog .offer-res.picked.res-brick { color: #fff; }
-.game-hud .hud-hand .actions button.dev-open, .game-hud .hud-hand .actions button.trade-open {
+.game-hud .hud-hand .actions button.trade-open {
   background: linear-gradient(180deg, #2f5568, #1f3d4d); color: #fdf8ec; border: 1px solid rgba(240, 201, 79, 0.35); }
 .hud-hand .badge { display: inline-block; min-width: 1.3em; margin-left: 6px; padding: 0 5px; border-radius: 999px; background: #c0392b;
   color: #fff; font-size: 0.75rem; font-weight: 700; line-height: 1.3em; text-align: center; }
@@ -429,11 +430,11 @@ table.keys td { padding: 4px 0; }
   .dev-buy { grid-template-columns: 1fr auto; }
   .dev-buy .chips { grid-column: 1; }
   .dev-buy .buy-card { grid-column: 2; grid-row: 1 / 3; }
-  .game-hud .hud-hand .actions button.dev-open { margin-left: 0; }
-  /* Five buttons share a phone's width: the three builds get the room, developments and trade show their icon. */
-  .hud-hand .actions { grid-template-columns: repeat(3, minmax(0, 1fr)) 48px 48px; }
+  .game-hud .hud-hand .actions button.trade-open { margin-left: 0; }
+  /* Five buttons share a phone's width: the four purchases get the room, trade shows its icon. */
+  .hud-hand .actions { grid-template-columns: repeat(4, minmax(0, 1fr)) 48px; }
   .hud-hand .actions .btn-text { display: none; }
-  .game-hud .hud-hand .actions button.dev-open, .game-hud .hud-hand .actions button.trade-open { position: relative; overflow: visible; }
+  .game-hud .hud-hand .actions button.trade-open { position: relative; overflow: visible; }
   .hud-hand .actions .badge { position: absolute; top: -6px; right: -4px; margin: 0; }
   .game-hud .hud-hand .actions button.build { padding-top: 4px; padding-bottom: 3px; }
   .pip { width: 6px; height: 6px; }
@@ -441,9 +442,9 @@ table.keys td { padding: 4px 0; }
 }
 @media (max-height: 500px) and (min-width: 480px) {
   .hud-hand .pips { display: none; }
-  .game-hud .hud-hand .actions button.dev-open { margin-left: 6px; }
+  .game-hud .hud-hand .actions button.trade-open { margin-left: 6px; }
   .hud-hand .actions .btn-text { display: none; }
-  .game-hud .hud-hand .actions button.dev-open, .game-hud .hud-hand .actions button.trade-open { position: relative; padding: 4px 10px; }
+  .game-hud .hud-hand .actions button.trade-open { position: relative; padding: 4px 10px; }
   .hud-hand .actions .badge { position: absolute; top: -6px; right: -6px; margin: 0; }
   .trade-side .choices { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
   .game-hud .hud-dialog .trade-side .card { padding: 2px; }

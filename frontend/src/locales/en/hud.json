@@ -157,6 +157,7 @@
     },
     "menu": "Developments",
     "menuHelp": "Buy and use development cards",
+    "button": "Development",
     "buyTitle": "Buy a development",
     "buyHelp": "A random card: knight, road building, plenty, monopoly or a victory point",
     "deckLeft_one": "{{count}} card left in the deck",
