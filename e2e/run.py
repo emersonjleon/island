@@ -67,6 +67,11 @@ def main() -> int:
         for script in SCRIPTS:
             result = subprocess.run(["node", str(ROOT / "e2e" / script), base, str(args.out)], cwd=ROOT, env=env)
             failed += result.returncode != 0
+        if failed:
+            # The servers' logs end up in an artifact; their tail in the job log saves a download.
+            for name, _ in procs:
+                tail = (args.out / f"{name}.log").read_text(encoding="utf-8", errors="replace").splitlines()[-40:]
+                print(f"--- last lines of {name}.log ---", *tail, sep="\n", flush=True)
         return 1 if failed else 0
     finally:
         for _, p in procs:

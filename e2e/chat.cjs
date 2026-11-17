@@ -44,8 +44,18 @@ async function say(page, scope, text) {
   const desk = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
   const phoneCtx = await browser.newContext({ ...PHONE });
   const phone = await phoneCtx.newPage();
+  // WebSocket frames, printed if the script fails (the CI log is all there is to go on).
+  const frames = [];
   for (const [who, p] of [["desk", desk], ["phone", phone]]) {
     p.on("pageerror", (e) => { console.error(`${who} page error:`, e.message); process.exitCode = 1; });
+    p.on("console", (m) => { if (m.type() === "error") frames.push(`${who} console: ${m.text()}`); });
+    p.on("websocket", (ws) => {
+      const at = () => new Date().toISOString().slice(11, 23);
+      frames.push(`${at()} ${who} ws open ${ws.url()}`);
+      ws.on("framesent", (f) => { if (!String(f.payload).includes("ping")) frames.push(`${at()} ${who} >> ${String(f.payload).slice(0, 160)}`); });
+      ws.on("framereceived", (f) => { if (!String(f.payload).includes("pong")) frames.push(`${at()} ${who} << ${String(f.payload).slice(0, 160)}`); });
+      ws.on("close", () => frames.push(`${at()} ${who} ws closed`));
+    });
   }
   try {
     log("sign up; the desktop creates a two-player game; the phone joins");
@@ -124,6 +134,12 @@ async function say(page, scope, text) {
     log("PASS");
   } catch (err) {
     console.error("FAIL:", err.message);
+    for (const [who, p] of [["desk", desk], ["phone", phone]]) {
+      const lines = await p.$$eval(".chat-lines li", (ls) => ls.map((l) => l.textContent.trim())).catch(() => []);
+      const error = await p.textContent(".chat-error").catch(() => null);
+      console.error(`${who} at ${p.url()} sees lines:`, JSON.stringify(lines), "error:", error);
+    }
+    console.error(frames.slice(-60).join("\n"));
     await desk.screenshot({ path: `${OUT}/chat-failure-desktop.png` }).catch(() => {});
     await phone.screenshot({ path: `${OUT}/chat-failure-phone.png` }).catch(() => {});
     process.exitCode = 1;
