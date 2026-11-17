@@ -42,11 +42,13 @@ async function signUp(page, name) {
     await page.selectOption("#id_max_players", String(PLAYERS));
     await Promise.all([page.waitForURL(/\/lobby\/[A-Z0-9]+\/$/), page.click("main form.stacked button[type=submit]")]);
     const code = page.url().match(/\/lobby\/([A-Z0-9]+)\/$/)[1];
-    for (let i = 1; i < PLAYERS; i++) {
-      await page.selectOption("#bot-level-select", "easy");
-      await Promise.all([page.waitForNavigation(), page.click(`form[action$="/bots/add/"] button`)]);
-    }
-    const colours = await page.$$eval("table.seats .swatch", (s) => s.map((x) => getComputedStyle(x).backgroundColor));
+    // One click fills every free seat (in the background; only the seats refresh).
+    await page.selectOption("#bot-level-select", "easy");
+    await page.click(`form[action$="/bots/add/"] button[name="fill"]`);
+    await page.waitForFunction((n) => document.querySelectorAll("#lobby-seats .badge.bot").length === n, PLAYERS - 1);
+    // Query and read in one step: the seats block can be refreshed again in between.
+    const colours = await page.evaluate(() =>
+      [...document.querySelectorAll("table.seats .swatch")].map((x) => getComputedStyle(x).backgroundColor));
     if (new Set(colours).size !== PLAYERS) throw new Error(`expected ${PLAYERS} distinct colours, saw ${colours}`);
     await page.screenshot({ path: `${OUT}/e2e-big-lobby.png`, fullPage: true });
 
