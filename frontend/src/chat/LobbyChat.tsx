@@ -11,7 +11,11 @@ import { ChatView } from "./ChatView";
 
 function LobbyChat({ log, t, send }: { log: ChatLog; t: TFunction; send(text: string): boolean }) {
   const [, setN] = useState(0);
-  useEffect(() => log.subscribe(() => setN((n) => n + 1)), [log]);
+  useEffect(() => {
+    const off = log.subscribe(() => setN((n) => n + 1));
+    setN((n) => n + 1);  // lines that arrived between the first render and this subscription
+    return off;
+  }, [log]);
   return <ChatView log={log} t={t} send={send} error={log.error ? t(chatErrorKey(log.error.code), log.error.params) : null} />;
 }
 

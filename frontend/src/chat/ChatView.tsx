@@ -29,7 +29,11 @@ export interface ChatViewProps {
 
 export function useChatLines(log: ChatLog): ChatLine[] {
   const [, setN] = useState(0);
-  useEffect(() => log.subscribe(() => setN((n) => n + 1)), [log]);
+  useEffect(() => {
+    const off = log.subscribe(() => setN((n) => n + 1));
+    setN((n) => n + 1);  // lines that arrived between the first render and this subscription
+    return off;
+  }, [log]);
   return log.lines;
 }
 
