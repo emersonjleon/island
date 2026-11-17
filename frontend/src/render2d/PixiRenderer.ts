@@ -17,8 +17,11 @@ const UNIT = 60;
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 4;
 const MAX_RESOLUTION = 2;
-/** Largest side of the cached board texture, in pixels (safe on phones). */
+/** Largest side of the cached board texture, in pixels. Phones get a smaller one and no
+ * multisampling: a 4096px multisampled texture takes about 256 MB, enough for some
+ * phones to drop the WebGL context, which blanks the board. */
 const MAX_CACHE_PX = 4096;
+const MAX_CACHE_PX_PHONE = 3072;
 
 export class PixiRenderer implements Renderer {
   private app = new Application();
@@ -38,17 +41,29 @@ export class PixiRenderer implements Renderer {
   private store: GameStore | null = null;
   private lastNow = 0;
   private resizeObserver: ResizeObserver | null = null;
+  private coarse = false;
+  /** Set when the GPU lost what it held (context lost, page hidden): redraw the board. */
+  private boardStale = false;
+  private onContextRestored = () => { this.boardStale = true; };
+  private onVisibility = () => { if (document.visibilityState === "visible") this.boardStale = true; };
   private fitInsets: () => Insets = () => ({ top: 0, right: 0, bottom: 0, left: 0 });
 
   async mount(el: HTMLElement): Promise<void> {
     // Phones: no MSAA and at most 2x pixels, which keeps the frame rate up and the battery cool.
     const coarse = typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+    this.coarse = coarse;
     // The sea around the board is the page's own gradient behind a transparent canvas.
     await this.app.init({ resizeTo: el, backgroundAlpha: 0, antialias: !coarse, autoDensity: true,
                           resolution: Math.min(window.devicePixelRatio || 1, MAX_RESOLUTION),
                           ...(coarse ? { powerPreference: "low-power" as const } : {}) });
     el.appendChild(this.app.canvas);
     this.keepCentreOnResize(el);
+    // Phones drop the WebGL context when the game goes to the background (or runs short of
+    // memory). Pixi restores the context, but the cached board texture comes back empty and
+    // the number tokens' text textures come back blank (their canvases went back to a shared
+    // pool), so the board is drawn again from scratch.
+    this.app.canvas.addEventListener("webglcontextrestored", this.onContextRestored);
+    document.addEventListener("visibilitychange", this.onVisibility);
     this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer,
                         this.overlayLayer, this.settlerLayer);
     this.app.stage.addChild(this.world);
@@ -57,6 +72,12 @@ export class PixiRenderer implements Renderer {
   update(store: GameStore, now: number): void {
     this.store = store;
     this.lastNow = now;
+    if (this.boardStale && this.board && this.geo) {
+      this.boardStale = false;
+      this.drawBoard();
+      this.cacheRes = 0;
+      this.drawnVersion = -1;
+    }
     if (store.board && store.board !== this.board) {
       this.board = store.board;
       this.geo = new BoardGeometry(store.board);
@@ -79,7 +100,8 @@ export class PixiRenderer implements Renderer {
   private drawBoard(): void {
     const geo = this.geo!;
     const board = this.board!;
-    this.boardLayer.removeChildren().forEach((c) => c.destroy());
+    this.boardLayer.cacheAsTexture(false);
+    this.boardLayer.removeChildren().forEach((c) => c.destroy({ children: true }));
     const fishing = new Map(board.fishing.map((f) => [f.hex, f.token]));
     const land = board.hexes.filter((h) => h.land && h.terrain);
 
@@ -189,11 +211,19 @@ export class PixiRenderer implements Renderer {
     const want = this.world.scale.x * this.app.renderer.resolution;
     // Steps of √2 so small zooms don't re-cache; never larger than the texture limit.
     const step = Math.SQRT2 ** Math.ceil(Math.log(Math.max(want, 0.25)) / Math.log(Math.SQRT2));
-    const res = Math.min(step, MAX_CACHE_PX / side);
+    const res = Math.min(step, this.maxCachePx() / side);
     if (Math.abs(res - this.cacheRes) < 1e-6) return;
     this.cacheRes = res;
     this.boardLayer.cacheAsTexture(false);
-    this.boardLayer.cacheAsTexture({ resolution: res, antialias: true });
+    this.boardLayer.cacheAsTexture({ resolution: res, antialias: !this.coarse });
+  }
+
+  /** The cache limit for this device, never above what its GPU can hold in one texture. */
+  private maxCachePx(): number {
+    const limit = this.coarse ? MAX_CACHE_PX_PHONE : MAX_CACHE_PX;
+    const gl = (this.app.renderer as { gl?: WebGLRenderingContext }).gl;
+    const gpu = gl && !gl.isContextLost() ? Number(gl.getParameter(gl.MAX_TEXTURE_SIZE)) : 0;
+    return gpu > 0 ? Math.min(limit, gpu) : limit;
   }
 
   // ------------------------------------------------------------------ pieces
@@ -412,6 +442,8 @@ export class PixiRenderer implements Renderer {
 
   destroy(): void {
     this.resizeObserver?.disconnect();
+    this.app.canvas.removeEventListener("webglcontextrestored", this.onContextRestored);
+    document.removeEventListener("visibilitychange", this.onVisibility);
     this.app.destroy(true, { children: true });
   }
 }

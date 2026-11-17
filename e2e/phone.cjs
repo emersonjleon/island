@@ -221,6 +221,12 @@ async function checkFits(page, what) {
       }, target), "the settler to walk where the phone tapped", 10_000);
     }
 
+    log("the first tap went full screen; leaving it turns that off for next time");
+    if (!(await phone.evaluate(() => !!document.fullscreenElement))) throw new Error("the phone's first tap did not go full screen");
+    await phone.evaluate(() => document.exitFullscreen());
+    await phone.waitForTimeout(500);
+    if (await phone.evaluate(() => localStorage.getItem("island.autoFullscreen")) !== "off") throw new Error("leaving full screen was not remembered");
+
     log("landscape");
     await phone.setViewportSize({ width: PHONE.viewport.height, height: PHONE.viewport.width });
     await phone.waitForTimeout(600);
