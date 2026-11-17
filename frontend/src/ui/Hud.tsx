@@ -19,6 +19,8 @@ import { GuidePanel, HelpDialog } from "./Guide";
 import { Die, ResIcon } from "./icons";
 import { KeySettings } from "./KeySettings";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
+import { othersOffers, playerTradesOn } from "../state/tradeboard";
+import { TradeBoard } from "./TradeBoard";
 import {
   MANY_PLAYERS, RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
   rollInterval, victoryTarget, visibleScoreSeats, type LogLine,
@@ -354,6 +356,7 @@ function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
   const myCards = cardCount(devPlayer(store.state, store.seat));
   const deckLeft = store.state?.dev_cards?.deck_left ?? 0;
   const refill = (store.settings["dev_cards"] as { refill?: boolean } | undefined)?.refill !== false;
+  const offerCount = othersOffers(store.state, store.seat).length;
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -382,7 +385,10 @@ function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
           {t("hud:dev.buy")}
         </button>
         {myCards > 0 && <button type="button" class="dev-open" onClick={onDev}>{t("hud:dev.open", { count: myCards })}</button>}
-        <button type="button" class="trade-open" onClick={onTrade}>{t("hud:trade.open")}</button>
+        <button type="button" class="trade-open" onClick={onTrade}>
+          {t("hud:trade.open")}
+          {offerCount > 0 && <span class="badge" title={t("hud:offers.waiting", { count: offerCount })}>{offerCount}</span>}
+        </button>
         {!touch && <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>}
       </div>
     </div>
@@ -464,21 +470,42 @@ function FullscreenHelp({ t, onClose }: { t: TFunction; onClose(): void }) {
 }
 
 // ------------------------------------------------------------------ trade
-function TradeDialog({ store, t, send, onClose }: HudProps & { onClose(): void }) {
+function TradeDialog(props: HudProps & { onClose(): void }) {
+  const { store, t, onClose } = props;
+  const players = playerTradesOn(store.settings);
+  const [tab, setTab] = useState<"bank" | "players">(() => (players && othersOffers(store.state, store.seat).length ? "players" : "bank"));
+  useEscape(onClose);
+  return (
+    <Dialog title={t(players ? "hud:trade.titleAll" : "hud:trade.title")} onClose={onClose} t={t} closeKey="hud:trade.close">
+      {players && (
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" class="tab-bank" aria-selected={tab === "bank"} onClick={() => setTab("bank")}>
+            {t("hud:trade.bankTab")}
+          </button>
+          <button type="button" role="tab" class="tab-players" aria-selected={tab === "players"} onClick={() => setTab("players")}>
+            {t("hud:trade.playersTab")}
+          </button>
+        </div>
+      )}
+      {tab === "players" && players ? <TradeBoard {...props} /> : <BankTrade {...props} />}
+    </Dialog>
+  );
+}
+
+function BankTrade({ store, t, send, onClose }: HudProps & { onClose(): void }) {
   const s = store.state!;
   const seat = store.seat!;
   const hand = store.player(seat)?.hand ?? {};
   const [give, setGive] = useState<Resource>(RESOURCES.reduce((a, r) => ((hand[r] ?? 0) > (hand[a] ?? 0) ? r : a), "lumber" as Resource));
   const [get, setGet] = useState<Resource>("ore");
   const [n, setN] = useState(1);
-  useEscape(onClose);
   const check = checkTrade(store.settings, store.board!, s, seat, give, get, n);
   const submit = () => {
     send({ a: "bank_trade", give: { [give]: check.ratio * n }, get: { [get]: n } });
     onClose();
   };
   return (
-    <Dialog title={t("hud:trade.title")} onClose={onClose} t={t} closeKey="hud:trade.close">
+    <>
       <div class="trade-grid">
         <h3>{t("hud:trade.give")}</h3>
         <div class="choices">
@@ -510,7 +537,7 @@ function TradeDialog({ store, t, send, onClose }: HudProps & { onClose(): void }
       <div class="dialog-buttons">
         <button type="button" class="primary" disabled={!check.ok} onClick={submit}>{t("hud:trade.confirm")}</button>
       </div>
-    </Dialog>
+    </>
   );
 }
 

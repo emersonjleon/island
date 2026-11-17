@@ -122,6 +122,9 @@ export class InputController {
     on(win, "pointerup", (e: PointerEvent) => this.pointerUp(e));
     on(win, "pointercancel", (e: PointerEvent) => this.pointerUp(e, true));
     on(el, "pointerleave", () => (this.pointer.inside = false));
+    // After a resize or a turn of the phone the last pointer position means nothing:
+    // left as it was it can sit in the edge band and scroll the island off screen.
+    on(win, "resize", () => (this.pointer.inside = false));
     on(el, "dblclick", (e: MouseEvent) => this.doubleClick(e));
     on(el, "wheel", (e: WheelEvent) => {
       e.preventDefault();
@@ -500,7 +503,9 @@ export class InputController {
       return;
     }
     const r = this.el?.getBoundingClientRect();
-    this.pointer = { x: p.x, y: p.y, inside: !!r && p.x >= 0 && p.y >= 0 && p.x <= r.width && p.y <= r.height };
+    // Only a pointer over the board itself pushes the camera, not one over a HUD panel.
+    const overBoard = !!this.el && this.el.contains(e.target as Node | null);
+    this.pointer = { x: p.x, y: p.y, inside: overBoard && !!r && p.x >= 0 && p.y >= 0 && p.x <= r.width && p.y <= r.height };
     const pr = this.press;
     if (!pr) return;
     if (!pr.dragging && Math.hypot(p.x - pr.x, p.y - pr.y) > FEEL.dragPx) pr.dragging = true;

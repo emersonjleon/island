@@ -406,6 +406,7 @@ class TradingSettings(_Group):
     player_trades: bool = setting(True, label="settings.trading.player_trades", stage=2)
     offer_expiry_ms: int | None = setting(None, label="settings.trading.offer_expiry_ms", stage=2,
                                           ge=1000, le=600000)
+    max_open_offers: int = setting(3, label="settings.trading.max_open_offers", stage=2, ge=1, le=20)
     private_offers: bool = setting(False, label="settings.trading.private_offers", stage=3)
 
 

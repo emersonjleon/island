@@ -1,5 +1,27 @@
 {
   "$defs": {
+    "AcceptOffer": {
+      "additionalProperties": false,
+      "description": "Accept another player's offer: the trade happens at once.",
+      "properties": {
+        "a": {
+          "const": "accept_offer",
+          "default": "accept_offer",
+          "title": "A",
+          "type": "string"
+        },
+        "offer": {
+          "minimum": 0,
+          "title": "Offer",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "offer"
+      ],
+      "title": "AcceptOffer",
+      "type": "object"
+    },
     "BankTrade": {
       "additionalProperties": false,
       "description": "Trade with the bank (or a harbor the player owns; the rule picks the best ratio).\n\nStage 1: exactly one ``give`` resource and one different ``get`` resource,\npositive amounts. Whether ``give`` amount == ratio * ``get`` amount is a rule check\n(``trade.*`` codes), not a schema check.",
@@ -146,6 +168,28 @@
       "title": "CancelBuild",
       "type": "object"
     },
+    "CancelOffer": {
+      "additionalProperties": false,
+      "description": "Take one's own offer off the trade board.",
+      "properties": {
+        "a": {
+          "const": "cancel_offer",
+          "default": "cancel_offer",
+          "title": "A",
+          "type": "string"
+        },
+        "offer": {
+          "minimum": 0,
+          "title": "Offer",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "offer"
+      ],
+      "title": "CancelOffer",
+      "type": "object"
+    },
     "DevCardKind": {
       "enum": [
         "knight",
@@ -267,6 +311,48 @@
       "title": "PlayDevCard",
       "type": "object"
     },
+    "PostOffer": {
+      "additionalProperties": false,
+      "description": "Put an offer on the trade board (stage 2): the poster gives ``give`` and gets\n``get`` from whoever accepts. Both name at least one resource, never the same one.",
+      "properties": {
+        "a": {
+          "const": "post_offer",
+          "default": "post_offer",
+          "title": "A",
+          "type": "string"
+        },
+        "get": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Get",
+          "type": "object"
+        },
+        "give": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Give",
+          "type": "object"
+        }
+      },
+      "required": [
+        "give",
+        "get"
+      ],
+      "title": "PostOffer",
+      "type": "object"
+    },
     "Resign": {
       "additionalProperties": false,
       "description": "Give up: the player leaves the game for good (see :mod:`engine.rules.resign`).",
@@ -296,12 +382,15 @@
   },
   "discriminator": {
     "mapping": {
+      "accept_offer": "#/$defs/AcceptOffer",
       "bank_trade": "#/$defs/BankTrade",
       "build": "#/$defs/Build",
       "buy_dev_card": "#/$defs/BuyDevCard",
       "cancel_build": "#/$defs/CancelBuild",
+      "cancel_offer": "#/$defs/CancelOffer",
       "move_settler": "#/$defs/MoveSettler",
       "play_dev_card": "#/$defs/PlayDevCard",
+      "post_offer": "#/$defs/PostOffer",
       "resign": "#/$defs/Resign"
     },
     "propertyName": "a"
@@ -324,6 +413,15 @@
     },
     {
       "$ref": "#/$defs/PlayDevCard"
+    },
+    {
+      "$ref": "#/$defs/PostOffer"
+    },
+    {
+      "$ref": "#/$defs/CancelOffer"
+    },
+    {
+      "$ref": "#/$defs/AcceptOffer"
     },
     {
       "$ref": "#/$defs/Resign"

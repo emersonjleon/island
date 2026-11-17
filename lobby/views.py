@@ -10,6 +10,10 @@ from . import services
 from .forms import CreateGameForm
 from .messages import error_message
 from .models import BOT_LEVELS, COLOURS, Game, GameStatus
+from .presets import (
+    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, preset_description, preset_values, presets_data, settings_values,
+    show, stats_rows,
+)
 
 
 def _game(code: str) -> Game:
@@ -32,7 +36,45 @@ def game_list(request: HttpRequest) -> HttpResponse:
         .select_related("host")
         .distinct()
     )
-    return render(request, "lobby/list.html", {"form": form, "open_games": open_games[:50], "my_games": mine})
+    context = {"form": form, "open_games": open_games[:50], "my_games": mine}
+    return render(request, "lobby/list.html", context | create_form_context(form))
+
+
+def _chosen(form: CreateGameForm) -> tuple[str, int]:
+    """The game type and table size the form shows (what was posted, else the initial ones)."""
+    preset = form.data.get("preset") or form.fields["preset"].initial
+    if preset not in dict(form.fields["preset"].choices):
+        preset = form.fields["preset"].initial
+    try:
+        players = int(form.data.get("max_players") or form.fields["max_players"].initial)
+    except ValueError:
+        players = form.fields["max_players"].initial
+    choices = [n for n, _label in form.fields["max_players"].choices]
+    return preset, min(max(players, choices[0]), choices[-1])
+
+
+def create_form_context(form: CreateGameForm) -> dict:
+    preset, players = _chosen(form)
+    cards = [
+        {"radio": radio, "name": radio.data["value"], "description": preset_description(radio.data["value"]),
+         "values": preset_values(radio.data["value"], players)}
+        for radio in form["preset"]
+    ]
+    groups = [
+        {"label": label, "fields": [form[k.name] for k in KNOBS if k.group == key]}
+        for key, label in GROUPS
+    ]
+    return {
+        "preset_cards": cards,
+        "chosen_preset": preset,
+        "chosen_stats": [
+            (label, text, " ".join(knobs))
+            for (label, text), (_label, knobs) in zip(stats_rows(preset_values(preset, players)), STATS)
+        ],
+        "knob_groups": groups,
+        "custom_preset": CUSTOM,
+        "presets_data": presets_data(),
+    }
 
 
 def seats_context(request: HttpRequest, game: Game) -> dict:
@@ -52,7 +94,19 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
         "bot_levels": BOT_LEVELS,
         "start_problems": [error_message(p) for p in services.start_problems(game, settings)] if game.is_open else [],
         "roll_seconds": settings.clock.roll_interval_ms // 1000,
+        "stats": stats_rows(settings_values(settings)),
+        "custom_changes": custom_changes(game, settings),
     }
+
+
+def custom_changes(game: Game, settings) -> list[tuple]:
+    """For a custom game, the changed settings that the summary does not already show."""
+    if game.preset != CUSTOM:
+        return []
+    shown = {k for _label, knobs in STATS for k in knobs}
+    values = settings_values(settings)
+    base = preset_values(CUSTOM, settings.players.max)
+    return [(KNOBS_BY_NAME[k].label, show(v)) for k, v in values.items() if k not in shown and v != base[k]]
 
 
 @login_required

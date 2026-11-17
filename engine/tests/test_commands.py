@@ -64,7 +64,8 @@ class ParseTest(unittest.TestCase):
         for name in COMMAND_TYPES:
             self.assertIn(name, text)
         self.assertEqual(set(COMMAND_TYPES), {"move_settler", "build", "cancel_build", "bank_trade",
-                                                  "buy_dev_card", "play_dev_card", "resign"})
+                                                  "buy_dev_card", "play_dev_card", "post_offer", "cancel_offer",
+                                              "accept_offer", "resign"})
 
 
 if __name__ == "__main__":

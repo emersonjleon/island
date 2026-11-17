@@ -4,6 +4,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from .presets import preset_label
+
 # No 0/O, 1/I/L: codes are read aloud and typed by players.
 CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"
 CODE_LENGTH = 5
@@ -80,6 +82,10 @@ class Game(models.Model):
             code = new_code()
             if not Game.objects.filter(code=code).exists():
                 return code
+
+    @property
+    def preset_label(self):
+        return preset_label(self.preset)
 
     @property
     def group_name(self) -> str:

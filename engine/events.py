@@ -32,7 +32,7 @@ __all__ = [
     "ClockStarted", "DiceRolled", "Produced", "RobberStole", "RobberMoved", "Hand", "SettlerLanded",
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
-    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "Buildable", "Resigned", "GameOver",
+    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver",
 ]
 
 ResMap = dict[Resource, int]
@@ -301,6 +301,31 @@ class LargestArmy(Event):
     knights: dict[int, int]
 
 
+# ---------------------------------------------------------------- trade board
+class OfferPosted(Event):
+    """``seat`` put offer ``offer`` on the trade board: they give ``give`` for ``get``.
+    ``expires_at``: game ms when it is taken down, or None (stays until taken)."""
+    k: Literal["offer_posted"] = "offer_posted"
+    offer: int
+    seat: int
+    give: ResMap
+    get: ResMap
+    expires_at: int | None = None
+
+
+class OfferClosed(Event):
+    """Offer ``offer`` of ``seat`` left the board. ``reason``: ``"accepted"`` (``by``
+    took it; the cards moved, see ``Hand``), ``"cancelled"``, ``"expired"`` or
+    ``"resigned"`` (its poster left the game)."""
+    k: Literal["offer_closed"] = "offer_closed"
+    offer: int
+    seat: int
+    reason: Literal["accepted", "cancelled", "expired", "resigned"]
+    by: int | None = None
+    give: ResMap = Field(default_factory=dict)
+    get: ResMap = Field(default_factory=dict)
+
+
 class Buildable(Event):
     """Legal build spots of ``seat`` (sent only to that seat, when they change)."""
     k: Literal["buildable"] = "buildable"
@@ -332,7 +357,7 @@ class GameOver(Event):
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
-    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, Buildable, Resigned, GameOver,
+    SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, OfferPosted, OfferClosed, Buildable, Resigned, GameOver,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
@@ -340,7 +365,7 @@ AnyEvent = Annotated[
     ClockStarted | DiceRolled | Produced | RobberStole | RobberMoved | Hand | SettlerLanded | SettlerPath
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
     | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
-    | Buildable | Resigned | GameOver,
+    | OfferPosted | OfferClosed | Buildable | Resigned | GameOver,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

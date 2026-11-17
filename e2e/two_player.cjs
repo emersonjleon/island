@@ -120,6 +120,39 @@ async function buyAndPlayCard(page) {
   return card.kind;
 }
 
+/** Player trade board through the HUD: ``poster`` offers 1 card, ``taker`` accepts it. */
+async function tradeOnBoard(poster, taker) {
+  const hand = (page) => page.evaluate(() => {
+    const st = window.island.store;
+    return st.state.players.find((p) => p.seat === st.seat).hand ?? {};
+  });
+  const ph = await hand(poster);
+  const th = await hand(taker);
+  const give = Object.keys(ph).filter((r) => ph[r] > 0).sort((x, y) => ph[y] - ph[x])[0];
+  const get = Object.keys(th).filter((r) => th[r] > 0 && r !== give).sort((x, y) => th[y] - th[x])[0];
+  if (!give || !get) return "skipped (not enough cards)";
+  await poster.click(".hud-hand .actions button.trade-open");
+  await poster.click(".tabs .tab-players");
+  await poster.click(`.offer-side:nth-of-type(1) .offer-res.res-${give} button:last-of-type`);
+  await poster.click(`.offer-side:nth-of-type(2) .offer-res.res-${get} button:last-of-type`);
+  await poster.click(".trade-board button.post-offer");
+  await waitFor(() => poster.evaluate(() => (window.island.store.state.trade_board?.offers ?? []).length > 0), "the offer on the board");
+  await poster.keyboard.press("Escape");
+  await taker.waitForSelector(".hud-hand .actions button.trade-open .badge", { timeout: STEP_TIMEOUT_MS });
+  await taker.click(".hud-hand .actions button.trade-open");
+  const accept = await taker.waitForSelector(".trade-board button.accept-offer", { timeout: 2000 });
+  if (await accept.isDisabled()) {
+    await taker.keyboard.press("Escape");
+    return `${give} for ${get}: could not accept (${(await taker.textContent(".trade-board .offer")).trim()})`;
+  }
+  await accept.click();
+  await waitFor(() => poster.evaluate(() => (window.island.store.state.trade_board?.offers ?? []).length === 0), "the trade");
+  await taker.keyboard.press("Escape");
+  const after = await hand(poster);
+  if ((after[get] ?? 0) !== (ph[get] ?? 0) + 1) throw new Error(`trade board: expected one more ${get}`);
+  return `1 ${give} for 1 ${get}`;
+}
+
 /** Main game: city if possible, else a settlement, else a road; until the game ends. */
 async function playToWin(page, who) {
   for (;;) {
@@ -195,6 +228,9 @@ async function playToWin(page, who) {
 
     log("ana buys a development card and plays it after the next roll");
     log("ana played:", await buyAndPlayCard(a));
+
+    log("ben offers a trade on the board and ana takes it");
+    log("traded:", await tradeOnBoard(b, a));
 
     log("building until someone reaches the target");
     const race = Promise.all([playToWin(a, "ana"), playToWin(b, "ben")]);

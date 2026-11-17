@@ -133,6 +133,20 @@
 .hud-dialog .choices .card small { font-size: 0.7rem; }
 .trade-amount { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
 .trade-why { color: #a33; margin: 8px 0 0; }
+.tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+.game-hud .hud-dialog .tabs button[aria-selected="true"] { background: linear-gradient(180deg, #f8dc78, #ebbb3a); font-weight: 700; }
+.trade-open .badge { display: inline-block; min-width: 1.3em; margin-left: 6px; padding: 0 5px; border-radius: 999px;
+  background: #c0392b; color: #fff; font-size: 0.75rem; font-weight: 700; line-height: 1.3em; text-align: center; }
+.trade-board .offers { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.trade-board .offer { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 6px 8px; border-radius: 10px; background: rgba(255, 255, 255, 0.6); border: 1px solid #e3d6b4; }
+.trade-board .offer small.trade-why { display: block; margin: 2px 0 0; }
+.offer-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.offer-side { border: 1px solid #e3d6b4; border-radius: 10px; padding: 6px 10px; margin: 0; }
+.offer-side legend { font-weight: 700; padding: 0 4px; }
+.offer-res { display: grid; grid-template-columns: 22px 1fr 32px 2ch 32px; align-items: center; gap: 6px; margin: 3px 0; }
+.offer-res .count { text-align: center; font-variant-numeric: tabular-nums; }
+.offer-res svg { width: 20px; height: 20px; }
 .dialog-buttons { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 14px; }
 .dialog-buttons .saved { margin-right: auto; color: #3f7a3f; }
 .game-hud .hud-dialog button { background: linear-gradient(180deg, #f1ead8, #ddd2b8); }

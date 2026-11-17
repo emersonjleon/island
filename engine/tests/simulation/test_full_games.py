@@ -68,6 +68,13 @@ class GreedyGamesTest(unittest.TestCase):
         r = run_game(s, make_seats(3), 3, ["greedy"] * 3, MAX_MS)
         self.assert_won(r, s.victory.target)
 
+    def test_bigger_presets(self) -> None:
+        for name in ("expanded", "huge"):
+            with self.subTest(preset=name):
+                s = load_preset(name, players=4)
+                r = run_game(s, make_seats(4), 5, ["greedy"] * 4, MAX_MS)
+                self.assert_won(r, s.victory.target)
+
     def test_variant_settings(self) -> None:
         variants = [
             {"build": {"network_builds_timed": False}},

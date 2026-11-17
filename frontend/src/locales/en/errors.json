@@ -39,6 +39,18 @@
     "unknown_vertex": "That spot doesn't exist",
     "unreachable": "Your settler can't get there"
   },
+  "offer": {
+    "disabled": "Trading between players is off in this game",
+    "setup_not_done": "Finish your setup first",
+    "too_many": "You already have {{max}} offers up; withdraw one first",
+    "cannot_afford": "You don't have those resources",
+    "not_found": "That offer is gone",
+    "not_yours": "That isn't your offer",
+    "own": "You can't take your own offer",
+    "poster_short": "They no longer have what they offered",
+    "empty": "Choose something to give and something to get",
+    "same_resource": "Don't give and get the same resource"
+  },
   "trade": {
     "bad_ratio": "Wrong amount for that trade",
     "bank_empty": "The bank has run out of that resource",

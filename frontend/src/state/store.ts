@@ -158,6 +158,10 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
     case "largest_army":
       applyDevCardEvent(state, ev);
       break;
+    case "offer_posted":
+    case "offer_closed":
+      applyOfferEvent(state, ev);
+      break;
     case "construction_started": {
       if (ev.kind === "road" && ev.seat === state.viewer && !Object.values((ev.paid ?? {}) as ResMap).some((n) => n)) {
         const me = state.dev_cards?.players[String(ev.seat)];
@@ -259,6 +263,20 @@ function devState(state: GameStateView): DevCardsView {
 function devPlayerOf(dc: DevCardsView, seat: number): DevCardsPlayer {
   dc.players[String(seat)] ??= { knights: 0 };
   return dc.players[String(seat)]!;
+}
+
+/** Trade board events (stage 2); the cards themselves move with ``hand`` events. */
+function applyOfferEvent(state: GameStateView, ev: GameEvent): void {
+  const board = (state.trade_board ??= { offers: [] });
+  const id = num(ev.offer);
+  board.offers = board.offers.filter((o) => o.id !== id);
+  if (ev.k === "offer_posted") {
+    board.offers.push({
+      id, seat: num(ev.seat), give: { ...(ev.give as ResMap) }, get: { ...(ev.get as ResMap) }, at: num(ev.at),
+      expires_at: (ev.expires_at as number | null | undefined) ?? null,
+    });
+    board.offers.sort((a, b) => a.id - b.id);
+  }
 }
 
 /** Development card events (stage 2). */

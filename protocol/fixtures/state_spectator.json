@@ -249,6 +249,22 @@
         ]
       }
     },
+    "trade_board": {
+      "offers": [
+        {
+          "at": 32000,
+          "expires_at": null,
+          "get": {
+            "ore": 1
+          },
+          "give": {
+            "lumber": 1
+          },
+          "id": 0,
+          "seat": 0
+        }
+      ]
+    },
     "viewer": null,
     "winner": null
   },
