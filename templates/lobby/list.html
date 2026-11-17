@@ -102,5 +102,6 @@
   </form>
   {{ presets_data|json_script:"presets-data" }}
 </section>
+{% include "chat/_social_chat.html" %}
 {% endblock %}
-{% block scripts %}{% vite_entry "create" %}{% endblock %}
+{% block scripts %}{% vite_entry "create" %}{% vite_entry "social" %}{% endblock %}

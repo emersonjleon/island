@@ -19,6 +19,7 @@ export default defineConfig({
         game: resolve(here, "src/entries/game.ts"),
         lobby: resolve(here, "src/entries/lobby.ts"),
         create: resolve(here, "src/entries/create.ts"),
+        social: resolve(here, "src/entries/social.ts"),
       },
     },
   },

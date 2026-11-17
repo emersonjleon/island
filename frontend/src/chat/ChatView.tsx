@@ -25,6 +25,14 @@ export interface ChatViewProps {
   autoFocus?: boolean;
   /** Show the quick phrases and resource buttons (trading talk, in the game). */
   quick?: boolean;
+  /** Site-wide chat: no player colours, no "watching" tag. */
+  plain?: boolean;
+  /** Names become buttons that call this (e.g. to write privately or add a friend). */
+  onName?(line: ChatLine): void;
+  /** Placeholder for the text box instead of the default one. */
+  placeholder?: string;
+  /** The text box is off (e.g. the privacy setting does not allow writing here). */
+  disabled?: boolean;
 }
 
 export function useChatLines(log: ChatLog): ChatLine[] {
@@ -59,7 +67,7 @@ function clock(at: number): string {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function ChatView({ log, t, send, error, autoFocus, quick }: ChatViewProps) {
+export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName, placeholder, disabled }: ChatViewProps) {
   const lines = useChatLines(log);
   const [draft, setDraft] = useState("");
   const [offline, setOffline] = useState(false);
@@ -112,10 +120,12 @@ export function ChatView({ log, t, send, error, autoFocus, quick }: ChatViewProp
           }}>
         {!lines.length && <li class="chat-empty">{t("chat:empty")}</li>}
         {lines.map((m) => (
-          <li key={m.id} class={m.player ? "" : "watcher"}>
-            {m.player && <span class="chat-dot" style={{ background: hex(m.colour) }} aria-hidden="true" />}
-            <strong class="chat-who">{m.name}</strong>
-            {!m.player && <small class="chat-tag"> ({t("chat:watching")})</small>}
+          <li key={m.id} class={m.player || plain ? "" : "watcher"}>
+            {m.player && !plain && <span class="chat-dot" style={{ background: hex(m.colour) }} aria-hidden="true" />}
+            {onName
+              ? <button type="button" class="chat-who chat-who-btn" onClick={() => onName(m)}>{m.name}</button>
+              : <strong class="chat-who">{m.name}</strong>}
+            {!m.player && !plain && <small class="chat-tag"> ({t("chat:watching")})</small>}
             <time class="chat-time">{clock(m.at)}</time>
             <span class="chat-text"><ChatText text={m.text} t={t} /></span>
           </li>
@@ -141,10 +151,11 @@ export function ChatView({ log, t, send, error, autoFocus, quick }: ChatViewProp
       )}
       <form class="chat-form" onSubmit={submit}>
         <input ref={input} type="text" value={draft} maxLength={MAX_LENGTH} enterKeyHint="send" autoComplete="off"
-               placeholder={t("chat:placeholder")} aria-label={t("chat:placeholder")}
+               placeholder={placeholder ?? t("chat:placeholder")} aria-label={placeholder ?? t("chat:placeholder")}
+               disabled={disabled}
                onInput={(e) => setDraft(e.currentTarget.value)}
                onKeyDown={(e) => { if (e.key === "Escape") e.currentTarget.blur(); }} />
-        <button type="submit" class="chat-send" disabled={!draft.trim()}>{t("chat:send")}</button>
+        <button type="submit" class="chat-send" disabled={disabled || !draft.trim()}>{t("chat:send")}</button>
       </form>
     </div>
   );

@@ -6,6 +6,8 @@ DEFAULTS = {
     "HISTORY": 60,             # messages sent to someone who opens the page
     "RATE_PER_SECOND": 0.5,    # steady sending rate per connection...
     "BURST": 5,                # ...with short bursts up to this many messages
+    "PUBLIC_HISTORY": 60,      # public-room lines sent when the site-wide chat opens
+    "DM_HISTORY": 200,         # latest private messages (all conversations) sent when it opens
 }
 
 

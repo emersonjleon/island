@@ -1117,6 +1117,22 @@ msgstr "Solo se usan en la partida Personalizada. Los campos en blanco mantienen
 msgid "Create game"
 msgstr "Crear partida"
 
+#: chat/models.py
+msgid "Everyone: public chat and messages from anyone"
+msgstr "Todos: chat público y mensajes de cualquiera"
+
+#: chat/models.py
+msgid "Only friends: messages from friends, no public chat"
+msgstr "Solo amigos: mensajes de amigos, sin chat público"
+
+#: chat/models.py
+msgid "Only in games: no public chat or private messages"
+msgstr "Solo en partidas: sin chat público ni mensajes privados"
+
+#: templates/chat/_social_chat.html
+msgid "The chat needs JavaScript."
+msgstr "El chat necesita JavaScript."
+
 #~ msgid ""
 #~ "Blank keeps the preset (19 in Classic, larger for more than 4 players)."
 #~ msgstr ""
