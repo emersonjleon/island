@@ -12,6 +12,7 @@ from channels.exceptions import ChannelFull
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 
+from chat.consumers import ChatMixin
 from engine.commands import parse_command
 from engine.errors import RuleError
 from gamehost import conf as host_conf
@@ -31,7 +32,7 @@ CLOSE_PROTO = 4400
 VISIBLE_STATUSES = (GameStatus.STARTING, GameStatus.RUNNING, GameStatus.FINISHED)
 
 
-class GameConsumer(AsyncWebsocketConsumer):
+class GameConsumer(ChatMixin, AsyncWebsocketConsumer):
     async def connect(self):
         user = self.scope.get("user")
         code = self.scope["url_route"]["kwargs"]["code"].upper()
@@ -48,10 +49,12 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.send_json({"t": "welcome", "game": self.code, "seat": self.seat, "proto": PROTO,
                               "settings": self.settings})
         await self._to_host("game.sync", seat=self.seat)
+        await self.chat_join(self.game_id)
 
     async def disconnect(self, close_code):
         if hasattr(self, "group"):
             await self.channel_layer.group_discard(self.group, self.channel_name)
+        await self.chat_leave()
 
     # ---------------------------------------------------------------- client -> server
     async def receive(self, text_data=None, bytes_data=None):
@@ -64,7 +67,7 @@ class GameConsumer(AsyncWebsocketConsumer):
             msg = None
         kind = msg.get("t") if isinstance(msg, dict) else None
         handler = {"hello": self.on_hello, "sync": self.on_sync, "ping": self.on_ping,
-                   "intent": self.on_intent}.get(kind)
+                   "intent": self.on_intent, "chat": self.chat_receive}.get(kind)
         if handler is None:
             await self.notice(codes.MESSAGE_INVALID)
             return

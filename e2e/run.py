@@ -8,8 +8,9 @@ Needs Redis (REDIS_URL, default redis://127.0.0.1:6379/0), a built frontend
 It creates a fresh e2e.sqlite3, starts ``runserver`` and ``run_gamehost`` with
 e2e/settings.py, runs e2e/two_player.cjs (two desktop browsers), e2e/phone.cjs
 (a desktop against a touch-screen phone), e2e/bots.cjs (one person against two
-computer players), e2e/resign_stats.cjs (statistics and resigning on a phone)
-and e2e/big_table.cjs (eight seats, the guide and the rules)
+computer players), e2e/resign_stats.cjs (statistics and resigning on a phone),
+e2e/big_table.cjs (eight seats, the guide and the rules) and e2e/chat.cjs (the
+chat in the waiting room and in the game, desktop and phone)
 and stops both servers again.
 """
 from __future__ import annotations
@@ -23,7 +24,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ("two_player.cjs", "phone.cjs", "bots.cjs", "resign_stats.cjs", "big_table.cjs")
+SCRIPTS = ("two_player.cjs", "phone.cjs", "bots.cjs", "resign_stats.cjs", "big_table.cjs", "chat.cjs")
 READY_TIMEOUT_S = 30
 
 
@@ -66,6 +67,11 @@ def main() -> int:
         for script in SCRIPTS:
             result = subprocess.run(["node", str(ROOT / "e2e" / script), base, str(args.out)], cwd=ROOT, env=env)
             failed += result.returncode != 0
+        if failed:
+            # The servers' logs end up in an artifact; their tail in the job log saves a download.
+            for name, _ in procs:
+                tail = (args.out / f"{name}.log").read_text(encoding="utf-8", errors="replace").splitlines()[-40:]
+                print(f"--- last lines of {name}.log ---", *tail, sep="\n", flush=True)
         return 1 if failed else 0
     finally:
         for _, p in procs:
