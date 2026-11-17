@@ -22,6 +22,48 @@ const MAX_RESOLUTION = 2;
  * phones to drop the WebGL context, which blanks the board. */
 const MAX_CACHE_PX = 4096;
 const MAX_CACHE_PX_PHONE = 3072;
+/** Build candidates: dash and gap along a road (hex radii), line width (px), dashes round a spot. */
+const DASH = 0.08;
+const GAP = 0.075;
+const CAND_W = 4;
+const RING_DASHES = 8;
+/** Roads stop this share of the edge short of each vertex. */
+const ROAD_INSET = 0.18;
+/** One beat of the chosen candidate's glow (ms). */
+const PULSE_MS = 1100;
+/** The chosen spot's preview building is see-through, so it never passes for a built one. */
+const GHOST_ALPHA = 0.5;
+
+/** Dashes from ``a`` to ``b`` (pixels), centred so both ends look the same. */
+function dashedLine(g: Graphics, a: Pt, b: Pt, dash: number, gap: number): void {
+  const len = Math.hypot(b.x - a.x, b.y - a.y);
+  if (len <= 0) return;
+  const n = Math.max(1, Math.round((len + gap) / (dash + gap)));
+  const d = (len - gap * (n - 1)) / n;
+  const ux = (b.x - a.x) / len;
+  const uy = (b.y - a.y) / len;
+  for (let i = 0; i < n; i++) {
+    const s0 = i * (d + gap);
+    g.moveTo(a.x + ux * s0, a.y + uy * s0).lineTo(a.x + ux * (s0 + d), a.y + uy * (s0 + d));
+  }
+}
+
+/** True for colours that need a dark halo to show (white, yellow). */
+function isLight(c: number): boolean {
+  const r = (c >> 16) & 0xff;
+  const g = (c >> 8) & 0xff;
+  const b = c & 0xff;
+  return r * 299 + g * 587 + b * 114 > 150_000;
+}
+
+/** A ring of ``n`` dashes round (x, y). */
+function dashedRing(g: Graphics, x: number, y: number, r: number, n: number): void {
+  const step = (Math.PI * 2) / n;
+  for (let i = 0; i < n; i++) {
+    const a0 = i * step;
+    g.moveTo(x + Math.cos(a0) * r, y + Math.sin(a0) * r).arc(x, y, r, a0, a0 + step * 0.6);
+  }
+}
 
 export class PixiRenderer implements Renderer {
   private app = new Application();
@@ -32,6 +74,7 @@ export class PixiRenderer implements Renderer {
   private progressLayer = new Graphics();
   private settlerLayer = new Graphics();
   private robberLayer = new Graphics();
+  private focusLayer = new Graphics();
   private geo: BoardGeometry | null = null;
   private board: BoardMsg | null = null;
   private drawnVersion = -1;
@@ -65,7 +108,7 @@ export class PixiRenderer implements Renderer {
     this.app.canvas.addEventListener("webglcontextrestored", this.onContextRestored);
     document.addEventListener("visibilitychange", this.onVisibility);
     this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer,
-                        this.overlayLayer, this.settlerLayer);
+                        this.overlayLayer, this.focusLayer, this.settlerLayer);
     this.app.stage.addChild(this.world);
   }
 
@@ -93,6 +136,7 @@ export class PixiRenderer implements Renderer {
       this.drawnVersion = store.version;
     }
     this.drawMoving(store, now);
+    this.drawFocus(now);
     this.cacheBoard();
   }
 
@@ -252,7 +296,7 @@ export class PixiRenderer implements Renderer {
 
   private road(g: Graphics, edge: number, colour: number, alpha: number): void {
     const [a, b] = this.geo!.edgeEnds(edge);
-    const t = 0.18;
+    const t = ROAD_INSET;
     const a2 = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
     const b2 = { x: b.x + (a.x - b.x) * t, y: b.y + (a.y - b.y) * t };
     const line = (dx: number, dy: number) => g.moveTo(a2.x * UNIT + dx, a2.y * UNIT + dy).lineTo(b2.x * UNIT + dx, b2.y * UNIT + dy);
@@ -266,31 +310,95 @@ export class PixiRenderer implements Renderer {
     drawBuilding(g, kind, p.x * UNIT, p.y * UNIT, UNIT, colour, alpha);
   }
 
+  /** Build mode candidates: dashed roads and dashed rings in the player's colour, all
+   * the same width, over a dark outline so they show on every terrain. */
   private drawOverlays(): void {
     const geo = this.geo!;
     const g = this.overlayLayer.clear();
-    for (const v of this.overlays.vertices ?? []) {
-      const p = geo.vertex[v];
-      if (p) g.circle(p.x * UNIT, p.y * UNIT, UNIT * 0.12).stroke({ width: 3, color: P.HIGHLIGHT });
-    }
+    const colour = P.playerColour(this.overlays.colour ?? "");
+    // A pale halo keeps candidates apart from built roads (which have a dark outline);
+    // light player colours get a dark one instead so they still show.
+    const halo = isLight(colour) ? P.OUTLINE : 0xffffff;
     for (const e of this.overlays.edges ?? []) {
-      const [a, b] = geo.edgeEnds(e);
-      g.moveTo(a.x * UNIT, a.y * UNIT).lineTo(b.x * UNIT, b.y * UNIT).stroke({ width: 4, color: P.HIGHLIGHT, alpha: 0.8 });
+      if (e === this.overlays.focusEdge) continue;
+      const [a, b] = this.roadEnds(e);
+      dashedLine(g, a, b, UNIT * DASH, UNIT * GAP);
+    }
+    g.stroke({ width: CAND_W + 4, color: halo, alpha: 0.85, cap: "round" });
+    for (const e of this.overlays.edges ?? []) {
+      if (e === this.overlays.focusEdge) continue;
+      const [a, b] = this.roadEnds(e);
+      dashedLine(g, a, b, UNIT * DASH, UNIT * GAP);
+    }
+    g.stroke({ width: CAND_W, color: colour, cap: "round" });
+    for (const v of this.overlays.vertices ?? []) {
+      if (v === this.overlays.focusVertex) continue;
+      const p = geo.vertex[v];
+      if (!p) continue;
+      g.circle(p.x * UNIT, p.y * UNIT, UNIT * 0.13).fill({ color: 0xffffff, alpha: 0.3 });
+      dashedRing(g, p.x * UNIT, p.y * UNIT, UNIT * 0.13, RING_DASHES);
+      g.stroke({ width: CAND_W + 4, color: halo, alpha: 0.85, cap: "round" });
+      dashedRing(g, p.x * UNIT, p.y * UNIT, UNIT * 0.13, RING_DASHES);
+      g.stroke({ width: CAND_W, color: colour, cap: "round" });
     }
     for (const h of this.overlays.hexes ?? []) {
+      if (h === this.overlays.focusHex) continue;
       const p = geo.hex[h];
-      if (p) g.circle(p.x * UNIT, p.y * UNIT, UNIT * 0.42).stroke({ width: 3, color: P.HIGHLIGHT, alpha: 0.8 });
+      if (!p) continue;
+      dashedRing(g, p.x * UNIT, p.y * UNIT, UNIT * 0.42, 14);
+      g.stroke({ width: CAND_W + 4, color: halo, alpha: 0.85, cap: "round" });
+      dashedRing(g, p.x * UNIT, p.y * UNIT, UNIT * 0.42, 14);
+      g.stroke({ width: CAND_W, color: P.HIGHLIGHT, cap: "round" });
     }
-    const fh = this.overlays.focusHex;
-    const hp = fh == null ? undefined : geo.hex[fh];
-    if (hp) g.circle(hp.x * UNIT, hp.y * UNIT, UNIT * 0.5).fill({ color: P.HIGHLIGHT, alpha: 0.25 }).stroke({ width: 5, color: P.HIGHLIGHT });
-    const fv = this.overlays.focusVertex;
-    const fp = fv == null ? undefined : geo.vertex[fv];
-    if (fp) g.circle(fp.x * UNIT, fp.y * UNIT, UNIT * 0.2).fill({ color: P.HIGHLIGHT, alpha: 0.45 }).stroke({ width: 4, color: P.HIGHLIGHT });
-    const fe = this.overlays.focusEdge;
+  }
+
+  /** A road's drawn ends: the edge pulled in a little at both vertices. */
+  private roadEnds(edge: number): [Pt, Pt] {
+    const [a, b] = this.geo!.edgeEnds(edge);
+    const t = ROAD_INSET;
+    return [
+      { x: (a.x + (b.x - a.x) * t) * UNIT, y: (a.y + (b.y - a.y) * t) * UNIT },
+      { x: (b.x + (a.x - b.x) * t) * UNIT, y: (b.y + (a.y - b.y) * t) * UNIT },
+    ];
+  }
+
+  /** The candidate about to be chosen: a pulsing glow and a see-through preview of the
+   * piece itself (redrawn every frame, it is only a few shapes). */
+  private drawFocus(now: number): void {
+    const geo = this.geo!;
+    const g = this.focusLayer.clear();
+    const o = this.overlays;
+    const colour = P.playerColour(o.colour ?? "");
+    const pulse = 0.5 + 0.5 * Math.sin((now % PULSE_MS) / PULSE_MS * Math.PI * 2);
+    const fe = o.focusEdge;
     if (fe != null && geo.edgeMid[fe]) {
-      const [a, b] = geo.edgeEnds(fe);
-      g.moveTo(a.x * UNIT, a.y * UNIT).lineTo(b.x * UNIT, b.y * UNIT).stroke({ width: 9, color: P.HIGHLIGHT });
+      // Still dashed and see-through: a choice, not a built road (those are solid).
+      const [a, b] = this.roadEnds(fe);
+      g.moveTo(a.x, a.y).lineTo(b.x, b.y)
+        .stroke({ width: 20 + 6 * pulse, color: P.HIGHLIGHT, alpha: 0.25 + 0.3 * pulse, cap: "round" });
+      const halo = isLight(colour) ? P.OUTLINE : 0xffffff;
+      dashedLine(g, a, b, UNIT * DASH * 1.4, UNIT * GAP);
+      g.stroke({ width: CAND_W + 7, color: halo, alpha: 0.9, cap: "round" });
+      dashedLine(g, a, b, UNIT * DASH * 1.4, UNIT * GAP);
+      g.stroke({ width: CAND_W + 3, color: colour, alpha: 0.85, cap: "round" });
+    }
+    const fv = o.focusVertex;
+    const fp = fv == null ? undefined : geo.vertex[fv];
+    if (fp) {
+      const x = fp.x * UNIT;
+      const y = fp.y * UNIT;
+      const r = UNIT * (0.24 + 0.05 * pulse);
+      g.circle(x, y, r).fill({ color: P.HIGHLIGHT, alpha: 0.2 + 0.2 * pulse }).stroke({ width: 7, color: P.OUTLINE, alpha: 0.6 });
+      g.circle(x, y, r).stroke({ width: 4, color: P.HIGHLIGHT });
+      drawBuilding(g, o.focusKind ?? "settlement", x, y, UNIT, colour, GHOST_ALPHA);
+    }
+    const fh = o.focusHex;
+    const hp = fh == null ? undefined : geo.hex[fh];
+    if (hp) {
+      const r = UNIT * (0.46 + 0.05 * pulse);
+      g.circle(hp.x * UNIT, hp.y * UNIT, r).fill({ color: P.HIGHLIGHT, alpha: 0.18 + 0.15 * pulse })
+        .stroke({ width: 8, color: P.OUTLINE, alpha: 0.6 });
+      g.circle(hp.x * UNIT, hp.y * UNIT, r).stroke({ width: 5, color: P.HIGHLIGHT });
     }
   }
 
@@ -315,7 +423,16 @@ export class PixiRenderer implements Renderer {
       const selected = this.overlays.selectedSettlers?.includes(settler.id) ?? false;
       const x = p.x * UNIT;
       const y = p.y * UNIT;
-      if (selected) g.circle(x, y, UNIT * 0.24).fill({ color: P.HIGHLIGHT, alpha: 0.35 });
+      if (selected) {
+        // A pulsing gold ring and a little marker above: easy to spot among other tokens.
+        const pulse = 0.5 + 0.5 * Math.sin((now % PULSE_MS) / PULSE_MS * Math.PI * 2);
+        const r = UNIT * (0.25 + 0.03 * pulse);
+        g.circle(x, y, r).fill({ color: P.HIGHLIGHT, alpha: 0.2 + 0.15 * pulse }).stroke({ width: 6, color: P.OUTLINE, alpha: 0.5 });
+        g.circle(x, y, r).stroke({ width: 3, color: P.HIGHLIGHT });
+        const my = y - UNIT * (0.36 + 0.04 * pulse);
+        g.poly([x - UNIT * 0.08, my - UNIT * 0.07, x + UNIT * 0.08, my - UNIT * 0.07, x, my + UNIT * 0.03])
+          .fill(P.HIGHLIGHT).stroke({ width: 2, color: P.OUTLINE, join: "round" });
+      }
       g.ellipse(x + 2, y + UNIT * 0.14, UNIT * 0.15, UNIT * 0.05).fill({ color: P.SHADOW, alpha: 0.4 });
       g.circle(x, y, UNIT * 0.16).fill(colour).stroke({ width: selected ? 4 : 2, color: selected ? P.HIGHLIGHT : P.OUTLINE });
       g.circle(x - UNIT * 0.05, y - UNIT * 0.06, UNIT * 0.05).fill({ color: 0xffffff, alpha: 0.35 });

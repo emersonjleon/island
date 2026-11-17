@@ -89,6 +89,9 @@ export function logLine(
   const seat = typeof ev.seat === "number" ? ev.seat : null;
   const who = seat === null ? "" : seat === viewer ? t("hud:you") : name(seat);
   const kindName = (k: unknown) => t(`hud:kind.${String(k)}`);
+  // "You ..." lines have their own wording where the language needs it (Spanish verbs agree with "tú").
+  const tw = (key: string, params: Record<string, unknown>) =>
+    t(seat !== null && seat === viewer ? [`events:${key}_you`, `events:${key}`] : `events:${key}`, params);
   switch (ev.k) {
     case "clock_started": return { text: t("events:clock_started"), seat: null };
     case "dice_rolled": return { text: t("events:dice_rolled", { sum: ev.sum }), seat: null };
@@ -102,27 +105,27 @@ export function logLine(
     case "robber_moved": return { text: t("events:robber_moved"), seat: null };
     case "robber_stole": {
       const lost = ev.lost as ResMap | undefined;
-      return { text: t("events:robber_stole", { who, res: lost ? formatRes(t, lost) : "" }), seat };
+      return { text: tw("robber_stole", { who, res: lost ? formatRes(t, lost) : "" }), seat };
     }
-    case "built": return { text: t("events:built", { who, kind: kindName(ev.kind) }), seat };
+    case "built": return { text: tw("built", { who, kind: kindName(ev.kind) }), seat };
     case "construction_cancelled":
-      return { text: t("events:construction_cancelled", { who, reason: t(`events:reason.${String(ev.reason)}`) }), seat };
-    case "setup_complete": return { text: t("events:setup_complete", { who }), seat };
+      return { text: tw("construction_cancelled", { who, reason: t(`events:reason.${String(ev.reason)}`) }), seat };
+    case "setup_complete": return { text: tw("setup_complete", { who }), seat };
     case "starting_resources": {
       const g = ev.gained as ResMap | undefined;
-      return handTotal(g) > 0 ? { text: t("events:starting_resources", { who, res: formatRes(t, g) }), seat } : null;
+      return handTotal(g) > 0 ? { text: tw("starting_resources", { who, res: formatRes(t, g) }), seat } : null;
     }
     case "traded": return {
-      text: t("events:traded", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat,
+      text: tw("traded", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat,
     };
     case "offer_posted":
-      return { text: t("events:offer_posted", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat };
+      return { text: tw("offer_posted", { who, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat };
     case "offer_closed": {
       if (ev.reason === "accepted") {
         const by = ev.by === viewer ? t("hud:youObject") : name(ev.by as number);
-        return { text: t("events:offer_accepted", { who, by, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat };
+        return { text: tw("offer_accepted", { who, by, give: formatRes(t, ev.give as ResMap), get: formatRes(t, ev.get as ResMap) }), seat };
       }
-      if (ev.reason === "expired") return { text: t("events:offer_expired", { who }), seat };
+      if (ev.reason === "expired") return { text: tw("offer_expired", { who }), seat };
       return null;                                        // withdrawn, or its player left: the board shows it
     }
     case "longest_road": {
@@ -138,13 +141,13 @@ export function logLine(
       const victim = typeof ev.victim === "number" ? (ev.victim === viewer ? t("hud:youObject") : name(ev.victim)) : null;
       switch (ev.card) {
         case "knight":
-          return { text: victim ? t("events:dev_knight_robbed", { who, victim }) : t("events:dev_knight", { who }), seat };
-        case "victory_point": return { text: t("events:dev_victory_point", { who }), seat };
-        case "road_building": return { text: t("events:dev_road_building", { who, count: ev.roads ?? 0 }), seat };
-        case "year_of_plenty": return { text: t("events:dev_year_of_plenty", { who, res: formatRes(t, ev.took as ResMap) }), seat };
+          return { text: victim ? tw("dev_knight_robbed", { who, victim }) : tw("dev_knight", { who }), seat };
+        case "victory_point": return { text: tw("dev_victory_point", { who }), seat };
+        case "road_building": return { text: tw("dev_road_building", { who, count: ev.roads ?? 0 }), seat };
+        case "year_of_plenty": return { text: tw("dev_year_of_plenty", { who, res: formatRes(t, ev.took as ResMap) }), seat };
         case "monopoly": {
           const total = Object.values((ev.taken ?? {}) as Record<string, number>).reduce((a, n) => a + n, 0);
-          return { text: t("events:dev_monopoly", { who, res: t(`hud:res.${String(ev.resource)}`), count: total }), seat };
+          return { text: tw("dev_monopoly", { who, res: t(`hud:res.${String(ev.resource)}`), count: total }), seat };
         }
         default: return null;
       }

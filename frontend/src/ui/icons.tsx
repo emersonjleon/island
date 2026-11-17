@@ -76,3 +76,36 @@ export function Die({ value }: { value: number }) {
     </svg>
   );
 }
+
+const CHIP_ORDER: Resource[] = ["lumber", "brick", "wool", "grain", "ore", "fish"];
+
+/** Resources as small coloured chips (icon and count), e.g. a cost or one side of a trade.
+ * With ``have``, chips the player can't cover are marked short. */
+export function ResChips({ res, have, label }: { res: Partial<Record<Resource, number>>; have?: Partial<Record<Resource, number>>; label?: string }) {
+  const items = CHIP_ORDER.filter((r) => (res[r] ?? 0) > 0);
+  return (
+    <span class="chips" aria-label={label}>
+      {items.map((r) => (
+        <span key={r} class={`chip res-${r}${have && (have[r] ?? 0) < (res[r] ?? 0) ? " short" : ""}`}>
+          <ResIcon res={r} size={14} /><b>{res[r]}</b>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** A cost as tiny squares, one per card, coloured by resource (fits under a button label). */
+export function CostPips({ cost }: { cost: Partial<Record<Resource, number>> }) {
+  const pips = CHIP_ORDER.flatMap((r) => Array.from({ length: cost[r] ?? 0 }, () => r));
+  return <span class="pips" aria-hidden="true">{pips.map((r, i) => <i key={i} class={`pip res-${r}`} />)}</span>;
+}
+
+/** The arrow between what you give (left) and what you get (right). */
+export function TradeArrow({ small }: { small?: boolean }) {
+  const w = small ? 18 : 28;
+  return (
+    <svg class={small ? "trade-arrow small" : "trade-arrow"} viewBox="0 0 28 28" width={w} height={w} aria-hidden="true">
+      <path d="M4 14h17M15 7l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  );
+}

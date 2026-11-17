@@ -132,9 +132,7 @@
   "spectator": "You are watching this game",
   "youObject": "you",
   "dev": {
-    "buy": "Develop",
     "buyCost": "Development: costs {{res}}",
-    "open": "Developments ({{count}})",
     "title": "Your developments",
     "none": "You have no developments.",
     "play": "Use",
@@ -156,7 +154,16 @@
       "road_building": "Build 2 roads for free",
       "year_of_plenty": "Take 2 resources from the bank",
       "monopoly": "Take one resource from every player"
-    }
+    },
+    "menu": "Developments",
+    "menuHelp": "Buy and use development cards",
+    "button": "Development",
+    "buyTitle": "Buy a development",
+    "buyHelp": "A random card: knight, road building, plenty, monopoly or a victory point",
+    "deckLeft_one": "{{count}} card left in the deck",
+    "deckLeft_other": "{{count}} cards left in the deck",
+    "buyNow": "Buy",
+    "yours": "Your cards"
   },
   "stats": {
     "open": "Stats",

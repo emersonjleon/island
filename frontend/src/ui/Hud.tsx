@@ -16,7 +16,7 @@ import { ChatPanel, ChatToggle, type GameChat } from "../chat/ChatDock";
 import { DevCardsDialog, VictimDialog } from "./DevCards";
 import { Dialog, useEscape } from "./Dialog";
 import { GuidePanel, HelpDialog } from "./Guide";
-import { Die, ResIcon } from "./icons";
+import { CostPips, Die, ResChips, ResIcon, TradeArrow } from "./icons";
 import { KeySettings } from "./KeySettings";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
@@ -154,7 +154,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         <div class="hud-slot-log">{s && <Log t={t} lines={log} />}</div>
         <div class="hud-slot-hand">
           {s && playing && (
-            <HandBar {...props} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} onDev={() => setDialog("dev")} />
+            <HandBar {...props} mode={feed.mode} devOpen={dialog === "dev"} onTrade={() => setDialog("trade")} onKeys={() => setDialog("keys")} onDev={() => setDialog("dev")} />
           )}
           {s && resigned && !finished && (
             <div class="hud-spectator hud-resigned">
@@ -211,10 +211,12 @@ function DiceClock(props: HudProps & { feed: HudFeed; onResults?: () => void }) 
     body = <span>{t("loading")}</span>;
   } else if (feed.mode) {
     const help = !feed.mode.count ? "input:mode.none" : feed.mode.kind === "robber" ? "input:mode.robberHelp"
+      : feed.mode.prompt ? (props.touch ? "input:mode.setupRoadTouch" : "input:mode.setupRoadHelp")
       : props.touch ? "input:mode.touchHelp" : "input:mode.help";
+    const title = feed.mode.prompt ? "input:mode.setupRoad" : `input:mode.${feed.mode.kind}`;
     body = (
       <>
-        <span class="hud-mode"><strong>{t(`input:mode.${feed.mode.kind}`)}</strong> <span>{t(help)}</span></span>
+        <span class={`hud-mode mode-${feed.mode.kind}${feed.mode.prompt ? " prompt" : ""}`}><strong>{t(title)}</strong> <span>{t(help)}</span></span>
         <button type="button" class="hud-cancel" onClick={() => props.controls.action("cancel")}>{t("hud:action.cancel")}</button>
       </>
     );
@@ -248,7 +250,7 @@ function DiceClock(props: HudProps & { feed: HudFeed; onResults?: () => void }) 
       </>
     );
   }
-  return <div class="hud-panel hud-clock" role="status">{body}</div>;
+  return <div class={`hud-panel hud-clock${feed.mode && s ? " in-mode" : ""}`} role="status">{body}</div>;
 }
 
 function Ring({ share, label, title }: { share: number; label: string; title: string }) {
@@ -348,15 +350,13 @@ const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Acti
   { kind: "city", action: "build_city" },
 ];
 
-function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
-  HudProps & { onTrade(): void; onKeys(): void; onDev(): void }) {
+function HandBar({ store, t, controls, touch, mode, devOpen, onTrade, onKeys, onDev }:
+  HudProps & { mode: ModeInfo | null; devOpen: boolean; onTrade(): void; onKeys(): void; onDev(): void }) {
   const me = store.player(store.seat!);
   const hand = me?.hand ?? {};
-  const cardCost = costOf(store.settings, "dev_card" as BuildKind);
   const myCards = cardCount(devPlayer(store.state, store.seat));
-  const deckLeft = store.state?.dev_cards?.deck_left ?? 0;
-  const refill = (store.settings["dev_cards"] as { refill?: boolean } | undefined)?.refill !== false;
   const offerCount = othersOffers(store.state, store.seat).length;
+  const devCost = costOf(store.settings, "dev_card" as BuildKind);
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -373,20 +373,24 @@ function HandBar({ store, t, controls, touch, send, onTrade, onKeys, onDev }:
           const cost = costOf(store.settings, kind);
           const ok = canAfford(hand, cost);
           return (
-            <button key={kind} type="button" class={ok ? "" : "short"} onClick={() => controls.action(action)}
-                    title={t("hud:build.cost", { res: formatRes(t, cost) })}>
-              {t(`hud:build.${kind}`)}
+            <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}`} onClick={() => controls.action(action)}
+                    aria-pressed={mode?.kind === kind} title={t("hud:build.cost", { res: formatRes(t, cost) })}>
+              <span class="build-name">{t(`hud:build.${kind}`)}</span>
+              <CostPips cost={cost} />
             </button>
           );
         })}
-        <button type="button" class={canAfford(hand, cardCost) && (deckLeft > 0 || refill) ? "buy-card" : "buy-card short"}
-                onClick={() => send({ a: "buy_dev_card" })}
-                title={t("hud:dev.buyCost", { res: formatRes(t, cardCost), left: deckLeft })}>
-          {t("hud:dev.buy")}
+        <button type="button" class={`build dev-open${canAfford(hand, devCost) ? "" : " short"}`} onClick={onDev}
+                aria-pressed={devOpen} title={`${t("hud:dev.menuHelp")} · ${t("hud:build.cost", { res: formatRes(t, devCost) })}`}>
+          <span class="build-name">{t("hud:dev.button")}</span>
+          <CostPips cost={devCost} />
+          {myCards > 0 && <span class="badge count-badge" title={t("hud:dev.yours")}>{myCards}</span>}
         </button>
-        {myCards > 0 && <button type="button" class="dev-open" onClick={onDev}>{t("hud:dev.open", { count: myCards })}</button>}
-        <button type="button" class="trade-open" onClick={onTrade}>
-          {t("hud:trade.open")}
+        <button type="button" class="trade-open" onClick={onTrade} aria-label={t("hud:trade.open")}>
+          <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="btn-text">{t("hud:trade.open")}</span>
           {offerCount > 0 && <span class="badge" title={t("hud:offers.waiting", { count: offerCount })}>{offerCount}</span>}
         </button>
         {!touch && <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>}
@@ -497,40 +501,52 @@ function BankTrade({ store, t, send, onClose }: HudProps & { onClose(): void }) 
   const seat = store.seat!;
   const hand = store.player(seat)?.hand ?? {};
   const [give, setGive] = useState<Resource>(RESOURCES.reduce((a, r) => ((hand[r] ?? 0) > (hand[a] ?? 0) ? r : a), "lumber" as Resource));
-  const [get, setGet] = useState<Resource>("ore");
+  // Start on something you lack: the resource you hold least of, never the one you give.
+  const [get, setGet] = useState<Resource>(() => RESOURCES.filter((r) => r !== give)
+    .reduce((a, r) => ((hand[r] ?? 0) < (hand[a] ?? 0) ? r : a), RESOURCES.find((r) => r !== give)!));
   const [n, setN] = useState(1);
   const check = checkTrade(store.settings, store.board!, s, seat, give, get, n);
   const submit = () => {
     send({ a: "bank_trade", give: { [give]: check.ratio * n }, get: { [get]: n } });
     onClose();
   };
+  const giveMap = { [give]: check.ratio * n };
+  const getMap = { [get]: n };
   return (
     <>
-      <div class="trade-grid">
-        <h3>{t("hud:trade.give")}</h3>
-        <div class="choices">
-          {RESOURCES.map((r) => (
-            <button key={r} type="button" aria-pressed={give === r} class={`card res-${r}`} onClick={() => setGive(r)}>
-              <ResIcon res={r} />
-              <span class="count">{hand[r] ?? 0}</span>
-              <span class="label">{t(`hud:res.${r}`)}</span>
-              <small>{t("hud:trade.ratio", { ratio: checkTrade(store.settings, store.board!, s, seat, r, get, 1).ratio })}</small>
-            </button>
-          ))}
-        </div>
-        <h3>{t("hud:trade.get")}</h3>
-        <div class="choices">
-          {RESOURCES.map((r) => (
-            <button key={r} type="button" aria-pressed={get === r} class={`card res-${r}`} onClick={() => setGet(r)}>
-              <ResIcon res={r} />
-              <span class="label">{t(`hud:res.${r}`)}</span>
-            </button>
-          ))}
-        </div>
+      <div class="trade-sides">
+        <section class="trade-side give">
+          <h3>{t("hud:trade.give")}</h3>
+          <div class="choices">
+            {RESOURCES.map((r) => (
+              <button key={r} type="button" aria-pressed={give === r} class={`card res-${r}${(hand[r] ?? 0) === 0 ? " empty" : ""}`}
+                      onClick={() => setGive(r)}>
+                <ResIcon res={r} />
+                <span class="count">{hand[r] ?? 0}</span>
+                <span class="label">{t(`hud:res.${r}`)}</span>
+                <small>{t("hud:trade.ratio", { ratio: checkTrade(store.settings, store.board!, s, seat, r, get, 1).ratio })}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+        <TradeArrow />
+        <section class="trade-side get">
+          <h3>{t("hud:trade.get")}</h3>
+          <div class="choices">
+            {RESOURCES.map((r) => (
+              <button key={r} type="button" aria-pressed={get === r} class={`card res-${r}`} onClick={() => setGet(r)}>
+                <ResIcon res={r} />
+                <span class="label">{t(`hud:res.${r}`)}</span>
+              </button>
+            ))}
+          </div>
+        </section>
       </div>
       <div class="trade-amount">
         <button type="button" onClick={() => setN(Math.max(1, n - 1))} aria-label="−">−</button>
-        <span>{t("hud:trade.summary", { give: formatRes(t, { [give]: check.ratio * n }), get: formatRes(t, { [get]: n }) })}</span>
+        <span class="trade-deal" aria-label={t("hud:trade.summary", { give: formatRes(t, giveMap), get: formatRes(t, getMap) })}>
+          <ResChips res={giveMap} have={hand} /><TradeArrow small /><ResChips res={getMap} />
+        </span>
         <button type="button" onClick={() => setN(n + 1)} aria-label="+">+</button>
       </div>
       {!check.ok && check.reason && <p class="trade-why">{errorText(t, check.reason)}</p>}
