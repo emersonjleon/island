@@ -10,6 +10,8 @@ const PASSWORD = "Zx9-long-pass!";
 const STEP_TIMEOUT_MS = 30_000;
 const PHONE = devices["Pixel 7"];
 
+// The other e2e scripts share the database, so names get a suffix of their own.
+const TAG = Date.now().toString(36).slice(-4);
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), "[chat]", ...a);
 
 async function signUp(page, name) {
@@ -47,9 +49,9 @@ async function say(page, scope, text) {
   }
   try {
     log("sign up; the desktop creates a two-player game; the phone joins");
-    await signUp(desk, "ana");
+    await signUp(desk, `ana${TAG}`);
     await spanish(desk);
-    await signUp(phone, "bo");
+    await signUp(phone, `bo${TAG}`);
     await spanish(phone);
     await desk.goto(`${BASE}/lobby/`);
     await desk.selectOption("#id_max_players", "2");
