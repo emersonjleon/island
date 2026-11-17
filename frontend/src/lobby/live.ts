@@ -48,9 +48,11 @@ export function wsUrl(path: string, loc: Location = window.location): string {
 }
 
 const MAX_BACKOFF_MS = 15000;
+/** Frames sent while the socket is (re)connecting wait for it, up to this many. */
+const MAX_QUEUED = 5;
 
 export interface LobbyConnection {
-  /** Send a frame now; false when the socket is not open (nothing is queued). */
+  /** Send a frame, or keep it until the socket opens; false when too many are waiting. */
   send(msg: object): boolean;
   close(): void;
 }
@@ -61,6 +63,7 @@ export function connectLobby(path: string, page: LobbyPage): LobbyConnection {
   let backoff = 500;
   let stopped = false;
   let everOpened = false;
+  const queued: string[] = [];
 
   const open = () => {
     socket = new WebSocket(wsUrl(path));
@@ -68,6 +71,7 @@ export function connectLobby(path: string, page: LobbyPage): LobbyConnection {
       if (everOpened) void page.refreshSeats();
       everOpened = true;
       backoff = 500;
+      while (queued.length && socket?.readyState === WebSocket.OPEN) socket.send(queued.shift()!);
     };
     socket.onmessage = (ev: MessageEvent<string>) => {
       const msg = parseMessage(ev.data);
@@ -82,8 +86,10 @@ export function connectLobby(path: string, page: LobbyPage): LobbyConnection {
   open();
   return {
     send(msg) {
-      if (!socket || socket.readyState !== WebSocket.OPEN) return false;
-      socket.send(JSON.stringify(msg));
+      const frame = JSON.stringify(msg);
+      if (socket && socket.readyState === WebSocket.OPEN) socket.send(frame);
+      else if (queued.length < MAX_QUEUED) queued.push(frame);
+      else return false;
       return true;
     },
     close() {

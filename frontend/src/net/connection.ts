@@ -30,6 +30,8 @@ export interface ConnectionOptions {
 
 const OPEN = 1;
 const MAX_BACKOFF_MS = 15000;
+/** Chat lines written while the socket is (re)connecting wait for it, up to this many. */
+const MAX_QUEUED_CHAT = 5;
 
 export class GameConnection {
   readonly clock: ServerClock;
@@ -39,6 +41,7 @@ export class GameConnection {
   private nextCid = 1;
   private pending = new Map<string, Intent>();
   private pingTimer: ReturnType<typeof setInterval> | null = null;
+  private chatQueue: string[] = [];
 
   constructor(private readonly opts: ConnectionOptions) {
     this.clock = opts.clock ?? new ServerClock();
@@ -63,10 +66,11 @@ export class GameConnection {
     return cid;
   }
 
-  /** Send a chat line; false when the socket is not open (nothing is queued). */
+  /** Send a chat line, or keep it until the socket (re)opens; false when too many are waiting. */
   say(text: string): boolean {
-    if (!this.socket || this.socket.readyState !== OPEN) return false;
-    this.raw({ t: "chat", text });
+    if (this.socket && this.socket.readyState === OPEN) this.raw({ t: "chat", text });
+    else if (this.chatQueue.length < MAX_QUEUED_CHAT) this.chatQueue.push(text);
+    else return false;
     return true;
   }
 
@@ -125,6 +129,7 @@ export class GameConnection {
       this.opts.onStatus?.("open");
       this.raw({ t: "hello", proto: PROTO, lang: this.opts.lang });
       this.ping();
+      for (const text of this.chatQueue.splice(0)) this.raw({ t: "chat", text });
       if (this.pingTimer) clearInterval(this.pingTimer);
       this.pingTimer = setInterval(() => this.ping(), this.opts.pingMs ?? 5000);
     };
