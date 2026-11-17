@@ -31,6 +31,7 @@ from .resolve import (
 )
 from .scaling import scale_for_players, scaled_count
 from .schema import export_json_schema
+from .share import ShareCodeError, SharedSettings, decode_share_code, encode_share_code
 
 __all__ = [
     # enums
@@ -54,4 +55,6 @@ __all__ = [
     "parse_settings", "merge_overrides", "migrate", "MIGRATIONS", "MigrationError",
     "load_preset", "available_presets", "preset_overrides", "UnknownPresetError",
     "export_json_schema", "scale_for_players", "scaled_count",
+    # share codes
+    "ShareCodeError", "SharedSettings", "encode_share_code", "decode_share_code",
 ]

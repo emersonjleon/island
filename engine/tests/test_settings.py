@@ -202,13 +202,17 @@ class CrossFieldTest(unittest.TestCase):
 
 class StageTest(unittest.TestCase):
     def test_implemented_stage(self) -> None:
-        self.assertEqual(IMPLEMENTED_STAGE, 1)
+        self.assertEqual(IMPLEMENTED_STAGE, 2)
+
+    def test_stage_two_fields_allowed(self) -> None:
+        s = GameSettings.model_validate({"dev_cards": {"road_building_roads": 3},
+                                         "victory": {"largest_army": {"min": 4}}})
+        self.assertEqual(s.dev_cards.road_building_roads, 3)
+        self.assertEqual(s.victory.largest_army.min, 4)
 
     def test_later_stage_field_rejected(self) -> None:
-        for raw, field in (({"dev_cards": {"road_building_roads": 3}}, "dev_cards.road_building_roads"),
-                           ({"victory": {"time_limit_ms": 600000}}, "victory.time_limit_ms"),
+        for raw, field in (({"victory": {"time_limit_ms": 600000}}, "victory.time_limit_ms"),
                            ({"settlers": {"leave_after_setup": False}}, "settlers.leave_after_setup"),
-                           ({"victory": {"largest_army": {"min": 4}}}, "victory.largest_army.min"),
                            ({"visibility": {"sight": {"city": 3}}}, "visibility.sight.city")):
             with self.subTest(field=field), self.assertRaises(ValidationError) as ctx:
                 GameSettings.model_validate(raw)

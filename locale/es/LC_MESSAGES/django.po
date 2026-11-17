@@ -1128,3 +1128,55 @@ msgstr "Crear partida"
 
 #~ msgid "Blank keeps the preset (10 in Classic)."
 #~ msgstr "En blanco mantiene el preajuste (10 en Clásico)."
+
+#: lobby/forms.py
+msgid "Settings code"
+msgstr "Código de configuración"
+
+#: lobby/forms.py
+msgid ""
+"Paste a code copied from another game to play with its rules. It replaces "
+"the choices below."
+msgstr ""
+"Pega un código copiado de otra partida para jugar con sus reglas. Reemplaza "
+"las opciones de abajo."
+
+#: lobby/messages.py
+msgid "That settings code is not complete or not valid. Copy it again."
+msgstr "Ese código de configuración está incompleto o no es válido. Cópialo de nuevo."
+
+#: lobby/messages.py
+msgid "That settings code is too long."
+msgstr "Ese código de configuración es demasiado largo."
+
+#: lobby/messages.py
+msgid "That settings code was made by a newer version of the game."
+msgstr "Ese código de configuración se hizo con una versión más nueva del juego."
+
+#: lobby/messages.py
+msgid "That settings code uses a game type this server does not have."
+msgstr "Ese código de configuración usa un tipo de partida que este servidor no tiene."
+
+#: templates/lobby/detail.html
+msgid ""
+"Copy this code, or the link, to create another game with these same rules."
+msgstr ""
+"Copia este código, o el enlace, para crear otra partida con estas mismas "
+"reglas."
+
+#: templates/lobby/detail.html
+msgid "Copied"
+msgstr "Copiado"
+
+#: templates/lobby/detail.html
+msgid "Copy code"
+msgstr "Copiar código"
+
+#: templates/lobby/detail.html
+msgid "Copy link"
+msgstr "Copiar enlace"
+
+#: templates/lobby/list.html
+#, python-format
+msgid "This code: %(type)s for %(players)s players"
+msgstr "Este código: %(type)s para %(players)s jugadores"

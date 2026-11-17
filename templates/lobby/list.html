@@ -43,6 +43,23 @@
   <form method="post" class="stacked create-form" id="create-game" data-preset="{{ chosen_preset }}" data-custom="{{ custom_preset }}">
     {% csrf_token %}
     {{ form.non_field_errors }}
+    <div class="config-field">
+      <label for="{{ form.config.id_for_label }}">{{ form.config.label }}</label>
+      {{ form.config }}
+      <span class="helptext">{{ form.config.help_text }}</span>
+      {{ form.config.errors }}
+      {% if code_preview %}
+      <div class="preset-stats code-preview">
+        <h3>{% blocktranslate with type=code_preview.label players=code_preview.players trimmed %}
+          This code: {{ type }} for {{ players }} players{% endblocktranslate %}</h3>
+        <dl class="stats-list">
+          {% for label, value in code_preview.stats %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+          {% endfor %}{% for label, value in code_preview.changes %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endif %}
+    </div>
     <fieldset class="preset-picker">
       <legend>{{ form.preset.label }}</legend>
       {{ form.preset.errors }}

@@ -1,5 +1,6 @@
 // Create-game form: live summaries of each game type for the chosen table size,
 // and the custom rules (shown only for the Custom type).
+import { hasCode } from "./share";
 
 export type KnobValue = number | boolean;
 export type Values = Record<string, KnobValue>;
@@ -71,6 +72,8 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData): void {
   };
 
   const render = () => {
+    const code = form.elements.namedItem("config");
+    form.classList.toggle("from-code", code instanceof HTMLInputElement && hasCode(code.value));
     const preset = chosen();
     const count = Number(players.value);
     form.dataset.preset = preset;

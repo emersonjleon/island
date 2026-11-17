@@ -1755,7 +1755,7 @@
   },
   "title": "GameSettings",
   "type": "object",
-  "x-implemented-stage": 1,
+  "x-implemented-stage": 2,
   "x-later-stage-values": {
     "AdjacencyTiming": {
       "after_move": 3

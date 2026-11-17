@@ -5,15 +5,17 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from engine.settings import load_preset
+from engine.settings.share import MAX_CODE_LENGTH
 
 from . import services
 from .forms import CreateGameForm
 from .messages import error_message
 from .models import BOT_LEVELS, COLOURS, Game, GameStatus
 from .presets import (
-    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, preset_description, preset_values, presets_data, settings_values,
-    show, stats_rows,
+    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, preset_description, preset_label, preset_values, presets_data,
+    settings_values, show, stats_rows,
 )
+from .sharing import CONFIG_PARAM, code_context, read_code
 
 
 def _game(code: str) -> Game:
@@ -22,10 +24,11 @@ def _game(code: str) -> Game:
 
 @login_required
 def game_list(request: HttpRequest) -> HttpResponse:
-    form = CreateGameForm(request.POST or None)
+    initial = {"config": request.GET.get(CONFIG_PARAM, "")[:MAX_CODE_LENGTH]}
+    form = CreateGameForm(request.POST or None, initial=initial)
     if request.method == "POST" and form.is_valid():
         try:
-            game = services.create_game(request.user, form.cleaned_data["preset"], form.overrides())
+            game = services.create_game(request.user, form.chosen_preset(), form.overrides())
         except services.LobbyError as exc:
             form.add_error(None, error_message(exc.code))
         else:
@@ -74,6 +77,26 @@ def create_form_context(form: CreateGameForm) -> dict:
         "knob_groups": groups,
         "custom_preset": CUSTOM,
         "presets_data": presets_data(),
+        "code_preview": code_preview(form),
+    }
+
+
+def code_preview(form: CreateGameForm) -> dict | None:
+    """The game type and summary of the settings code the form holds, if it can be read."""
+    code = form.data.get("config") if form.is_bound else form.initial.get("config")
+    code = "".join((code or "").split())
+    if not code:
+        return None
+    try:
+        shared = read_code(code)
+        settings = services.build_settings(shared.preset, shared.overrides)
+    except services.LobbyError:
+        return None
+    return {
+        "label": preset_label(shared.preset),
+        "players": settings.players.max,
+        "stats": stats_rows(settings_values(settings)),
+        "changes": rule_changes(shared.preset, settings),
     }
 
 
@@ -95,17 +118,15 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
         "start_problems": [error_message(p) for p in services.start_problems(game, settings)] if game.is_open else [],
         "roll_seconds": settings.clock.roll_interval_ms // 1000,
         "stats": stats_rows(settings_values(settings)),
-        "custom_changes": custom_changes(game, settings),
-    }
+        "rule_changes": rule_changes(game.preset, settings),
+    } | code_context(request, game)
 
 
-def custom_changes(game: Game, settings) -> list[tuple]:
-    """For a custom game, the changed settings that the summary does not already show."""
-    if game.preset != CUSTOM:
-        return []
+def rule_changes(preset: str, settings) -> list[tuple]:
+    """The rules changed from the game type that the summary does not already show."""
     shown = {k for _label, knobs in STATS for k in knobs}
     values = settings_values(settings)
-    base = preset_values(CUSTOM, settings.players.max)
+    base = preset_values(preset, settings.players.max)
     return [(KNOBS_BY_NAME[k].label, show(v)) for k, v in values.items() if k not in shown and v != base[k]]
 
 

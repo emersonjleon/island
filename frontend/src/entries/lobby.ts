@@ -6,6 +6,7 @@ import { mountLobbyChat } from "../chat/LobbyChat";
 import { ChatLog, type ChatFrame } from "../chat/model";
 import { initI18n, pageLanguage } from "../i18n";
 import { connectLobby } from "../lobby/live";
+import { initCopyButtons } from "../lobby/share";
 
 const ready = initI18n(pageLanguage()).then((i18n) => {
   addChatCatalogue(i18n);
@@ -38,6 +39,9 @@ function justSubmitted(): boolean {
     return false;
   }
 }
+
+const shareBox = document.querySelector<HTMLElement>("[data-share-code]");
+if (shareBox) initCopyButtons(shareBox);
 
 const root = document.getElementById("lobby-seats");
 if (root) {
