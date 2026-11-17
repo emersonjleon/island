@@ -151,7 +151,9 @@ async function tradeOnBoard(poster, taker) {
   await waitFor(() => poster.evaluate(() => (window.island.store.state.trade_board?.offers ?? []).length === 0), "the trade");
   await taker.keyboard.press("Escape");
   const after = await hand(poster);
-  if ((after[get] ?? 0) !== (ph[get] ?? 0) + 1) throw new Error(`trade board: expected one more ${get}`);
+  // A dice roll can land while the trade goes through and add more of the same resource,
+  // so this checks for at least one more (the robber is off in e2e games: nothing is taken away).
+  if ((after[get] ?? 0) < (ph[get] ?? 0) + 1) throw new Error(`trade board: expected one more ${get}`);
   return `1 ${give} for 1 ${get}`;
 }
 
