@@ -132,9 +132,7 @@
   "spectator": "Estás mirando esta partida",
   "youObject": "ti",
   "dev": {
-    "buy": "Desarrollo",
     "buyCost": "Desarrollo: cuesta {{res}}",
-    "open": "Desarrollos ({{count}})",
     "title": "Tus desarrollos",
     "none": "No tienes desarrollos.",
     "play": "Usar",
@@ -156,7 +154,15 @@
       "road_building": "Construye 2 caminos gratis",
       "year_of_plenty": "Toma 2 recursos del banco",
       "monopoly": "Quítales un recurso a todos los jugadores"
-    }
+    },
+    "menu": "Desarrollos",
+    "menuHelp": "Compra y usa cartas de desarrollo",
+    "buyTitle": "Comprar un desarrollo",
+    "buyHelp": "Una carta al azar: caballero, caminos, abundancia, monopolio o un punto de victoria",
+    "deckLeft_one": "Queda {{count}} carta en el mazo",
+    "deckLeft_other": "Quedan {{count}} cartas en el mazo",
+    "buyNow": "Comprar",
+    "yours": "Tus cartas"
   },
   "stats": {
     "open": "Estadísticas",

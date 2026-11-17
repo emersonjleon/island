@@ -159,6 +159,34 @@ describe("InputController", () => {
     expect(modes).toEqual([0, 1]);
   });
 
+  it("after a setup settlement is finished, opens road mode on the edge next to it", () => {
+    const { input, store, board, start, renderer } = setup();
+    const me = store.state!.players[0]!;
+    me.setup = { remaining: { road: 1 }, done: false, settlements_built: 1 };
+    const next = board.edges.filter((e) => e.v.includes(start)).map((e) => e.id);
+    const far = board.edges.find((e) => !e.v.includes(start))!.id;
+    store.state!.buildings = [{ kind: "settlement", seat: 0, vertex: start }];
+    store.state!.buildable = { roads: [far, ...next], settlements: [], cities: [] };
+    input.tick(16);
+    expect(input.mode).toMatchObject({ kind: "road", prompt: true });
+    expect(next).toContain(input.mode!.focus);
+    expect(renderer.overlays).toMatchObject({ colour: "red", focusEdge: input.mode!.focus });
+    // Pressing the road button (or R) now keeps the prompt's road mode open.
+    input.action("build_road");
+    expect(input.mode?.kind).toBe("road");
+    input.action("build_road");
+    expect(input.mode).toBeNull();
+  });
+
+  it("does not prompt for a road once setup roads are done", () => {
+    const { input, store, start } = setup();
+    store.state!.players[0]!.setup = { remaining: {}, done: false, settlements_built: 1 };
+    store.state!.buildings = [{ kind: "settlement", seat: 0, vertex: start }];
+    store.state!.buildable = { roads: [1, 2], settlements: [], cities: [] };
+    input.tick(16);
+    expect(input.mode).toBeNull();
+  });
+
   it("still walks a builder for setup pieces after the dice clock has started", () => {
     const { input, sent, store, board, start } = setup("running");
     const target = walkableNeighbours(board, walkableNeighbours(board, start)[0]!).find((v) => v !== start)!;

@@ -93,8 +93,10 @@ async function buyAndPlayCard(page) {
     const st = window.island.store;
     return st.state.dev_cards?.players[String(st.seat)]?.cards ?? [];
   });
-  await page.click(".hud-hand .actions button.buy-card");
+  await page.click(".hud-hand .actions button.dev-open");      // the developments menu holds the buy button
+  await page.click(".dev-buy button.buy-card");
   await waitFor(async () => (await cards()).length > 0, "a bought development card");
+  await page.keyboard.press("Escape");
   const rolls = await page.evaluate(() => window.island.store.state.dice_history.length);
   await waitFor(() => page.evaluate((n) => window.island.store.state.dice_history.length > n, rolls), "the next dice roll");
   const played = () => page.evaluate(() => window.island.store.lastEvents.some((e) => e.k === "dev_card_played")

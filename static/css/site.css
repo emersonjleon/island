@@ -186,6 +186,16 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 .preset-card:has(input:focus-visible) { box-shadow: 0 0 0 3px rgba(23, 96, 127, 0.25); }
 .preset-card:has(input:checked), .preset-card.selected { border-color: var(--accent); background: var(--panel);
   box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
+/* The chosen game type: gold ring, a tick in the corner, and the other cards step back. */
+.preset-card:has(input:checked) { box-shadow: 0 0 0 3px var(--gold), 0 0 0 5px var(--accent), 0 8px 20px rgba(23, 96, 127, 0.22);
+  transform: translateY(-2px); }
+.preset-card:has(input:checked)::after { content: "✓"; position: absolute; top: -9px; right: -9px; width: 24px; height: 24px;
+  display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: var(--gold); font-weight: 800;
+  border: 2px solid var(--gold); }
+.preset-card:has(input:checked) .preset-chips > span { background: rgba(233, 185, 73, 0.3); }
+.preset-picker:has(input:checked) .preset-card:not(:has(input:checked)) { opacity: 0.7; }
+.preset-picker:has(input:checked) .preset-card:not(:has(input:checked)):hover { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .preset-card:has(input:checked) { transform: none; } }
 .preset-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
 .preset-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.35; }
 .preset-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-top: auto; padding-top: 4px; font-size: 0.78rem; }

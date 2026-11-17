@@ -15,7 +15,12 @@ export type BuildChoice = "road" | "settlement" | "city";
 /** What a pick mode places: a building, or the robber (knight card). */
 export type ModeKind = BuildChoice | "robber";
 
-export interface ModeInfo { kind: ModeKind; count: number }
+export interface ModeInfo {
+  kind: ModeKind;
+  count: number;
+  /** Opened by the game itself: setup asks for the road next to the settlement just built. */
+  prompt?: boolean;
+}
 
 export interface MenuItem { label: BuildChoice | "walk"; run: () => void }
 
@@ -66,6 +71,8 @@ const CAMERA: Partial<Record<Action, Pt>> = {
 const BUILD_KEYS: Partial<Record<Action, BuildChoice>> = {
   build_road: "road", build_settlement: "settlement", build_city: "city",
 };
+/** How long a finished setup settlement waits for its road candidates before giving up the prompt. */
+const ROAD_PROMPT_MS = 3000;
 const BUILDABLE_FIELD = { road: "roads", settlement: "settlements", city: "cities" } as const;
 
 interface Awaiting { target: number; at: number }
@@ -75,7 +82,7 @@ export class InputController {
   selected: number[] = [];
   /** True while a HUD dialog is open: keys go to the dialog, not the game. */
   paused = false;
-  mode: { kind: ModeKind; focus: number | null } | null = null;
+  mode: { kind: ModeKind; focus: number | null; prompt?: boolean } | null = null;
   private keys: Map<string, Action>;
   private held = new Set<Action>();
   private lean = new Map<number, number>();
@@ -84,6 +91,10 @@ export class InputController {
   private geo: BoardGeometry | null = null;
   private overlayKey = "";
   private modeCount = -1;
+  /** Our finished buildings last frame (null until the first state), to notice a new setup settlement. */
+  private myBuildings: Set<number> | null = null;
+  /** A setup settlement waiting for its road prompt (the road candidates may arrive a frame later). */
+  private roadPrompt: { vertex: number; until: number } | null = null;
   private pointer: { x: number; y: number; inside: boolean } = { x: 0, y: 0, inside: false };
   private press: { button: number; x: number; y: number; dragging: boolean } | null = null;
   private box: HTMLDivElement | null = null;
@@ -326,16 +337,18 @@ export class InputController {
   }
 
   private toggleMode(kind: ModeKind): void {
+    // The game opened this mode for the player: their own press keeps it open instead of closing it.
+    if (this.mode?.kind === kind && this.mode.prompt) { this.setMode({ kind, focus: this.mode.focus }); return; }
     if (this.mode?.kind === kind) { this.setMode(null); return; }
     if (this.opts.store.seat === null || !this.state || this.state.phase === "finished") return;
     const focus = this.nearest(kind, this.candidates(kind));
     this.setMode({ kind, focus });
   }
 
-  private setMode(mode: { kind: ModeKind; focus: number | null } | null): void {
+  private setMode(mode: { kind: ModeKind; focus: number | null; prompt?: boolean } | null): void {
     this.mode = mode;
     this.modeCount = mode ? this.candidates(mode.kind).length : -1;
-    this.opts.onMode?.(mode && { kind: mode.kind, count: this.modeCount });
+    this.opts.onMode?.(mode && { kind: mode.kind, count: this.modeCount, ...(mode.prompt ? { prompt: true } : {}) });
   }
 
   /** Candidates change while build mode is open (a build finishes, resources arrive). */
@@ -343,11 +356,11 @@ export class InputController {
     const mode = this.mode!;
     const cands = this.candidates(mode.kind);
     if (mode.focus === null || !cands.includes(mode.focus)) {
-      this.mode = { kind: mode.kind, focus: this.nearest(mode.kind, cands) };
+      this.mode = { ...mode, focus: this.nearest(mode.kind, cands) };
     }
     if (cands.length !== this.modeCount) {
       this.modeCount = cands.length;
-      this.opts.onMode?.({ kind: mode.kind, count: cands.length });
+      this.opts.onMode?.({ kind: mode.kind, count: cands.length, ...(mode.prompt ? { prompt: true } : {}) });
     }
   }
 
@@ -361,6 +374,46 @@ export class InputController {
       if (p && dist2(p, ref) < best) { best = dist2(p, ref); focus = c; }
     }
     return focus;
+  }
+
+  /** Setup: once a setup settlement is finished and a setup road is still owed, open road
+   * mode on the edges next to it, so the player only has to pick one. */
+  private watchSetupRoad(): void {
+    const s = this.state;
+    const seat = this.opts.store.seat;
+    if (!s || seat === null) return;
+    const mine = new Set(s.buildings.filter((b) => b.seat === seat).map((b) => b.vertex));
+    const before = this.myBuildings;
+    this.myBuildings = mine;
+    const me = this.opts.store.player(seat);
+    const owesRoad = !!me && !me.setup.done && (me.setup.remaining.road ?? 0) > 0
+      && !s.constructions.some((c) => c.seat === seat && c.setup && c.kind === "road");
+    if (before) {
+      const fresh = [...mine].find((v) => !before.has(v));
+      if (fresh !== undefined && owesRoad) this.roadPrompt = { vertex: fresh, until: this.opts.now() + ROAD_PROMPT_MS };
+    }
+    const p = this.roadPrompt;
+    if (!p) return;
+    if (!owesRoad || this.mode || this.opts.now() > p.until) { this.roadPrompt = null; return; }
+    const cands = this.candidates("road");
+    if (!cands.length) return;
+    this.roadPrompt = null;
+    const geo = this.geometry()!;
+    const at = geo.vertex[p.vertex]!;
+    let focus = cands[0]!;
+    for (const c of cands) if (dist2(geo.edgeMid[c]!, at) < dist2(geo.edgeMid[focus]!, at)) focus = c;
+    this.setMode({ kind: "road", focus, prompt: true });
+    this.revealSpot(at);
+  }
+
+  /** Centre the camera on ``p`` if it is outside the middle of the screen. */
+  private revealSpot(p: Pt): void {
+    const r = this.el?.getBoundingClientRect();
+    if (!r || !r.width) return;
+    const s = this.opts.renderer.worldToScreen(p);
+    const mx = r.width * 0.2;
+    const my = r.height * 0.2;
+    if (s.x < mx || s.x > r.width - mx || s.y < my || s.y > r.height - my) this.opts.renderer.centerOn(p);
   }
 
   /** Tab in build mode: next candidate by distance from the selected settler. */
@@ -669,6 +722,7 @@ export class InputController {
     this.selected = this.selected.filter((id) => mine.some((s) => s.id === id));
     if (!this.selected.length && mine.length) this.selected = [mine[0]!.id];
     if (this.mode) this.refreshMode();
+    this.watchSetupRoad();
     this.cameraKeys(dtMs);
     this.edgePush(dtMs);
     if (!this.mode) this.walkKeys();
@@ -706,9 +760,11 @@ export class InputController {
     const o: Overlays = { selectedSettlers: this.selected };
     if (this.mode) {
       const cands = this.candidates(this.mode.kind);
+      const seat = this.opts.store.seat;
+      if (seat !== null) o.colour = this.opts.store.colourOf(seat);
       if (this.mode.kind === "robber") { o.hexes = cands; o.focusHex = this.mode.focus; }
       else if (this.mode.kind === "road") { o.edges = cands; o.focusEdge = this.mode.focus; }
-      else { o.vertices = cands; o.focusVertex = this.mode.focus; }
+      else { o.vertices = cands; o.focusVertex = this.mode.focus; o.focusKind = this.mode.kind; }
     }
     const key = JSON.stringify(o);
     if (key !== this.overlayKey) {

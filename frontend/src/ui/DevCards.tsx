@@ -3,12 +3,12 @@
 import type { TFunction } from "i18next";
 import { useState } from "preact/hooks";
 
-import type { DevCard, DevCardKind, Intent, Resource } from "../protocol/types";
+import type { BuildKind, DevCard, DevCardKind, Intent, Resource } from "../protocol/types";
 import { DEV_KINDS, devPlayer, plentyCount, whyNot } from "../state/devcards";
 import type { GameStore } from "../state/store";
 import { Dialog, useEscape } from "./Dialog";
-import { ResIcon } from "./icons";
-import { RESOURCES, errorText } from "./model";
+import { ResChips, ResIcon } from "./icons";
+import { RESOURCES, canAfford, costOf, errorText } from "./model";
 
 interface Props {
   store: GameStore;
@@ -45,7 +45,9 @@ export function DevCardsDialog({ store, t, now, send, startRobber, onClose }: Pr
   };
 
   return (
-    <Dialog title={t("hud:dev.title")} t={t} closeKey="hud:action.close" onClose={onClose}>
+    <Dialog title={t("hud:dev.title")} t={t} closeKey="hud:dev.close" onClose={onClose}>
+      <BuyCard store={store} t={t} send={send} />
+      <h3>{t("hud:dev.yours")}</h3>
       {!byKind.length && <p class="muted">{t("hud:dev.none")}</p>}
       <ul class="dev-cards">
         {byKind.map(({ kind, list }) => {
@@ -87,6 +89,31 @@ export function DevCardsDialog({ store, t, now, send, startRobber, onClose }: Pr
   );
 }
 
+/** Buying a development card: its cost, how many are left, and the button. */
+function BuyCard({ store, t, send }: Pick<Props, "store" | "t" | "send">) {
+  const seat = store.seat!;
+  const hand = store.player(seat)?.hand ?? {};
+  const cost = costOf(store.settings, "dev_card" as BuildKind);
+  const deckLeft = store.state?.dev_cards?.deck_left ?? 0;
+  const refill = (store.settings["dev_cards"] as { refill?: boolean } | undefined)?.refill !== false;
+  const why = !store.player(seat)?.setup.done ? "dev.setup_not_done"
+    : deckLeft <= 0 && !refill ? "dev.deck_empty"
+    : !canAfford(hand, cost) ? "dev.cannot_afford" : null;
+  return (
+    <section class="dev-buy">
+      <div class="dev-buy-info">
+        <strong>{t("hud:dev.buyTitle")}</strong>
+        <span class="muted">{refill ? t("hud:dev.buyHelp") : t("hud:dev.deckLeft", { count: deckLeft })}</span>
+      </div>
+      <ResChips res={cost} have={hand} />
+      <button type="button" class="primary buy-card" disabled={why !== null} onClick={() => send({ a: "buy_dev_card" })}>
+        {t("hud:dev.buyNow")}
+      </button>
+      {why && why !== "dev.cannot_afford" && <p class="trade-why">{errorText(t, why)}</p>}
+    </section>
+  );
+}
+
 function ResourcePicker({ t, value, onChange }: { t: TFunction; value: Resource; onChange(r: Resource): void }) {
   return (
     <div class="choices">
@@ -106,7 +133,7 @@ export function VictimDialog({ store, t, hex, victims, send, onClose }: {
 }) {
   useEscape(onClose);
   return (
-    <Dialog title={t("hud:dev.victimTitle")} t={t} closeKey="hud:action.close" onClose={onClose}>
+    <Dialog title={t("hud:dev.victimTitle")} t={t} closeKey="hud:dev.close" onClose={onClose}>
       <div class="choices">
         {victims.map((v) => (
           <button key={v} type="button" onClick={() => { send({ a: "play_dev_card", card: "knight", hex, victim: v }); onClose(); }}>
