@@ -108,8 +108,14 @@ export function logLine(
       return { text: tw("robber_stole", { who, res: lost ? formatRes(t, lost) : "" }), seat };
     }
     case "built": return { text: tw("built", { who, kind: kindName(ev.kind) }), seat };
-    case "construction_cancelled":
-      return { text: tw("construction_cancelled", { who, reason: t(`events:reason.${String(ev.reason)}`) }), seat };
+    case "construction_cancelled": {
+      // The refund goes back to the hand: say so, or a robbery right after reads as if it was lost.
+      const refund = ev.refund as ResMap | undefined;
+      const reason = t(`events:reason.${String(ev.reason)}`);
+      return handTotal(refund) > 0
+        ? { text: tw("construction_cancelled_refund", { who, reason, res: formatRes(t, refund) }), seat }
+        : { text: tw("construction_cancelled", { who, reason }), seat };
+    }
     case "setup_complete": return { text: tw("setup_complete", { who }), seat };
     case "starting_resources": {
       const g = ev.gained as ResMap | undefined;

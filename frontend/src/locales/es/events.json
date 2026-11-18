@@ -10,6 +10,8 @@
   "built_you": "Construiste: {{kind}}",
   "construction_cancelled": "{{who}}: construcción detenida ({{reason}})",
   "construction_cancelled_you": "Tu construcción se detuvo ({{reason}})",
+  "construction_cancelled_refund": "{{who}}: construcción detenida ({{reason}}); recuperó {{res}}",
+  "construction_cancelled_refund_you": "Tu construcción se detuvo ({{reason}}). Te devolvimos {{res}}",
   "setup_complete": "{{who}} terminó la preparación",
   "setup_complete_you": "Terminaste la preparación",
   "starting_resources": "{{who}} recibió {{res}} para empezar",
@@ -49,7 +51,7 @@
   "reason": {
     "builder_left": "el colono se fue",
     "cancelled": "cancelada",
-    "conflict": "alguien construyó ahí primero",
+    "conflict": "otro jugador terminó antes un edificio ahí o al lado",
     "resigned": "se rindió"
   },
   "resigned": "{{who}} se rindió",
