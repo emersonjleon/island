@@ -30,6 +30,69 @@
     "empty": "Escribe algo primero.",
     "too_long": "Demasiado largo: como mucho {{max}} caracteres.",
     "rate_limited": "Más despacio; inténtalo de nuevo en un momento.",
-    "offline": "Sin conexión ahora mismo. Inténtalo en un momento."
-  }
+    "offline": "Sin conexión ahora mismo. Inténtalo en un momento.",
+    "public_off": "Tu ajuste de privacidad oculta el chat público.",
+    "dm_off": "Solo aceptas mensajes dentro de las partidas.",
+    "dm_friends_only": "Con «Solo amigos» solo puedes escribir en privado a tus amigos.",
+    "dm_refused": "{{name}} no acepta mensajes privados tuyos.",
+    "no_user": "No encontramos a nadie llamado «{{name}}».",
+    "friend_self": "No puedes agregarte a ti mismo como amigo.",
+    "friend_already": "{{name}} y tú ya son amigos.",
+    "bad_privacy": "Ese ajuste no existe.",
+    "bad_room": "Esa sala no existe."
+  },
+  "social": {
+    "title": "Chat",
+    "open": "Abrir el chat",
+    "close": "Cerrar",
+    "connecting": "Conectando…",
+    "attention_one": "{{count}} nuevo",
+    "attention_other": "{{count}} nuevos",
+    "tabs": {
+      "public": "Público",
+      "friends": "Amigos",
+      "messages": "Mensajes",
+      "settings": "Privacidad"
+    },
+    "public_placeholder": "Mensaje para todos…",
+    "public_hint": "Toca un nombre para escribirle en privado o agregarlo como amigo.",
+    "public_off": "Tu ajuste de privacidad oculta el chat público.",
+    "change_setting": "Cambiar ajuste",
+    "message": "Mensaje",
+    "add_friend": "Agregar amigo",
+    "is_friend": "amigo",
+    "pending": "solicitud pendiente",
+    "add_label": "Agregar un amigo por nombre de usuario",
+    "add_placeholder": "Nombre de usuario",
+    "send_request": "Enviar solicitud",
+    "incoming": "Solicitudes de amistad",
+    "friends": "Amigos",
+    "outgoing": "Solicitudes enviadas",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "remove": "Quitar",
+    "cancel": "Cancelar",
+    "no_friends": "Aún no tienes amigos. Agrega a alguien por su nombre o tocando su nombre en el chat público.",
+    "back": "Volver",
+    "dm_placeholder": "Mensaje para {{name}}…",
+    "dm_off": "Solo aceptas mensajes dentro de las partidas, así que no puedes escribir en privado.",
+    "no_conversations": "Aún no hay mensajes privados. Empieza uno desde Amigos o tocando un nombre en el chat público.",
+    "privacy_title": "¿Quién puede escribirte?",
+    "privacy": {
+      "everyone": "Todos",
+      "everyone_help": "Chat público y mensajes privados de cualquiera.",
+      "friends": "Solo amigos",
+      "friends_help": "Sin chat público; mensajes privados solo con tus amigos.",
+      "games": "Solo en partidas",
+      "games_help": "Sin chat público ni mensajes privados; solo hablas dentro de tus partidas."
+    },
+    "privacy_note": "El chat de cada partida funciona siempre, sea cual sea este ajuste. Cualquiera puede enviarte una solicitud de amistad.",
+    "room": "Sala",
+    "rooms": {
+      "en": "Inglés",
+      "es": "Español"
+    }
+  },
+  "older": "Ver mensajes anteriores",
+  "loading": "Cargando…"
 }

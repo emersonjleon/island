@@ -103,3 +103,4 @@
 .lobby-chat .chat-view { height: 300px; }
 .lobby-chat .chat-lines { background: #fff; border: 1px solid #ebe1c8; border-radius: 8px; padding: 4px 8px; }
 @media (max-width: 600px) { .lobby-chat .chat-view { height: 260px; } }
+.chat-lines .chat-more { text-align: center; border: 0; padding: 4px 0 6px; }

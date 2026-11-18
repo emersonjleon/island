@@ -6,6 +6,8 @@ import type { Resource } from "../protocol/types";
 /** One chat line as the server sends it (see chat/services.py ``to_wire``). */
 export interface ChatLine {
   id: number;
+  /** Writer's user id (the site-wide chat sends it, so a name can open a private chat). */
+  uid?: number;
   name: string;
   /** Player colour name ("" for someone who is only watching). */
   colour: string;

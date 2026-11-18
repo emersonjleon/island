@@ -1,0 +1,85 @@
+/* Site-wide chat: a round button bottom-right that opens a panel; full screen on phones.
+   Colours come from the site's tokens (static/css/site.css), so it follows dark mode. */
+.social-fab { position: fixed; right: 16px; bottom: max(16px, env(safe-area-inset-bottom)); z-index: 40;
+  display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border: 0; border-radius: 999px;
+  font: inherit; font-weight: 600; background: var(--accent, #17607f); color: var(--accent-fg, #fff); cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
+.social-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px;
+  border-radius: 999px; background: #c8412e; color: #fff; font-size: 0.75rem; font-weight: 700; line-height: 1; }
+
+.social-panel { position: fixed; right: 16px; bottom: 16px; z-index: 40; width: 360px; height: min(560px, calc(100vh - 100px));
+  display: flex; flex-direction: column; background: var(--panel, #fffdf7); color: var(--fg, #1f2a2e);
+  border: 1px solid var(--border, #ddd3bd); border-radius: 14px; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28); overflow: hidden; }
+.social-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 6px; }
+.social-head h2 { margin: 0; font-size: 1.1rem; }
+.social-me { flex: 1; color: var(--muted, #5d6a6e); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.social-close, .social-x { border: 0; border-radius: 8px; background: none; color: inherit; font-size: 1.5rem; line-height: 1; padding: 2px 8px; cursor: pointer; }
+.social-tabs { display: flex; gap: 2px; padding: 0 8px; border-bottom: 1px solid var(--border, #ddd3bd); }
+.social-tabs button { flex: 1; padding: 8px 4px; min-width: 0; border: 0; border-bottom: 3px solid transparent; background: none; color: var(--muted, #5d6a6e);
+  font: inherit; font-size: 0.86rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.social-tabs button.on { color: var(--fg, #1f2a2e); border-bottom-color: var(--accent, #17607f); }
+.social-tabs .social-badge { margin-left: 3px; min-width: 18px; height: 18px; font-size: 0.7rem; }
+.social-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; }
+.social-body .muted { color: var(--muted, #5d6a6e); }
+.social-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.social-scroll h3 { margin: 14px 0 6px; font-size: 0.95rem; }
+.social-hint { margin: 0; color: var(--muted, #5d6a6e); font-size: 0.78rem; }
+.social-note { padding: 10px 12px; border-radius: 10px; background: var(--bg-deep, #ece3cd); }
+.social-note p { margin: 0 0 8px; }
+
+.social-panel .chat-view { --chat-fg: var(--fg, #1d2a30); --chat-muted: var(--muted, #6b6253); --chat-line: var(--border, #ebe1c8);
+  --chat-input-bg: var(--bg, #fff); --chat-input-border: var(--border, #c9bf9f); --chat-chip-bg: var(--bg-deep, #f1ead8); --chat-error: var(--error, #a33); }
+.social-panel .chat-lines { border: 1px solid var(--border, #ebe1c8); border-radius: 8px; padding: 4px 8px; background: var(--bg, #fff); }
+
+.social-body button { font: inherit; font-size: 0.85rem; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border, #ddd3bd);
+  background: var(--bg-deep, #ece3cd); color: var(--fg, #1f2a2e); cursor: pointer; }
+.social-body button.primary, .social-body .chat-send, .social-body .social-add button {
+  background: var(--accent, #17607f); color: var(--accent-fg, #fff); border-color: transparent; }
+.social-body button:disabled { opacity: 0.55; cursor: default; }
+.social-body button.quiet { background: none; }
+.social-body .chat-who-btn { border: 0; padding: 0; border-radius: 0; background: none; color: var(--accent, #17607f); font-size: inherit; font-weight: 700; }
+.social-body .chat-who-btn:hover { text-decoration: underline; }
+.social-body .social-x { border: 0; background: none; font-size: 1.4rem; line-height: 1; padding: 0 6px; }
+
+.social-picked { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 10px; background: var(--bg-deep, #ece3cd); }
+.social-picked strong { margin-right: auto; }
+.social-add label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+.social-add div { display: flex; gap: 6px; }
+.social-add input { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 6px 10px; border-radius: 8px;
+  border: 1px solid var(--border, #c9bf9f); background: var(--bg, #fff); color: var(--fg, #1f2a2e); }
+.social-people, .social-convos { list-style: none; margin: 0; padding: 0; }
+.social-person { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--border, #ebe1c8); }
+.social-person:first-child { border-top: 0; }
+.social-name { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.social-actions { display: flex; gap: 4px; flex: none; }
+.social-body .social-convos button { display: flex; flex-direction: column; align-items: stretch; width: 100%; gap: 2px; padding: 8px 6px; text-align: left;
+  border: 0; border-radius: 0; border-top: 1px solid var(--border, #ebe1c8); background: none; color: inherit; font-size: inherit; cursor: pointer; }
+.social-body .social-convos li:first-child button { border-top: 0; }
+.social-body .social-convos button:hover { background: var(--bg-deep, #ece3cd); }
+.social-preview { color: var(--muted, #5d6a6e); font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.social-convo-head { display: flex; align-items: center; gap: 8px; }
+.social-privacy { margin: 0; padding: 0; border: 0; display: grid; gap: 8px; }
+.social-privacy legend { font-weight: 700; margin-bottom: 8px; }
+.social-privacy label { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border: 1px solid var(--border, #ddd3bd); border-radius: 10px; cursor: pointer; }
+.social-privacy label.on { border-color: var(--accent, #17607f); box-shadow: inset 0 0 0 1px var(--accent, #17607f); }
+.social-privacy input { margin-top: 4px; }
+.social-privacy span { display: grid; gap: 2px; }
+.social-privacy small { color: var(--muted, #5d6a6e); }
+
+@media (max-width: 600px) {
+  .social-panel { inset: 0; width: auto; height: auto; border-radius: 0; border: 0;
+    padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+}
+
+/* The site's round accent buttons (site.css) do not suit the panel's tabs and links. */
+.social-panel button { box-shadow: none; transform: none; }
+.social-panel button:hover { filter: none; }
+.social-tabs button { border-radius: 0; }
+.social-tabs button:hover { color: var(--fg, #1f2a2e); }
+.social-close { color: var(--fg, #1f2a2e); }
+.social-body button:hover { color: var(--fg, #1f2a2e); filter: brightness(0.97); }
+.social-body button.primary:hover, .social-body .chat-send:hover, .social-body .social-add button:hover { color: var(--accent-fg, #fff); }
+.social-body .chat-who-btn { margin-right: 0.35em; }
+.social-room { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted, #5d6a6e); }
+.social-room select { font: inherit; padding: 3px 8px; border-radius: 8px; border: 1px solid var(--border, #ddd3bd);
+  background: var(--bg, #fff); color: var(--fg, #1f2a2e); }

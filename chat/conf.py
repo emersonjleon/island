@@ -6,6 +6,9 @@ DEFAULTS = {
     "HISTORY": 60,             # messages sent to someone who opens the page
     "RATE_PER_SECOND": 0.5,    # steady sending rate per connection...
     "BURST": 5,                # ...with short bursts up to this many messages
+    "PAGE": 50,                # site-wide chat: messages per page of history (public room or a conversation)
+    "CONVERSATIONS": 50,       # latest private conversations listed when the site-wide chat opens
+    "PUBLIC_RETENTION_DAYS": 30,  # prune_chat deletes public-room messages older than this
 }
 
 
