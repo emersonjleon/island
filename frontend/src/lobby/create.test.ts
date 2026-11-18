@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { customValues, formatStat, presetValues, type PresetsData } from "./create";
+import { customValues, formatStat, keepText, presetValues, type PresetsData } from "./create";
 
 const data: PresetsData = {
   presets: {
@@ -40,5 +40,11 @@ describe("create-game form", () => {
   it("formats summary lines", () => {
     expect(formatStat({ a: 15, b: 5, c: 4 }, ["a", "b", "c"], "Yes", "No")).toBe("15 / 5 / 4");
     expect(formatStat({ robber: false }, ["robber"], "Sí", "No")).toBe("No");
+  });
+
+  it("names the base type's choice in the keep option", () => {
+    const options = [{ value: "", text: "–" }, { value: "1", text: "Yes" }, { value: "0", text: "No" }];
+    expect(keepText(options, "0")).toBe("(No)");
+    expect(keepText(options, undefined)).toBe("–");
   });
 });

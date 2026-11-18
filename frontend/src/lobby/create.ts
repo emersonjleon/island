@@ -52,7 +52,31 @@ export function formatStat(values: Values, knobs: string[], yes: string, no: str
     .join(" / ");
 }
 
-export function initCreateForm(form: HTMLFormElement, data: PresetsData): void {
+/** Placeholders of the "all settings" inputs for each base game type, by input name. */
+export interface EditorData {
+  placeholders: Record<string, Record<string, string>>;
+}
+
+/** The text of a select's "keep" option: the base type's choice in brackets. */
+export function keepText(options: { value: string; text: string }[], base: string | undefined): string {
+  const chosen = options.find((o) => o.value !== "" && o.value === base);
+  return chosen ? `(${chosen.text})` : "–";
+}
+
+function fillEditor(form: HTMLFormElement, placeholders: Record<string, string> | undefined): void {
+  if (!placeholders) return;
+  for (const el of form.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[data-setting]")) {
+    const base = placeholders[el.name];
+    if (el instanceof HTMLSelectElement) {
+      const keep = el.options[0];
+      if (keep) keep.text = keepText([...el.options].map((o) => ({ value: o.value, text: o.text })), base);
+    } else if (base !== undefined) {
+      el.placeholder = base;
+    }
+  }
+}
+
+export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?: EditorData): void {
   const players = form.elements.namedItem("max_players") as HTMLSelectElement | null;
   const stats = form.querySelector<HTMLElement>("#preset-stats");
   if (!players) return;
@@ -86,12 +110,15 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData): void {
     for (const card of form.querySelectorAll<HTMLElement>("[data-card]")) {
       const name = card.dataset.card ?? "";
       card.classList.toggle("selected", name === preset);
-      const values = presetValues(data, name, count, read, base());
+      // Only the chosen card follows the table size; the others keep their own numbers.
+      const own = data.presets[name === data.custom ? base() : name]?.players ?? count;
+      const values = presetValues(data, name, name === preset ? count : own, read, base());
       if (values) fill(card, values);
     }
     const values = presetValues(data, preset, count, read, base());
     if (values && stats) fill(stats, values);
     if (baseLabel) baseLabel.textContent = data.presets[base()]?.label ?? base();
+    fillEditor(form, editor?.placeholders[base()]);
     const baseValues = data.presets[base()]?.values[String(count)];
     if (baseValues) {
       for (const [name, value] of Object.entries(baseValues)) {

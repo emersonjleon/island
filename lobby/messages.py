@@ -23,3 +23,19 @@ ERROR_MESSAGES = {
 
 def error_message(code: str):
     return ERROR_MESSAGES.get(code, _("That action was refused."))
+
+
+# Settings that do not fit together (codes of engine.settings validation errors).
+VALIDATION_MESSAGES = {
+    "settings.players.min_gt_max": _("More players are needed to start than fit at the table."),
+    "settings.board.too_small_for_players": _("The island is too small for this many players."),
+    "settings.setup.exceeds_pieces": _("The first settlements and roads need more pieces than a player has."),
+    "settings.economy.bank_too_small": _("The bank cannot pay every player's starting materials."),
+    "settings.board.token_out_of_range": _("Some number tokens cannot be rolled with these dice."),
+    "settings.dev_cards.cooldown_ms_missing": _("Give the seconds between developments."),
+    "settings.later_stage": _("This option is not available yet."),
+}
+
+
+def validation_message(code: str):
+    return VALIDATION_MESSAGES.get(code, _("This value does not fit with the other settings."))
