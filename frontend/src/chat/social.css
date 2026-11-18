@@ -80,3 +80,6 @@
 .social-body button:hover { color: var(--fg, #1f2a2e); filter: brightness(0.97); }
 .social-body button.primary:hover, .social-body .chat-send:hover, .social-body .social-add button:hover { color: var(--accent-fg, #fff); }
 .social-body .chat-who-btn { margin-right: 0.35em; }
+.social-room { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted, #5d6a6e); }
+.social-room select { font: inherit; padding: 3px 8px; border-radius: 8px; border: 1px solid var(--border, #ddd3bd);
+  background: var(--bg, #fff); color: var(--fg, #1f2a2e); }

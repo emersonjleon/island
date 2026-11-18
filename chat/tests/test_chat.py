@@ -7,7 +7,7 @@ from django.test import TestCase, TransactionTestCase, override_settings
 
 from accounts.models import User
 from chat import codes, services
-from chat.models import ChatMessage
+from chat.models import Channel, Message
 from gameplay.routing import websocket_urlpatterns as game_ws
 from lobby import services as lobby
 from lobby.routing import websocket_urlpatterns as lobby_ws
@@ -68,8 +68,15 @@ class PostAndHistoryTests(TestCase):
 
     def test_lines_go_with_their_game(self):
         services.post(self.game.pk, self.host, "hola")
+        self.assertEqual(Channel.objects.get().key, f"game:{self.game.pk}")
         self.game.delete()
-        self.assertFalse(ChatMessage.objects.exists())
+        self.assertFalse(Message.objects.exists())
+        self.assertFalse(Channel.objects.exists())
+
+    def test_refused_line_creates_no_channel(self):
+        with self.assertRaises(services.ChatError):
+            services.post(self.game.pk, self.host, "  ")
+        self.assertFalse(Channel.objects.exists())
 
 
 class ChatSocketTests(TransactionTestCase):

@@ -38,7 +38,8 @@
     "no_user": "No encontramos a nadie llamado «{{name}}».",
     "friend_self": "No puedes agregarte a ti mismo como amigo.",
     "friend_already": "{{name}} y tú ya son amigos.",
-    "bad_privacy": "Ese ajuste no existe."
+    "bad_privacy": "Ese ajuste no existe.",
+    "bad_room": "Esa sala no existe."
   },
   "social": {
     "title": "Chat",
@@ -85,6 +86,13 @@
       "games": "Solo en partidas",
       "games_help": "Sin chat público ni mensajes privados; solo hablas dentro de tus partidas."
     },
-    "privacy_note": "El chat de cada partida funciona siempre, sea cual sea este ajuste. Cualquiera puede enviarte una solicitud de amistad."
-  }
+    "privacy_note": "El chat de cada partida funciona siempre, sea cual sea este ajuste. Cualquiera puede enviarte una solicitud de amistad.",
+    "room": "Sala",
+    "rooms": {
+      "en": "Inglés",
+      "es": "Español"
+    }
+  },
+  "older": "Ver mensajes anteriores",
+  "loading": "Cargando…"
 }

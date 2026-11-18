@@ -1,4 +1,4 @@
-"""The site-wide chat: a public room, friends and private messages, with a privacy setting.
+"""The site-wide chat: public rooms, friends and private messages, with a privacy setting.
 
 Plain functions over the models; the WebSocket consumer (``chat.consumers.SocialConsumer``)
 calls them. Privacy settings (see ``Privacy``):
@@ -8,27 +8,33 @@ calls them. Privacy settings (see ``Privacy``):
 * games    - no public room and no private messages; only the game chats.
 
 Friend requests are not messages, so they can be sent to anyone whatever their setting.
+The public room is one per language ("public:es"); private conversations are "dm:<a>:<b>"
+channels whose two memberships keep what each person has read.
 """
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Count, F, Q
 
 from . import codes, conf
-from .models import ChatSettings, Friendship, Privacy, SocialMessage
-from .services import ChatError, clean_text
-
-PUBLIC_GROUP = "social.public"
+from .models import Channel, ChannelKind, ChatSettings, Friendship, Membership, Message, Privacy
+from .services import ChatError, channel_group, get_channel, page, write
 
 
 def user_group(user_id: int) -> str:
+    """Every open site-wide chat of one person (private messages, friend changes)."""
     return f"social.user.{user_id}"
 
 
+def _settings(user_id: int) -> dict[str, str]:
+    row = ChatSettings.objects.filter(user_id=user_id).values("privacy", "room").first()
+    return row or {"privacy": Privacy.EVERYONE, "room": ""}
+
+
 def privacy_of(user_id: int) -> str:
-    value = ChatSettings.objects.filter(user_id=user_id).values_list("privacy", flat=True).first()
-    return value or Privacy.EVERYONE
+    return _settings(user_id)["privacy"]
 
 
 def set_privacy(user, value: Any) -> str:
@@ -40,6 +46,33 @@ def set_privacy(user, value: Any) -> str:
 
 def reads_public(user_id: int) -> bool:
     return privacy_of(user_id) == Privacy.EVERYONE
+
+
+# --- public rooms ----------------------------------------------------------------
+
+def rooms() -> list[str]:
+    """One public room per site language."""
+    return [code for code, _name in settings.LANGUAGES]
+
+
+def room_of(user) -> str:
+    chosen = _settings(user.pk)["room"] or getattr(user, "preferred_language", "") or settings.LANGUAGE_CODE
+    return chosen if chosen in rooms() else settings.LANGUAGE_CODE
+
+
+def set_room(user, value: Any) -> str:
+    if value not in rooms():
+        raise ChatError(codes.BAD_ROOM)
+    ChatSettings.objects.update_or_create(user=user, defaults={"room": value})
+    return value
+
+
+def public_key(room: str) -> str:
+    return f"public:{room}"
+
+
+def public_group(room: str) -> str:
+    return channel_group(public_key(room))
 
 
 # --- friends -----------------------------------------------------------------
@@ -109,7 +142,7 @@ def remove_friend(user, other) -> bool:
 
 
 def state(user) -> dict[str, Any]:
-    """Everything the panel shows besides the messages: you, your setting, friends and requests."""
+    """Everything the panel shows besides message lines: you, your settings, friends, requests, conversations."""
     rows = Friendship.objects.filter(Q(from_user=user) | Q(to_user=user)).select_related("from_user", "to_user")
     friends, incoming, outgoing = [], [], []
     for r in rows:
@@ -124,32 +157,40 @@ def state(user) -> dict[str, Any]:
         "t": "social",
         "me": _person(user),
         "privacy": privacy_of(user.pk),
+        "room": room_of(user),
+        "rooms": rooms(),
         "friends": sorted(friends, key=by_name),
         "incoming": sorted(incoming, key=by_name),
         "outgoing": sorted(outgoing, key=by_name),
+        "conversations": conversations(user),
     }
 
 
 # --- messages ----------------------------------------------------------------
 
-def to_wire(msg: SocialMessage) -> dict[str, Any]:
-    return {
-        "id": msg.pk,
-        "from": msg.sender_id,
-        "name": msg.name,
-        "to": msg.recipient_id,
-        "to_name": msg.recipient.public_name if msg.recipient_id else None,
-        "text": msg.text,
-        "at": int(msg.created_at.timestamp() * 1000),
-    }
+def to_wire(msg: Message) -> dict[str, Any]:
+    return {"id": msg.pk, "from": msg.sender_id, "name": msg.name, "text": msg.text,
+            "at": int(msg.created_at.timestamp() * 1000)}
 
 
-def post_public(user, text: Any) -> dict[str, Any]:
+def post_public(user, text: Any) -> tuple[str, dict[str, Any]]:
+    """Write in the person's public room; returns the room and the message as sent to clients."""
     if not reads_public(user.pk):
         raise ChatError(codes.PUBLIC_OFF)
-    cleaned = clean_text(text)
-    msg = SocialMessage.objects.create(sender=user, name=user.public_name[:64], text=cleaned)
-    return to_wire(msg)
+    room = room_of(user)
+    channel = get_channel(public_key(room), ChannelKind.PUBLIC)
+    return room, to_wire(write(channel, user, text))
+
+
+def public_page(room: str, before: Any = None) -> tuple[list[dict[str, Any]], bool]:
+    channel_id = Channel.objects.filter(key=public_key(room)).values_list("pk", flat=True).first()
+    msgs, more = page(channel_id, before)
+    return [to_wire(m) for m in msgs], more
+
+
+def dm_key(a_id: int, b_id: int) -> str:
+    low, high = sorted((a_id, b_id))
+    return f"dm:{low}:{high}"
 
 
 def check_dm(sender, recipient) -> None:
@@ -171,24 +212,55 @@ def check_dm(sender, recipient) -> None:
         raise ChatError(codes.DM_REFUSED, {"name": recipient.public_name})
 
 
+@transaction.atomic
 def post_dm(sender, recipient, text: Any) -> dict[str, Any]:
+    """Write privately; returns the message with ``to``/``to_name`` so both people can file it."""
     check_dm(sender, recipient)
-    cleaned = clean_text(text)
-    msg = SocialMessage.objects.create(sender=sender, recipient=recipient, name=sender.public_name[:64], text=cleaned)
-    return to_wire(msg)
+    channel = get_channel(dm_key(sender.pk, recipient.pk), ChannelKind.DIRECT)
+    msg = write(channel, sender, text)
+    Membership.objects.get_or_create(channel=channel, user=recipient)
+    mine, _ = Membership.objects.get_or_create(channel=channel, user=sender)
+    Membership.objects.filter(pk=mine.pk).update(last_read_id=msg.pk)  # your own message is read
+    return {**to_wire(msg), "to": recipient.pk, "to_name": recipient.public_name}
 
 
-def public_history(limit: int | None = None) -> list[dict[str, Any]]:
-    n = conf.get("PUBLIC_HISTORY") if limit is None else limit
-    latest = list(SocialMessage.objects.filter(recipient__isnull=True).order_by("-id")[:n])
-    return [to_wire(m) for m in reversed(latest)]
+def dm_page(user, other_id: Any, before: Any = None) -> tuple[dict[str, Any], list[dict[str, Any]], bool]:
+    """A page of the conversation between ``user`` and someone else: (that person, messages, more)."""
+    other = get_user(other_id)
+    channel_id = Channel.objects.filter(key=dm_key(user.pk, other.pk)).values_list("pk", flat=True).first()
+    msgs, more = page(channel_id, before)
+    return _person(other), [to_wire(m) for m in msgs], more
 
 
-def dm_history(user, limit: int | None = None) -> list[dict[str, Any]]:
-    """The latest private messages to or from ``user``, every conversation together, oldest first."""
-    n = conf.get("DM_HISTORY") if limit is None else limit
-    latest = list(
-        SocialMessage.objects.filter(Q(sender=user, recipient__isnull=False) | Q(recipient=user))
-        .select_related("recipient").order_by("-id")[:n]
+def mark_read(user, other_id: Any, upto: Any) -> int | None:
+    """Everything up to message id ``upto`` in the conversation with ``other_id`` is read. Returns the new mark."""
+    if not isinstance(other_id, int) or not isinstance(upto, int):
+        return None
+    updated = Membership.objects.filter(
+        channel__key=dm_key(user.pk, other_id), user=user, last_read_id__lt=upto,
+    ).update(last_read_id=upto)
+    return upto if updated else None
+
+
+def conversations(user) -> list[dict[str, Any]]:
+    """The latest private conversations: who with, the last message and how many are unread."""
+    mine = list(
+        Membership.objects.filter(user=user, channel__kind=ChannelKind.DIRECT, channel__last_message_id__isnull=False)
+        .annotate(unread=Count("channel__messages", filter=Q(channel__messages__id__gt=F("last_read_id"))
+                               & ~Q(channel__messages__sender=user)))
+        .select_related("channel").order_by("-channel__last_message_id")[: conf.get("CONVERSATIONS")]
     )
-    return [to_wire(m) for m in reversed(latest)]
+    ids = [m.channel_id for m in mine]
+    others = {
+        m.channel_id: m.user
+        for m in Membership.objects.filter(channel_id__in=ids).exclude(user=user).select_related("user")
+    }
+    last = {m.pk: m for m in Message.objects.filter(pk__in=[m.channel.last_message_id for m in mine])}
+    out = []
+    for m in mine:
+        other = others.get(m.channel_id)
+        msg = last.get(m.channel.last_message_id)
+        if other is None or msg is None:
+            continue
+        out.append({"with": _person(other), "last": to_wire(msg), "unread": m.unread})
+    return out

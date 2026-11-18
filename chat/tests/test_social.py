@@ -6,7 +6,7 @@ from django.test import TestCase, TransactionTestCase, override_settings
 
 from accounts.models import User
 from chat import codes, social
-from chat.models import Friendship, Privacy
+from chat.models import Channel, Friendship, Privacy
 from chat.routing import websocket_urlpatterns as chat_ws
 from chat.services import ChatError
 
@@ -88,8 +88,8 @@ class PrivacyTests(TestCase):
 
     def test_default_is_everyone(self):
         self.assertEqual(social.privacy_of(self.ana.pk), Privacy.EVERYONE)
-        msg = social.post_public(self.ana, " hola  a todos ")
-        self.assertEqual((msg["name"], msg["to"], msg["text"]), ("ana", None, "hola a todos"))
+        room, msg = social.post_public(self.ana, " hola  a todos ")
+        self.assertEqual((room, msg["name"], msg["text"]), ("en", "ana", "hola a todos"))
         dm = social.post_dm(self.ana, self.bo, "hola bo")
         self.assertEqual((dm["from"], dm["to"], dm["to_name"]), (self.ana.pk, self.bo.pk, "bo"))
 
@@ -118,18 +118,52 @@ class PrivacyTests(TestCase):
     def test_no_message_to_yourself(self):
         self.refuses(codes.NO_USER, social.post_dm, self.ana, self.ana, "hi")
 
-    @override_settings(CHAT={"PUBLIC_HISTORY": 2, "DM_HISTORY": 2})
-    def test_histories(self):
-        cy = make_user("cy")
+    @override_settings(CHAT={"PAGE": 2})
+    def test_public_rooms_by_language_with_pages(self):
+        self.bo.preferred_language = "es"
+        self.bo.save()
         for i in range(3):
-            social.post_public(self.ana, f"p{i}")
+            social.post_public(self.bo, f"p{i}")
+        room, _msg = social.post_public(self.ana, "hello")
+        self.assertEqual((room, social.room_of(self.bo)), ("en", "es"))
+        msgs, more = social.public_page("es")
+        self.assertEqual(([m["text"] for m in msgs], more), (["p1", "p2"], True))
+        msgs, more = social.public_page("es", before=msgs[0]["id"])
+        self.assertEqual(([m["text"] for m in msgs], more), (["p0"], False))
+        self.assertEqual([m["text"] for m in social.public_page("en")[0]], ["hello"])
+        social.set_room(self.bo, "en")
+        self.assertEqual(social.post_public(self.bo, "hi")[0], "en")
+        self.refuses(codes.BAD_ROOM, social.set_room, self.bo, "xx")
+
+    @override_settings(CHAT={"PAGE": 2})
+    def test_conversations_pages_and_unread(self):
+        cy = make_user("cy")
         social.post_dm(self.ana, self.bo, "d0")
         social.post_dm(cy, self.ana, "d1")
         social.post_dm(self.bo, cy, "not ana's")
-        social.post_dm(self.bo, self.ana, "d2")
-        self.assertEqual([m["text"] for m in social.public_history()], ["p1", "p2"])
-        self.assertEqual([m["text"] for m in social.dm_history(self.ana)], ["d1", "d2"])
-        self.assertEqual([m["text"] for m in social.dm_history(self.ana, 10)], ["d0", "d1", "d2"])
+        last = social.post_dm(self.bo, self.ana, "d2")
+        social.post_dm(self.bo, self.ana, "d3")
+        convos = social.conversations(self.ana)
+        self.assertEqual([(c["with"]["name"], c["last"]["text"], c["unread"]) for c in convos],
+                         [("bo", "d3", 2), ("cy", "d1", 1)])
+        self.assertEqual(social.conversations(self.bo)[0]["unread"], 0)  # your own lines are read
+        person, msgs, more = social.dm_page(self.ana, self.bo.pk)
+        self.assertEqual((person["name"], [m["text"] for m in msgs], more), ("bo", ["d2", "d3"], True))
+        self.assertEqual([m["text"] for m in social.dm_page(self.ana, self.bo.pk, msgs[0]["id"])[1]], ["d0"])
+        self.assertEqual(social.mark_read(self.ana, self.bo.pk, last["id"]), last["id"])
+        self.assertEqual(social.conversations(self.ana)[0]["unread"], 1)
+        self.assertIsNone(social.mark_read(self.ana, self.bo.pk, 1))  # never goes back
+        self.assertEqual(social.dm_page(self.ana, cy.pk)[1][0]["text"], "d1")
+        self.assertEqual(social.dm_page(self.bo, cy.pk)[1][0]["text"], "not ana's")
+        self.assertEqual(social.dm_page(make_user("di"), self.bo.pk)[1:], ([], False))
+
+    def test_refused_message_leaves_no_conversation(self):
+        social.set_privacy(self.bo, Privacy.GAMES)
+        self.refuses(codes.DM_REFUSED, social.post_dm, self.ana, self.bo, "hi")
+        social.set_privacy(self.bo, Privacy.EVERYONE)
+        self.refuses(codes.EMPTY, social.post_dm, self.ana, self.bo, "  ")
+        self.assertFalse(Channel.objects.exists())
+        self.assertEqual(social.conversations(self.bo), [])
 
 
 class SocialSocketTests(TransactionTestCase):
@@ -167,8 +201,8 @@ class SocialSocketTests(TransactionTestCase):
             b = await self.open(self.bo)
             hello = await self.recv(a, "social")
             self.assertEqual((hello["me"]["name"], hello["privacy"], hello["friends"]), ("ana", "everyone", []))
-            self.assertEqual(await self.recv(a, "dm"), {"t": "dm", "msgs": [], "history": True})
-            self.assertEqual(await self.recv(a, "public"), {"t": "public", "msgs": [], "history": True})
+            self.assertEqual(hello["conversations"], [])
+            self.assertEqual(await self.recv(a, "public"), {"t": "public", "room": "en", "msgs": [], "history": True, "more": False})
             await self.recv(b, "public")
 
             await a.send_json_to({"t": "say", "to": None, "text": "¿alguien juega?"})
@@ -190,10 +224,18 @@ class SocialSocketTests(TransactionTestCase):
             await a.send_json_to({"t": "say", "to": None, "text": "solo para todos"})
             await self.recv(a, "public")
             await a.send_json_to({"t": "say", "to": self.bo.pk, "text": "hola amigo"})
-            for comm in (a, b):
-                got = (await self.recv(comm, "dm"))["msgs"]
-                self.assertEqual([(m["from"], m["to"], m["text"]) for m in got], [(self.ana.pk, self.bo.pk, "hola amigo")])
+            for comm, other in ((a, "bo"), (b, "ana")):
+                got = await self.recv(comm, "dm")
+                self.assertEqual(got["with"]["name"], other)
+                self.assertEqual([(m["from"], m["text"]) for m in got["msgs"]], [(self.ana.pk, "hola amigo")])
+            sent_id = got["msgs"][0]["id"]
             self.assertTrue(await b.receive_nothing(timeout=0.2))  # the public line never reached bo
+            # bo reads it in one tab; bo's other tabs hear about it.
+            b_tab = await self.open(self.bo)
+            self.assertEqual((await self.recv(b_tab, "social"))["conversations"][0]["unread"], 1)
+            await b.send_json_to({"t": "read", "with": self.ana.pk, "upto": sent_id})
+            self.assertEqual(await self.recv(b_tab, "read"), {"t": "read", "with": self.ana.pk, "upto": sent_id})
+            await b_tab.disconnect()
 
             # bo goes games-only: ana's message is refused.
             await b.send_json_to({"t": "privacy", "value": "games"})
@@ -204,10 +246,13 @@ class SocialSocketTests(TransactionTestCase):
             await a.disconnect()
             await b.disconnect()
 
-            # Reconnecting brings back the private conversation.
+            # Reconnecting lists the conversation; its lines come when it is opened.
             b2 = await self.open(self.bo)
+            convo = (await self.recv(b2, "social"))["conversations"][0]
+            self.assertEqual((convo["with"]["name"], convo["last"]["text"], convo["unread"]), ("ana", "hola amigo", 0))
+            await b2.send_json_to({"t": "history", "with": self.ana.pk})
             history = await self.recv(b2, "dm")
-            self.assertEqual([m["text"] for m in history["msgs"]], ["hola amigo"])
+            self.assertEqual(([m["text"] for m in history["msgs"]], history["more"]), (["hola amigo"], False))
             await b2.disconnect()
 
         async_to_sync(run)()

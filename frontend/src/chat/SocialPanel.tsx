@@ -10,9 +10,9 @@ import "./social.css";
 import { chatErrorKey } from "./i18n";
 import type { ChatLine } from "./model";
 import { ChatView } from "./ChatView";
-import { PRIVACY, type Person, type Privacy, type SocialStore } from "./social";
+import { PRIVACY, type Person, type Privacy, type SocialSend, type SocialStore } from "./social";
 
-export type SocialSend = (frame: object) => boolean;
+export type { SocialSend };
 type Tab = "public" | "friends" | "messages" | "settings";
 const TABS: Tab[] = ["public", "friends", "messages", "settings"];
 const OPEN_KEY = "island.social.open";
@@ -37,23 +37,13 @@ function writeOpen(open: boolean): void {
   }
 }
 
+/** Re-render on every frame; each conversation view follows its own lines. */
 function useStore(store: SocialStore): void {
   const [, setN] = useState(0);
   useEffect(() => {
-    const bump = () => setN((n) => n + 1);
-    const offs = [store.subscribe(bump), store.publicLog.subscribe(bump)];
-    const watched = new Set<number>();
-    const watchConversations = () => {
-      for (const [id, c] of store.conversations) {
-        if (watched.has(id)) continue;
-        watched.add(id);
-        offs.push(c.log.subscribe(bump));
-      }
-    };
-    watchConversations();
-    offs.push(store.subscribe(watchConversations));
-    bump();
-    return () => offs.forEach((off) => off());
+    const off = store.subscribe(() => setN((n) => n + 1));
+    setN((n) => n + 1);
+    return off;
   }, [store]);
 }
 
@@ -89,14 +79,12 @@ export function SocialPanel({ store, t, send }: Props) {
     store.clearError();
   };
 
-  // Lines count as read only in the view that shows them.
-  useEffect(() => {
-    store.publicLog.setOpen(open && tab === "public");
-    for (const [id, c] of store.conversations) c.log.setOpen(open && tab === "messages" && talkTo === id);
-  }, [open, tab, talkTo, store.conversations.size]);
+  // A conversation is read only while it is on screen.
+  const showing = open && tab === "messages" ? talkTo : null;
+  useEffect(() => { store.open(showing); }, [showing, store]);
 
   const attention = store.attention();
-  const dmUnread = attention - (state?.incoming.length ?? 0);
+  const dmUnread = store.unreadMessages();
   const error = store.error ? t(chatErrorKey(store.error.code), store.error.params) : null;
 
   if (!open) {
@@ -160,8 +148,17 @@ function PublicTab({ store, t, send, error, picked, setPicked, talk, toSettings 
     if (line.uid === undefined || line.uid === state.me.id) return;
     setPicked(picked?.id === line.uid ? null : { id: line.uid, name: line.name });
   };
+  const room = store.publicRoom;
   return (
     <>
+      {state.rooms.length > 1 && (
+        <label class="social-room">
+          {t("chat:social.room")}
+          <select value={state.room} onChange={(e) => send({ t: "room", value: e.currentTarget.value })}>
+            {state.rooms.map((r) => <option key={r} value={r}>{t(`chat:social.rooms.${r}`, { defaultValue: r })}</option>)}
+          </select>
+        </label>
+      )}
       {picked && (
         <div class="social-picked">
           <strong>{picked.name}</strong>
@@ -172,7 +169,8 @@ function PublicTab({ store, t, send, error, picked, setPicked, talk, toSettings 
           <button type="button" class="social-x" onClick={() => setPicked(null)} aria-label={t("chat:close")}>×</button>
         </div>
       )}
-      <ChatView log={store.publicLog} t={t} plain onName={onName} error={error}
+      <ChatView key={room.room} log={room.log} t={t} plain onName={onName} error={error}
+                onMore={room.more ? () => store.loadOlder(null) : undefined} loadingMore={room.loading}
                 placeholder={t("chat:social.public_placeholder")}
                 send={(text) => send({ t: "say", to: null, text })} />
       <p class="social-hint">{t("chat:social.public_hint")}</p>
@@ -264,24 +262,25 @@ function MessagesTab({ store, t, send, error, talkTo, setTalkTo, toSettings }: P
             <button type="button" onClick={toSettings}>{t("chat:social.change_setting")}</button>
           </div>
         )}
-        <ChatView log={convo.log} t={t} plain error={error} disabled={blocked} autoFocus={!blocked}
+        <ChatView key={convo.with.id} log={convo.log} t={t} plain error={error} disabled={blocked} autoFocus={!blocked}
+                  onMore={convo.more ? () => store.loadOlder(convo.with.id) : undefined} loadingMore={convo.loading}
                   placeholder={t("chat:social.dm_placeholder", { name: convo.with.name })}
                   send={(text) => send({ t: "say", to: convo.with.id, text })} />
       </>
     );
   }
-  const list = store.sortedConversations().filter((c) => c.log.lines.length > 0);
+  const list = store.sortedConversations();
   return (
     <div class="social-scroll">
       {list.length ? (
         <ul class="social-convos">
           {list.map((c) => {
-            const last = c.log.lines[c.log.lines.length - 1];
+            const last = c.last;
             return (
               <li key={c.with.id}>
                 <button type="button" onClick={() => setTalkTo(c.with.id)}>
-                  <span class="social-name">{c.with.name}<Badge n={c.log.unread} /></span>
-                  {last && <span class="social-preview">{last.uid === state.me.id ? `${t("chat:you")}: ` : ""}{last.text}</span>}
+                  <span class="social-name">{c.with.name}<Badge n={c.unread} /></span>
+                  {last && <span class="social-preview">{last.from === state.me.id ? `${t("chat:you")}: ` : ""}{last.text}</span>}
                 </button>
               </li>
             );

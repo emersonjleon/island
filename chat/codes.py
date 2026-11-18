@@ -12,8 +12,9 @@ NO_USER = "chat.no_user"              # params: {"name": ...}
 FRIEND_SELF = "chat.friend_self"
 FRIEND_ALREADY = "chat.friend_already"  # params: {"name": ...}
 BAD_PRIVACY = "chat.bad_privacy"
+BAD_ROOM = "chat.bad_room"
 
 ALL = [
     EMPTY, TOO_LONG, RATE_LIMITED, PUBLIC_OFF, DM_OFF, DM_FRIENDS_ONLY, DM_REFUSED, NO_USER,
-    FRIEND_SELF, FRIEND_ALREADY, BAD_PRIVACY,
+    FRIEND_SELF, FRIEND_ALREADY, BAD_PRIVACY, BAD_ROOM,
 ]

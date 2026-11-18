@@ -33,6 +33,10 @@ export interface ChatViewProps {
   placeholder?: string;
   /** The text box is off (e.g. the privacy setting does not allow writing here). */
   disabled?: boolean;
+  /** Older lines exist: show a button at the top that asks for them. */
+  onMore?(): void;
+  /** Older lines were asked for and have not arrived yet. */
+  loadingMore?: boolean;
 }
 
 export function useChatLines(log: ChatLog): ChatLine[] {
@@ -67,7 +71,7 @@ function clock(at: number): string {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName, placeholder, disabled }: ChatViewProps) {
+export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName, placeholder, disabled, onMore, loadingMore }: ChatViewProps) {
   const lines = useChatLines(log);
   const [draft, setDraft] = useState("");
   const [offline, setOffline] = useState(false);
@@ -75,9 +79,15 @@ export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName,
   const input = useRef<HTMLInputElement>(null);
   const sticky = useRef(true);
 
+  // Older lines added on top keep the lines being read where they were.
+  const seen = useRef({ first: 0, height: 0 });
   useLayoutEffect(() => {
     const el = list.current;
-    if (el && sticky.current) el.scrollTop = el.scrollHeight;
+    if (!el) return;
+    const first = lines[0]?.id ?? 0;
+    if (sticky.current) el.scrollTop = el.scrollHeight;
+    else if (seen.current.first && first < seen.current.first) el.scrollTop += el.scrollHeight - seen.current.height;
+    seen.current = { first, height: el.scrollHeight };
   }, [lines.length]);
   useEffect(() => { if (autoFocus) input.current?.focus({ preventScroll: true }); }, [autoFocus]);
 
@@ -118,6 +128,11 @@ export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName,
             const el = e.currentTarget;
             sticky.current = el.scrollHeight - el.scrollTop - el.clientHeight < STICKY_PX;
           }}>
+        {onMore && (
+          <li class="chat-more">
+            <button type="button" onClick={onMore} disabled={loadingMore}>{t(loadingMore ? "chat:loading" : "chat:older")}</button>
+          </li>
+        )}
         {!lines.length && <li class="chat-empty">{t("chat:empty")}</li>}
         {lines.map((m) => (
           <li key={m.id} class={m.player || plain ? "" : "watcher"}>

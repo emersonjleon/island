@@ -54,17 +54,24 @@ class ChatMixin:
 
 
 class SocialConsumer(AsyncJsonWebsocketConsumer):
-    """The site-wide chat on ``/ws/social/``: public room, friends and private messages.
+    """The site-wide chat on ``/ws/social/``: public rooms, friends and private messages.
 
     Client -> server:
-      ``{"t": "say", "to": null | user_id, "text": ...}``  (null = public room)
+      ``{"t": "say", "to": null | user_id, "text": ...}``  (null = your public room)
+      ``{"t": "history", "with": user_id | null, "before": message_id?}``  (null = public room)
+      ``{"t": "read", "with": user_id, "upto": message_id}``
       ``{"t": "friend", "op": "add" | "accept" | "remove", "id": user_id}`` or ``"name": ...`` for "add"
-      ``{"t": "privacy", "value": "everyone" | "friends" | "games"}``
+      ``{"t": "privacy", "value": "everyone" | "friends" | "games"}``, ``{"t": "room", "value": "es"}``
       ``{"t": "ping"}``
     Server -> client:
-      ``{"t": "social", ...}`` (see ``social.state``) on connect and whenever friends or the setting change;
-      ``{"t": "public", "msgs": [...], "history": bool}``; ``{"t": "dm", "msgs": [...], "history": bool}``;
+      ``{"t": "social", ...}`` (see ``social.state``) on connect and whenever friends or settings change;
+      ``{"t": "public", "room": "es", "msgs": [...], "history": bool, "more": bool}``;
+      ``{"t": "dm", "with": {"id", "name"}, "msgs": [...], "history": bool, "more": bool}``;
+      ``{"t": "read", "with": user_id, "upto": message_id}`` (another tab of yours read it);
       refusals as ``{"t": "notice", "code": "chat....", "params": {...}}``.
+
+    Private history is not sent up front: the state lists conversations with unread
+    counts, and each conversation's lines come a page at a time when it is opened.
     """
 
     async def connect(self):
@@ -73,45 +80,43 @@ class SocialConsumer(AsyncJsonWebsocketConsumer):
             await self.close(code=4403)
             return
         self.user = user
-        self.in_public = False
+        self.room: str | None = None
         self.bucket = TokenBucket(conf.get("RATE_PER_SECOND"), conf.get("BURST"))
         self.own_group = social.user_group(user.pk)
         await self.channel_layer.group_add(self.own_group, self.channel_name)
         await self.accept()
-        await self._push_state(send_dm_history=True)
+        await self._push_state()
 
     async def disconnect(self, close_code):
         if hasattr(self, "own_group"):
             await self.channel_layer.group_discard(self.own_group, self.channel_name)
-        if getattr(self, "in_public", False):
-            await self.channel_layer.group_discard(social.PUBLIC_GROUP, self.channel_name)
+        if getattr(self, "room", None):
+            await self.channel_layer.group_discard(social.public_group(self.room), self.channel_name)
 
     async def receive_json(self, content, **kwargs):
         kind = content.get("t") if isinstance(content, dict) else None
         if kind == "ping":
             await self.send_json({"t": "pong"})
             return
-        if kind not in ("say", "friend", "privacy"):
+        handler = {
+            "say": self._say, "history": self._history, "read": self._read,
+            "friend": self._friend, "privacy": self._setting, "room": self._setting,
+        }.get(kind)
+        if handler is None:
             return
-        if not self.bucket.take():
+        if kind != "read" and not self.bucket.take():
             await self._notice(codes.RATE_LIMITED)
             return
         try:
-            if kind == "say":
-                await self._say(content)
-            elif kind == "friend":
-                await self._friend(content)
-            else:
-                await database_sync_to_async(social.set_privacy)(self.user, content.get("value"))
-                await self.channel_layer.group_send(self.own_group, {"type": "social.refresh"})
+            await handler(content)
         except services.ChatError as exc:
             await self._notice(exc.code, exc.params)
 
     async def _say(self, content: dict[str, Any]) -> None:
         to = content.get("to")
         if to is None:
-            msg = await database_sync_to_async(social.post_public)(self.user, content.get("text"))
-            await self.channel_layer.group_send(social.PUBLIC_GROUP, {"type": "social.public", "msg": msg})
+            room, msg = await database_sync_to_async(social.post_public)(self.user, content.get("text"))
+            await self.channel_layer.group_send(social.public_group(room), {"type": "social.public", "room": room, "msg": msg})
             return
 
         def post_dm():
@@ -120,6 +125,27 @@ class SocialConsumer(AsyncJsonWebsocketConsumer):
         msg = await database_sync_to_async(post_dm)()
         for uid in {self.user.pk, msg["to"]}:
             await self.channel_layer.group_send(social.user_group(uid), {"type": "social.dm", "msg": msg})
+
+    async def _history(self, content: dict[str, Any]) -> None:
+        other, before = content.get("with"), content.get("before")
+        if other is None:
+            if self.room is None:
+                return
+            msgs, more = await database_sync_to_async(social.public_page)(self.room, before)
+            await self.send_json({"t": "public", "room": self.room, "msgs": msgs, "history": True, "more": more})
+            return
+        person, msgs, more = await database_sync_to_async(social.dm_page)(self.user, other, before)
+        await self.send_json({"t": "dm", "with": person, "msgs": msgs, "history": True, "more": more})
+
+    async def _read(self, content: dict[str, Any]) -> None:
+        other, upto = content.get("with"), content.get("upto")
+        if await database_sync_to_async(social.mark_read)(self.user, other, upto) is not None:
+            await self.channel_layer.group_send(self.own_group, {"type": "social.read", "with": other, "upto": upto})
+
+    async def _setting(self, content: dict[str, Any]) -> None:
+        change = social.set_privacy if content["t"] == "privacy" else social.set_room
+        await database_sync_to_async(change)(self.user, content.get("value"))
+        await self.channel_layer.group_send(self.own_group, {"type": "social.refresh"})
 
     async def _friend(self, content: dict[str, Any]) -> None:
         op = content.get("op")
@@ -142,36 +168,41 @@ class SocialConsumer(AsyncJsonWebsocketConsumer):
         for uid in {self.user.pk, other_id}:
             await self.channel_layer.group_send(social.user_group(uid), {"type": "social.refresh"})
 
-    async def _push_state(self, send_dm_history: bool = False) -> None:
-        """Send the panel's state and join or leave the public room to match the privacy setting."""
+    async def _push_state(self) -> None:
+        """Send the panel's state and join the public room the settings call for (or none)."""
 
         def load():
             user = get_user_model().objects.get(pk=self.user.pk)  # the name may have changed since connecting
-            return social.state(user), (social.dm_history(user) if send_dm_history else None)
+            return social.state(user)
 
-        frame, dms = await database_sync_to_async(load)()
+        frame = await database_sync_to_async(load)()
         await self.send_json(frame)
-        if dms is not None:
-            await self.send_json({"t": "dm", "msgs": dms, "history": True})
-        wants_public = frame["privacy"] == social.Privacy.EVERYONE
-        if wants_public and not self.in_public:
-            await self.channel_layer.group_add(social.PUBLIC_GROUP, self.channel_name)
-            self.in_public = True
-            msgs = await database_sync_to_async(social.public_history)()
-            await self.send_json({"t": "public", "msgs": msgs, "history": True})
-        elif not wants_public and self.in_public:
-            await self.channel_layer.group_discard(social.PUBLIC_GROUP, self.channel_name)
-            self.in_public = False
+        wanted = frame["room"] if frame["privacy"] == social.Privacy.EVERYONE else None
+        if wanted == self.room:
+            return
+        if self.room is not None:
+            await self.channel_layer.group_discard(social.public_group(self.room), self.channel_name)
+        self.room = wanted
+        if wanted is not None:
+            await self.channel_layer.group_add(social.public_group(wanted), self.channel_name)
+            msgs, more = await database_sync_to_async(social.public_page)(wanted)
+            await self.send_json({"t": "public", "room": wanted, "msgs": msgs, "history": True, "more": more})
 
     async def social_refresh(self, event: dict[str, Any]) -> None:
         await self._push_state()
 
     async def social_public(self, event: dict[str, Any]) -> None:
-        if self.in_public:
-            await self.send_json({"t": "public", "msgs": [event["msg"]], "history": False})
+        if self.room == event["room"]:
+            await self.send_json({"t": "public", "room": event["room"], "msgs": [event["msg"]], "history": False, "more": False})
 
     async def social_dm(self, event: dict[str, Any]) -> None:
-        await self.send_json({"t": "dm", "msgs": [event["msg"]], "history": False})
+        msg = event["msg"]
+        mine = msg["from"] == self.user.pk
+        person = {"id": msg["to"], "name": msg["to_name"]} if mine else {"id": msg["from"], "name": msg["name"]}
+        await self.send_json({"t": "dm", "with": person, "msgs": [msg], "history": False, "more": False})
+
+    async def social_read(self, event: dict[str, Any]) -> None:
+        await self.send_json({"t": "read", "with": event["with"], "upto": event["upto"]})
 
     async def _notice(self, code: str, params: dict | None = None) -> None:
         await self.send_json({"t": "notice", "code": code, "params": params or {}})

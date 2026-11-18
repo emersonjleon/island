@@ -4,14 +4,14 @@ import type { TFunction } from "i18next";
 
 import { addChatCatalogue } from "../chat/i18n";
 import { mountSocialPanel } from "../chat/SocialPanel";
-import { parseSocialFrame, SocialStore } from "../chat/social";
+import { parseSocialFrame, SocialStore, type SocialFrame, type SocialSend } from "../chat/social";
 import { initI18n, pageLanguage } from "../i18n";
 import { wsUrl } from "../lobby/live";
 
 const MAX_BACKOFF_MS = 15000;
 const PING_MS = 25000;
 
-function connect(path: string, store: SocialStore): (frame: object) => boolean {
+function connect(path: string, receive: (frame: SocialFrame) => void): SocialSend {
   let socket: WebSocket | null = null;
   let backoff = 500;
   const open = () => {
@@ -20,7 +20,7 @@ function connect(path: string, store: SocialStore): (frame: object) => boolean {
     socket.onmessage = (ev: MessageEvent<string>) => {
       try {
         const frame = parseSocialFrame(JSON.parse(ev.data));
-        if (frame) store.receive(frame);
+        if (frame) receive(frame);
       } catch {
         // ignore malformed frames
       }
@@ -42,10 +42,13 @@ function connect(path: string, store: SocialStore): (frame: object) => boolean {
 
 const root = document.getElementById("social-chat");
 if (root) {
-  const store = new SocialStore();
-  const send = connect(root.dataset.wsPath ?? "/ws/social/", store);
+  let store: SocialStore | null = null;
+  const early: SocialFrame[] = [];
+  const send = connect(root.dataset.wsPath ?? "/ws/social/", (frame) => (store ? store.receive(frame) : early.push(frame)));
+  store = new SocialStore(send);
+  for (const frame of early.splice(0)) store.receive(frame);
   void initI18n(pageLanguage()).then((i18n) => {
     addChatCatalogue(i18n);
-    mountSocialPanel(root, store, i18n.t.bind(i18n) as TFunction, send);
+    mountSocialPanel(root, store!, i18n.t.bind(i18n) as TFunction, send);
   });
 }

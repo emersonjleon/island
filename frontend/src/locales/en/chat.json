@@ -38,7 +38,8 @@
     "no_user": "Nobody called \"{{name}}\" was found.",
     "friend_self": "You cannot add yourself as a friend.",
     "friend_already": "You and {{name}} are already friends.",
-    "bad_privacy": "That setting does not exist."
+    "bad_privacy": "That setting does not exist.",
+    "bad_room": "That room does not exist."
   },
   "social": {
     "title": "Chat",
@@ -85,6 +86,13 @@
       "games": "Only in games",
       "games_help": "No public chat or private messages; you talk only inside your games."
     },
-    "privacy_note": "The chat inside each game always works, whatever this setting. Anyone can still send you a friend request."
-  }
+    "privacy_note": "The chat inside each game always works, whatever this setting. Anyone can still send you a friend request.",
+    "room": "Room",
+    "rooms": {
+      "en": "English",
+      "es": "Spanish"
+    }
+  },
+  "older": "Show older messages",
+  "loading": "Loading…"
 }

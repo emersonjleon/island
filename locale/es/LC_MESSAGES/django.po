@@ -1136,6 +1136,14 @@ msgstr "Solo en partidas: sin chat público ni mensajes privados"
 msgid "The chat needs JavaScript."
 msgstr "El chat necesita JavaScript."
 
+#: chat/models.py
+msgid "Public room"
+msgstr "Sala pública"
+
+#: chat/models.py
+msgid "Private conversation"
+msgstr "Conversación privada"
+
 #~ msgid ""
 #~ "Blank keeps the preset (19 in Classic, larger for more than 4 players)."
 #~ msgstr ""
