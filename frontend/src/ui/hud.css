@@ -354,6 +354,10 @@ table.keys td { padding: 4px 0; }
 /* A development is bought like a building (same button, cost pips); trade sits apart. */
 .game-hud .hud-hand .actions button.dev-open { position: relative; overflow: visible; }
 .hud-hand .actions button.dev-open .badge { position: absolute; top: -7px; right: -6px; margin: 0; }
+/* Free roads from a road building card: "Free" instead of the cost, and how many are left. */
+.game-hud .hud-hand .actions button.build-road { position: relative; overflow: visible; }
+.hud-hand .actions button.build-road .badge { position: absolute; top: -7px; right: -6px; margin: 0; }
+.free-pill { font-size: 0.68rem; font-weight: 800; line-height: 1; text-transform: uppercase; letter-spacing: 0.04em; color: #1e6b33; }
 .game-hud .hud-hand .actions button.trade-open { margin-left: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-icon { flex: none; }
 /* Camera buttons are toggles too, but stay put: only a gold ring shows full screen is on. */

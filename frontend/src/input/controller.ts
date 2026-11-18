@@ -9,7 +9,7 @@ import type { GameStore } from "../state/store";
 import { type Action, type Bindings, comboOf, keymap } from "./bindings";
 import { heldDirection, neighbourToward } from "./directions";
 import { TouchGestures } from "./touch";
-import { knightHexes } from "../state/devcards";
+import { devPlayer, knightHexes } from "../state/devcards";
 
 export type BuildChoice = "road" | "settlement" | "city";
 /** What a pick mode places: a building, or the robber (knight card). */
@@ -20,6 +20,8 @@ export interface ModeInfo {
   count: number;
   /** Opened by the game itself: setup asks for the road next to the settlement just built. */
   prompt?: boolean;
+  /** Free roads left from a road building card (road mode only, when there are any). */
+  free?: number;
 }
 
 export interface MenuItem { label: BuildChoice | "walk"; run: () => void }
@@ -91,10 +93,14 @@ export class InputController {
   private geo: BoardGeometry | null = null;
   private overlayKey = "";
   private modeCount = -1;
+  private modeFree = 0;
   /** Our finished buildings last frame (null until the first state), to notice a new setup settlement. */
   private myBuildings: Set<number> | null = null;
   /** A setup settlement waiting for its road prompt (the road candidates may arrive a frame later). */
   private roadPrompt: { vertex: number; until: number } | null = null;
+  /** Free roads (road building card) seen last frame, and whether road mode should open for them. */
+  private freeSeen = 0;
+  private freePrompt = false;
   private pointer: { x: number; y: number; inside: boolean } = { x: 0, y: 0, inside: false };
   private press: { button: number; x: number; y: number; dragging: boolean } | null = null;
   private box: HTMLDivElement | null = null;
@@ -348,7 +354,18 @@ export class InputController {
   private setMode(mode: { kind: ModeKind; focus: number | null; prompt?: boolean } | null): void {
     this.mode = mode;
     this.modeCount = mode ? this.candidates(mode.kind).length : -1;
-    this.opts.onMode?.(mode && { kind: mode.kind, count: this.modeCount, ...(mode.prompt ? { prompt: true } : {}) });
+    this.modeFree = mode?.kind === "road" ? this.freeRoads() : 0;
+    this.opts.onMode?.(mode && this.modeInfo(mode, this.modeCount));
+  }
+
+  private modeInfo(mode: { kind: ModeKind; prompt?: boolean }, count: number): ModeInfo {
+    const free = mode.kind === "road" ? this.freeRoads() : 0;
+    return { kind: mode.kind, count, ...(mode.prompt ? { prompt: true } : {}), ...(free > 0 ? { free } : {}) };
+  }
+
+  /** Roads this player may still build for free (road building card). */
+  private freeRoads(): number {
+    return devPlayer(this.state, this.opts.store.seat)?.free_roads ?? 0;
   }
 
   /** Candidates change while build mode is open (a build finishes, resources arrive). */
@@ -358,9 +375,11 @@ export class InputController {
     if (mode.focus === null || !cands.includes(mode.focus)) {
       this.mode = { ...mode, focus: this.nearest(mode.kind, cands) };
     }
-    if (cands.length !== this.modeCount) {
+    const free = mode.kind === "road" ? this.freeRoads() : 0;
+    if (cands.length !== this.modeCount || free !== this.modeFree) {
       this.modeCount = cands.length;
-      this.opts.onMode?.({ kind: mode.kind, count: cands.length, ...(mode.prompt ? { prompt: true } : {}) });
+      this.modeFree = free;
+      this.opts.onMode?.(this.modeInfo(mode, cands.length));
     }
   }
 
@@ -404,6 +423,19 @@ export class InputController {
     for (const c of cands) if (dist2(geo.edgeMid[c]!, at) < dist2(geo.edgeMid[focus]!, at)) focus = c;
     this.setMode({ kind: "road", focus, prompt: true });
     this.revealSpot(at);
+  }
+
+  /** Road building card: open road mode when free roads arrive, and again after each
+   * free road while some are left, so the player only has to pick the edges. */
+  private watchFreeRoads(): void {
+    const free = this.freeRoads();
+    if (free !== this.freeSeen) this.freePrompt = free > 0;
+    this.freeSeen = free;
+    if (!this.freePrompt || this.mode || this.roadPrompt || !this.state || this.state.phase === "finished") return;
+    const cands = this.candidates("road");
+    if (!cands.length) return;
+    this.freePrompt = false;
+    this.setMode({ kind: "road", focus: this.nearest("road", cands) });
   }
 
   /** Centre the camera on ``p`` if it is outside the middle of the screen. */
@@ -723,6 +755,7 @@ export class InputController {
     if (!this.selected.length && mine.length) this.selected = [mine[0]!.id];
     if (this.mode) this.refreshMode();
     this.watchSetupRoad();
+    this.watchFreeRoads();
     this.cameraKeys(dtMs);
     this.edgePush(dtMs);
     if (!this.mode) this.walkKeys();

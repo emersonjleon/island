@@ -14,6 +14,8 @@
     "help": "Tab or arrows to choose, Enter to build, Esc to cancel",
     "none": "Nowhere to build that right now",
     "touchHelp": "Tap a highlighted spot to build",
+    "freeRoad_one": "Free road: {{count}} left",
+    "freeRoad_other": "Free roads: {{count}} left",
     "setupRoad": "Now a road next to your new settlement",
     "setupRoadHelp": "Pick one of the dashed lines: Tab or arrows to choose, Enter to build",
     "setupRoadTouch": "Tap one of the dashed lines next to it"

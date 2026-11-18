@@ -187,6 +187,34 @@ describe("InputController", () => {
     expect(input.mode).toBeNull();
   });
 
+  it("a road building card opens road mode for each free road", () => {
+    const { input, sent, store } = setup("running");
+    const infos: unknown[] = [];
+    (input as unknown as { opts: { onMode: (m: unknown) => void } }).opts.onMode = (m) => infos.push(m);
+    store.state!.players[0]!.setup.done = true;
+    store.state!.dev_cards = { deck_left: 0, army: null, players: { "0": { knights: 0, cards: [], free_roads: 2 } } };
+    input.tick(16);
+    expect(input.mode).toBeNull();                       // waits for the road candidates
+    store.state!.buildable = { roads: [4, 5], settlements: [], cities: [] };
+    input.tick(16);
+    expect(input.mode?.kind).toBe("road");
+    expect(infos.at(-1)).toMatchObject({ kind: "road", count: 2, free: 2 });
+    input.action("confirm");
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ a: "build", kind: "road" });
+    expect(input.mode).toBeNull();
+    // The first free road started: road mode opens again for the second one.
+    store.state!.dev_cards.players["0"]!.free_roads = 1;
+    store.state!.buildable = { roads: [5], settlements: [], cities: [] };
+    input.tick(16);
+    expect(input.mode).toMatchObject({ kind: "road", focus: 5 });
+    expect(infos.at(-1)).toMatchObject({ free: 1 });
+    // Escape closes it for good; it does not keep coming back.
+    input.action("cancel");
+    input.tick(16);
+    expect(input.mode).toBeNull();
+  });
+
   it("still walks a builder for setup pieces after the dice clock has started", () => {
     const { input, sent, store, board, start } = setup("running");
     const target = walkableNeighbours(board, walkableNeighbours(board, start)[0]!).find((v) => v !== start)!;
