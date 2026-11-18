@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from engine.settings import load_preset
+from engine.settings import encode_share_code, load_preset
 from engine.settings.share import MAX_CODE_LENGTH
 
 from . import services
@@ -16,7 +18,8 @@ from .presets import (
     presets_data, settings_values, stats_rows,
 )
 from .settings_editor import changed_settings, editor_data, editor_view
-from .sharing import CONFIG_PARAM, code_context, read_code
+from .prefill import settings_form_data
+from .sharing import CONFIG_PARAM, code_context, create_path, read_code
 
 
 def _game(code: str) -> Game:
@@ -42,7 +45,7 @@ def game_list(request: HttpRequest) -> HttpResponse:
         .select_related("host")
         .distinct()
     )
-    context = {"form": form, "open_games": open_games[:50], "my_games": mine}
+    context = {"form": form, "open_games": open_games[:50], "my_games": mine, "saved_settings": saved_rows(request.user)}
     return render(request, "lobby/list.html", context | create_form_context(form))
 
 
@@ -158,6 +161,60 @@ def rule_changes(preset: str, settings) -> list[tuple]:
     base = load_preset(preset, {"players": {"max": players}}, players=players)
     shown = {".".join(KNOBS_BY_NAME[k].path) for _label, knobs in STATS for k in knobs}
     return changed_settings(base, settings, exclude=shown)
+
+
+@login_required
+def edit_settings(request: HttpRequest, code: str) -> HttpResponse:
+    """The host changes the settings of a game that has not started (the custom-game form, filled in)."""
+    game = _game(code)
+    if game.host_id != request.user.pk or not game.is_open:
+        return redirect("lobby:detail", code=game.code)
+    data = request.POST if request.method == "POST" else settings_form_data(game.preset, game.overrides)
+    form = CreateGameForm(data)
+    if request.method == "POST" and form.is_valid():
+        try:
+            services.change_settings(game, request.user, form.chosen_preset(), form.overrides())
+        except services.LobbyError as exc:
+            form.add_error(None, error_message(exc.code))
+        else:
+            messages.success(request, _("Settings changed. Every player must get ready again."))
+            return redirect("lobby:detail", code=game.code)
+    context = {"game": game, "form": form} | create_form_context(form)
+    context["editor_open"] = True
+    return render(request, "lobby/settings.html", context)
+
+
+@login_required
+@require_POST
+def save_game_settings(request: HttpRequest, code: str) -> HttpResponse:
+    """Anyone who sees a game can keep its settings under a name of their own."""
+    game = _game(code)
+    try:
+        saved = services.save_settings(request.user, request.POST.get("name", ""), game.preset, game.overrides)
+    except services.LobbyError as exc:
+        messages.error(request, error_message(exc.code))
+    else:
+        messages.success(request, _("Saved as \u201c%(name)s\u201d. Find it under My settings when you create a game.")
+                         % {"name": saved.name})
+    return redirect("lobby:detail", code=game.code)
+
+
+@login_required
+@require_POST
+def delete_saved(request: HttpRequest, saved_id: int) -> HttpResponse:
+    try:
+        services.delete_saved(request.user, saved_id)
+    except services.LobbyError as exc:
+        messages.error(request, error_message(exc.code))
+    return redirect(reverse("lobby:list") + "#my-settings")
+
+
+def saved_rows(user) -> list[dict]:
+    rows = []
+    for saved in user.saved_settings.all():
+        code = encode_share_code(saved.preset, saved.overrides)
+        rows.append({"saved": saved, "use_url": create_path(code)})
+    return rows
 
 
 @login_required

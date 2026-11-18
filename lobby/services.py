@@ -15,7 +15,7 @@ from engine.settings import (
     CURRENT_SCHEMA_VERSION, GameSettings, SeatOrder, UnknownPresetError, load_preset, merge_overrides,
 )
 
-from .models import BOT_LEVELS, BOT_NAMES, COLOUR_VALUES, Game, GamePlayer, GameStatus
+from .models import BOT_LEVELS, BOT_NAMES, COLOUR_VALUES, SAVED_NAME_LENGTH, Game, GamePlayer, GameStatus, SavedSettings
 
 SEED_BITS = 63
 
@@ -278,3 +278,47 @@ def start_game(game: Game, user) -> Game:
     )
     broadcast_changed(game)
     return game
+
+
+# ------------------------------------------------------------------ settings
+MAX_SAVED_PER_USER = 30
+
+
+@transaction.atomic
+def change_settings(game: Game, user, preset: str, overrides: dict[str, Any]) -> Game:
+    """The host changes the game's settings before it starts; every person must get ready again."""
+    game = _locked(game)
+    _require_open(game)
+    if game.host_id != user.pk:
+        raise LobbyError("lobby.not_host")
+    forced = getattr(django_settings, "LOBBY_FORCED_OVERRIDES", None)
+    if forced:
+        overrides = merge_overrides(overrides, forced)
+    settings = build_settings(preset, overrides)
+    if game.players.count() > settings.players.max:
+        raise LobbyError("lobby.too_many_seated", seated=game.players.count(), max=settings.players.max)
+    game.preset, game.overrides = preset, overrides
+    game.save(update_fields=["preset", "overrides"])
+    game.players.filter(user__isnull=False).exclude(user_id=game.host_id).update(ready=False)
+    broadcast_changed(game)
+    return game
+
+
+def save_settings(user, name: str, preset: str, overrides: dict[str, Any]) -> SavedSettings:
+    """Save (or replace, by name) one of ``user``'s own settings."""
+    name = " ".join(name.split())[:SAVED_NAME_LENGTH]
+    if not name:
+        raise LobbyError("lobby.saved_needs_name")
+    build_settings(preset, overrides)
+    existing = SavedSettings.objects.filter(owner=user, name=name).first()
+    if existing is None and SavedSettings.objects.filter(owner=user).count() >= MAX_SAVED_PER_USER:
+        raise LobbyError("lobby.saved_too_many", max=MAX_SAVED_PER_USER)
+    saved, _created = SavedSettings.objects.update_or_create(
+        owner=user, name=name, defaults={"preset": preset, "overrides": overrides})
+    return saved
+
+
+def delete_saved(user, saved_id: int) -> None:
+    deleted, _rows = SavedSettings.objects.filter(owner=user, pk=saved_id).delete()
+    if not deleted:
+        raise LobbyError("lobby.no_such_saved")

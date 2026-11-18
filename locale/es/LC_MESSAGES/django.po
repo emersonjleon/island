@@ -1669,3 +1669,56 @@ msgstr "Todos los ajustes"
 
 msgid "Leave a box blank to keep the game type's value, shown in grey."
 msgstr "Deja una casilla en blanco para mantener el valor del tipo de partida, que se ve en gris."
+
+msgid "More players are seated than these settings allow."
+msgstr "Hay más jugadores sentados de los que permiten estos ajustes."
+
+msgid "Give the settings a name."
+msgstr "Ponle un nombre a los ajustes."
+
+msgid "You have too many saved settings. Delete one first."
+msgstr "Tienes demasiados ajustes guardados. Borra uno primero."
+
+msgid "Those saved settings no longer exist."
+msgstr "Esos ajustes guardados ya no existen."
+
+msgid "Settings changed. Every player must get ready again."
+msgstr "Ajustes cambiados. Cada jugador debe volver a marcar que está listo."
+
+#, python-format
+msgid "Saved as “%(name)s”. Find it under My settings when you create a game."
+msgstr "Guardado como “%(name)s”. Lo encontrarás en Mis ajustes al crear una partida."
+
+#, python-format
+msgid "Settings of game %(code)s"
+msgstr "Ajustes de la partida %(code)s"
+
+msgid "Change the rules before the game starts. Every player must get ready again afterwards."
+msgstr "Cambia las reglas antes de que empiece la partida. Después, cada jugador debe volver a marcar que está listo."
+
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+msgid "Back to the game"
+msgstr "Volver a la partida"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Name for these settings"
+msgstr "Nombre para estos ajustes"
+
+msgid "Save to My settings"
+msgstr "Guardar en Mis ajustes"
+
+msgid "Change settings"
+msgstr "Cambiar ajustes"
+
+msgid "My settings"
+msgstr "Mis ajustes"
+
+msgid "Use"
+msgstr "Usar"
+
+msgid "Delete"
+msgstr "Borrar"

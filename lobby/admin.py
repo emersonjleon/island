@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Game, GamePlayer
+from .models import Game, GamePlayer, SavedSettings
 
 
 class GamePlayerInline(admin.TabularInline):
@@ -15,3 +15,9 @@ class GameAdmin(admin.ModelAdmin):
     search_fields = ("code", "host__username")
     readonly_fields = ("code",)
     inlines = [GamePlayerInline]
+
+
+@admin.register(SavedSettings)
+class SavedSettingsAdmin(admin.ModelAdmin):
+    list_display = ("name", "owner", "preset", "updated_at")
+    search_fields = ("name", "owner__username")
