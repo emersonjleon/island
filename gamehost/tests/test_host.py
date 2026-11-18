@@ -204,6 +204,49 @@ class GameHostTests(TransactionTestCase):
         )
         self.assertTrue(GameSnapshot.objects.filter(game=game, kind="end").exists())
 
+    async def finish(self, host: GameHost, game: Game) -> None:
+        await host.dispatch({"type": "game.start", "game_id": game.pk})
+        runner = host.runners[game.pk]
+        runner.core.state.phase, runner.core.state.winner = "finished", 0
+        await asyncio.wait_for(host.tasks[game.pk], TIMEOUT) if game.pk in host.tasks else None
+
+    async def ping_and_sync(self, host: GameHost, game_id: int) -> list[str]:
+        reply = await self.layer.new_channel()
+        await host.dispatch({"type": "game.ping", "game_id": game_id, "c": 7, "reply_channel": reply})
+        pong = (await self.recv(reply))["msg"]
+        self.assertEqual((pong["t"], pong["c"]), ("pong", 7))
+        await host.dispatch({"type": "game.sync", "game_id": game_id, "seat": 0, "reply_channel": reply})
+        board, state = (await self.recv(reply))["msg"], (await self.recv(reply))["msg"]
+        return [board["t"], state["t"], state["state"]["phase"]]
+
+    def test_finished_game_still_answers_pings_and_syncs(self):
+        """The game-over page keeps its socket: "see the board" must not look like a lost link."""
+        game = started_lobby_game(2)
+
+        async def run():
+            host = self.host()
+            await self.finish(host, game)
+            self.assertNotIn(game.pk, host.runners)
+            self.assertEqual(await self.ping_and_sync(host, game.pk), ["board", "state", "finished"])
+            # Another host process (or a restart) loads the final position from the database.
+            other = self.host()
+            self.assertEqual(await self.ping_and_sync(other, game.pk), ["board", "state", "finished"])
+            self.assertIn(game.pk, other.finished)
+
+        async_to_sync(run)()
+
+    def test_unknown_game_ping_gets_no_answer(self):
+        async def run():
+            host = self.host()
+            reply = await self.layer.new_channel()
+            await host.dispatch({"type": "game.ping", "game_id": 999, "c": 1, "reply_channel": reply})
+            await asyncio.gather(*host._starts)
+            self.assertEqual(host.finished, {})
+            with self.assertRaises(TimeoutError):
+                await asyncio.wait_for(self.layer.receive(reply), 0.1)
+
+        async_to_sync(run)()
+
     def test_bad_starting_game_is_aborted(self):
         game = started_lobby_game(2)
         Game.objects.filter(pk=game.pk).update(settings={"board": {"land_hexes": -1}})

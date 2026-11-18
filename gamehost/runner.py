@@ -1,6 +1,7 @@
 """The game host: one asyncio task per live game, fed by the ``gamehost`` channel."""
 import asyncio
 import logging
+from collections import OrderedDict
 from typing import Any
 
 from asgiref.sync import sync_to_async
@@ -90,6 +91,9 @@ class GameHost:
         self.tasks: dict[int, asyncio.Task] = {}
         self._taking: set[int] = set()
         self._starts: set[asyncio.Task] = set()   # keeps start tasks referenced until done
+        # Finished games: their page still shows the final board and pings to keep the link up.
+        self.finished: OrderedDict[int, GameCore] = OrderedDict()
+        self._loading: set[int] = set()
         self.channel = conf.get("CHANNEL")
 
     # ----------------------------------------------------------- taking games
@@ -140,6 +144,8 @@ class GameHost:
         except Exception:
             log.exception("game %s crashed; it will be restored from its last snapshot", game_id)
         finally:
+            if runner.core.finished:
+                self._keep_finished(game_id, runner.core)
             self.runners.pop(game_id, None)
             self.tasks.pop(game_id, None)
             await self.leases.release(game_id)
@@ -162,6 +168,8 @@ class GameHost:
             if reply and kind == "game.intent":
                 await self.layer.send(reply, {"type": "game.out", "msg": {
                     "t": "reject", "cid": message.get("cid"), "code": "game.not_running", "params": {}}})
+            elif reply and kind in ("game.ping", "game.sync"):
+                await self._answer_finished(game_id, message)
             return
         if kind == "game.ping":
             # Answered at once (not queued) so the round trip measures the network, not the game loop.
@@ -171,6 +179,46 @@ class GameHost:
                     "t": "pong", "c": message.get("c"), "now": runner.clock.now()}})
         elif kind in ("game.intent", "game.sync"):
             runner.inbox.put_nowait(message)
+
+    # ----------------------------------------------------------- finished games
+    def _keep_finished(self, game_id: int, core: GameCore) -> None:
+        self.finished[game_id] = core
+        self.finished.move_to_end(game_id)
+        while len(self.finished) > max(0, conf.get("FINISHED_KEPT")):
+            self.finished.popitem(last=False)
+
+    async def _answer_finished(self, game_id: int, message: dict[str, Any]) -> None:
+        """A game that is over has no runner, but its players still look at the final board:
+        answer their pings and syncs from its final position (loaded beside the loop if needed)."""
+        core = self.finished.get(game_id)
+        if core is not None:
+            await self._reply_finished(core, message)
+        elif game_id not in self._loading:
+            self._loading.add(game_id)
+            task = asyncio.create_task(self._load_finished(game_id, message), name=f"finished-{game_id}")
+            self._starts.add(task)
+            task.add_done_callback(self._starts.discard)
+
+    async def _load_finished(self, game_id: int, message: dict[str, Any]) -> None:
+        try:
+            core = await db(store.load_finished_core)(game_id)
+        except Exception:
+            log.exception("could not load finished game %s", game_id)
+            return
+        finally:
+            self._loading.discard(game_id)
+        if core is not None and game_id not in self.runners:
+            self._keep_finished(game_id, core)
+            await self._reply_finished(core, message)
+
+    async def _reply_finished(self, core: GameCore, message: dict[str, Any]) -> None:
+        reply = message["reply_channel"]
+        if message.get("type") == "game.ping":
+            await self.layer.send(reply, {"type": "game.out", "msg": {
+                "t": "pong", "c": message.get("c"), "now": core.state.now_ms}})
+        else:
+            for o in core.sync(message):
+                await self.layer.send(o.target, o.message)
 
     async def receive_loop(self) -> None:
         while True:

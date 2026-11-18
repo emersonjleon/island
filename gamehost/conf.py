@@ -8,6 +8,7 @@ DEFAULTS = {
     "SCAN_S": 5,                      # look for STARTING / orphaned RUNNING games this often
     "SNAPSHOT_EVERY_ROLLS": 1,        # snapshot after this many dice rolls (0 = only start/end/shutdown)
     "SNAPSHOTS_KEPT": 5,              # older snapshots of a game are deleted
+    "FINISHED_KEPT": 20,              # finished games kept in memory to answer the final board
     "LEASE_TTL_MS": 10000,
     "LEASE_REFRESH_MS": 3000,
 }
