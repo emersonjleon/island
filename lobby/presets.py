@@ -21,9 +21,9 @@ MAX_TABLE = 12
 PRESET_INFO = {
     "blitz": (_("Blitz"), _("Fast dice, quicker builds and fewer points to win.")),
     "classic": (_("Classic"), _("The standard island for 3 or 4 players.")),
-    "expanded": (_("Expanded"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
+    "expanded": (_("Big"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
     "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game.")),
-    CUSTOM: (_("Custom"), _("Start from Classic and choose the rules yourself.")),
+    CUSTOM: (_("Custom"), _("Start from the game type you chose and change the rules yourself.")),
 }
 
 
@@ -144,6 +144,11 @@ def preset_values(name: str, players: int) -> dict[str, int | bool]:
     return {k.name: k.read(settings) for k in KNOBS}
 
 
+def base_presets() -> list[str]:
+    """The game types a custom game can start from (every type but Custom itself)."""
+    return [p for p in preset_names() if p != CUSTOM]
+
+
 def default_players(name: str) -> int:
     return load_preset(name).players.max
 
@@ -154,6 +159,7 @@ def presets_data() -> dict[str, Any]:
         "presets": {
             name: {
                 "players": default_players(name),
+                "label": str(preset_label(name)),
                 "values": {n: preset_values(name, n) for n in range(MIN_TABLE, MAX_TABLE + 1)},
             }
             for name in preset_names()

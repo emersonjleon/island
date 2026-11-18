@@ -9,7 +9,7 @@
       <td>{% if seat.is_bot %}{{ seat.bot_name }} <span class="badge bot">{% blocktranslate with level=seat.get_bot_level_display %}bot · {{ level }}{% endblocktranslate %}</span>{% else %}{{ seat.user.public_name }}{% if seat.user_id == game.host_id %} <span class="badge">{% translate "host" %}</span>{% endif %}{% endif %}</td>
       <td>{% if seat.user_id == game.host_id %}–{% elif seat.ready %}{% translate "Ready" %}{% else %}{% translate "Not ready" %}{% endif %}</td>
       {% if is_host and game.is_open %}<td>{% if seat.is_bot %}
-        <form method="post" action="{% url 'lobby:remove_bot' game.code %}" class="inline">{% csrf_token %}
+        <form method="post" action="{% url 'lobby:remove_bot' game.code %}" class="inline" data-quick>{% csrf_token %}
           <input type="hidden" name="player" value="{{ seat.pk }}">
           <button type="submit" class="secondary">{% translate "Remove" %}</button>
         </form>{% endif %}</td>{% endif %}
@@ -43,12 +43,14 @@
     <form method="post" action="{% url 'lobby:leave' game.code %}">{% csrf_token %}<button type="submit" class="secondary">{% translate "Leave" %}</button></form>
   {% endif %}
   {% if can_add_bot %}
-    <form method="post" action="{% url 'lobby:add_bot' game.code %}">{% csrf_token %}
+    <form method="post" action="{% url 'lobby:add_bot' game.code %}" data-quick>{% csrf_token %}
       <label for="bot-level-select">{% translate "Bot level" %}</label>
       <select id="bot-level-select" name="level">
-        {% for value, label in bot_levels %}<option value="{{ value }}"{% if value == "medium" %} selected{% endif %}>{{ label }}</option>{% endfor %}
+        {% for value, label in bot_levels %}<option value="{{ value }}"{% if value == bot_level %} selected{% endif %}>{{ label }}</option>{% endfor %}
       </select>
       <button type="submit">{% translate "Add bot" %}</button>
+      <button type="submit" name="fill" value="1" class="secondary">{% blocktranslate count free=free_seats trimmed %}
+        Fill the free seat{% plural %}Fill the {{ free }} free seats{% endblocktranslate %}</button>
     </form>
   {% endif %}
   {% if is_host %}

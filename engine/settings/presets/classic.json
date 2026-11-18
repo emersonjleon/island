@@ -1,1 +1,3 @@
-{}
+{
+  "clock": {"roll_interval_ms": 15000}
+}

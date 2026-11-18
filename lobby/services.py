@@ -172,6 +172,17 @@ def add_bot(game: Game, user, level: str) -> GamePlayer:
 
 
 @transaction.atomic
+def fill_with_bots(game: Game, user, level: str) -> list[GamePlayer]:
+    """The host fills every free seat with computer players of ``level``."""
+    game = _locked(game)
+    free = max_players(game) - game.players.count()
+    if free <= 0:
+        _require_open(game)
+        raise LobbyError("lobby.full")
+    return [add_bot(game, user, level) for _ in range(free)]
+
+
+@transaction.atomic
 def remove_bot(game: Game, user, player_id: int) -> None:
     """The host removes one of the game's computer players."""
     game = _locked(game)

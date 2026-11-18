@@ -14,6 +14,10 @@ ERROR_MESSAGES = {
     "lobby.not_all_ready": _("Every player must be ready first."),
     "lobby.bad_bot_level": _("Unknown bot level."),
     "lobby.no_such_bot": _("That bot is no longer in the game."),
+    "lobby.code_malformed": _("That settings code is not complete or not valid. Copy it again."),
+    "lobby.code_too_long": _("That settings code is too long."),
+    "lobby.code_too_new": _("That settings code was made by a newer version of the game."),
+    "lobby.code_unknown_preset": _("That settings code uses a game type this server does not have."),
 }
 
 

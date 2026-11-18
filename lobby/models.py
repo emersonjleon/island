@@ -2,9 +2,10 @@ import secrets
 
 from django.conf import settings
 from django.db import models
+from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
-from .presets import preset_label
+from .presets import CUSTOM, preset_label
 
 # No 0/O, 1/I/L: codes are read aloud and typed by players.
 CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"
@@ -84,8 +85,17 @@ class Game(models.Model):
                 return code
 
     @property
+    def is_customized(self) -> bool:
+        """True when the host changed rules on top of the game type (the table size does not count)."""
+        players = {k: v for k, v in (self.overrides.get("players") or {}).items() if k != "max"}
+        return bool(players) or any(k != "players" for k in self.overrides)
+
+    @property
     def preset_label(self):
-        return preset_label(self.preset)
+        label = preset_label(self.preset)
+        if self.is_customized and self.preset != CUSTOM:
+            return format_lazy(_("{type} (custom)"), type=label)
+        return label
 
     @property
     def group_name(self) -> str:

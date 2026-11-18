@@ -119,3 +119,35 @@ class BotViewTests(TestCase):
         page = self.client.get(reverse("lobby:detail", args=[game.code]))
         self.assertContains(page, "Añadir bot")
         self.assertContains(page, "bot · Fácil")
+
+
+class QuickBotTests(TestCase):
+    def setUp(self):
+        self.host = user("ana")
+        self.client.force_login(self.host)
+
+    def test_fill_free_seats(self):
+        game = services.create_game(self.host, "classic", {"players": {"max": 4}})
+        bots = services.fill_with_bots(game, self.host, "hard")
+        self.assertEqual([b.bot_level for b in bots], ["hard"] * 3)
+        with self.assertRaises(LobbyError) as ctx:
+            services.fill_with_bots(game, self.host, "hard")
+        self.assertEqual(ctx.exception.code, "lobby.full")
+
+    def test_fill_through_view_in_the_background(self):
+        game = services.create_game(self.host, "classic", {"players": {"max": 3}})
+        url = reverse("lobby:add_bot", args=[game.code])
+        response = self.client.post(url, {"level": "easy", "fill": "1"}, headers={"X-Lobby-Quick": "1"})
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(game.players.filter(user=None).count(), 2)
+        response = self.client.post(url, {"level": "easy"}, headers={"X-Lobby-Quick": "1"})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("full", response.content.decode())
+
+    def test_play_now_against_bots(self):
+        response = self.client.post(reverse("lobby:list"), {"preset": "blitz", "max_players": "4",
+                                                            "bot_level": "easy", "play_bots": "1"})
+        game = Game.objects.get()
+        self.assertRedirects(response, reverse("lobby:detail", args=[game.code]), fetch_redirect_response=False)
+        self.assertEqual(game.status, GameStatus.STARTING)
+        self.assertEqual(list(game.players.filter(user=None).values_list("bot_level", flat=True)), ["easy"] * 3)

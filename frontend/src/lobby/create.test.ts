@@ -27,6 +27,16 @@ describe("create-game form", () => {
     expect(presetValues(data, "classic", 7, () => undefined)).toBeNull();
   });
 
+  it("starts a custom game from the type chosen before it", () => {
+    const withBlitz: PresetsData = {
+      ...data,
+      presets: { ...data.presets, blitz: { players: 4, values: { "4": { land_hexes: 19, target: 7, robber: true } } } },
+    };
+    expect(presetValues(withBlitz, "custom", 4, () => "", "blitz")?.target).toBe(7);
+    expect(presetValues(withBlitz, "custom", 4, () => "", "classic")?.target).toBe(10);
+    expect(presetValues(withBlitz, "blitz", 4, () => "12", "classic")?.target).toBe(7);
+  });
+
   it("formats summary lines", () => {
     expect(formatStat({ a: 15, b: 5, c: 4 }, ["a", "b", "c"], "Yes", "No")).toBe("15 / 5 / 4");
     expect(formatStat({ robber: false }, ["robber"], "Sí", "No")).toBe("No");

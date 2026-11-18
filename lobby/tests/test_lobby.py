@@ -191,7 +191,8 @@ class ViewTests(TestCase):
         )
         game = Game.objects.get()
         self.assertRedirects(response, reverse("lobby:detail", args=[game.code]))
-        self.assertEqual(game.preset, "custom")
+        self.assertEqual(game.preset, "classic")  # a custom game keeps the type it started from
+        self.assertTrue(game.is_customized)
         self.assertEqual(
             game.overrides,
             {"players": {"max": 3}, "board": {"land_hexes": 37}, "clock": {"roll_interval_ms": 15000},
@@ -199,6 +200,18 @@ class ViewTests(TestCase):
              # An unchecked box switches a default-on rule off.
              "robber": {"spare_setup": False}},
         )
+
+    def test_custom_starts_from_chosen_type(self):
+        self.client.force_login(self.host)
+        self.client.post(reverse("lobby:list"), {"preset": "custom", "base": "blitz", "max_players": "4",
+                                                 "target": "9", "robber": "on", "spare_setup": "on"})
+        game = Game.objects.get()
+        self.assertEqual((game.preset, game.overrides), ("blitz", {"players": {"max": 4}, "victory": {"target": 9}}))
+        settings = services.build_settings(game.preset, game.overrides)
+        self.assertEqual((settings.clock.roll_interval_ms, settings.victory.target), (10000, 9))
+        self.assertEqual(str(game.preset_label), "Blitz (custom)")
+        page = self.client.get(reverse("lobby:list"), {"preset": "custom", "base": "blitz"})
+        self.assertContains(page, 'data-base-label')
 
     def test_presets_ignore_custom_fields(self):
         self.client.force_login(self.host)

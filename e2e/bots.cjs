@@ -23,9 +23,16 @@ async function signUp(page, name) {
   if (page.url().includes("/signup/")) throw new Error(`sign-up failed for ${name}: ${await page.textContent("main")}`);
 }
 
+// Bot buttons post in the background and refresh only the seats: wait for the bot count to change.
+async function botsBecome(page, count) {
+  await page.waitForFunction((n) => document.querySelectorAll("#lobby-seats .badge.bot").length === n, count);
+}
+
 async function addBot(page, level) {
+  const before = await page.locator("#lobby-seats .badge.bot").count();
   await page.selectOption("#bot-level-select", level);
-  await Promise.all([page.waitForNavigation(), page.click(`form[action$="/bots/add/"] button`)]);
+  await page.click(`form[action$="/bots/add/"] button:not([name])`);
+  await botsBecome(page, before + 1);
 }
 
 (async () => {
@@ -44,7 +51,8 @@ async function addBot(page, level) {
     await addBot(page, "hard");
     await addBot(page, "easy");
     if (await page.locator(`form[action$="/bots/add/"]`).count()) throw new Error("add-bot form shown in a full game");
-    await Promise.all([page.waitForNavigation(), page.locator(`form[action$="/bots/remove/"] button`).last().click()]);
+    await page.locator(`form[action$="/bots/remove/"] button`).last().click();
+    await botsBecome(page, 1);
     await addBot(page, "easy");
     const badges = await page.$$eval(".badge.bot", (bs) => bs.map((b) => b.textContent.trim()));
     if (badges.length !== 2) throw new Error(`expected two bots, saw ${badges}`);
