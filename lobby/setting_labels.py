@@ -1,0 +1,197 @@
+"""Names shown for every game setting in the lobby's "all settings" editor.
+
+Keys are the dotted settings paths (``engine/settings/models.py``). A setting with
+no entry here is not shown in the editor (a test checks that every editable
+setting has one). ``CHOICES`` names the values of choice settings.
+"""
+from django.utils.translation import gettext_lazy as _
+
+GROUP_LABELS = {
+    "players": _("Players"),
+    "board": _("Island"),
+    "clock": _("Dice"),
+    "economy": _("Bank and resources"),
+    "pieces": _("Pieces per player"),
+    "build": _("Building"),
+    "setup": _("First settlements"),
+    "robber": _("Robber"),
+    "settlers": _("Settlers"),
+    "visibility": _("What players see"),
+    "victory": _("Victory"),
+    "trading": _("Trade"),
+    "dev_cards": _("Developments"),
+}
+
+# Sub-groups that get their own heading inside a group.
+SUBGROUP_LABELS = {
+    "board.fishing_grounds": _("Fishing grounds"),
+    "board.harbors": _("Harbors"),
+    "economy.costs": _("Costs"),
+    "economy.production_per": _("Resources produced per roll"),
+    "economy.starting_resources": _("Resources for the first settlements"),
+    "economy.bank": _("Bank"),
+    "economy.trade": _("Bank trade"),
+    "build.time_ms": _("Seconds to build"),
+    "visibility.sight": _("Sight range (hexes)"),
+    "victory.building_points": _("Points per building"),
+    "victory.longest_road": _("Longest road"),
+    "victory.largest_army": _("Largest army"),
+}
+
+LABELS = {
+    # players
+    "players.min": (_("Fewest players to start"), ""),
+    "players.seat_order": (_("Order of the seats"), ""),
+    "players.sized_for": (_("Players the island is made for"), _("Bigger tables grow the island and bank from this size.")),
+    "players.scale_for_more": (_("Grow island and bank for bigger tables"), ""),
+    "players.min_land_per_player": (_("Land hexes needed per player on big tables"), ""),
+    # board
+    "board.land_hexes": (_("Island size (land hexes)"), ""),
+    "board.layout": (_("Island layout"), ""),
+    "board.seed": (_("Island number (same number, same island)"), _("Used by the fixed layout.")),
+    "board.red_may_touch": (_("6 and 8 may be next to each other"), ""),
+    "board.red_rule_includes_fishing": (_("The 6 and 8 rule also counts fishing grounds"), ""),
+    "board.fishing_grounds.count": (_("Number of fishing grounds"), _("Blank: grows with the island.")),
+    "board.fishing_grounds.min_gap": (_("Hexes between fishing grounds"), ""),
+    "board.harbors.generic": (_("Generic harbors"), _("Blank: grows with the island.")),
+    "board.harbors.specific": (_("Special harbors of each resource"), ""),
+    "board.harbors.generic_ratio": (_("Generic harbor trade (cards for 1)"), ""),
+    "board.harbors.specific_ratio": (_("Special harbor trade (cards for 1)"), ""),
+    "board.robber_start": (_("Where the robber starts"), ""),
+    "board.sea_margin": (_("Sea around the island (hexes)"), ""),
+    # clock
+    "clock.roll_interval_ms": (_("Seconds between dice rolls"), ""),
+    "clock.dice_mode": (_("Dice"), ""),
+    # economy
+    "economy.costs.road": (_("Road"), ""),
+    "economy.costs.settlement": (_("Settlement"), ""),
+    "economy.costs.city": (_("City"), ""),
+    "economy.costs.megacity": (_("Megacity"), ""),
+    "economy.costs.dev_card": (_("Development"), ""),
+    "economy.production_per.settlement": (_("Settlement"), ""),
+    "economy.production_per.city": (_("City"), ""),
+    "economy.production_per.megacity": (_("Megacity"), ""),
+    "economy.starting_materials": (_("Starting materials"), _("What each player gets to build the first settlements.")),
+    "economy.starting_materials_from_bank": (_("Starting materials come from the bank"), ""),
+    "economy.starting_resources.granting_settlements": (_("Settlements that give resources when built"), ""),
+    "economy.starting_resources.cards_per_hex": (_("Resources per neighbouring hex"), ""),
+    "economy.starting_resources.include_fishing": (_("Fishing grounds count too"), ""),
+    "economy.bank.per_resource": (_("Bank cards of each resource"), _("Blank: grows with the number of players.")),
+    "economy.trade.bank_ratio": (_("Bank trade (cards for 1)"), ""),
+    # pieces
+    "pieces.roads": (_("Roads"), ""),
+    "pieces.settlements": (_("Settlements"), ""),
+    "pieces.cities": (_("Cities"), ""),
+    "pieces.megacities": (_("Megacities"), _("0 turns megacities off.")),
+    # build
+    "build.time_ms.road": (_("Road"), ""),
+    "build.time_ms.settlement": (_("Settlement"), ""),
+    "build.time_ms.city": (_("City"), ""),
+    "build.time_ms.megacity": (_("Megacity"), ""),
+    "build.network_builds_timed": (_("Building on the road network takes time"), ""),
+    "build.refund_pct": (_("Refund when a build is cancelled (%)"), ""),
+    # setup
+    "setup.settlements": (_("First settlements per player"), ""),
+    "setup.roads": (_("First roads per player"), ""),
+    "setup.road_touches_new_settlement": (_("A first road must touch its new settlement"), ""),
+    "setup.network_build_during_setup": (_("Build on the network before finishing the first settlements"), ""),
+    "setup.bank_trade_during_setup": (_("Trade with the bank before finishing the first settlements"), ""),
+    # robber
+    "robber.enabled": (_("Robber on a 7"), ""),
+    "robber.card_limit": (_("Safe hand size on a 7"), ""),
+    "robber.steal_pct": (_("Share of the hand lost on a 7 (%)"), ""),
+    "robber.steal_rounding": (_("Rounding of the cards lost"), ""),
+    "robber.require_over_limit": (_("Only players over the safe hand size lose cards"), ""),
+    "robber.require_adjacent": (_("Only players next to the robber lose cards"), ""),
+    "robber.adjacency_timing": (_("Next to the robber: before or after it moves"), ""),
+    "robber.move_on_seven": (_("How the robber moves on a 7"), ""),
+    "robber.may_enter_desert": (_("The robber may enter the desert"), ""),
+    "robber.knight_max_distance": (_("Hexes a knight moves the robber"), ""),
+    "robber.knight_steal": (_("Cards a knight steals"), ""),
+    "robber.spare_setup": (_("Spare players still placing their first settlements"), ""),
+    # settlers
+    "settlers.ms_per_edge": (_("Seconds a settler takes per road length"), ""),
+    "settlers.road_speed_pct": (_("Settler speed on own roads (%)"), ""),
+    "settlers.builder_required": (_("When a settler must stand on the site"), ""),
+    # visibility
+    "visibility.map": (_("Map"), ""),
+    "visibility.hands": (_("Other players' resources"), ""),
+    "visibility.dev_cards": (_("Other players' developments"), ""),
+    "visibility.scores": (_("Scores"), ""),
+    "visibility.production_log": (_("Production log"), ""),
+    "visibility.trade_offers": (_("Trade offers"), ""),
+    # victory
+    "victory.target": (_("Points to win"), ""),
+    "victory.building_points.settlement": (_("Settlement"), ""),
+    "victory.building_points.city": (_("City"), ""),
+    "victory.building_points.megacity": (_("Megacity"), ""),
+    "victory.longest_road.min": (_("Shortest road that wins the award"), ""),
+    "victory.longest_road.points": (_("Points"), ""),
+    "victory.largest_army.min": (_("Fewest knights that win the award"), ""),
+    "victory.largest_army.points": (_("Points"), ""),
+    # trading
+    "trading.harbor_trade": (_("Harbor trade"), ""),
+    "trading.player_trades": (_("Trade between players"), ""),
+    "trading.offer_expiry_ms": (_("Seconds before an offer expires"), _("Blank: offers stay until taken or cancelled.")),
+    "trading.max_open_offers": (_("Open offers per player"), ""),
+    # developments
+    "dev_cards.deck": (_("Developments in the deck"), ""),
+    "dev_cards.refill": (_("Shuffle in a new deck when it runs out"), ""),
+    "dev_cards.cooldown": (_("Waiting time between developments"), ""),
+    "dev_cards.cooldown_ms": (_("Seconds between developments"), _("Used when the waiting time is in seconds.")),
+    "dev_cards.vp_cards_must_be_played": (_("Victory point developments must be played"), ""),
+    "dev_cards.victory_point_points": (_("Points of a victory point development"), ""),
+    "dev_cards.road_building_roads": (_("Roads from a road building"), ""),
+    "dev_cards.year_of_plenty_cards": (_("Resources from a year of plenty"), ""),
+}
+
+# (enum class name, value) -> label
+CHOICES = {
+    ("SeatOrder", "random"): _("Random"),
+    ("SeatOrder", "host"): _("Order of joining"),
+    ("BoardLayout", "random"): _("Random"),
+    ("BoardLayout", "seeded"): _("Fixed (island number)"),
+    ("BoardLayout", "beginner"): _("Beginner"),
+    ("RobberStart", "desert"): _("Desert"),
+    ("RobberStart", "random_land"): _("Random land hex"),
+    ("DiceMode", "two_dice"): _("Two dice"),
+    ("DiceMode", "deck"): _("Dice deck"),
+    ("Rounding", "floor"): _("Down"),
+    ("Rounding", "ceil"): _("Up"),
+    ("AdjacencyTiming", "before_move"): _("Before it moves"),
+    ("AdjacencyTiming", "after_move"): _("After it moves"),
+    ("MoveOnSeven", "random_neighbour"): _("To a random neighbouring hex"),
+    ("MoveOnSeven", "player"): _("The player who rolled moves it"),
+    ("BuilderRequired", "setup_only"): _("Only for the first settlements"),
+    ("BuilderRequired", "always"): _("Always"),
+    ("MapVisibility", "open"): _("Open map"),
+    ("MapVisibility", "growing"): _("Growing sight"),
+    ("MapVisibility", "explored"): _("Explored"),
+    ("MapVisibility", "live_fog"): _("Live fog"),
+    ("InfoVisibility", "counts"): _("How many, not which"),
+    ("InfoVisibility", "open"): _("Everything"),
+    ("InfoVisibility", "hidden"): _("Nothing"),
+    ("ScoreVisibility", "shown"): _("Shown"),
+    ("ScoreVisibility", "hidden_until_end"): _("Hidden until the end"),
+    ("ProductionLog", "all"): _("Everyone's"),
+    ("ProductionLog", "own"): _("Only your own"),
+    ("TradeOffers", "public"): _("Seen by everyone"),
+    ("TradeOffers", "private"): _("Private offers allowed"),
+    ("Cooldown", "per_roll"): _("One per dice roll"),
+    ("Cooldown", "ms"): _("A number of seconds"),
+}
+
+# Keys of map settings: resources and development kinds.
+KEY_LABELS = {
+    "lumber": _("Lumber"),
+    "brick": _("Brick"),
+    "wool": _("Wool"),
+    "grain": _("Grain"),
+    "ore": _("Ore"),
+    "fish": _("Fish"),
+    "knight": _("Knight"),
+    "victory_point": _("Victory point"),
+    "road_building": _("Road building"),
+    "year_of_plenty": _("Year of plenty"),
+    "monopoly": _("Monopoly"),
+}

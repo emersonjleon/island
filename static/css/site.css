@@ -277,3 +277,19 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 .rules-table th, .rules-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
 .rules-table th { font-size: 0.85rem; color: var(--muted); }
 @media (max-width: 520px) { .rules-table th, .rules-table td { padding: 5px 4px; font-size: 0.9rem; } }
+
+/* All settings (custom games) */
+.all-settings { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+.all-settings > summary { cursor: pointer; font-weight: 700; color: var(--accent-strong); padding: 4px 0; }
+.editor-group { border: 0; padding: 0; margin: 12px 0 0; min-width: 0; }
+.editor-group > legend { font-family: var(--font-display); font-weight: 700; color: var(--accent-strong); margin-bottom: 4px; }
+.editor-group h4 { margin: 10px 0 4px; font-size: 0.9rem; color: var(--muted); }
+.editor-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 14px; }
+.editor-row { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.editor-row.editor-map { grid-column: 1 / -1; }
+.editor-label { font-size: 0.88rem; font-weight: 600; }
+.editor-row input, .editor-row select { padding: 7px 9px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--fg); font: inherit; min-width: 0; }
+.editor-keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
+.editor-keys label { display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; font-size: 0.8rem; color: var(--muted); }
+.editor-row.has-error input, .editor-row.has-error select { border-color: var(--error); }

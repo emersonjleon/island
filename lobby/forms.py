@@ -1,14 +1,20 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from engine.settings import merge_overrides
+from pydantic import ValidationError
+
+from engine.settings import load_preset, merge_overrides
 from engine.settings.share import MAX_CODE_LENGTH
 
 from .models import BOT_LEVELS, COLOURS
 from .presets import CUSTOM, KNOBS, MIN_TABLE, base_presets, preset_label, preset_names, preset_values
-from .messages import error_message
+from .messages import error_message, validation_message
 from .services import LobbyError
+from .settings_editor import editor_overrides, settings_by_path
 from .sharing import read_code
+
+# Settings the quick rules (KNOBS) already set; the "all settings" list leaves them out.
+KNOB_PATHS = frozenset(".".join(k.path) for k in KNOBS)
 
 MAX_PLAYERS = len(COLOURS)
 
@@ -98,8 +104,46 @@ class CreateGameForm(forms.Form):
             if value is None:
                 continue
             out = merge_overrides(out, knob.override(value))
-        return out
+        return merge_overrides(out, self.editor_changes)
 
+    # ------------------------------------------------------- all settings
+    editor_changes: dict = {}
+    editor_errors: dict = {}
+
+    def clean(self):
+        cleaned = super().clean()
+        self.editor_changes, self.editor_errors = {}, {}
+        if self.errors or cleaned.get("config") or cleaned.get("preset") != CUSTOM:
+            return cleaned
+        players = cleaned["max_players"]
+        base = load_preset(self.base_name(), {"players": {"max": players}}, players=players)
+        self.editor_changes, errors = editor_overrides(self.data, base, exclude=KNOB_PATHS)
+        self.editor_errors = {e.setting.path: e.message for e in errors}
+        if errors:
+            raise forms.ValidationError(_("Some settings are not valid: they are marked below."))
+        self._check_together()
+        return cleaned
+
+    def _check_together(self) -> None:
+        """Validate the whole set; errors go to the setting they name when the editor shows it."""
+        try:
+            load_preset(self.chosen_preset(), self.overrides())
+        except ValidationError as exc:
+            known = settings_by_path()
+            for err in exc.errors():
+                path = ".".join(str(p) for p in err["loc"] if not isinstance(p, int))
+                while path and path not in known:
+                    path = path.rpartition(".")[0]
+                message = validation_message(err.get("type", ""))
+                knob = next((k for k in KNOBS if ".".join(k.path) == path), None)
+                if knob is not None:
+                    self.add_error(knob.name, message)
+                elif path:
+                    self.editor_errors[path] = message
+                else:
+                    self.add_error(None, message)
+            if self.editor_errors:
+                raise forms.ValidationError(_("Some settings are not valid: they are marked below.")) from exc
 
 class ColourForm(forms.Form):
     colour = forms.ChoiceField(choices=COLOURS)

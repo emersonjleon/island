@@ -1209,3 +1209,439 @@ msgid "Fill the free seat"
 msgid_plural "Fill the %(free)s free seats"
 msgstr[0] "Llenar el puesto libre"
 msgstr[1] "Llenar los %(free)s puestos libres"
+
+msgid "Dice"
+msgstr "Dados"
+
+msgid "Bank and resources"
+msgstr "Banco y recursos"
+
+msgid "First settlements"
+msgstr "Primeros poblados"
+
+msgid "Settlers"
+msgstr "Colonos"
+
+msgid "What players see"
+msgstr "Qué ven los jugadores"
+
+msgid "Trade"
+msgstr "Comercio"
+
+msgid "Developments"
+msgstr "Desarrollos"
+
+msgid "Fishing grounds"
+msgstr "Caladeros"
+
+msgid "Harbors"
+msgstr "Puertos"
+
+msgid "Costs"
+msgstr "Costes"
+
+msgid "Resources produced per roll"
+msgstr "Recursos producidos por tirada"
+
+msgid "Resources for the first settlements"
+msgstr "Recursos por los primeros poblados"
+
+msgid "Bank"
+msgstr "Banco"
+
+msgid "Bank trade"
+msgstr "Comercio con el banco"
+
+msgid "Seconds to build"
+msgstr "Segundos para construir"
+
+msgid "Sight range (hexes)"
+msgstr "Alcance de la vista (hexágonos)"
+
+msgid "Points per building"
+msgstr "Puntos por edificio"
+
+msgid "Longest road"
+msgstr "Camino más largo"
+
+msgid "Largest army"
+msgstr "Ejército más grande"
+
+msgid "Fewest players to start"
+msgstr "Mínimo de jugadores para empezar"
+
+msgid "Order of the seats"
+msgstr "Orden de los puestos"
+
+msgid "Players the island is made for"
+msgstr "Jugadores para los que está hecha la isla"
+
+msgid "Bigger tables grow the island and bank from this size."
+msgstr "Con más jugadores, la isla y el banco crecen a partir de este tamaño."
+
+msgid "Grow island and bank for bigger tables"
+msgstr "Agrandar isla y banco con más jugadores"
+
+msgid "Land hexes needed per player on big tables"
+msgstr "Hexágonos de tierra necesarios por jugador en mesas grandes"
+
+msgid "Island layout"
+msgstr "Disposición de la isla"
+
+msgid "Island number (same number, same island)"
+msgstr "Número de isla (mismo número, misma isla)"
+
+msgid "Used by the fixed layout."
+msgstr "Se usa con la disposición fija."
+
+msgid "The 6 and 8 rule also counts fishing grounds"
+msgstr "La regla del 6 y el 8 también cuenta los caladeros"
+
+msgid "Number of fishing grounds"
+msgstr "Número de caladeros"
+
+msgid "Blank: grows with the island."
+msgstr "En blanco: crece con la isla."
+
+msgid "Hexes between fishing grounds"
+msgstr "Hexágonos entre caladeros"
+
+msgid "Generic harbors"
+msgstr "Puertos genéricos"
+
+msgid "Special harbors of each resource"
+msgstr "Puertos especiales de cada recurso"
+
+msgid "Where the robber starts"
+msgstr "Dónde empieza el ladrón"
+
+msgid "Sea around the island (hexes)"
+msgstr "Mar alrededor de la isla (hexágonos)"
+
+msgid "Development"
+msgstr "Desarrollo"
+
+msgid "Starting materials"
+msgstr "Materiales iniciales"
+
+msgid "What each player gets to build the first settlements."
+msgstr "Lo que recibe cada jugador para construir los primeros poblados."
+
+msgid "Starting materials come from the bank"
+msgstr "Los materiales iniciales salen del banco"
+
+msgid "Settlements that give resources when built"
+msgstr "Poblados que dan recursos al construirse"
+
+msgid "Resources per neighbouring hex"
+msgstr "Recursos por hexágono vecino"
+
+msgid "Fishing grounds count too"
+msgstr "Los caladeros también cuentan"
+
+msgid "Blank: grows with the number of players."
+msgstr "En blanco: crece con el número de jugadores."
+
+msgid "Megacities"
+msgstr "Metrópolis"
+
+msgid "0 turns megacities off."
+msgstr "0 desactiva las metrópolis."
+
+msgid "Building on the road network takes time"
+msgstr "Construir en la red de caminos toma tiempo"
+
+msgid "Refund when a build is cancelled (%)"
+msgstr "Devolución al cancelar una construcción (%)"
+
+msgid "First settlements per player"
+msgstr "Primeros poblados por jugador"
+
+msgid "First roads per player"
+msgstr "Primeros caminos por jugador"
+
+msgid "A first road must touch its new settlement"
+msgstr "Un primer camino debe tocar su nuevo poblado"
+
+msgid "Build on the network before finishing the first settlements"
+msgstr "Construir en la red antes de terminar los primeros poblados"
+
+msgid "Trade with the bank before finishing the first settlements"
+msgstr "Comerciar con el banco antes de terminar los primeros poblados"
+
+msgid "Rounding of the cards lost"
+msgstr "Redondeo de las cartas perdidas"
+
+msgid "Only players over the safe hand size lose cards"
+msgstr "Solo pierden cartas quienes superan la mano segura"
+
+msgid "Only players next to the robber lose cards"
+msgstr "Solo pierden cartas quienes están junto al ladrón"
+
+msgid "Next to the robber: before or after it moves"
+msgstr "Junto al ladrón: antes o después de moverse"
+
+msgid "How the robber moves on a 7"
+msgstr "Cómo se mueve el ladrón con un 7"
+
+msgid "The robber may enter the desert"
+msgstr "El ladrón puede entrar al desierto"
+
+msgid "Hexes a knight moves the robber"
+msgstr "Hexágonos que un caballero mueve al ladrón"
+
+msgid "Cards a knight steals"
+msgstr "Cartas que roba un caballero"
+
+msgid "Seconds a settler takes per road length"
+msgstr "Segundos que tarda un colono por tramo de camino"
+
+msgid "Settler speed on own roads (%)"
+msgstr "Velocidad del colono en caminos propios (%)"
+
+msgid "When a settler must stand on the site"
+msgstr "Cuándo debe estar un colono en el sitio"
+
+msgid "Map"
+msgstr "Mapa"
+
+msgid "Other players' resources"
+msgstr "Recursos de los demás"
+
+msgid "Other players' developments"
+msgstr "Desarrollos de los demás"
+
+msgid "Scores"
+msgstr "Puntuaciones"
+
+msgid "Production log"
+msgstr "Registro de producción"
+
+msgid "Trade offers"
+msgstr "Ofertas de comercio"
+
+msgid "Shortest road that wins the award"
+msgstr "Camino más corto que gana el premio"
+
+msgid "Fewest knights that win the award"
+msgstr "Mínimo de caballeros que gana el premio"
+
+msgid "Harbor trade"
+msgstr "Comercio en puertos"
+
+msgid "Trade between players"
+msgstr "Comercio entre jugadores"
+
+msgid "Seconds before an offer expires"
+msgstr "Segundos antes de que caduque una oferta"
+
+msgid "Blank: offers stay until taken or cancelled."
+msgstr "En blanco: las ofertas siguen hasta que se aceptan o se cancelan."
+
+msgid "Open offers per player"
+msgstr "Ofertas abiertas por jugador"
+
+msgid "Developments in the deck"
+msgstr "Desarrollos en el mazo"
+
+msgid "Shuffle in a new deck when it runs out"
+msgstr "Barajar un mazo nuevo cuando se acabe"
+
+msgid "Waiting time between developments"
+msgstr "Espera entre desarrollos"
+
+msgid "Seconds between developments"
+msgstr "Segundos entre desarrollos"
+
+msgid "Used when the waiting time is in seconds."
+msgstr "Se usa cuando la espera es en segundos."
+
+msgid "Victory point developments must be played"
+msgstr "Los desarrollos de punto de victoria deben jugarse"
+
+msgid "Points of a victory point development"
+msgstr "Puntos de un desarrollo de punto de victoria"
+
+msgid "Roads from a road building"
+msgstr "Caminos de una construcción de caminos"
+
+msgid "Resources from a year of plenty"
+msgstr "Recursos de un año de abundancia"
+
+msgid "Random"
+msgstr "Al azar"
+
+msgid "Order of joining"
+msgstr "Orden de llegada"
+
+msgid "Fixed (island number)"
+msgstr "Fija (número de isla)"
+
+msgid "Beginner"
+msgstr "Principiante"
+
+msgid "Desert"
+msgstr "Desierto"
+
+msgid "Random land hex"
+msgstr "Hexágono de tierra al azar"
+
+msgid "Two dice"
+msgstr "Dos dados"
+
+msgid "Dice deck"
+msgstr "Mazo de dados"
+
+msgid "Down"
+msgstr "Hacia abajo"
+
+msgid "Up"
+msgstr "Hacia arriba"
+
+msgid "Before it moves"
+msgstr "Antes de moverse"
+
+msgid "After it moves"
+msgstr "Después de moverse"
+
+msgid "To a random neighbouring hex"
+msgstr "A un hexágono vecino al azar"
+
+msgid "The player who rolled moves it"
+msgstr "Lo mueve quien sacó el 7"
+
+msgid "Only for the first settlements"
+msgstr "Solo para los primeros poblados"
+
+msgid "Always"
+msgstr "Siempre"
+
+msgid "Open map"
+msgstr "Mapa abierto"
+
+msgid "Growing sight"
+msgstr "Visión creciente"
+
+msgid "Explored"
+msgstr "Explorado"
+
+msgid "Live fog"
+msgstr "Niebla en vivo"
+
+msgid "How many, not which"
+msgstr "Cuántos, no cuáles"
+
+msgid "Everything"
+msgstr "Todo"
+
+msgid "Nothing"
+msgstr "Nada"
+
+msgid "Shown"
+msgstr "Visibles"
+
+msgid "Hidden until the end"
+msgstr "Ocultas hasta el final"
+
+msgid "Everyone's"
+msgstr "El de todos"
+
+msgid "Only your own"
+msgstr "Solo el propio"
+
+msgid "Seen by everyone"
+msgstr "Las ve todo el mundo"
+
+msgid "Private offers allowed"
+msgstr "Se permiten ofertas privadas"
+
+msgid "One per dice roll"
+msgstr "Uno por tirada"
+
+msgid "A number of seconds"
+msgstr "Unos segundos"
+
+msgid "Lumber"
+msgstr "Madera"
+
+msgid "Brick"
+msgstr "Ladrillo"
+
+msgid "Wool"
+msgstr "Lana"
+
+msgid "Grain"
+msgstr "Trigo"
+
+msgid "Ore"
+msgstr "Mineral"
+
+msgid "Fish"
+msgstr "Pescado"
+
+msgid "Knight"
+msgstr "Caballero"
+
+msgid "Victory point"
+msgstr "Punto de victoria"
+
+msgid "Road building"
+msgstr "Construcción de caminos"
+
+msgid "Year of plenty"
+msgstr "Año de abundancia"
+
+msgid "Monopoly"
+msgstr "Monopolio"
+
+msgid "Enter a whole number."
+msgstr "Escribe un número entero."
+
+msgid "Enter a number of seconds."
+msgstr "Escribe un número de segundos."
+
+#, python-format
+msgid "Enter a value from %(low)s to %(high)s."
+msgstr "Escribe un valor de %(low)s a %(high)s."
+
+msgid "Choose yes or no."
+msgstr "Elige sí o no."
+
+msgid "Choose one of the options."
+msgstr "Elige una de las opciones."
+
+msgid "More players are needed to start than fit at the table."
+msgstr "Se necesitan más jugadores para empezar de los que caben en la mesa."
+
+msgid "The island is too small for this many players."
+msgstr "La isla es demasiado pequeña para tantos jugadores."
+
+msgid "The first settlements and roads need more pieces than a player has."
+msgstr "Los primeros poblados y caminos necesitan más piezas de las que tiene un jugador."
+
+msgid "The bank cannot pay every player's starting materials."
+msgstr "El banco no alcanza para los materiales iniciales de todos."
+
+msgid "Some number tokens cannot be rolled with these dice."
+msgstr "Algunos números no pueden salir con estos dados."
+
+msgid "Give the seconds between developments."
+msgstr "Indica los segundos entre desarrollos."
+
+msgid "This option is not available yet."
+msgstr "Esta opción aún no está disponible."
+
+msgid "This value does not fit with the other settings."
+msgstr "Este valor no encaja con los demás ajustes."
+
+msgid "Some settings are not valid: they are marked below."
+msgstr "Algunos ajustes no son válidos: están marcados abajo."
+
+msgid "auto"
+msgstr "auto"
+
+msgid "All settings"
+msgstr "Todos los ajustes"
+
+msgid "Leave a box blank to keep the game type's value, shown in grey."
+msgstr "Deja una casilla en blanco para mantener el valor del tipo de partida, que se ve en gris."

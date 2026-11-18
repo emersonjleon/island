@@ -8,13 +8,14 @@ from engine.settings import load_preset
 from engine.settings.share import MAX_CODE_LENGTH
 
 from . import services
-from .forms import CreateGameForm
+from .forms import KNOB_PATHS, CreateGameForm
 from .messages import error_message
 from .models import BOT_LEVELS, COLOURS, Game, GameStatus
 from .presets import (
-    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, preset_description, preset_label, preset_values, presets_data,
-    settings_values, show, stats_rows,
+    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, default_players, preset_description, preset_label, preset_values,
+    presets_data, settings_values, stats_rows,
 )
+from .settings_editor import changed_settings, editor_data, editor_view
 from .sharing import CONFIG_PARAM, code_context, read_code
 
 
@@ -71,12 +72,18 @@ def create_form_context(form: CreateGameForm) -> dict:
     preset, players = _chosen(form)
     base = form.base_name()
 
-    def values_of(name: str) -> dict:
-        return preset_values(base if name == CUSTOM else name, players)
+    def values_of(name: str, size: int | None = None) -> dict:
+        real = base if name == CUSTOM else name
+        return preset_values(real, size or players)
+
+    def card_values(name: str) -> dict:
+        """The chosen card follows the table size; the others show their own numbers."""
+        own = default_players(base if name == CUSTOM else name)
+        return values_of(name, players if name == preset else own)
 
     cards = [
         {"radio": radio, "name": radio.data["value"], "description": preset_description(radio.data["value"]),
-         "values": values_of(radio.data["value"])}
+         "values": card_values(radio.data["value"])}
         for radio in form["preset"]
     ]
     groups = [
@@ -95,6 +102,10 @@ def create_form_context(form: CreateGameForm) -> dict:
         "base_label": preset_label(base),
         "presets_data": presets_data(),
         "code_preview": code_preview(form),
+        "editor": editor_view(form.data if form.is_bound else {}, base, KNOB_PATHS, form.editor_errors),
+        "editor_open": bool(form.editor_errors) or any(
+            k.startswith("s:") and v for k, v in (form.data.items() if form.is_bound else [])),
+        "editor_data": editor_data(),
     }
 
 
@@ -142,11 +153,11 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
 
 
 def rule_changes(preset: str, settings) -> list[tuple]:
-    """The rules changed from the game type that the summary does not already show."""
-    shown = {k for _label, knobs in STATS for k in knobs}
-    values = settings_values(settings)
-    base = preset_values(preset, settings.players.max)
-    return [(KNOBS_BY_NAME[k].label, show(v)) for k, v in values.items() if k not in shown and v != base[k]]
+    """The settings changed from the game type that the summary does not already show."""
+    players = settings.players.max
+    base = load_preset(preset, {"players": {"max": players}}, players=players)
+    shown = {".".join(KNOBS_BY_NAME[k].path) for _label, knobs in STATS for k in knobs}
+    return changed_settings(base, settings, exclude=shown)
 
 
 @login_required
