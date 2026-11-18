@@ -14,6 +14,8 @@
     "help": "Tab o flechas para elegir, Enter para construir, Esc para cancelar",
     "none": "No hay dónde construir eso ahora",
     "touchHelp": "Toca un lugar resaltado para construir",
+    "freeRoad_one": "Camino gratis: te queda {{count}}",
+    "freeRoad_other": "Caminos gratis: te quedan {{count}}",
     "setupRoad": "Ahora un camino junto a tu nuevo poblado",
     "setupRoadHelp": "Elige una de las líneas punteadas: Tab o flechas para elegir, Enter para construir",
     "setupRoadTouch": "Toca una de las líneas punteadas junto a él"
