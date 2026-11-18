@@ -181,6 +181,8 @@ class GameHost:
     async def _sync_finished(self, message: dict[str, Any]) -> None:
         try:
             core = await db(store.load_finished_core)(message.get("game_id"))
+        except LookupError:
+            return  # its board is no longer kept; the game page says so
         except Exception:
             log.exception("could not load finished game %s", message.get("game_id"))
             return

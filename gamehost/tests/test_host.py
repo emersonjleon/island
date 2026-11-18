@@ -222,6 +222,21 @@ class GameHostTests(TransactionTestCase):
 
         async_to_sync(run)()
 
+    def test_finished_game_without_snapshot_gets_no_answer(self):
+        game = started_lobby_game(2)
+        Game.objects.filter(pk=game.pk).update(status=GameStatus.FINISHED)
+
+        async def run():
+            host = self.host()
+            reply = await self.layer.new_channel()
+            with self.assertNoLogs("gamehost.runner", level="ERROR"):
+                await host.dispatch({"type": "game.sync", "game_id": game.pk, "seat": 0, "reply_channel": reply})
+                await asyncio.gather(*host._starts)
+            with self.assertRaises(TimeoutError):
+                await asyncio.wait_for(self.layer.receive(reply), 0.1)
+
+        async_to_sync(run)()
+
     def test_sync_for_unknown_game_gets_no_answer(self):
         async def run():
             host = self.host()

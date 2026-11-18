@@ -16,6 +16,7 @@ from gameplay.ratelimit import TokenBucket
 from gameplay.routing import websocket_urlpatterns
 from gamehost.clock import ManualClock
 from gamehost.leases import LocalLeases
+from gamehost.models import GameSnapshot
 from gamehost.runner import GameHost
 from lobby import services
 from lobby.models import Game, GameStatus
@@ -44,6 +45,30 @@ class PlayViewTests(TestCase):
         self.client.force_login(user)
         response = self.client.get(reverse("gameplay:play", args=[game.code]))
         self.assertRedirects(response, reverse("lobby:detail", args=[game.code]))
+
+    def test_unknown_game_goes_back_to_the_lobby(self):
+        user = User.objects.create_user("solo", "s@example.com", "x")
+        self.client.force_login(user)
+        response = self.client.get(reverse("gameplay:play", args=["NOPE42"]), follow=True)
+        self.assertRedirects(response, reverse("lobby:list"))
+        self.assertContains(response, "does not exist any more")
+
+    def test_finished_game_without_its_board_shows_the_game_page(self):
+        game, users = started_game()
+        Game.objects.filter(pk=game.pk).update(status=GameStatus.FINISHED)
+        self.client.force_login(users[0])
+        response = self.client.get(reverse("gameplay:play", args=[game.code]), follow=True)
+        self.assertRedirects(response, reverse("lobby:detail", args=[game.code]))
+        self.assertContains(response, "no longer kept")
+
+    def test_finished_game_with_its_board_opens_the_board(self):
+        game, users = started_game()
+        GameSnapshot.objects.create(game=game, kind="end", cmd_seq=0, game_ms=0, state={}, state_hash="x")
+        Game.objects.filter(pk=game.pk).update(status=GameStatus.FINISHED)
+        self.client.force_login(users[0])
+        response = self.client.get(reverse("gameplay:play", args=[game.code]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["config"]["status"], GameStatus.FINISHED)
 
     def test_page_carries_config(self):
         game, users = started_game()
