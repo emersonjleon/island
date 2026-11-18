@@ -70,6 +70,8 @@ export interface HudHandle {
   setLink(link: string, info?: LinkInfo): void;
   setMode(mode: ModeInfo | null): void;
   notify(code: string, params?: Record<string, unknown>): void;
+  /** Pop up an already translated line. */
+  notifyText(text: string): void;
   openTrade(): void;
   /** The player picked the robber's hex for a knight: play it (asking whom to rob if needed). */
   robberPicked(hex: number): void;
@@ -85,7 +87,7 @@ type Notice = { id: number; text: string };
 
 export function mountHud(el: HTMLElement, props: HudProps): HudHandle {
   const handle: HudHandle = {
-    setLink: () => {}, setMode: () => {}, notify: () => {}, openTrade: () => {}, robberPicked: () => {}, buyCard: () => {},
+    setLink: () => {}, setMode: () => {}, notify: () => {}, notifyText: () => {}, openTrade: () => {}, robberPicked: () => {}, buyCard: () => {},
   };
   render(<Hud {...props} handle={handle} />, el);
   return handle;
@@ -111,6 +113,13 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       if (store.seq !== seq && store.lastEvents.length) {
         const lines = store.lastEvents.map((ev) => logLine(t, ev, name, store.seat)).filter((l): l is LogLine => !!l);
         if (lines.length) setLog((old) => [...old, ...lines].slice(-LOG_KEEP));
+        // A build of yours that stops is easy to miss in the log: pop it up too.
+        for (const ev of store.lastEvents) {
+          if (ev.k === "construction_cancelled" && ev.seat === store.seat && ev.reason !== "cancelled") {
+            const line = logLine(t, ev, name, store.seat);
+            if (line) handle.notifyText(line.text);
+          }
+        }
       }
       seq = store.seq;
     });
@@ -130,11 +139,12 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       }
     };
     handle.setMode = (mode) => setFeed((f) => ({ ...f, mode }));
-    handle.notify = (code, params) => {
+    handle.notifyText = (text) => {
       const id = ++next;
-      setNotices((n) => [...n.slice(-2), { id, text: errorText(t, code, params) }]);
+      setNotices((n) => [...n.slice(-2), { id, text }]);
       setTimeout(() => setNotices((n) => n.filter((x) => x.id !== id)), NOTICE_MS);
     };
+    handle.notify = (code, params) => handle.notifyText(errorText(t, code, params));
     handle.openTrade = () => setDialog((d) => (d === "trade" ? null : "trade"));
     handle.buyCard = () => props.send({ a: "buy_dev_card" });
     handle.robberPicked = (hex) => {

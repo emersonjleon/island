@@ -127,7 +127,11 @@ describe("texts", () => {
     expect(logLine(t, { k: "produced", roll: 6, gains: { "1": { ore: 2 } } }, name, 0)).toBeNull();
     expect(logLine(t, { k: "produced", roll: 2, gains: {} }, name, 0)!.text).toBe("Nobody produced anything");
     expect(logLine(t, { k: "construction_cancelled", seat: 1, reason: "conflict" }, name, 0)!.text)
-      .toBe("ben: building stopped (someone else built there first)");
+      .toBe("ben: building stopped (someone else finished a building there or next to it first)");
+    expect(logLine(t, { k: "construction_cancelled", seat: 0, reason: "conflict", refund: { brick: 1, lumber: 1 } }, name, 0)!.text)
+      .toBe("Your construction stopped (someone else finished a building there or next to it first). You got back 1 lumber, 1 brick");
+    expect(logLine(tEs, { k: "construction_cancelled", seat: 0, reason: "conflict", refund: { grain: 1 } }, name, 0)!.text)
+      .toBe("Tu construcción se detuvo (otro jugador terminó antes un edificio ahí o al lado). Te devolvimos 1 de trigo");
     expect(logLine(t, { k: "game_over", winner: 1, points: {} }, name, 0)!.text).toBe("ben won the game");
     expect(logLine(t, { k: "game_over", winner: 0, points: {} }, name, 0)!.text).toBe("You won the game");
     const lr = (seat: number | null, previous: number | null) =>

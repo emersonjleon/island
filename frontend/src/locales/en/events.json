@@ -10,6 +10,8 @@
   "built_you": "You built a {{kind}}",
   "construction_cancelled": "{{who}}: building stopped ({{reason}})",
   "construction_cancelled_you": "Your construction stopped ({{reason}})",
+  "construction_cancelled_refund": "{{who}}: building stopped ({{reason}}); got back {{res}}",
+  "construction_cancelled_refund_you": "Your construction stopped ({{reason}}). You got back {{res}}",
   "setup_complete": "{{who}} finished setup",
   "setup_complete_you": "You finished setup",
   "starting_resources": "{{who}} got {{res}} to start",
@@ -49,7 +51,7 @@
   "reason": {
     "builder_left": "the settler walked away",
     "cancelled": "cancelled",
-    "conflict": "someone else built there first",
+    "conflict": "someone else finished a building there or next to it first",
     "resigned": "resigned"
   },
   "resigned": "{{who}} resigned",
