@@ -192,7 +192,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         </div>
       </div>
       {s && props.chat && <ChatPanel chat={props.chat} t={t} touch={!!props.touch} />}
-      {s && feed.link !== "open" && <LinkBanner t={t} feed={feed} now={Date.now()} reconnect={props.reconnect} />}
+      {s && !finished && feed.link !== "open" && <LinkBanner t={t} feed={feed} now={Date.now()} reconnect={props.reconnect} />}
       <div class="hud-notices" aria-live="polite">
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
