@@ -14,8 +14,8 @@ by default that is all of ``raw``. A preset's own ``land_hexes`` or bank, writte
 for its ``sized_for`` players, is not explicit when ``load_preset`` scales it: it
 is the starting point that gets multiplied.
 
-The development deck is not scaled yet: its settings group is a stage 2 setting
-and non-default values are refused while ``IMPLEMENTED_STAGE`` is 1.
+The development deck is not scaled: with ``dev_cards.refill`` (the default) a
+fresh deck is shuffled in whenever it runs out.
 
 It works on the raw (unvalidated) settings dict, before validation, because the
 unscaled settings of a big game would not validate (the bank could not pay the

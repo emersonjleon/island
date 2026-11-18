@@ -187,10 +187,12 @@ Every number in this doc is a customizable variable, and the code never hard-cod
 
 | Preset | Purpose | Key settings |
 | --- | --- | --- |
-| Classic (default) | Base Catan, played in real time | Settlers walk to build the first 2 settlements from starting materials, then everything connects to your roads; open map, or Growing sight on large islands; 20 s rolls; 10 points |
+| Classic (default) | Base Catan, played in real time | Settlers walk to build the first 2 settlements from starting materials, then everything connects to your roads; open map, or Growing sight on large islands; 15 s rolls; 10 points |
 | Settlers (variation) | Characters walk to build | As Classic, but a settler must stand on the site to build |
 | Explorer (variation) | Discovery and scouting | Explored fog, hidden numbers, settlers, 20 s rolls |
-| Blitz | Short games | 8 s rolls, 7 points |
+| Blitz | Short games | 10 s rolls, 7 points |
+| Big | 5 or 6 players | 30 hexes, 10 s rolls, 12 points |
+| Huge | 7 or more players | 48 hexes, 5 s rolls, 14 points |
 
 **Setting groups.**
 
@@ -226,7 +228,7 @@ Version 1 is the Classic preset, fully playable online in the 2D view by 2–4 p
 - [x] Default preset: Classic. Settlers walk to build the first 2 settlements, wherever their player prefers; after that everything connects to the road network. Settlers doing all the building is a later variation.
 - [x] Visibility: Growing sight, optional, for large islands.
 - [x] Robber on a 7: nobody controls it; it moves to a random neighbouring hex. Only a knight card lets a player move it, up to 3 hexes.
-- [x] Roll interval: 20 seconds.
+- [x] Roll interval: 15 seconds in Classic (Blitz and Big 10 s, Huge 5 s; Emerson, Nov 17, 2026).
 - [x] Computer players: not in version 1.
 - [x] Players need accounts to play.
 - [x] Megacities (upgrade of a city: 4 cards per roll, 3 points) so full islands cannot stall a game. Added Oct 26, 2026 (not yet in the Claude Docs version).

@@ -42,7 +42,25 @@
   <h2>{% translate "Create a game" %}</h2>
   <form method="post" class="stacked create-form" id="create-game" data-preset="{{ chosen_preset }}" data-custom="{{ custom_preset }}">
     {% csrf_token %}
+    {{ form.base }}
     {{ form.non_field_errors }}
+    <div class="config-field">
+      <label for="{{ form.config.id_for_label }}">{{ form.config.label }}</label>
+      {{ form.config }}
+      <span class="helptext">{{ form.config.help_text }}</span>
+      {{ form.config.errors }}
+      {% if code_preview %}
+      <div class="preset-stats code-preview">
+        <h3>{% blocktranslate with type=code_preview.label players=code_preview.players trimmed %}
+          This code: {{ type }} for {{ players }} players{% endblocktranslate %}</h3>
+        <dl class="stats-list">
+          {% for label, value in code_preview.stats %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+          {% endfor %}{% for label, value in code_preview.changes %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+          {% endfor %}
+        </dl>
+      </div>
+      {% endif %}
+    </div>
     <fieldset class="preset-picker">
       <legend>{{ form.preset.label }}</legend>
       {{ form.preset.errors }}
@@ -78,7 +96,9 @@
 
     <div class="custom-settings" id="custom-settings">
       <h3>{% translate "Custom rules" %}</h3>
-      <p class="helptext">{% translate "Used only by the Custom game type. Blank fields keep the Classic value shown in grey." %}</p>
+      <p class="helptext">{% blocktranslate trimmed %}
+        Starting from <b data-base-label>{{ base_label }}</b>. Blank fields keep its value, shown in grey.
+      {% endblocktranslate %}</p>
       {% for group in knob_groups %}
       <fieldset class="knob-group">
         <legend>{{ group.label }}</legend>
@@ -98,7 +118,16 @@
       {% endfor %}
     </div>
 
-    <button type="submit">{% translate "Create game" %}</button>
+    <div class="create-actions">
+      <button type="submit">{% translate "Create game" %}</button>
+      <span class="or muted">{% translate "or" %}</span>
+      <span class="play-bots">
+        <button type="submit" name="play_bots" value="1" class="secondary">{% translate "Play now against bots" %}</button>
+        <label for="{{ form.bot_level.id_for_label }}" class="visually-hidden">{{ form.bot_level.label }}</label>
+        {{ form.bot_level }}
+      </span>
+    </div>
+    <p class="helptext">{% translate "Play now fills every other seat with bots and starts the game straight away." %}</p>
   </form>
   {{ presets_data|json_script:"presets-data" }}
 </section>

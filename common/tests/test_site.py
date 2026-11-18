@@ -41,7 +41,7 @@ class SiteTests(TestCase):
         response = self.client.get(reverse("how_to_play"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "10 points")
-        self.assertContains(response, "20 seconds")
+        self.assertContains(response, "15 seconds")
         self.assertContains(response, "1 brick, 1 lumber")
         self.assertContains(response, "never steals")
         response = self.client.get(reverse("how_to_play"), HTTP_ACCEPT_LANGUAGE="es")

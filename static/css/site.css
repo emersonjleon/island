@@ -102,7 +102,7 @@ button.link { background: none; border: 0; padding: 0; color: var(--accent); tex
 /* ------------------------------------------------------------------ forms + buttons */
 .stacked > div { margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
 .stacked label { font-weight: 600; font-size: 0.95rem; }
-.stacked input, .stacked select, .lobby-actions select { padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+.stacked input, .share-row input, .stacked select, .lobby-actions select { padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
   background: var(--bg); color: var(--fg); font: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
 .stacked input:focus, .stacked select:focus, .lobby-actions select:focus { outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(23, 96, 127, 0.18); }
@@ -212,6 +212,19 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 .knob-check label { display: flex; align-items: flex-start; gap: 8px; font-weight: normal; cursor: pointer; }
 .knob-check input { width: 1.15rem; height: 1.15rem; margin: 1px 0 0; accent-color: var(--accent); flex: none; }
 .create-form.js:not([data-preset="custom"]) .custom-settings { display: none; }
+.config-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+.config-field label { font-weight: 600; font-size: 0.95rem; }
+.config-field input, .share-row input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
+.code-preview { margin-top: 8px; }
+.create-form.from-code > .preset-picker, .create-form.from-code > .players-field,
+.create-form.from-code > .preset-stats, .create-form.from-code > .custom-settings { opacity: 0.4; pointer-events: none; }
+.create-form:not([data-preset="custom"]) > .preset-stats { display: none; }
+.create-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
+.create-actions .play-bots { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.create-actions select { padding: 8px 10px; }
+#lobby-seats > p.error { color: var(--error); font-weight: 600; margin: 0 0 8px; }
+.share-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.share-row input { flex: 1 1 16rem; min-width: 0; }
 .settings-summary .settings-note { grid-column: 1 / -1; font-weight: normal; font-size: 0.85rem; }
 @media (max-width: 480px) {
   .settings-summary { grid-template-columns: 1fr auto; }

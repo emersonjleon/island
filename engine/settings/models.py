@@ -32,7 +32,7 @@ __all__ = [
     "VictorySettings", "LongestRoadSettings", "LargestArmySettings", "TradingSettings", "DevCardSettings",
 ]
 
-IMPLEMENTED_STAGE = 1
+IMPLEMENTED_STAGE = 2
 """Highest design stage the engine implements. Context key ``implemented_stage`` overrides it."""
 
 CURRENT_SCHEMA_VERSION = 1

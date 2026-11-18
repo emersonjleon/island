@@ -256,8 +256,8 @@ msgid "The standard island for 3 or 4 players."
 msgstr "La isla de siempre, para 3 o 4 jugadores."
 
 #: lobby/presets.py:24
-msgid "Expanded"
-msgstr "Ampliada"
+msgid "Big"
+msgstr "Grande"
 
 #: lobby/presets.py:24
 msgid ""
@@ -278,8 +278,8 @@ msgid "Custom"
 msgstr "Personalizada"
 
 #: lobby/presets.py:26
-msgid "Start from Classic and choose the rules yourself."
-msgstr "Parte de la Clásica y elige tú las reglas."
+msgid "Start from the game type you chose and change the rules yourself."
+msgstr "Parte del tipo de partida que elegiste y cambia tú las reglas."
 
 #: lobby/presets.py:85
 msgid "Island"
@@ -1108,10 +1108,13 @@ msgid "Custom rules"
 msgstr "Reglas personalizadas"
 
 #: templates/lobby/list.html:81
+#, python-format
 msgid ""
-"Used only by the Custom game type. Blank fields keep the Classic value shown "
-"in grey."
-msgstr "Solo se usan en la partida Personalizada. Los campos en blanco mantienen el valor de la Clásica, que se ve en gris."
+"Starting from <b data-base-label>%(base_label)s</b>. Blank fields keep its "
+"value, shown in grey."
+msgstr ""
+"Partiendo de <b data-base-label>%(base_label)s</b>. Los campos en blanco "
+"mantienen su valor, que se ve en gris."
 
 #: templates/lobby/list.html:101
 msgid "Create game"
@@ -1128,3 +1131,81 @@ msgstr "Crear partida"
 
 #~ msgid "Blank keeps the preset (10 in Classic)."
 #~ msgstr "En blanco mantiene el preajuste (10 en Clásico)."
+
+#: lobby/forms.py
+msgid "Settings code"
+msgstr "Código de configuración"
+
+#: lobby/forms.py
+msgid ""
+"Paste a code copied from another game to play with its rules. It replaces "
+"the choices below."
+msgstr ""
+"Pega un código copiado de otra partida para jugar con sus reglas. Reemplaza "
+"las opciones de abajo."
+
+#: lobby/messages.py
+msgid "That settings code is not complete or not valid. Copy it again."
+msgstr "Ese código de configuración está incompleto o no es válido. Cópialo de nuevo."
+
+#: lobby/messages.py
+msgid "That settings code is too long."
+msgstr "Ese código de configuración es demasiado largo."
+
+#: lobby/messages.py
+msgid "That settings code was made by a newer version of the game."
+msgstr "Ese código de configuración se hizo con una versión más nueva del juego."
+
+#: lobby/messages.py
+msgid "That settings code uses a game type this server does not have."
+msgstr "Ese código de configuración usa un tipo de partida que este servidor no tiene."
+
+#: templates/lobby/detail.html
+msgid ""
+"Copy this code, or the link, to create another game with these same rules."
+msgstr ""
+"Copia este código, o el enlace, para crear otra partida con estas mismas "
+"reglas."
+
+#: templates/lobby/detail.html
+msgid "Copied"
+msgstr "Copiado"
+
+#: templates/lobby/detail.html
+msgid "Copy code"
+msgstr "Copiar código"
+
+#: templates/lobby/detail.html
+msgid "Copy link"
+msgstr "Copiar enlace"
+
+#: templates/lobby/list.html
+#, python-format
+msgid "This code: %(type)s for %(players)s players"
+msgstr "Este código: %(type)s para %(players)s jugadores"
+
+#: lobby/models.py
+#, python-brace-format
+msgid "{type} (custom)"
+msgstr "{type} (personalizada)"
+
+#: templates/lobby/list.html
+msgid "or"
+msgstr "o"
+
+#: templates/lobby/list.html
+msgid "Play now against bots"
+msgstr "Jugar ya contra bots"
+
+#: templates/lobby/list.html
+msgid ""
+"Play now fills every other seat with bots and starts the game straight away."
+msgstr ""
+"Jugar ya llena los demás puestos con bots y empieza la partida de inmediato."
+
+#: templates/lobby/_seats.html
+#, python-format
+msgid "Fill the free seat"
+msgid_plural "Fill the %(free)s free seats"
+msgstr[0] "Llenar el puesto libre"
+msgstr[1] "Llenar los %(free)s puestos libres"
