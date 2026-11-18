@@ -199,7 +199,9 @@ table.keys td { padding: 4px 0; }
 .stats section + section { margin-top: 4px; }
 .stats-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 8px; padding: 0; font-size: 0.78rem; color: #4d4637; }
 .stats-legend li { display: inline-flex; align-items: center; gap: 5px; }
-.stats-legend .chip { width: 12px; height: 12px; border-radius: 3px; }
+/* Point sources use square keys; players use round swatches. The source colours are
+   lighter tints so they do not read as player colours. */
+.stats-key { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(29, 42, 48, 0.35); }
 .stats-players { list-style: none; margin: 0; padding: 0; }
 .stats-players li { padding: 6px 0; }
 .stats-players li + li { border-top: 1px solid #ebe1c8; }
@@ -211,15 +213,18 @@ table.keys td { padding: 4px 0; }
 .stats .swatch { border-color: #fff; flex: none; }
 .stats-bar { position: relative; display: flex; height: 12px; margin: 5px 0 3px; border-radius: 6px; background: #ece3cc; overflow: hidden; }
 .stats-bar span { height: 100%; }
-.stats-bar span + span:not(.target) { box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.7); }
+.stats-bar span + span:not(.target) { box-shadow: inset 2px 0 0 #fbf6ea; }
 .stats-bar .target { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -2px; background: #1d2a30; opacity: 0.45; }
 .stats .parts, .stats .muted { margin: 0; font-size: 0.8rem; color: #6b6253; }
-.src-settlement { background: #7cb342; }
-.src-city { background: #3f86c4; }
-.src-megacity { background: #7e57c2; }
-.src-road { background: #d77448; }
-.src-army { background: #b3261e; }
-.src-vp { background: #e9b824; }
+.stats .parts { display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.stats .parts .part { display: inline-flex; align-items: center; gap: 5px; }
+.stats .parts .stats-key { width: 10px; height: 10px; }
+.stats-key.src-settlement, .stats-bar .src-settlement { background: #9ccc65; }
+.stats-key.src-city, .stats-bar .src-city { background: #81b9e8; }
+.stats-key.src-megacity, .stats-bar .src-megacity { background: #b9a3de; }
+.stats-key.src-road, .stats-bar .src-road { background: #f2a97c; }
+.stats-key.src-army, .stats-bar .src-army { background: #98a7b0; }
+.stats-key.src-vp, .stats-bar .src-vp { background: #f5d36b; }
 .stats-chart { display: block; width: 100%; height: auto; max-height: 220px; }
 .stats-chart text { font-size: 9px; fill: #6b6253; }
 .stats-chart .grid { stroke: #e6dcc3; stroke-width: 1; }
