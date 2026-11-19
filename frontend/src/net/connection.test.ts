@@ -111,6 +111,24 @@ describe("GameConnection", () => {
     vi.useRealTimers();
   });
 
+  it("keeps a quiet socket once the game is over (nobody answers pings then)", () => {
+    vi.useFakeTimers();
+    const sockets: FakeSocket[] = [];
+    const store = new GameStore();
+    const conn = new GameConnection({
+      url: "ws://x/", lang: "es", store, pingMs: 1000, events: null,
+      socketFactory: () => { const s = new FakeSocket(); sockets.push(s); return s; },
+    });
+    conn.start();
+    sockets[0]!.open();
+    sockets[0]!.deliver({ t: "state", seq: 1, now: 0, state: { phase: "finished", players: [], settlers: [], constructions: [], buildings: [], roads: [], dice_history: [] } });
+    vi.advanceTimersByTime(10_000);
+    expect(sockets).toHaveLength(1);
+    expect(conn.isOpen).toBe(true);
+    conn.stop();
+    vi.useRealTimers();
+  });
+
   it("follows the browser's online and offline events", () => {
     vi.useFakeTimers();
     const target = new EventTarget();

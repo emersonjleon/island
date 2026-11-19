@@ -203,6 +203,8 @@ export class GameConnection {
       if (this.pingTimer) clearInterval(this.pingTimer);
       const every = this.opts.pingMs ?? 5000;
       this.pingTimer = setInterval(() => {
+        // A finished game has nobody left to answer pings: silence is expected, not a lost link.
+        if (this.opts.store.state?.phase === "finished") return;
         if (Date.now() - this.lastHeard > (this.opts.staleMs ?? every * 3)) this.drop();
         else this.ping();
       }, every);

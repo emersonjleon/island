@@ -1669,3 +1669,11 @@ msgstr "Todos los ajustes"
 
 msgid "Leave a box blank to keep the game type's value, shown in grey."
 msgstr "Deja una casilla en blanco para mantener el valor del tipo de partida, que se ve en gris."
+
+#: gameplay/views.py
+msgid "That game does not exist any more."
+msgstr "Esa partida ya no existe."
+
+#: gameplay/views.py
+msgid "This game is over and its board is no longer kept."
+msgstr "Esta partida terminó y su tablero ya no se conserva."
