@@ -162,6 +162,12 @@ class GameHost:
             if reply and kind == "game.intent":
                 await self.layer.send(reply, {"type": "game.out", "msg": {
                     "t": "reject", "cid": message.get("cid"), "code": "game.not_running", "params": {}}})
+            elif reply and kind == "game.sync":
+                # A finished game has no runner; a page (re)loaded after the end still gets its
+                # final board, read from the end snapshot beside the loop.
+                task = asyncio.create_task(self._sync_finished(message), name=f"finished-{game_id}")
+                self._starts.add(task)
+                task.add_done_callback(self._starts.discard)
             return
         if kind == "game.ping":
             # Answered at once (not queued) so the round trip measures the network, not the game loop.
@@ -171,6 +177,17 @@ class GameHost:
                     "t": "pong", "c": message.get("c"), "now": runner.clock.now()}})
         elif kind in ("game.intent", "game.sync"):
             runner.inbox.put_nowait(message)
+
+    async def _sync_finished(self, message: dict[str, Any]) -> None:
+        try:
+            core = await db(store.load_finished_core)(message.get("game_id"))
+        except LookupError:
+            return  # its board is no longer kept; the game page says so
+        except Exception:
+            log.exception("could not load finished game %s", message.get("game_id"))
+            return
+        for o in core.sync(message) if core is not None else []:
+            await self.layer.send(o.target, o.message)
 
     async def receive_loop(self) -> None:
         while True:

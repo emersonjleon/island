@@ -53,6 +53,12 @@ def restore_core(game: Game) -> GameCore:
     return GameCore(game.pk, state, cmd_seq=cmd_seq, seqs=dict(snap.seqs), bots=bots_for(game, state.now_ms))
 
 
+def load_finished_core(game_id: int) -> GameCore | None:
+    """The final position of a FINISHED game (from its end snapshot), or None for any other game."""
+    game = Game.objects.filter(pk=game_id, status=GameStatus.FINISHED).first()
+    return restore_core(game) if game is not None else None
+
+
 def flush_commands(core: GameCore) -> int:
     pending = core.take_pending()
     GameCommand.objects.bulk_create(

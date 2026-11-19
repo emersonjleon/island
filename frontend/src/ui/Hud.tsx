@@ -192,7 +192,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         </div>
       </div>
       {s && props.chat && <ChatPanel chat={props.chat} t={t} touch={!!props.touch} />}
-      {s && feed.link !== "open" && <LinkBanner t={t} feed={feed} now={Date.now()} reconnect={props.reconnect} />}
+      {s && !finished && feed.link !== "open" && <LinkBanner t={t} feed={feed} now={Date.now()} reconnect={props.reconnect} />}
       <div class="hud-notices" aria-live="polite">
         {notices.map((n) => <div key={n.id} class="hud-notice">{n.text}</div>)}
       </div>
@@ -251,10 +251,12 @@ function DiceClock(props: HudProps & { feed: HudFeed; onResults?: () => void }) 
     const help = !feed.mode.count ? "input:mode.none" : feed.mode.kind === "robber" ? "input:mode.robberHelp"
       : feed.mode.prompt ? (props.touch ? "input:mode.setupRoadTouch" : "input:mode.setupRoadHelp")
       : props.touch ? "input:mode.touchHelp" : "input:mode.help";
-    const title = feed.mode.prompt ? "input:mode.setupRoad" : `input:mode.${feed.mode.kind}`;
+    const title = feed.mode.prompt ? "input:mode.setupRoad" : feed.mode.free ? "input:mode.freeRoad" : `input:mode.${feed.mode.kind}`;
     body = (
       <>
-        <span class={`hud-mode mode-${feed.mode.kind}${feed.mode.prompt ? " prompt" : ""}`}><strong>{t(title)}</strong> <span>{t(help)}</span></span>
+        <span class={`hud-mode mode-${feed.mode.kind}${feed.mode.prompt || feed.mode.free ? " prompt" : ""}`}>
+          <strong>{t(title, { count: feed.mode.free ?? 0 })}</strong> <span>{t(help)}</span>
+        </span>
         <button type="button" class="hud-cancel" onClick={() => props.controls.action("cancel")}>{t("hud:action.cancel")}</button>
       </>
     );
@@ -398,6 +400,7 @@ function HandBar({ store, t, controls, touch, mode, devOpen, onTrade, onKeys, on
   const myCards = cardCount(devPlayer(store.state, store.seat));
   const offerCount = othersOffers(store.state, store.seat).length;
   const devCost = costOf(store.settings, "dev_card" as BuildKind);
+  const freeRoads = devPlayer(store.state, store.seat)?.free_roads ?? 0;
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -412,12 +415,14 @@ function HandBar({ store, t, controls, touch, mode, devOpen, onTrade, onKeys, on
       <div class="actions">
         {BUILDS.map(({ kind, action }) => {
           const cost = costOf(store.settings, kind);
-          const ok = canAfford(hand, cost);
+          const free = kind === "road" && freeRoads > 0;       // road building card
+          const ok = free || canAfford(hand, cost);
           return (
             <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}`} onClick={() => controls.action(action)}
-                    aria-pressed={mode?.kind === kind} title={t("hud:build.cost", { res: formatRes(t, cost) })}>
+                    aria-pressed={mode?.kind === kind} title={free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
               <span class="build-name">{t(`hud:build.${kind}`)}</span>
-              <CostPips cost={cost} />
+              {free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
+              {free && <span class="badge count-badge" title={t("hud:build.free")}>{freeRoads}</span>}
             </button>
           );
         })}

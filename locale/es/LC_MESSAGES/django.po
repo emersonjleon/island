@@ -1722,3 +1722,11 @@ msgstr "Usar"
 
 msgid "Delete"
 msgstr "Borrar"
+
+#: gameplay/views.py
+msgid "That game does not exist any more."
+msgstr "Esa partida ya no existe."
+
+#: gameplay/views.py
+msgid "This game is over and its board is no longer kept."
+msgstr "Esta partida terminó y su tablero ya no se conserva."

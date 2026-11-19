@@ -204,6 +204,50 @@ class GameHostTests(TransactionTestCase):
         )
         self.assertTrue(GameSnapshot.objects.filter(game=game, kind="end").exists())
 
+    def test_finished_game_answers_sync_from_the_database(self):
+        """Reloading the page after the end still shows the final board."""
+        game = started_lobby_game(2)
+
+        async def run():
+            host = self.host()
+            await host.dispatch({"type": "game.start", "game_id": game.pk})
+            runner = host.runners[game.pk]
+            runner.core.state.phase, runner.core.state.winner = "finished", 0
+            await asyncio.wait_for(host.tasks[game.pk], TIMEOUT) if game.pk in host.tasks else None
+            self.assertNotIn(game.pk, host.runners)
+            reply = await self.layer.new_channel()
+            await host.dispatch({"type": "game.sync", "game_id": game.pk, "seat": 0, "reply_channel": reply})
+            board, state = (await self.recv(reply))["msg"], (await self.recv(reply))["msg"]
+            self.assertEqual((board["t"], state["t"], state["state"]["phase"]), ("board", "state", "finished"))
+
+        async_to_sync(run)()
+
+    def test_finished_game_without_snapshot_gets_no_answer(self):
+        game = started_lobby_game(2)
+        Game.objects.filter(pk=game.pk).update(status=GameStatus.FINISHED)
+
+        async def run():
+            host = self.host()
+            reply = await self.layer.new_channel()
+            with self.assertNoLogs("gamehost.runner", level="ERROR"):
+                await host.dispatch({"type": "game.sync", "game_id": game.pk, "seat": 0, "reply_channel": reply})
+                await asyncio.gather(*host._starts)
+            with self.assertRaises(TimeoutError):
+                await asyncio.wait_for(self.layer.receive(reply), 0.1)
+
+        async_to_sync(run)()
+
+    def test_sync_for_unknown_game_gets_no_answer(self):
+        async def run():
+            host = self.host()
+            reply = await self.layer.new_channel()
+            await host.dispatch({"type": "game.sync", "game_id": 999, "seat": 0, "reply_channel": reply})
+            await asyncio.gather(*host._starts)
+            with self.assertRaises(TimeoutError):
+                await asyncio.wait_for(self.layer.receive(reply), 0.1)
+
+        async_to_sync(run)()
+
     def test_bad_starting_game_is_aborted(self):
         game = started_lobby_game(2)
         Game.objects.filter(pk=game.pk).update(settings={"board": {"land_hexes": -1}})

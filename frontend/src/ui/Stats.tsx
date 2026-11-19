@@ -53,7 +53,7 @@ function Breakdown({ store, t, state }: { store: GameStore; t: TFunction; state:
       <h3>{t("hud:stats.points")}</h3>
       <ul class="stats-legend">
         {POINT_SOURCES.filter((src) => used.has(src)).map((src) => (
-          <li key={src}><span class={`chip ${SOURCE_CLASS[src]}`} />{t(`hud:stats.label.${src}`)}</li>
+          <li key={src}><span class={`stats-key ${SOURCE_CLASS[src]}`} aria-hidden="true" />{t(`hud:stats.label.${src}`)}</li>
         ))}
       </ul>
       <ul class="stats-players">
@@ -71,13 +71,19 @@ function Breakdown({ store, t, state }: { store: GameStore; t: TFunction; state:
               <>
                 <div class="stats-bar" role="img" aria-label={t("hud:stats.pointsOf", { name: p.name, count: p.points })}>
                   {parts.map((x) => (
-                    <span key={x.source} class={SOURCE_CLASS[x.source]} style={{ width: `${(100 * x.points) / scale}%` }} />
+                    <span key={x.source} class={SOURCE_CLASS[x.source]} title={t(`hud:stats.label.${x.source}`)}
+                          style={{ width: `${(100 * x.points) / scale}%` }} />
                   ))}
                   <span class="target" style={{ left: `${(100 * target) / scale}%` }} />
                 </div>
                 <p class="parts">
                   {parts.length === 0 ? t("hud:stats.noPoints")
-                    : parts.map((x) => t(`hud:stats.part.${x.source}`, { count: x.count, points: x.points })).join(" · ")}
+                    : parts.map((x) => (
+                      <span key={x.source} class="part">
+                        <span class={`stats-key ${SOURCE_CLASS[x.source]}`} aria-hidden="true" />
+                        {t(`hud:stats.part.${x.source}`, { count: x.count, points: x.points })}
+                      </span>
+                    ))}
                 </p>
               </>
             )}
