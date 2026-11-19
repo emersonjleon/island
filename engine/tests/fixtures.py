@@ -55,6 +55,7 @@ def make_seats(n: int = 3) -> list[SeatInfo]:
     return [SeatInfo(seat=i, user_id=100 + i, name=f"p{i}", colour=COLOURS[i]) for i in range(n)]
 
 
-def make_settings(overrides: dict[str, Any] | None = None) -> GameSettings:
-    """Classic defaults plus ``overrides`` (nested dict)."""
-    return parse_settings(overrides or {})
+def make_settings(overrides: dict[str, Any] | None = None, *, implemented_stage: int | None = None) -> GameSettings:
+    """Classic defaults plus ``overrides`` (nested dict). ``implemented_stage`` lets
+    tests use settings of a stage the lobby does not offer yet."""
+    return parse_settings(overrides or {}, implemented_stage=implemented_stage)

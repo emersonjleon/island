@@ -32,7 +32,7 @@ __all__ = [
     "ClockStarted", "DiceRolled", "Produced", "RobberStole", "RobberMoved", "Hand", "SettlerLanded",
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
-    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver",
+    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver", "Revealed", "NumbersRevealed",
 ]
 
 ResMap = dict[Resource, int]
@@ -120,6 +120,8 @@ class RobberStole(Event):
 
 
 class RobberMoved(Event):
+    """Under fog a player gets ``None`` for a hex they have not seen (and nothing
+    when neither hex is seen)."""
     k: Literal["robber_moved"] = "robber_moved"
     from_hex: int | None
     to_hex: int
@@ -354,10 +356,33 @@ class GameOver(Event):
     reason: Literal["target", "resign"] = "target"
 
 
+class Revealed(Event):
+    """``seat`` saw new land (Growing sight). ``board`` holds the newly seen hexes
+    and the vertices, edges, fishing grounds and harbors on them, shaped like the
+    ``board`` message (vertices and edges already known come again with their seen
+    hexes). ``pieces`` holds what stands there now (``buildings``, ``roads``,
+    ``settlers``, ``constructions``, ``robber``), shaped like the ``state`` message;
+    a client replaces what it had at those places."""
+    k: Literal["revealed"] = "revealed"
+    audience: ClassVar[Literal["public", "private"]] = "private"
+    seat: int
+    board: dict[str, Any]
+    pieces: dict[str, Any]
+
+
+class NumbersRevealed(Event):
+    """Number tokens shown because a building now stands next to their hex
+    (``visibility.hidden_numbers``). ``tokens``: hex id -> token. Players get only
+    the hexes they have seen."""
+    k: Literal["numbers_revealed"] = "numbers_revealed"
+    tokens: dict[int, int]
+
+
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
     SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, OfferPosted, OfferClosed, Buildable, Resigned, GameOver,
+    Revealed, NumbersRevealed,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
@@ -365,7 +390,7 @@ AnyEvent = Annotated[
     ClockStarted | DiceRolled | Produced | RobberStole | RobberMoved | Hand | SettlerLanded | SettlerPath
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
     | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
-    | OfferPosted | OfferClosed | Buildable | Resigned | GameOver,
+    | OfferPosted | OfferClosed | Buildable | Resigned | GameOver | Revealed | NumbersRevealed,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

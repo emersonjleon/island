@@ -11,7 +11,7 @@ from engine.ai.driver import BotDriver
 from engine.errors import RuleError
 from engine.events import DiceRolled, Event
 from engine.sim.runner import CommandRecord
-from engine.views import filter_events, project_state
+from engine.views import board_for, filter_events, project_state
 
 SPECT = "spect"
 PROTO = 1
@@ -130,7 +130,7 @@ class GameCore:
         reply = msg.get("reply_channel")
         if not reply:
             return []
-        board = {"t": "board", **self.state.board.to_dict()}
+        board = {"t": "board", **board_for(self.state, seat)}
         return [self._reply(reply, board), self._reply(reply, self.state_message(seat))]
 
     def resumed_messages(self) -> list[Outgoing]:

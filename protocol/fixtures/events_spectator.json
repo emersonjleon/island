@@ -118,6 +118,15 @@
       "seat": null
     },
     {
+      "at": 11000,
+      "k": "numbers_revealed",
+      "tokens": {
+        "12": 10,
+        "13": 9,
+        "16": 6
+      }
+    },
+    {
       "at": 233000,
       "by": null,
       "get": {
