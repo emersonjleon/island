@@ -1165,7 +1165,7 @@
         },
         "spare_setup": {
           "default": true,
-          "description": "Players still building their setup settlements and roads are never robbed (sevens or knights).",
+          "description": "Players still building their setup settlements and roads are never robbed (sevens, knights or monopoly).",
           "label": "settings.robber.spare_setup",
           "stage": 1,
           "title": "Spare Setup",
