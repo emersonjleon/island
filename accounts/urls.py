@@ -17,6 +17,8 @@ urlpatterns = [
     path("profile/", views.profile, name="profile"),
     path("language/", views.set_language, name="set_language"),
     path("keybindings/", views.keybindings, name="keybindings"),
+    path("dev/", views.dev_overview, name="dev_overview"),
+    path("dev/users/", views.dev_users, name="dev_users"),
     path(
         "password/change/",
         auth_views.PasswordChangeView.as_view(

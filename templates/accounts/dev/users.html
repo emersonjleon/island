@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% load i18n static %}
+{% block title %}{% translate "Registered users" %} · {{ block.super }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/dev.css' %}">{% endblock %}
+{% block main_class %}dev-page{% endblock %}
+{% block content %}
+<h1>{% translate "Developer panel" %}</h1>
+{% include "accounts/dev/_tabs.html" with tab="users" %}
+<section>
+  <h2>{% blocktranslate count n=page.paginator.count %}{{ n }} registered user{% plural %}{{ n }} registered users{% endblocktranslate %}</h2>
+  <form method="get" class="dev-search" role="search">
+    <label class="visually-hidden" for="dev-q">{% translate "Search" %}</label>
+    <input id="dev-q" type="search" name="q" value="{{ query }}" placeholder="{% translate 'Name, username or email' %}">
+    <input type="hidden" name="sort" value="{{ sort }}">
+    <button type="submit">{% translate "Search" %}</button>
+    {% if query %}<a class="button secondary" href="?sort={{ sort }}">{% translate "Clear" %}</a>{% endif %}
+  </form>
+  {% include "accounts/dev/_user_table.html" with users=page.object_list %}
+  {% if page.has_other_pages %}
+  <nav class="pager">
+    {% if page.has_previous %}<a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}sort={{ sort }}&amp;page={{ page.previous_page_number }}">← {% translate "Previous" %}</a>{% endif %}
+    <span class="muted">{% blocktranslate with n=page.number total=page.paginator.num_pages %}Page {{ n }} of {{ total }}{% endblocktranslate %}</span>
+    {% if page.has_next %}<a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}sort={{ sort }}&amp;page={{ page.next_page_number }}">{% translate "Next" %} →</a>{% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% endblock %}
