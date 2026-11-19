@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import { RESOURCES } from "../ui/model";
 import { ResIcon } from "../ui/icons";
 import { playerColour } from "../render2d/palette";
+import { clock, dayKey, dayName, fullWhen } from "./dates";
 import { RES_EMOJI, splitResources, type ChatLine, type ChatLog } from "./model";
 
 /** Same limit as the server's default (chat.conf MAX_LENGTH); the server has the last word. */
@@ -37,6 +38,10 @@ export interface ChatViewProps {
   onMore?(): void;
   /** Older lines were asked for and have not arrived yet. */
   loadingMore?: boolean;
+  /** Lines can be days old (site-wide chat): a heading for each day, the date on hover. */
+  dated?: boolean;
+  /** Your user id: your own lines are marked so they stand out. */
+  me?: number;
 }
 
 export function useChatLines(log: ChatLog): ChatLine[] {
@@ -65,13 +70,17 @@ export function ChatText({ text, t }: { text: string; t: TFunction }) {
   );
 }
 
-function clock(at: number): string {
-  if (!at) return "";
-  const d = new Date(at);
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+function pageLocale(): string | undefined {
+  return (typeof document !== "undefined" && document.documentElement.lang) || undefined;
 }
 
-export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName, placeholder, disabled, onMore, loadingMore }: ChatViewProps) {
+function DayHeading({ at, t }: { at: number; t: TFunction }) {
+  const day = dayName(at, Date.now(), pageLocale());
+  const text = day.kind === "date" ? day.text : t(`chat:${day.kind}`);
+  return <li class="chat-day" role="separator"><span>{text}</span></li>;
+}
+
+export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName, placeholder, disabled, onMore, loadingMore, dated, me }: ChatViewProps) {
   const lines = useChatLines(log);
   const [draft, setDraft] = useState("");
   const [offline, setOffline] = useState(false);
@@ -122,7 +131,7 @@ export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName,
   };
 
   return (
-    <div class="chat-view">
+    <div class={dated ? "chat-view dated" : "chat-view"}>
       <ol class="chat-lines" ref={list} aria-live="polite"
           onScroll={(e) => {
             const el = e.currentTarget;
@@ -134,17 +143,20 @@ export function ChatView({ log, t, send, error, autoFocus, quick, plain, onName,
           </li>
         )}
         {!lines.length && <li class="chat-empty">{t("chat:empty")}</li>}
-        {lines.map((m) => (
-          <li key={m.id} class={m.player || plain ? "" : "watcher"}>
+        {lines.map((m, i) => [
+          dated && m.at > 0 && (i === 0 || dayKey(lines[i - 1]!.at) !== dayKey(m.at))
+            ? <DayHeading key={`d${m.id}`} at={m.at} t={t} /> : null,
+          <li key={m.id} class={[m.player || plain ? "" : "watcher", me !== undefined && m.uid === me ? "mine" : ""].join(" ").trim()}>
             {m.player && !plain && <span class="chat-dot" style={{ background: hex(m.colour) }} aria-hidden="true" />}
             {onName
               ? <button type="button" class="chat-who chat-who-btn" onClick={() => onName(m)}>{m.name}</button>
               : <strong class="chat-who">{m.name}</strong>}
             {!m.player && !plain && <small class="chat-tag"> ({t("chat:watching")})</small>}
-            <time class="chat-time">{clock(m.at)}</time>
+            <time class="chat-time" dateTime={m.at ? new Date(m.at).toISOString() : undefined}
+                  title={dated ? fullWhen(m.at, pageLocale()) : undefined}>{clock(m.at)}</time>
             <span class="chat-text"><ChatText text={m.text} t={t} /></span>
-          </li>
-        ))}
+          </li>,
+        ])}
       </ol>
       {(offline || error) && <p class="chat-error" role="alert">{offline ? t("chat:errors.offline") : error}</p>}
       {quick && (

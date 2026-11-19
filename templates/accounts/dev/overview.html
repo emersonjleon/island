@@ -1,0 +1,118 @@
+{% extends "base.html" %}{% load i18n static %}
+{% block title %}{% translate "Developer panel" %} · {{ block.super }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/dev.css' %}">{% endblock %}
+{% block main_class %}dev-page{% endblock %}
+{% block content %}
+<h1>{% translate "Developer panel" %}</h1>
+<p class="muted">{% blocktranslate trimmed with when=now|date:"j M Y, H:i" %}Figures as of {{ when }} (UTC). Only developers can see this page.{% endblocktranslate %}</p>
+{% include "accounts/dev/_tabs.html" with tab="overview" %}
+
+<div class="kpis">
+  <div class="kpi"><span class="value">{{ users.total }}</span><span class="label">{% translate "Registered users" %}</span>
+    <span class="sub">{% blocktranslate with n=users.new_7d %}+{{ n }} this week{% endblocktranslate %}</span></div>
+  <div class="kpi"><span class="value">{{ users.active_24h }}</span><span class="label">{% translate "Logged in, last 24 h" %}</span>
+    <span class="sub">{% blocktranslate with n=users.active_7d %}{{ n }} in 7 days{% endblocktranslate %}</span></div>
+  <div class="kpi"><span class="value">{{ games.playing_now }}</span><span class="label">{% translate "Playing now" %}</span>
+    <span class="sub">{% blocktranslate count n=games.running %}{{ n }} game running{% plural %}{{ n }} games running{% endblocktranslate %}</span></div>
+  <div class="kpi"><span class="value">{{ games.waiting }}</span><span class="label">{% translate "Games waiting for players" %}</span></div>
+  <div class="kpi"><span class="value">{{ games.total }}</span><span class="label">{% translate "Games created" %}</span>
+    <span class="sub">{% blocktranslate with n=games.created_24h m=games.created_7d %}{{ n }} today · {{ m }} this week{% endblocktranslate %}</span></div>
+  <div class="kpi"><span class="value">{{ games.finished }}</span><span class="label">{% translate "Games finished" %}</span>
+    {% if games.avg_minutes is not None %}<span class="sub">{% blocktranslate with n=games.avg_minutes %}{{ n }} min on average{% endblocktranslate %}</span>{% endif %}</div>
+  <div class="kpi"><span class="value">{{ chat.total }}</span><span class="label">{% translate "Chat messages" %}</span>
+    <span class="sub">{% blocktranslate with n=chat.last_24h %}{{ n }} in 24 h{% endblocktranslate %}</span></div>
+  <div class="kpi"><span class="value">{{ chat.friends }}</span><span class="label">{% translate "Friendships" %}</span>
+    <span class="sub">{% blocktranslate with n=chat.friend_requests %}{{ n }} pending{% endblocktranslate %}</span></div>
+</div>
+
+<div class="dev-grid">
+  <section>
+    <h2>{% blocktranslate with n=per_day|length %}Games per day (last {{ n }} days){% endblocktranslate %}</h2>
+    <ul class="bars">
+      {% for d in per_day %}
+        <li><span>{{ d.day|date:"D j" }}</span><span class="bar"><span style="width: {{ d.percent }}%"></span></span><span class="n">{{ d.count }}</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section>
+    <h2>{% translate "Users" %}</h2>
+    <dl class="stats-list">
+      <dt>{% translate "New in the last 7 days" %}</dt><dd>{{ users.new_7d }}</dd>
+      <dt>{% translate "New in the last 30 days" %}</dt><dd>{{ users.new_30d }}</dd>
+      <dt>{% translate "Logged in, last 7 days" %}</dt><dd>{{ users.active_7d }}</dd>
+      <dt>{% translate "Logged in, last 30 days" %}</dt><dd>{{ users.active_30d }}</dd>
+      <dt>{% translate "Never played a game" %}</dt><dd>{{ users.never_played }}</dd>
+      {% for label, n in users.languages %}<dt>{% blocktranslate %}Language: {{ label }}{% endblocktranslate %}</dt><dd>{{ n }}</dd>{% endfor %}
+    </dl>
+  </section>
+  <section>
+    <h2>{% translate "Games" %}</h2>
+    <dl class="stats-list">
+      {% for label, n in games.statuses %}<dt>{{ label }}</dt><dd>{{ n }}</dd>{% endfor %}
+      {% if games.longest_minutes is not None %}<dt>{% translate "Longest game" %}</dt><dd>{% blocktranslate with n=games.longest_minutes %}{{ n }} min{% endblocktranslate %}</dd>{% endif %}
+      <dt>{% translate "Seats taken by people" %}</dt><dd>{{ games.human_seats }}</dd>
+      <dt>{% translate "Seats taken by bots" %}</dt><dd>{{ games.bot_seats }}</dd>
+      {% for label, n in games.bot_levels %}<dt>{% blocktranslate %}Bots: {{ label }}{% endblocktranslate %}</dt><dd>{{ n }}</dd>{% endfor %}
+      <dt>{% translate "Saved game settings" %}</dt><dd>{{ games.saved_settings }}</dd>
+    </dl>
+  </section>
+  <section>
+    <h2>{% translate "Game types" %}</h2>
+    {% if games.presets %}
+    <dl class="stats-list">{% for label, n in games.presets %}<dt>{{ label }}</dt><dd>{{ n }}</dd>{% endfor %}</dl>
+    {% else %}<p class="muted">{% translate "No games yet." %}</p>{% endif %}
+  </section>
+  <section>
+    <h2>{% translate "Chat" %}</h2>
+    <dl class="stats-list">
+      <dt>{% translate "Messages, last 7 days" %}</dt><dd>{{ chat.last_7d }}</dd>
+      <dt>{% translate "People who wrote, last 7 days" %}</dt><dd>{{ chat.writers_7d }}</dd>
+      {% for label, n in chat.kinds %}<dt>{% blocktranslate %}Messages: {{ label }}{% endblocktranslate %}</dt><dd>{{ n }}</dd>{% endfor %}
+      <dt>{% translate "Private conversations" %}</dt><dd>{{ chat.conversations }}</dd>
+      <dt>{% translate "Public rooms" %}</dt><dd>{{ chat.public_rooms }}</dd>
+      {% for label, n in chat.privacy %}<dt>{{ label }}</dt><dd>{{ n }}</dd>{% endfor %}
+    </dl>
+  </section>
+  <section>
+    <h2>{% translate "Top players" %}</h2>
+    {% if top_players %}
+    <div class="table-scroll"><table class="dev">
+      <thead><tr><th>{% translate "Player" %}</th><th class="num">{% translate "Games" %}</th><th class="num">{% translate "Wins" %}</th></tr></thead>
+      <tbody>{% for u in top_players %}<tr><td>{{ u.public_name }} <span class="muted">@{{ u.username }}</span></td><td class="num">{{ u.games }}</td><td class="num">{{ u.wins }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% else %}<p class="muted">{% translate "Nobody has played yet." %}</p>{% endif %}
+  </section>
+</div>
+
+<section>
+  <h2>{% translate "Latest games" %}</h2>
+  {% if recent_games %}
+  <div class="table-scroll"><table class="dev">
+    <thead><tr>
+      <th>{% translate "Code" %}</th><th>{% translate "Status" %}</th><th>{% translate "Host" %}</th>
+      <th class="hide-phone">{% translate "Type" %}</th><th>{% translate "Players" %}</th>
+      <th class="hide-phone">{% translate "Created" %}</th><th>{% translate "Winner" %}</th>
+    </tr></thead>
+    <tbody>
+    {% for game in recent_games %}
+      <tr>
+        <td class="code"><a href="{% url 'lobby:detail' game.code %}">{{ game.code }}</a></td>
+        <td>{{ game.get_status_display }}</td>
+        <td>{{ game.host.public_name }}</td>
+        <td class="hide-phone">{{ game.preset_label }}</td>
+        <td>{% for p in game.players.all %}{{ p.display_name }}{% if p.final_points is not None %} ({{ p.final_points }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+        <td class="hide-phone" title="{{ game.created_at|date:'j M Y, H:i' }} UTC">{% blocktranslate with t=game.created_at|timesince %}{{ t }} ago{% endblocktranslate %}</td>
+        <td>{% for p in game.players.all %}{% if p.is_winner %}{{ p.display_name }}{% endif %}{% endfor %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}<p class="muted">{% translate "No games yet." %}</p>{% endif %}
+</section>
+
+<section>
+  <h2>{% translate "Newest users" %}</h2>
+  {% include "accounts/dev/_user_table.html" with users=recent_users %}
+  <p><a href="{% url 'accounts:dev_users' %}">{% translate "See all registered users" %}</a></p>
+</section>
+{% endblock %}

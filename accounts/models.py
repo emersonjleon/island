@@ -21,3 +21,8 @@ class User(AbstractUser):
     @property
     def public_name(self) -> str:
         return self.display_name or self.username
+
+    @property
+    def is_developer(self) -> bool:
+        """May open the developer panel (see settings.DEVELOPER_USERNAMES)."""
+        return self.is_active and self.username.lower() in settings.DEVELOPER_USERNAMES

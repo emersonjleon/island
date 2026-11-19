@@ -4,12 +4,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods, require_POST
 from django.views.i18n import set_language as django_set_language
 
+from . import devmode
 from .forms import ProfileForm, SignUpForm
 from .keybindings import KeybindingsError, validate_keybindings
 
@@ -68,3 +70,27 @@ def keybindings(request: HttpRequest) -> JsonResponse:
     request.user.keybindings = clean
     request.user.save(update_fields=["keybindings"])
     return JsonResponse({"keybindings": clean})
+
+
+# ------------------------------------------------------------------ developer panel
+
+@devmode.developer_required
+def dev_overview(request: HttpRequest) -> HttpResponse:
+    return render(request, "accounts/dev/overview.html", devmode.overview())
+
+
+@devmode.developer_required
+def dev_users(request: HttpRequest) -> HttpResponse:
+    query = request.GET.get("q", "").strip()
+    sort = request.GET.get("sort", devmode.DEFAULT_USER_SORT)
+    if sort not in devmode.USER_SORTS:
+        sort = devmode.DEFAULT_USER_SORT
+    page = Paginator(devmode.user_table(query, sort), devmode.USERS_PER_PAGE).get_page(request.GET.get("page"))
+    return render(request, "accounts/dev/users.html", {
+        "page": page, "query": query, "sort": sort, "sorts": True,
+        "sort_headers": [
+            ("name", _("User")), ("joined", _("Joined")), ("login", _("Last login")),
+            ("games", _("Games")), ("wins", _("Wins")), ("messages", _("Messages")),
+        ],
+        "numeric_sorts": {"games", "wins", "messages"},
+    })

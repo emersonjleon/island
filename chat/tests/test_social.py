@@ -89,7 +89,7 @@ class PrivacyTests(TestCase):
     def test_default_is_everyone(self):
         self.assertEqual(social.privacy_of(self.ana.pk), Privacy.EVERYONE)
         room, msg = social.post_public(self.ana, " hola  a todos ")
-        self.assertEqual((room, msg["name"], msg["text"]), ("en", "ana", "hola a todos"))
+        self.assertEqual((room, msg["name"], msg["text"]), ("general", "ana", "hola a todos"))
         dm = social.post_dm(self.ana, self.bo, "hola bo")
         self.assertEqual((dm["from"], dm["to"], dm["to_name"]), (self.ana.pk, self.bo.pk, "bo"))
 
@@ -119,20 +119,30 @@ class PrivacyTests(TestCase):
         self.refuses(codes.NO_USER, social.post_dm, self.ana, self.ana, "hi")
 
     @override_settings(CHAT={"PAGE": 2})
-    def test_public_rooms_by_language_with_pages(self):
+    def test_everyone_starts_in_the_general_room(self):
+        # Whatever their language, everyone meets in one room until they pick another.
         self.bo.preferred_language = "es"
         self.bo.save()
+        self.assertEqual((social.room_of(self.ana), social.room_of(self.bo)), ("general", "general"))
+        social.post_public(self.ana, "hello")
+        social.post_public(self.bo, "hola")
+        self.assertEqual([m["text"] for m in social.public_page("general")[0]], ["hello", "hola"])
+        self.assertEqual(social.rooms()[0], "general")
+
+    @override_settings(CHAT={"PAGE": 2})
+    def test_language_rooms_can_be_picked_with_pages(self):
+        social.set_room(self.bo, "es")
         for i in range(3):
             social.post_public(self.bo, f"p{i}")
         room, _msg = social.post_public(self.ana, "hello")
-        self.assertEqual((room, social.room_of(self.bo)), ("en", "es"))
+        self.assertEqual((room, social.room_of(self.bo)), ("general", "es"))
         msgs, more = social.public_page("es")
         self.assertEqual(([m["text"] for m in msgs], more), (["p1", "p2"], True))
         msgs, more = social.public_page("es", before=msgs[0]["id"])
         self.assertEqual(([m["text"] for m in msgs], more), (["p0"], False))
-        self.assertEqual([m["text"] for m in social.public_page("en")[0]], ["hello"])
-        social.set_room(self.bo, "en")
-        self.assertEqual(social.post_public(self.bo, "hi")[0], "en")
+        self.assertEqual([m["text"] for m in social.public_page("general")[0]], ["hello"])
+        social.set_room(self.bo, "general")
+        self.assertEqual(social.post_public(self.bo, "hi")[0], "general")
         self.refuses(codes.BAD_ROOM, social.set_room, self.bo, "xx")
 
     @override_settings(CHAT={"PAGE": 2})
@@ -202,7 +212,7 @@ class SocialSocketTests(TransactionTestCase):
             hello = await self.recv(a, "social")
             self.assertEqual((hello["me"]["name"], hello["privacy"], hello["friends"]), ("ana", "everyone", []))
             self.assertEqual(hello["conversations"], [])
-            self.assertEqual(await self.recv(a, "public"), {"t": "public", "room": "en", "msgs": [], "history": True, "more": False})
+            self.assertEqual(await self.recv(a, "public"), {"t": "public", "room": "general", "msgs": [], "history": True, "more": False})
             await self.recv(b, "public")
 
             await a.send_json_to({"t": "say", "to": None, "text": "¿alguien juega?"})

@@ -1,0 +1,27 @@
+{% load i18n %}<div class="table-scroll"><table class="dev">
+  <thead><tr>
+    {% if sorts %}
+      {% for key, label in sort_headers %}<th class="{% if key in numeric_sorts %}num{% endif %}{% if key == 'joined' %} hide-phone{% endif %}"><a href="?{% if query %}q={{ query|urlencode }}&amp;{% endif %}sort={{ key }}"{% if key == sort %} aria-current="true"{% endif %}>{{ label }}</a></th>{% endfor %}
+    {% else %}
+      <th>{% translate "User" %}</th><th class="hide-phone">{% translate "Joined" %}</th><th>{% translate "Last login" %}</th>
+      <th class="num">{% translate "Games" %}</th><th class="num">{% translate "Wins" %}</th><th class="num">{% translate "Messages" %}</th>
+    {% endif %}
+    <th class="hide-phone">{% translate "Email" %}</th><th class="hide-phone">{% translate "Language" %}</th>
+  </tr></thead>
+  <tbody>
+  {% for u in users %}
+    <tr>
+      <td><strong>{{ u.username }}</strong>{% if u.display_name %} <span class="muted">({{ u.display_name }})</span>{% endif %}{% if u.is_developer %} <span class="badge">{% translate "developer" %}</span>{% endif %}{% if not u.is_active %} <span class="badge">{% translate "inactive" %}</span>{% endif %}</td>
+      <td class="hide-phone" title="{{ u.date_joined|date:'j M Y, H:i' }} UTC">{{ u.date_joined|date:"j M Y" }}</td>
+      <td>{% if u.last_login %}<span title="{{ u.last_login|date:'j M Y, H:i' }} UTC">{% blocktranslate with t=u.last_login|timesince %}{{ t }} ago{% endblocktranslate %}</span>{% else %}<span class="muted">{% translate "never" %}</span>{% endif %}</td>
+      <td class="num">{{ u.games }}</td>
+      <td class="num">{{ u.wins }}</td>
+      <td class="num">{{ u.messages }}</td>
+      <td class="hide-phone">{{ u.email }}</td>
+      <td class="hide-phone">{{ u.get_preferred_language_display }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="8" class="muted">{% translate "No users found." %}</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
