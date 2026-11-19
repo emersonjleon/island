@@ -24,7 +24,7 @@ from .enums import (
 from .resolve import STANDARD_NUMBER_TOKENS, resolve_board_counts
 
 __all__ = [
-    "IMPLEMENTED_STAGE", "CURRENT_SCHEMA_VERSION", "GameSettings", "stage_violations",
+    "IMPLEMENTED_STAGE", "EARLY_FEATURES", "feature_stage", "CURRENT_SCHEMA_VERSION", "GameSettings", "stage_violations",
     "PlayersSettings", "BoardSettings", "FishingGroundSettings", "HarborSettings", "ClockSettings",
     "EconomySettings", "CostSettings", "ProductionSettings", "StartingResourcesSettings",
     "BankSettings", "TradeRatioSettings", "PieceSettings", "BuildSettings", "BuildTimeSettings",
@@ -35,7 +35,20 @@ __all__ = [
 IMPLEMENTED_STAGE = 2
 """Highest design stage the engine implements. Context key ``implemented_stage`` overrides it."""
 
+EARLY_FEATURES: frozenset[str] = frozenset({
+    "visibility.sight", "visibility.hidden_numbers", "visibility.map=growing",   # WP21/WP22
+})
+"""Later-stage settings (``path``) and enum values (``path=value``) already available,
+as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""
+
 CURRENT_SCHEMA_VERSION = 1
+
+
+def feature_stage(path: str, stage: int, value: str | None = None) -> int:
+    """The stage at which setting ``path`` (or its enum ``value``) is available:
+    ``stage``, or the implemented stage for an entry of :data:`EARLY_FEATURES`."""
+    key = path if value is None else f"{path}={value}"
+    return min(stage, IMPLEMENTED_STAGE) if key in EARLY_FEATURES else stage
 
 _MAX_MS = 3_600_000
 _MAX_COUNT = 1000
@@ -533,9 +546,9 @@ def _walk(model: BaseModel, default: BaseModel, path: str, parent_stage: int, im
     cls = type(model)
     for name in cls.model_fields:
         extra = _field_extra(cls, name)
-        stage = max(parent_stage, int(extra.get("stage", 1)))
-        value, default_value = getattr(model, name), getattr(default, name)
         field_path = f"{path}.{name}" if path else name
+        stage = feature_stage(field_path, max(parent_stage, int(extra.get("stage", 1))))
+        value, default_value = getattr(model, name), getattr(default, name)
         if isinstance(value, BaseModel):
             _walk(value, default_value, field_path, stage, implemented, out)
             continue
@@ -543,8 +556,9 @@ def _walk(model: BaseModel, default: BaseModel, path: str, parent_stage: int, im
             out.append({"field": field_path, "stage": stage})
             continue
         for enum_value in _enum_values(value):
-            if value_stage(enum_value) > implemented:
-                out.append({"field": field_path, "value": enum_value.value, "stage": value_stage(enum_value)})
+            v_stage = feature_stage(field_path, value_stage(enum_value), enum_value.value)
+            if v_stage > implemented:
+                out.append({"field": field_path, "value": enum_value.value, "stage": v_stage})
         above = extra.get("later_stage_above")
         if above and isinstance(value, int) and value > above["value"] and above["stage"] > implemented:
             out.append({"field": field_path, "value": value, "stage": above["stage"]})

@@ -18,7 +18,7 @@ from typing import Any, Union, get_args, get_origin
 from django.utils.translation import gettext, gettext_lazy as _
 from pydantic import BaseModel
 
-from engine.settings import IMPLEMENTED_STAGE, GameSettings, load_preset, merge_overrides, value_stage
+from engine.settings import IMPLEMENTED_STAGE, GameSettings, feature_stage, load_preset, merge_overrides, value_stage
 
 from .presets import base_presets
 from .setting_labels import CHOICES, GROUP_LABELS, KEY_LABELS, LABELS, SUBGROUP_LABELS
@@ -137,8 +137,8 @@ def _inner_bounds(annotation) -> tuple[int | None, int | None]:
     return None, None
 
 
-def _allowed(enum_cls: type[Enum], implemented: int) -> list[Enum]:
-    return [v for v in enum_cls if value_stage(v) <= implemented]
+def _allowed(enum_cls: type[Enum], implemented: int, path: str) -> list[Enum]:
+    return [v for v in enum_cls if feature_stage(path, value_stage(v), v.value) <= implemented]
 
 
 def _setting(path: str, info, group: str, subgroup: str, implemented: int) -> Setting | None:
@@ -153,7 +153,7 @@ def _setting(path: str, info, group: str, subgroup: str, implemented: int) -> Se
         annotation = args[0] if len(args) == 1 else annotation
     common = {"label": label, "help": help_text, "group": group, "subgroup": subgroup, "optional": optional}
     if isinstance(annotation, type) and issubclass(annotation, Enum):
-        allowed = _allowed(annotation, implemented)
+        allowed = _allowed(annotation, implemented, path)
         if len(allowed) < 2:
             return None
         choices = tuple((v.value, CHOICES.get((annotation.__name__, v.value), v.value)) for v in allowed)
@@ -182,10 +182,10 @@ def _walk(model: type[BaseModel], prefix: str, stage: int, implemented: int, out
           group: str, subgroup: str) -> None:
     for name, info in model.model_fields.items():
         extra = info.json_schema_extra if isinstance(info.json_schema_extra, dict) else {}
-        field_stage = max(stage, int(extra.get("stage", 1)))
+        path = f"{prefix}.{name}" if prefix else name
+        field_stage = feature_stage(path, max(stage, int(extra.get("stage", 1))))
         if field_stage > implemented:
             continue
-        path = f"{prefix}.{name}" if prefix else name
         annotation = info.annotation
         if isinstance(annotation, type) and issubclass(annotation, BaseModel):
             top = group or name

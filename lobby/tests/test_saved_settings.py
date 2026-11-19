@@ -137,3 +137,26 @@ class ChangeSettingsTests(TestCase):
         with self.assertRaises(LobbyError):
             services.change_settings(self.game, self.bo, "classic", {"players": {"max": 4}})
         self.assertEqual(Game.objects.get().overrides, {"players": {"max": 4}})
+
+
+class GrowingSightTests(TestCase):
+    def test_huge_uses_growing_sight_and_the_game_page_says_so(self):
+        host = user("ana")
+        game = services.create_game(host, "huge", {"players": {"max": 8}})
+        self.assertEqual(load_preset(game.preset, game.overrides).visibility.map.value, "growing")
+        self.client.force_login(host)
+        page = self.client.get(reverse("lobby:detail", args=[game.code]))
+        self.assertContains(page, "Growing sight")
+        classic = services.create_game(host, "classic", {"players": {"max": 4}})
+        self.assertNotContains(self.client.get(reverse("lobby:detail", args=[classic.code])), "Growing sight")
+
+    def test_custom_game_can_turn_on_growing_sight_and_hidden_numbers(self):
+        host = user("bo")
+        self.client.force_login(host)
+        data = settings_form_data("classic", {"players": {"max": 4}})
+        data.update({"s:visibility.map": "growing", "s:visibility.hidden_numbers": "1"})
+        self.client.post(reverse("lobby:list"), data)
+        game = Game.objects.get()
+        settings = load_preset(game.preset, game.overrides)
+        self.assertEqual(settings.visibility.map.value, "growing")
+        self.assertTrue(settings.visibility.hidden_numbers)

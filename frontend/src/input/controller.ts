@@ -180,7 +180,7 @@ export class InputController {
     return this.selected.map((id) => mine.find((s) => s.id === id)).filter((s): s is SettlerView => !!s);
   }
 
-  private settlerAt(s: SettlerView): Pt {
+  private settlerAt(s: SettlerView): Pt | null {
     return settlerPosition(this.geometry()!, s, this.opts.now());
   }
 
@@ -275,7 +275,8 @@ export class InputController {
 
   private centerSelected(): void {
     const s = this.selectedSettlers()[0];
-    if (s && this.geometry()) this.opts.renderer.centerOn(this.settlerAt(s));
+    const p = s && this.geometry() ? this.settlerAt(s) : null;
+    if (p) this.opts.renderer.centerOn(p);
   }
 
   /** Keyboard walking: queue one more step for each selected settler when it is due. */
@@ -741,7 +742,9 @@ export class InputController {
     const [x0, x1] = [Math.min(a.x, b.x), Math.max(a.x, b.x)];
     const [y0, y1] = [Math.min(a.y, b.y), Math.max(a.y, b.y)];
     const inside = this.mine().filter((s) => {
-      const p = this.opts.renderer.worldToScreen(this.settlerAt(s));
+      const at = this.settlerAt(s);
+      if (!at) return false;
+      const p = this.opts.renderer.worldToScreen(at);
       return p.x >= x0 && p.x <= x1 && p.y >= y0 && p.y <= y1;
     });
     if (inside.length) this.select(inside.map((s) => s.id), add);

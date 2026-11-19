@@ -270,8 +270,12 @@ msgid "Huge"
 msgstr "Enorme"
 
 #: lobby/presets.py:25
-msgid "A very big island for 7 or more players, and a long game."
-msgstr "Una isla muy grande para 7 o más jugadores, y una partida larga."
+msgid ""
+"A very big island for 7 or more players, and a long game. You see the land "
+"around your own pieces."
+msgstr ""
+"Una isla muy grande para 7 o más jugadores, y una partida larga. Ves la "
+"tierra alrededor de tus propias piezas."
 
 #: lobby/presets.py:26
 msgid "Custom"
@@ -2016,3 +2020,12 @@ msgid "%(n)s registered user"
 msgid_plural "%(n)s registered users"
 msgstr[0] "%(n)s usuario registrado"
 msgstr[1] "%(n)s usuarios registrados"
+
+msgid "Growing sight: each player sees only the land around their own pieces."
+msgstr "Vista creciente: cada jugador ve solo la tierra alrededor de sus propias piezas."
+
+msgid "Numbers hidden until a building is next to them"
+msgstr "Números ocultos hasta que haya un edificio al lado"
+
+msgid "Settler"
+msgstr "Colono"

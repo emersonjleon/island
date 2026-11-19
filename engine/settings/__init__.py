@@ -17,12 +17,12 @@ from .enums import (
 from .loading import merge_overrides, parse_settings
 from .migrations import MIGRATIONS, MigrationError, migrate
 from .models import (
-    CURRENT_SCHEMA_VERSION, IMPLEMENTED_STAGE, BankSettings, BoardSettings, BuildSettings,
+    CURRENT_SCHEMA_VERSION, EARLY_FEATURES, IMPLEMENTED_STAGE, BankSettings, BoardSettings, BuildSettings,
     BuildTimeSettings, ClockSettings, CostSettings, DevCardSettings, EconomySettings,
     FishingGroundSettings, GameSettings, HarborSettings, LargestArmySettings, LongestRoadSettings,
     PieceSettings, PlayersSettings, ProductionSettings, RobberSettings, SettlerSettings, SetupSettings,
     SightSettings, StartingResourcesSettings, TradeRatioSettings, TradingSettings, VictorySettings,
-    VisibilitySettings, stage_violations,
+    VisibilitySettings, feature_stage, stage_violations,
 )
 from .presets import UnknownPresetError, available_presets, load_preset, preset_overrides
 from .resolve import (
@@ -41,7 +41,7 @@ __all__ = [
     "BuilderRequired", "SpawnAt", "MapVisibility", "InfoVisibility", "ScoreVisibility", "ProductionLog",
     "TradeOffers", "Cooldown", "STAGE_LATER", "LATER_STAGE_VALUES", "value_stage",
     # models
-    "IMPLEMENTED_STAGE", "CURRENT_SCHEMA_VERSION", "GameSettings", "PlayersSettings", "BoardSettings",
+    "IMPLEMENTED_STAGE", "EARLY_FEATURES", "feature_stage", "CURRENT_SCHEMA_VERSION", "GameSettings", "PlayersSettings", "BoardSettings",
     "FishingGroundSettings", "HarborSettings", "ClockSettings", "EconomySettings", "CostSettings",
     "ProductionSettings", "StartingResourcesSettings", "BankSettings", "TradeRatioSettings",
     "PieceSettings", "BuildSettings", "BuildTimeSettings", "SetupSettings", "RobberSettings",

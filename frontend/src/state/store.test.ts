@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { BoardMsg, EventsMsg, GameStateView, StateMsg } from "../protocol/types";
 import { fixture } from "../testing/fixtures";
-import { GameStore, applyEvent } from "./store";
+import { GameStore, applyEvent, known } from "./store";
 
 function baseState(): GameStateView {
   return {
@@ -147,5 +147,35 @@ describe("GameStore reducers", () => {
     expect(state.longest_road).toEqual({ holder: 1, lengths: { "0": 2, "1": 5 } });
     applyEvent(state, { k: "longest_road", seat: null, previous: 1, lengths: { "0": 2, "1": 3 } });
     expect(state.longest_road!.holder).toBeNull();
+  });
+});
+
+describe("Growing sight", () => {
+  it("keeps a partial board by id and grows it with revealed land and numbers", () => {
+    const store = new GameStore();
+    const fog = fixture<BoardMsg>("board_seat0_fog.json");
+    store.apply(fog);
+    const board = store.board!;
+    expect(board.partial).toBe(true);
+    for (const h of known(board.hexes)) expect(board.hexes[h.id]).toBe(h);
+    const before = known(board.hexes).length;
+    store.apply({ t: "state", seq: 1, now: 0, state: baseState() });
+    const hex = { id: 500, q: 40, r: 40, terrain: "forest" as const, token: null, land: true };
+    const vertex = { id: 900, q: 40, r: 40, c: "N" as const, hexes: [500], adj_v: [], adj_e: [] };
+    const building = { kind: "settlement" as const, seat: 1, vertex: 900 };
+    store.apply({ t: "events", seq: 2, now: 5, events: [
+      { k: "revealed", at: 5, seat: 0,
+        board: { hexes: [hex], vertices: [vertex], edges: [], fishing: [], harbors: [] },
+        pieces: { buildings: [building], roads: [], settlers: [], constructions: [], robber: 500 } },
+      { k: "numbers_revealed", at: 5, tokens: { "500": 9 } },
+    ] });
+    expect(store.board).not.toBe(board);
+    expect(known(store.board!.hexes).length).toBe(before + 1);
+    expect(store.board!.hexes[500]!.token).toBe(9);
+    expect(store.board!.vertices[900]).toEqual(vertex);
+    expect(store.state!.buildings).toContainEqual(building);
+    expect(store.state!.robber).toBe(500);
+    store.apply({ t: "events", seq: 3, now: 6, events: [{ k: "robber_moved", at: 6, from_hex: 500, to_hex: null }] });
+    expect(store.state!.robber).toBeNull();
   });
 });

@@ -7,7 +7,7 @@ import { BoardGeometry, hexCenter, hexCorners, type Pt } from "../board/geometry
 import type { BoardMsg, Resource } from "../protocol/types";
 import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
-import type { GameStore } from "../state/store";
+import { known, type GameStore } from "../state/store";
 import { drawBuilding } from "./buildings";
 import { drawTerrainDecor, drawWaves } from "./decor";
 import { drawHarbor } from "./harbor";
@@ -33,6 +33,13 @@ const ROAD_INSET = 0.18;
 const PULSE_MS = 1100;
 /** The chosen spot's preview building is see-through, so it never passes for a built one. */
 const GHOST_ALPHA = 0.5;
+/** Smallest width and height (hex radii) the camera frames at the start under Growing sight. */
+const MIN_PARTIAL_SPAN = 8;
+/** Rings of cloud drawn round the land a player has seen (Growing sight). */
+const CLOUD_RINGS = 2;
+const HEX_DIRS: [number, number][] = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+/** Soft puffs on each cloud hex: offset x, y and radius (hex radii). */
+const CLOUD_PUFFS: [number, number, number][] = [[-0.3, -0.15, 0.32], [0.25, -0.2, 0.28], [0.05, 0.25, 0.34]];
 
 /** Dashes from ``a`` to ``b`` (pixels), centred so both ends look the same. */
 function dashedLine(g: Graphics, a: Pt, b: Pt, dash: number, gap: number): void {
@@ -122,11 +129,13 @@ export class PixiRenderer implements Renderer {
       this.drawnVersion = -1;
     }
     if (store.board && store.board !== this.board) {
+      // Newly seen land (Growing sight) redraws the board but leaves the camera where it is.
+      const refit = this.board === null || !store.board.partial;
       this.board = store.board;
       this.geo = new BoardGeometry(store.board);
       this.drawBoard();
       this.cacheRes = 0;
-      this.fit();
+      if (refit) this.fit();
       this.drawnVersion = -1;
     }
     if (!this.geo || !store.state) return;
@@ -151,7 +160,7 @@ export class PixiRenderer implements Renderer {
 
     // Sea: a faint grid, darker fishing grounds and a few waves.
     const sea = new Graphics();
-    for (const h of board.hexes) {
+    for (const h of known(board.hexes)) {
       if (h.land) continue;
       const c = geo.hex[h.id]!;
       const fish = fishing.has(h.id);
@@ -176,11 +185,20 @@ export class PixiRenderer implements Renderer {
     }
     this.boardLayer.addChild(sea, coast, tiles);
 
-    for (const h of board.hexes) {
+    for (const h of known(board.hexes)) {
       const token = h.land ? h.token : fishing.get(h.id) ?? null;
+      const hidden = token === null && (fishing.has(h.id) || (h.land && h.terrain !== null && h.terrain !== "desert"));
       if (token) this.boardLayer.addChild(this.token(geo.hex[h.id]!, token, !h.land));
+      else if (hidden) this.boardLayer.addChild(this.hiddenToken(geo.hex[h.id]!));
     }
+    if (board.partial) this.boardLayer.addChild(this.clouds(board));
     for (const hb of board.harbors) this.boardLayer.addChild(this.harbor(hb.vertices, hb.ratio, hb.resource));
+  }
+
+  /** Whether both ends of ``edge`` are on the board this player knows. */
+  private knownEdge(edge: number): boolean {
+    const e = this.board?.edges[edge];
+    return !!e && !!this.geo?.vertex[e.v[0]] && !!this.geo?.vertex[e.v[1]];
   }
 
   private hexPts(q: number, r: number, k: number): number[] {
@@ -217,6 +235,50 @@ export class PixiRenderer implements Renderer {
     return box;
   }
 
+  /** A token whose number is hidden until a building stands next to its hex. */
+  private hiddenToken(c: Pt): Container {
+    const box = new Container();
+    box.position.set(c.x * UNIT, c.y * UNIT);
+    const g = new Graphics()
+      .circle(0, 0, UNIT * 0.26).fill({ color: P.TOKEN_BG, alpha: 0.55 })
+      .stroke({ width: 1.5, color: P.TOKEN_RING, alpha: 0.6 });
+    const label = new Text({ text: "?", style: { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: UNIT * 0.26,
+      fontWeight: "700", fill: P.TOKEN_TEXT } });
+    label.anchor.set(0.5, 0.55);
+    label.alpha = 0.7;
+    box.addChild(g, label);
+    return box;
+  }
+
+  /** Cloud over the hexes next to the seen land (two rings), so the edge of what a
+   * player knows reads as unexplored rather than as open sea. */
+  private clouds(board: BoardMsg): Graphics {
+    const seen = new Set(known(board.hexes).map((h) => `${h.q},${h.r}`));
+    const ring = new Map<string, [number, number, number]>();
+    let frontier = known(board.hexes).map((h) => [h.q, h.r] as [number, number]);
+    for (let depth = 1; depth <= CLOUD_RINGS; depth++) {
+      const next: [number, number][] = [];
+      for (const [q, r] of frontier) {
+        for (const [dq, dr] of HEX_DIRS) {
+          const key = `${q + dq},${r + dr}`;
+          if (seen.has(key) || ring.has(key)) continue;
+          ring.set(key, [q + dq, r + dr, depth]);
+          next.push([q + dq, r + dr]);
+        }
+      }
+      frontier = next;
+    }
+    const g = new Graphics();
+    for (const [q, r, depth] of ring.values()) {
+      const c = hexCenter(q, r);
+      g.poly(this.hexPts(q, r, 1.04)).fill({ color: P.CLOUD, alpha: depth === 1 ? 0.92 : 0.75 });
+      for (const [ox, oy, rad] of CLOUD_PUFFS) {
+        g.circle((c.x + ox) * UNIT, (c.y + oy) * UNIT, rad * UNIT).fill({ color: P.CLOUD_LIGHT, alpha: 0.55 });
+      }
+    }
+    return g;
+  }
+
   private harbor(vertices: number[], ratio: number, resource: Resource | null): Container {
     const geo = this.geo!;
     const a = geo.vertex[vertices[0]!]!;
@@ -233,7 +295,7 @@ export class PixiRenderer implements Renderer {
     const geo = this.geo!;
     let sx = 0;
     let sy = 0;
-    for (const h of this.board!.hexes) {
+    for (const h of known(this.board!.hexes)) {
       if (!h.land) continue;
       const c = geo.hex[h.id]!;
       const d2 = (c.x - p.x) ** 2 + (c.y - p.y) ** 2;
@@ -279,9 +341,13 @@ export class PixiRenderer implements Renderer {
     for (const c of s.constructions) {
       if (c.kind === "road") this.road(g, c.target, P.playerColour(store.colourOf(c.seat)), 0.35);
     }
-    for (const b of s.buildings) this.building(g, geo.vertex[b.vertex]!, b.kind, P.playerColour(store.colourOf(b.seat)), 1);
+    for (const b of s.buildings) {
+      const p = geo.vertex[b.vertex];
+      if (p) this.building(g, p, b.kind, P.playerColour(store.colourOf(b.seat)), 1);
+    }
     for (const c of s.constructions) {
-      if (c.kind !== "road") this.building(g, geo.vertex[c.target]!, c.kind, P.playerColour(store.colourOf(c.seat)), 0.35);
+      const p = geo.vertex[c.target];
+      if (c.kind !== "road" && p) this.building(g, p, c.kind, P.playerColour(store.colourOf(c.seat)), 0.35);
     }
     const r = this.robberLayer.clear();
     if (s.robber !== null && geo.hex[s.robber]) {
@@ -295,6 +361,7 @@ export class PixiRenderer implements Renderer {
   }
 
   private road(g: Graphics, edge: number, colour: number, alpha: number): void {
+    if (!this.knownEdge(edge)) return;
     const [a, b] = this.geo!.edgeEnds(edge);
     const t = ROAD_INSET;
     const a2 = { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
@@ -320,13 +387,13 @@ export class PixiRenderer implements Renderer {
     // light player colours get a dark one instead so they still show.
     const halo = isLight(colour) ? P.OUTLINE : 0xffffff;
     for (const e of this.overlays.edges ?? []) {
-      if (e === this.overlays.focusEdge) continue;
+      if (e === this.overlays.focusEdge || !this.knownEdge(e)) continue;
       const [a, b] = this.roadEnds(e);
       dashedLine(g, a, b, UNIT * DASH, UNIT * GAP);
     }
     g.stroke({ width: CAND_W + 4, color: halo, alpha: 0.85, cap: "round" });
     for (const e of this.overlays.edges ?? []) {
-      if (e === this.overlays.focusEdge) continue;
+      if (e === this.overlays.focusEdge || !this.knownEdge(e)) continue;
       const [a, b] = this.roadEnds(e);
       dashedLine(g, a, b, UNIT * DASH, UNIT * GAP);
     }
@@ -419,6 +486,7 @@ export class PixiRenderer implements Renderer {
     const g = this.settlerLayer.clear();
     for (const settler of s.settlers) {
       const p = settlerPosition(geo, settler, now);
+      if (!p) continue;
       const colour = P.playerColour(store.colourOf(settler.seat));
       const selected = this.overlays.selectedSettlers?.includes(settler.id) ?? false;
       const x = p.x * UNIT;
@@ -440,9 +508,10 @@ export class PixiRenderer implements Renderer {
       g.circle(x, y - UNIT * 0.05, UNIT * 0.045).fill(P.OUTLINE);
       g.ellipse(x, y + UNIT * 0.05, UNIT * 0.075, UNIT * 0.045).fill(P.OUTLINE);
       if (settler.path.length) {
-        let prev = settler.step ? geo.vertex[settler.step.to_v]! : p;
+        let prev = settler.step ? geo.vertex[settler.step.to_v] ?? p : p;
         for (const v of settler.path) {
-          const q = geo.vertex[v]!;
+          const q = geo.vertex[v];
+          if (!q) break;
           g.moveTo(prev.x * UNIT, prev.y * UNIT).lineTo(q.x * UNIT, q.y * UNIT);
           prev = q;
         }
@@ -500,7 +569,17 @@ export class PixiRenderer implements Renderer {
     if (!pts.length) return geo.bounds;
     const xs = pts.map((p) => p.x);
     const ys = pts.map((p) => p.y);
-    return { minX: Math.min(...xs) - 1, minY: Math.min(...ys) - 1, maxX: Math.max(...xs) + 1, maxY: Math.max(...ys) + 1 };
+    const box = { minX: Math.min(...xs) - 1, minY: Math.min(...ys) - 1, maxX: Math.max(...xs) + 1, maxY: Math.max(...ys) + 1 };
+    // Growing sight starts with a few hexes: frame some cloud round them rather than zooming right in.
+    if (this.board!.partial) {
+      const grow = (lo: number, hi: number): [number, number] => {
+        const pad = Math.max(0, MIN_PARTIAL_SPAN - (hi - lo)) / 2;
+        return [lo - pad, hi + pad];
+      };
+      [box.minX, box.maxX] = grow(box.minX, box.maxX);
+      [box.minY, box.maxY] = grow(box.minY, box.maxY);
+    }
+    return box;
   }
 
   screenToWorld(sx: number, sy: number): Pt {
@@ -518,6 +597,7 @@ export class PixiRenderer implements Renderer {
     let best: { id: number; d2: number } | null = null;
     for (const s of this.store?.state?.settlers ?? []) {
       const p = settlerPosition(this.geo, s, now);
+      if (!p) continue;
       const d2 = (p.x - w.x) ** 2 + (p.y - w.y) ** 2;
       if (d2 < settlerR ** 2 && (!best || d2 < best.d2)) best = { id: s.id, d2 };
     }

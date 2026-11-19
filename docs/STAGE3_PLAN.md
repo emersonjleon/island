@@ -71,12 +71,19 @@ this order. Each one leaves the game playable.
   WP22 can draw them; WP22 adds them to `EARLY_FEATURES`.
 
 ### WP22 Fog and the growing view in the client
-- 2D renderer: unseen sea of cloud, seen-but-not-in-sight land dimmed, in sight
-  normal. `reveal` events add hexes with a short fade.
-- Growing view: the camera starts framed on the player's own area and its limits
-  grow with the seen area; "centre on my land" key.
-- Large-island presets (`huge`) default to Growing sight; the create form and
-  game page say when a game uses it.
+- The client keeps the board by id (`indexBoard`, holes for unseen land) and
+  grows it with `revealed` and `numbers_revealed`; pieces on new land replace
+  what it had there. Pieces, settlers and paths on unknown places are not drawn.
+- 2D renderer: two rings of cloud round the seen land; a hidden number shows as
+  "?". The camera starts framed on the player's own area (at least 8 hex radii)
+  and does not jump when new land appears.
+- `visibility.map = growing`, `visibility.hidden_numbers` and `visibility.sight`
+  are in `EARLY_FEATURES`, so the lobby offers them (all settings). Huge defaults
+  to Growing sight; its description, the game page and the code preview say so.
+- e2e `fog.cjs`: a code link with Growing sight and hidden numbers, play now
+  against bots, walk to reveal land, nothing out of sight reaches the page.
+- Dimming land that is seen but no longer in sight moves to WP24 (Live fog),
+  where it matters.
 
 ### WP23 Settlers variation
 - `buy_settler` command (cost `economy.costs.settler`, `settlers.max`), new settlers

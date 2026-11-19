@@ -14,7 +14,7 @@ describe("interpolation", () => {
     const s = { id: 1, seat: 0, vertex: e.v[0], path: [], step: { edge: e.id, from_v: e.v[0], to_v: e.v[1], t0: 1000, t1: 2000 } };
     expect(settlerPosition(geo, s, 500)).toEqual(geo.vertex[e.v[0]]);
     const mid = settlerPosition(geo, s, 1500);
-    expect(mid.x).toBeCloseTo(geo.edgeMid[e.id]!.x);
+    expect(mid!.x).toBeCloseTo(geo.edgeMid[e.id]!.x);
     expect(settlerPosition(geo, s, 9999)).toEqual(geo.vertex[e.v[1]]);
     expect(settlerPosition(geo, { ...s, step: null }, 1500)).toEqual(geo.vertex[e.v[0]]);
   });
