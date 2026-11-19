@@ -20,6 +20,7 @@
     <nav class="site-nav">
       <a href="{% url 'how_to_play' %}">{% translate "How to play" %}</a>
       {% if user.is_authenticated %}
+        {% if user.is_developer %}<a href="{% url 'accounts:dev_overview' %}">{% translate "Developer" %}</a>{% endif %}
         <a href="{% url 'accounts:profile' %}">{{ user.public_name }}</a>
         <form method="post" action="{% url 'accounts:logout' %}" class="inline">
           {% csrf_token %}<button type="submit" class="link">{% translate "Log out" %}</button>
