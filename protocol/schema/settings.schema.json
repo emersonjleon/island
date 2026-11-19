@@ -1812,6 +1812,14 @@
   "title": "GameSettings",
   "type": "object",
   "x-early-features": [
+    "economy.costs.settler",
+    "settlers.block_robber",
+    "settlers.gather",
+    "settlers.gather_cards",
+    "settlers.gather_rolls",
+    "settlers.leave_after_setup",
+    "settlers.max",
+    "settlers.start_count",
     "visibility.hidden_numbers",
     "visibility.map=growing",
     "visibility.sight"

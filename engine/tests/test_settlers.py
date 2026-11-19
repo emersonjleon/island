@@ -20,8 +20,15 @@ FULL_COST = dict(lumber=1, wool=1, grain=1, fish=2)
 NOW = 100
 
 
+def staying(overrides: dict[str, Any] | None) -> dict[str, Any]:
+    """``overrides`` with settlers staying after setup (unless they say otherwise)."""
+    out = dict(overrides or {})
+    out["settlers"] = {"leave_after_setup": False, **out.get("settlers", {})}
+    return out
+
+
 def new_state(overrides: dict[str, Any] | None = None, n: int = 3) -> GameState:
-    s = make_state(n=n, overrides=overrides or {}, stage=3)
+    s = make_state(n=n, overrides=staying(overrides), stage=3)
     for p in s.players:
         set_hand(s, p.seat)
     return s
@@ -93,6 +100,13 @@ class BuySettlerTest(unittest.TestCase):
         ev = buy(s, 0, vertex=verts[40])
         self.assertEqual(ev[1].vertex, verts[40])
 
+    def test_not_available_when_settlers_leave(self) -> None:
+        s = new_state({"settlers": {"leave_after_setup": True}})
+        place(s, 0, sorted(s.board.board.land_vertices)[0])
+        set_hand(s, 0, **FULL_COST)
+        self.assertEqual(code(buy, s, 0)[0], "settler.not_available")
+        self.assertFalse(settlers.can_buy(s, 0))
+
     def test_refusals(self) -> None:
         s = new_state()
         verts = sorted(s.board.board.land_vertices)
@@ -113,6 +127,28 @@ class BuySettlerTest(unittest.TestCase):
         set_hand(s, 0, **FULL_COST)
         self.assertEqual(code(buy, s, 0), ("settler.max", {"max": maxed}))
         self.assertEqual(s.players[0].hand_count, sum(FULL_COST.values()))
+
+
+class BotTest(unittest.TestCase):
+    def test_bots_buy_settlers_and_gather_in_the_settlers_preset(self) -> None:
+        from engine.settings import load_preset
+        from engine.sim.bots import make_bot
+        from engine.sim.runner import Simulation
+        from engine.tests.fixtures import make_seats
+        kinds: dict[str, int] = {}
+
+        def count(batch: list) -> None:
+            for e in batch:
+                kinds[e.k] = kinds.get(e.k, 0) + 1
+
+        settings = load_preset("settlers", players=3)
+        sim = Simulation(settings, make_seats(3), 2, [make_bot("greedy", i, 2000 + i) for i in range(3)], on_events=count)
+        while not sim.state.finished and len(sim.state.dice_history) < 400:
+            sim.step()
+        self.assertTrue(sim.state.finished)
+        self.assertGreater(kinds.get("settlers_gathered", 0), 0)
+        self.assertGreater(max(len(p.settler_ids) for p in sim.state.players), 1)
+        self.assertNotIn("settler_left", kinds)
 
 
 class GatherTest(unittest.TestCase):
@@ -204,7 +240,7 @@ class GatherTest(unittest.TestCase):
         self.assertNotIn(res, got)
 
     def test_dice_roll_triggers_gathering(self) -> None:
-        s = make_state(n=3, overrides=GATHER, stage=3, rolls=[[1, 2]])
+        s = make_state(n=3, overrides=staying(GATHER), stage=3, rolls=[[1, 2]])
         for p in s.players:
             set_hand(s, p.seat)
         v = land_vertex_with_resources(s)

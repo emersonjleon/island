@@ -242,8 +242,9 @@
           "wool": 1
         },
         "2": {
-          "brick": 1,
-          "ore": 1
+          "grain": 1,
+          "lumber": 1,
+          "wool": 1
         }
       },
       "k": "settlers_gathered",

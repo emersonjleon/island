@@ -57,6 +57,7 @@
     "settler.cannot_afford",
     "settler.max",
     "settler.no_building",
+    "settler.not_available",
     "settler.not_your_building",
     "settler.setup_not_done",
     "trade.bad_ratio",

@@ -37,6 +37,9 @@ IMPLEMENTED_STAGE = 2
 
 EARLY_FEATURES: frozenset[str] = frozenset({
     "visibility.sight", "visibility.hidden_numbers", "visibility.map=growing",   # WP21/WP22
+    "settlers.start_count", "settlers.max", "settlers.leave_after_setup",        # WP23
+    "settlers.gather", "settlers.gather_rolls", "settlers.gather_cards", "settlers.block_robber",
+    "economy.costs.settler",
 })
 """Later-stage settings (``path``) and enum values (``path=value``) already available,
 as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""

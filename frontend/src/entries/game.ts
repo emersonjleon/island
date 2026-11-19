@@ -97,6 +97,7 @@ async function main(): Promise<void> {
     onAction: (a) => {
       if (a === "open_trade") hud?.openTrade();
       if (a === "buy_dev_card") hud?.buyCard();
+      if (a === "buy_settler") hud?.buySettler();
     },
     onRobber: (hex) => hud?.robberPicked(hex),
     showMenu: menuFactory(canvasHost, t),

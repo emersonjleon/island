@@ -98,6 +98,7 @@
     "max": "You already have the most settlers allowed ({{max}})",
     "cannot_afford": "Not enough resources for a settler",
     "no_building": "You need a building for the settler to start from",
-    "not_your_building": "The settler must start at one of your buildings"
+    "not_your_building": "The settler must start at one of your buildings",
+    "not_available": "Settlers leave after the first settlements in this game"
   }
 }

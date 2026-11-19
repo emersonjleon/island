@@ -1,6 +1,7 @@
 """Settlers variation (WP23): buying settlers, gathering, blocking the robber.
 
-* ``buy_settler`` command: a player whose setup is done, with fewer than
+* ``buy_settler`` command, only when settlers stay after setup
+  (``settlers.leave_after_setup`` off): a player whose setup is done, with fewer than
   ``settlers.max`` settlers, pays ``economy.costs.settler`` to the bank; the new
   settler appears at ``vertex`` (one of the player's buildings) or, without one,
   at the player's building with the lowest vertex id (``settlers.spawn_at =
@@ -16,7 +17,7 @@
 * :func:`blocked_hexes`: with ``settlers.block_robber``, hexes with a settler on one
   of their corners, where the robber may not go (random moves and knights).
 
-Reject codes of ``buy_settler``: ``settler.setup_not_done``, ``settler.max`` {max},
+Reject codes of ``buy_settler``: ``settler.not_available``, ``settler.setup_not_done``, ``settler.max`` {max},
 ``settler.cannot_afford`` {missing}, ``settler.no_building``,
 ``settler.not_your_building`` {vertex}.
 """
@@ -31,7 +32,7 @@ from engine.rules.placement import missing_resources
 from engine.settings.enums import Resource
 from engine.state import GameState, Settler
 
-__all__ = ["buy_settler", "gather", "gather_numbers", "blocked_hexes", "settler_at_work"]
+__all__ = ["buy_settler", "can_buy", "gather", "gather_numbers", "blocked_hexes", "settler_at_work"]
 
 
 # ------------------------------------------------------------------ buying
@@ -46,10 +47,21 @@ def _spawn_vertex(state: GameState, seat: int, wanted: int | None) -> int:
     return own[0]
 
 
+def can_buy(state: GameState, seat: int) -> bool:
+    """Whether ``seat`` may buy a settler now (ignoring where it would land)."""
+    p = state.player(seat)
+    ss = state.settings.settlers
+    cost = {r: n for r, n in state.settings.economy.costs.settler.items() if n}
+    return (not ss.leave_after_setup and p.setup_done and len(p.settler_ids) < ss.max
+            and not missing_resources(p.hand, cost))
+
+
 @command_handler("buy_settler")
 def buy_settler(state: GameState, seat: int, cmd: BuySettler, now_ms: int) -> list[Event]:
     p = state.player(seat)
     ss = state.settings.settlers
+    if ss.leave_after_setup:
+        raise RuleError("settler.not_available", {})
     if not p.setup_done:
         raise RuleError("settler.setup_not_done", {})
     if len(p.settler_ids) >= ss.max:
