@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% load i18n vite %}
+{% block title %}{% blocktranslate with code=game.code %}Settings of game {{ code }}{% endblocktranslate %} · {{ block.super }}{% endblock %}
+{% block content %}
+<h1>{% blocktranslate with code=game.code %}Settings of game {{ code }}{% endblocktranslate %}</h1>
+<p class="muted">{% translate "Change the rules before the game starts. Every player must get ready again afterwards." %}</p>
+<section class="create-game">
+  <form method="post" class="stacked create-form" id="create-game" data-preset="{{ chosen_preset }}" data-custom="{{ custom_preset }}">
+    {% csrf_token %}
+    {% include "lobby/_settings_form.html" %}
+    <div class="create-actions">
+      <button type="submit">{% translate "Save changes" %}</button>
+      <a href="{% url 'lobby:detail' game.code %}">{% translate "Back to the game" %}</a>
+    </div>
+  </form>
+  {{ presets_data|json_script:"presets-data" }}
+  {{ editor_data|json_script:"editor-data" }}
+</section>
+{% endblock %}
+{% block scripts %}{% vite_entry "create" %}{% endblock %}

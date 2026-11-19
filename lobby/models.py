@@ -148,3 +148,28 @@ class GamePlayer(models.Model):
     def display_name(self) -> str:
         """The name shown in the lobby and in the game."""
         return f"{self.bot_name} (bot)" if self.is_bot else self.user.public_name
+
+
+SAVED_NAME_LENGTH = 40
+
+
+class SavedSettings(models.Model):
+    """A player's own named game settings: a game type and the changes on top."""
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_settings")
+    name = models.CharField(max_length=SAVED_NAME_LENGTH)
+    preset = models.CharField(max_length=32, default="classic")
+    overrides = models.JSONField(default=dict, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at", "id"]
+        constraints = [models.UniqueConstraint(fields=["owner", "name"], name="lobby_saved_settings_unique_name")]
+
+    def __str__(self) -> str:
+        return f"{self.owner_id}:{self.name}"
+
+    @property
+    def preset_label(self):
+        return preset_label(self.preset)

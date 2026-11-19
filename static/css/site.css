@@ -117,8 +117,8 @@ button:hover, .button:hover { filter: brightness(1.08); color: var(--accent-fg);
 button:active, .button:active { transform: translateY(1px); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15); }
 .button.gold, button.gold { background: linear-gradient(180deg, #f6d272, var(--gold)); border-color: #c99a2a; color: #3a2a05; }
 .button.gold:hover { color: #3a2a05; }
-button.secondary { background: transparent; color: var(--accent); box-shadow: none; border-color: var(--border); }
-button.secondary:hover { background: rgba(23, 96, 127, 0.08); color: var(--accent-strong); }
+button.secondary, .button.secondary { background: transparent; color: var(--accent); box-shadow: none; border-color: var(--border); }
+button.secondary:hover, .button.secondary:hover { background: rgba(23, 96, 127, 0.08); color: var(--accent-strong); }
 button[disabled] { opacity: 0.5; cursor: not-allowed; filter: none; transform: none; }
 
 /* ------------------------------------------------------------------ home */
@@ -293,3 +293,13 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 .editor-keys { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; }
 .editor-keys label { display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; font-size: 0.8rem; color: var(--muted); }
 .editor-row.has-error input, .editor-row.has-error select { border-color: var(--error); }
+
+/* Saved settings */
+.share-actions { margin-top: 10px; justify-content: space-between; }
+.save-settings { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 1 1 18rem; }
+.save-settings input { flex: 1 1 10rem; min-width: 0; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--fg); font: inherit; }
+.saved-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.saved-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.saved-list .saved-name { font-weight: 600; }
+.saved-list .muted { flex: 1 1 auto; }
