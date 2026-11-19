@@ -10,7 +10,8 @@ e2e/settings.py, runs e2e/two_player.cjs (two desktop browsers), e2e/phone.cjs
 (a desktop against a touch-screen phone), e2e/bots.cjs (one person against two
 computer players), e2e/resign_stats.cjs (statistics and resigning on a phone),
 e2e/big_table.cjs (eight seats, the guide and the rules), e2e/reconnect.cjs (a
-player's connection drops mid-game and comes back) and e2e/chat.cjs (the
+player's connection drops mid-game and comes back), e2e/fog.cjs (Growing sight
+against bots) and e2e/chat.cjs (the
 chat in the waiting room and in the game, desktop and phone)
 and stops both servers again.
 """
@@ -25,7 +26,8 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ("two_player.cjs", "phone.cjs", "bots.cjs", "resign_stats.cjs", "big_table.cjs", "chat.cjs", "reconnect.cjs")
+SCRIPTS = ("two_player.cjs", "phone.cjs", "bots.cjs", "resign_stats.cjs", "big_table.cjs", "chat.cjs", "reconnect.cjs",
+           "fog.cjs")
 READY_TIMEOUT_S = 30
 
 

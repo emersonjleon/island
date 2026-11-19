@@ -56,3 +56,7 @@ export function playerColour(name: string): number {
 export function pips(token: number): number {
   return 6 - Math.abs(7 - token);
 }
+
+/** Unexplored land and sea under Growing sight. */
+export const CLOUD = 0xdfe6ea;
+export const CLOUD_LIGHT = 0xf7fafb;

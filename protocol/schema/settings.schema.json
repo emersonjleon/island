@@ -1811,6 +1811,11 @@
   },
   "title": "GameSettings",
   "type": "object",
+  "x-early-features": [
+    "visibility.hidden_numbers",
+    "visibility.map=growing",
+    "visibility.sight"
+  ],
   "x-implemented-stage": 2,
   "x-later-stage-values": {
     "AdjacencyTiming": {
