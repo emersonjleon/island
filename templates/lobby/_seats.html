@@ -65,4 +65,23 @@
   <p data-starting>{% translate "The island is being prepared. You will be taken to the game when it is ready." %}</p>
 {% elif game.status == "RUNNING" %}
   <p><a class="button" href="{% url 'gameplay:play' game.code %}" data-game-url>{% translate "Go to the game" %}</a></p>
+{% elif game.status == "FINISHED" %}
+<div class="lobby-actions play-again" data-play-again>
+  {% if rematch %}
+    {% if in_rematch %}
+      <p>{% translate "You are in the new game." %}</p>
+      <a class="button" href="{% url 'lobby:detail' rematch.code %}">{% translate "Go to the new game" %}</a>
+    {% else %}
+      <p>{% blocktranslate with name=rematch_host trimmed %}{{ name }} wants to play again with the same settings.{% endblocktranslate %}</p>
+      {% if can_play_again %}
+      <form method="post" action="{% url 'lobby:play_again' game.code %}">{% csrf_token %}<button type="submit">{% translate "Join the new game" %}</button></form>
+      {% else %}
+      <a class="button secondary" href="{% url 'lobby:detail' rematch.code %}">{% translate "See the new game" %}</a>
+      {% endif %}
+    {% endif %}
+  {% elif can_play_again %}
+    <form method="post" action="{% url 'lobby:play_again' game.code %}">{% csrf_token %}<button type="submit">{% translate "Play again" %}</button></form>
+    <p class="muted">{% translate "A new game with the same settings, table size and bots. The other players are invited back." %}</p>
+  {% endif %}
+</div>
 {% endif %}

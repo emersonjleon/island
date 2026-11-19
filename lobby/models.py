@@ -65,6 +65,8 @@ class Game(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     started_at = models.DateTimeField(null=True, blank=True)
     finished_at = models.DateTimeField(null=True, blank=True)
+    # The game started from this one with "Play again" (same settings, players invited back).
+    rematch = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True, related_name="+")
 
     class Meta:
         ordering = ["-created_at"]

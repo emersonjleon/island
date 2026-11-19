@@ -192,7 +192,23 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
         "roll_seconds": settings.clock.roll_interval_ms // 1000,
         "stats": stats_rows(settings_values(settings)),
         "rule_changes": rule_changes(game.preset, settings),
-    } | code_context(request, game)
+    } | code_context(request, game) | again_context(game, me)
+
+
+def again_context(game: Game, me) -> dict:
+    """Play again on a finished game: who may press it, and the new game another player started."""
+    if game.status != GameStatus.FINISHED:
+        return {"can_play_again": False, "rematch": None}
+    rematch = game.rematch
+    if rematch is not None and rematch.status != GameStatus.LOBBY:
+        rematch = None
+    in_rematch = rematch is not None and me is not None and rematch.players.filter(user_id=me.user_id).exists()
+    return {
+        "can_play_again": me is not None and not me.is_bot,
+        "rematch": rematch,
+        "rematch_host": rematch.host.public_name if rematch is not None else "",
+        "in_rematch": in_rematch,
+    }
 
 
 def rule_changes(preset: str, settings) -> list[tuple]:
@@ -353,3 +369,16 @@ def cancel(request: HttpRequest, code: str) -> HttpResponse:
         messages.error(request, error_message(exc.code))
         return redirect("lobby:detail", code=game.code)
     return redirect("lobby:list")
+
+
+@login_required
+@require_POST
+def play_again(request: HttpRequest, code: str) -> HttpResponse:
+    """Start the same game again (same settings, table size and bots), or join the one already started."""
+    game = _game(code)
+    try:
+        rematch = services.play_again(game, request.user)
+    except services.LobbyError as exc:
+        messages.error(request, error_message(exc.code))
+        return redirect("lobby:detail", code=game.code)
+    return redirect("lobby:detail", code=rematch.code)

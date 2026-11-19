@@ -1728,6 +1728,43 @@ msgstr "Esa partida ya no existe."
 msgid "This game is over and its board is no longer kept."
 msgstr "Esta partida terminó y su tablero ya no se conserva."
 
+#: lobby/messages.py
+msgid "This game has not finished yet."
+msgstr "Esta partida todavía no ha terminado."
+
+#: templates/lobby/_seats.html
+msgid "You are in the new game."
+msgstr "Ya estás en la partida nueva."
+
+#: templates/lobby/_seats.html
+msgid "Go to the new game"
+msgstr "Ir a la partida nueva"
+
+#: templates/lobby/_seats.html
+#, python-format
+msgid "%(name)s wants to play again with the same settings."
+msgstr "%(name)s quiere jugar de nuevo con los mismos ajustes."
+
+#: templates/lobby/_seats.html
+msgid "Join the new game"
+msgstr "Unirme a la partida nueva"
+
+#: templates/lobby/_seats.html
+msgid "See the new game"
+msgstr "Ver la partida nueva"
+
+#: templates/lobby/_seats.html
+msgid "Play again"
+msgstr "Jugar de nuevo"
+
+#: templates/lobby/_seats.html
+msgid ""
+"A new game with the same settings, table size and bots. The other players "
+"are invited back."
+msgstr ""
+"Una partida nueva con los mismos ajustes, el mismo tamaño de mesa y los "
+"mismos bots. Se invita a volver a los demás jugadores."
+
 msgid "Use a settings code"
 msgstr "Usar un código de ajustes"
 
