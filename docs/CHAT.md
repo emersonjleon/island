@@ -5,7 +5,7 @@ who may read and write, never in how lines are stored, paged or cleaned up.
 
 | Kind | Key | Who | Where it is shown | Lifetime |
 |---|---|---|---|---|
-| `public` | `public:<lang>` | everyone whose privacy is *Everyone*, in that room | lobby panel, "Public" tab | pruned after `PUBLIC_RETENTION_DAYS` |
+| `public` | `public:general`, `public:<lang>` | everyone whose privacy is *Everyone*, in that room (the general one until they pick a language room) | lobby panel, "Public" tab | pruned after `PUBLIC_RETENTION_DAYS` |
 | `game` | `game:<game id>` | players and watchers of that game | waiting room and game page | deleted with the game |
 | `direct` | `dm:<low id>:<high id>` | the two people (a `Membership` each) | lobby panel, "Messages" tab | kept |
 
@@ -19,7 +19,8 @@ Models (`chat/models.py`): `Channel(kind, key, game?, last_message_id)`,
   `{"t": "chat"}` frames through `ChatMixin`; one group per game channel (`chat.game.<id>`).
 * Site-wide: `/ws/social/` (`SocialConsumer`). It joins two groups: the person's own
   (`social.user.<id>`: private lines, friend changes, "read" marks for their other tabs) and the
-  public room of their language (`chat.public.<lang>`), only if their privacy allows it.
+  public room they are in (`chat.public.general` unless they picked a language room such as
+  `chat.public.es`), only if their privacy allows it.
 
 Nothing is sent in bulk on connect: the state frame lists friends, requests and the latest
 `CONVERSATIONS` private conversations (who, last line, unread count from `last_read_id`); the
@@ -37,8 +38,9 @@ The rules live in `chat/social.py` (`check_dm`, `reads_public`); every write goe
 
 * **One table, one index.** All history reads are `WHERE channel_id = ? AND id < ? ORDER BY id DESC
   LIMIT n` on `(channel, id)`, whatever the kind; cost does not grow with the table.
-* **No fan-out to everyone.** A line goes to one group: a game's players, one language room, or two
-  people. Rooms per language split the crowd from the start.
+* **No fan-out to everyone.** A line goes to one group: a game's players, one public room, or two
+  people. Everyone starts in the general room; rooms per language are there for people who
+  want them, and the shards below split a room that gets too busy.
 * **Unread counts on the server** (`Membership.last_read_id`), so badges follow a person across tabs
   and devices, and opening the panel does not download every private message.
 * **Bounded growth.** Public rooms are pruned (`manage.py prune_chat`, run daily); game chats leave
@@ -47,7 +49,7 @@ The rules live in `chat/social.py` (`check_dm`, `reads_public`); every write goe
 
 ## Next steps when the numbers call for them
 
-1. **Room shards.** When a language room is too busy to read, split it (`public:es:1`,
+1. **Room shards.** When a public room is too busy to read, split it (`public:es:1`,
    `public:es:2`, ...) and assign people by load; the key format already allows it.
 2. **Presence.** "Online" for friends from a Redis set per user with a TTL refreshed by the socket's
    ping; announce changes to friends' `social.user.<id>` groups.

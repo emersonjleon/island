@@ -1,6 +1,6 @@
 """Every conversation on the site is a ``Channel`` with ``Message`` rows.
 
-* ``public`` - one room per language ("public:es"), for everyone whose privacy allows it;
+* ``public`` - the general room ("public:general") and one per language ("public:es"), for everyone whose privacy allows it;
 * ``game``   - one per game ("game:42"), from the waiting room into the game; goes with the game;
 * ``direct`` - one per pair of people ("dm:3:8"), with a ``Membership`` for each holding what they read.
 
@@ -80,7 +80,7 @@ class ChatSettings(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,
                                 related_name="chat_settings")
     privacy = models.CharField(max_length=16, choices=Privacy.choices, default=Privacy.EVERYONE)
-    # Language of the public room; blank follows the person's language.
+    # Public room picked ("general" or a language); blank is the general room.
     room = models.CharField(max_length=10, blank=True)
 
     def __str__(self) -> str:

@@ -89,10 +89,13 @@
     "privacy_note": "The chat inside each game always works, whatever this setting. Anyone can still send you a friend request.",
     "room": "Room",
     "rooms": {
+      "general": "General (everyone)",
       "en": "English",
       "es": "Spanish"
     }
   },
   "older": "Show older messages",
-  "loading": "Loading…"
+  "loading": "Loading…",
+  "today": "Today",
+  "yesterday": "Yesterday"
 }

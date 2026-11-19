@@ -10,6 +10,7 @@ import "./social.css";
 import { chatErrorKey } from "./i18n";
 import type { ChatLine } from "./model";
 import { ChatView } from "./ChatView";
+import { shortWhen } from "./dates";
 import { PRIVACY, type Person, type Privacy, type SocialSend, type SocialStore } from "./social";
 
 export type { SocialSend };
@@ -169,7 +170,7 @@ function PublicTab({ store, t, send, error, picked, setPicked, talk, toSettings 
           <button type="button" class="social-x" onClick={() => setPicked(null)} aria-label={t("chat:close")}>×</button>
         </div>
       )}
-      <ChatView key={room.room} log={room.log} t={t} plain onName={onName} error={error}
+      <ChatView key={room.room} log={room.log} t={t} plain dated me={state.me.id} onName={onName} error={error}
                 onMore={room.more ? () => store.loadOlder(null) : undefined} loadingMore={room.loading}
                 placeholder={t("chat:social.public_placeholder")}
                 send={(text) => send({ t: "say", to: null, text })} />
@@ -262,7 +263,7 @@ function MessagesTab({ store, t, send, error, talkTo, setTalkTo, toSettings }: P
             <button type="button" onClick={toSettings}>{t("chat:social.change_setting")}</button>
           </div>
         )}
-        <ChatView key={convo.with.id} log={convo.log} t={t} plain error={error} disabled={blocked} autoFocus={!blocked}
+        <ChatView key={convo.with.id} log={convo.log} t={t} plain dated me={state.me.id} error={error} disabled={blocked} autoFocus={!blocked}
                   onMore={convo.more ? () => store.loadOlder(convo.with.id) : undefined} loadingMore={convo.loading}
                   placeholder={t("chat:social.dm_placeholder", { name: convo.with.name })}
                   send={(text) => send({ t: "say", to: convo.with.id, text })} />
@@ -279,7 +280,10 @@ function MessagesTab({ store, t, send, error, talkTo, setTalkTo, toSettings }: P
             return (
               <li key={c.with.id}>
                 <button type="button" onClick={() => setTalkTo(c.with.id)}>
-                  <span class="social-name">{c.with.name}<Badge n={c.unread} /></span>
+                  <span class="social-convo-top">
+                    <span class="social-name">{c.with.name}<Badge n={c.unread} /></span>
+                    {last && <time class="social-when">{shortWhen(last.at, Date.now(), document.documentElement.lang || undefined)}</time>}
+                  </span>
                   {last && <span class="social-preview">{last.from === state.me.id ? `${t("chat:you")}: ` : ""}{last.text}</span>}
                 </button>
               </li>
