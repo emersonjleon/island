@@ -127,3 +127,9 @@ VITE_MANIFEST_PATH = BASE_DIR / "static" / "dist" / ".vite" / "manifest.json"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DEFAULT_FROM_EMAIL = env("DJANGO_DEFAULT_FROM_EMAIL", "no-reply@localhost")
+
+# Usernames that see the developer panel (registered users and platform statistics).
+# Comma-separated list in DEVELOPER_USERNAMES overrides the default.
+DEVELOPER_USERNAMES: list[str] = [
+    u.strip().lower() for u in env("DEVELOPER_USERNAMES", "emersonleon,emer2").split(",") if u.strip()
+]

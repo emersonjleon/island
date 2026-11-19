@@ -1751,3 +1751,231 @@ msgstr ""
 #, python-format
 msgid "Saved as “%(name)s”. It is ready under My settings."
 msgstr "Guardado como “%(name)s”. Ya está en Mis ajustes."
+
+# Developer panel (accounts/dev)
+msgid "User"
+msgstr "Usuario"
+
+msgid "Last login"
+msgstr "Último acceso"
+
+msgid "Wins"
+msgstr "Victorias"
+
+msgid "Messages"
+msgstr "Mensajes"
+
+msgid "Overview"
+msgstr "Resumen"
+
+msgid "Registered users"
+msgstr "Usuarios registrados"
+
+msgid "Django admin"
+msgstr "Administración de Django"
+
+msgid "Email"
+msgstr "Correo"
+
+msgid "inactive"
+msgstr "inactivo"
+
+#, python-format
+msgid "%(t)s ago"
+msgstr "hace %(t)s"
+
+msgid "never"
+msgstr "nunca"
+
+msgid "No users found."
+msgstr "No se encontraron usuarios."
+
+#, python-format
+msgid "Figures as of %(when)s (UTC). Only developers can see this page."
+msgstr "Cifras al %(when)s (UTC). Solo los desarrolladores pueden ver esta página."
+
+msgid "Logged in, last 24 h"
+msgstr "Entraron, últimas 24 h"
+
+msgid "Playing now"
+msgstr "Jugando ahora"
+
+#, python-format
+msgid "%(n)s today · %(m)s this week"
+msgstr "%(n)s hoy · %(m)s esta semana"
+
+#, python-format
+msgid "%(n)s min on average"
+msgstr "%(n)s min de media"
+
+msgid "Chat messages"
+msgstr "Mensajes de chat"
+
+msgid "Friendships"
+msgstr "Amistades"
+
+#, python-format
+msgid "Games per day (last %(n)s days)"
+msgstr "Partidas por día (últimos %(n)s días)"
+
+msgid "Users"
+msgstr "Usuarios"
+
+msgid "New in the last 7 days"
+msgstr "Nuevos en los últimos 7 días"
+
+msgid "New in the last 30 days"
+msgstr "Nuevos en los últimos 30 días"
+
+msgid "Logged in, last 7 days"
+msgstr "Entraron, últimos 7 días"
+
+msgid "Logged in, last 30 days"
+msgstr "Entraron, últimos 30 días"
+
+#, python-format
+msgid "Language: %(label)s"
+msgstr "Idioma: %(label)s"
+
+msgid "Seats taken by people"
+msgstr "Puestos ocupados por personas"
+
+msgid "Seats taken by bots"
+msgstr "Puestos ocupados por bots"
+
+msgid "Messages, last 7 days"
+msgstr "Mensajes, últimos 7 días"
+
+msgid "People who wrote, last 7 days"
+msgstr "Personas que escribieron, últimos 7 días"
+
+#, python-format
+msgid "Messages: %(label)s"
+msgstr "Mensajes: %(label)s"
+
+msgid "Nobody has played yet."
+msgstr "Nadie ha jugado todavía."
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Newest users"
+msgstr "Usuarios más recientes"
+
+msgid "See all registered users"
+msgstr "Ver todos los usuarios registrados"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Name, username or email"
+msgstr "Nombre, usuario o correo"
+
+msgid "Clear"
+msgstr "Limpiar"
+
+msgid "Previous"
+msgstr "Anterior"
+
+#, python-format
+msgid "Page %(n)s of %(total)s"
+msgstr "Página %(n)s de %(total)s"
+
+msgid "Next"
+msgstr "Siguiente"
+
+msgid "Joined"
+msgstr "Registro"
+
+msgid "Games"
+msgstr "Partidas"
+
+msgid "Developer panel"
+msgstr "Panel de desarrollador"
+
+msgid "developer"
+msgstr "desarrollador"
+
+#, python-format
+msgid "+%(n)s this week"
+msgstr "+%(n)s esta semana"
+
+#, python-format
+msgid "%(n)s in 7 days"
+msgstr "%(n)s en 7 días"
+
+msgid "Games waiting for players"
+msgstr "Partidas esperando jugadores"
+
+msgid "Games created"
+msgstr "Partidas creadas"
+
+msgid "Games finished"
+msgstr "Partidas terminadas"
+
+#, python-format
+msgid "%(n)s in 24 h"
+msgstr "%(n)s en 24 h"
+
+#, python-format
+msgid "%(n)s pending"
+msgstr "%(n)s pendientes"
+
+msgid "Never played a game"
+msgstr "Nunca han jugado"
+
+msgid "Longest game"
+msgstr "Partida más larga"
+
+#, python-format
+msgid "%(n)s min"
+msgstr "%(n)s min"
+
+#, python-format
+msgid "Bots: %(label)s"
+msgstr "Bots: %(label)s"
+
+msgid "Saved game settings"
+msgstr "Configuraciones guardadas"
+
+msgid "Game types"
+msgstr "Tipos de partida"
+
+msgid "No games yet."
+msgstr "Todavía no hay partidas."
+
+msgid "Private conversations"
+msgstr "Conversaciones privadas"
+
+msgid "Public rooms"
+msgstr "Salas públicas"
+
+msgid "Top players"
+msgstr "Mejores jugadores"
+
+msgid "Latest games"
+msgstr "Últimas partidas"
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Created"
+msgstr "Creada"
+
+msgid "Winner"
+msgstr "Ganador"
+
+msgid "Developer"
+msgstr "Desarrollador"
+
+#, python-format
+msgid "%(n)s game running"
+msgid_plural "%(n)s games running"
+msgstr[0] "%(n)s partida en curso"
+msgstr[1] "%(n)s partidas en curso"
+
+#, python-format
+msgid "%(n)s registered user"
+msgid_plural "%(n)s registered users"
+msgstr[0] "%(n)s usuario registrado"
+msgstr[1] "%(n)s usuarios registrados"
