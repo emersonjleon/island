@@ -44,6 +44,8 @@ FIXTURE_SEED = 3
 FIXTURE_SEATS = 3
 RESIGN_SEAT = 1           # this seat resigns once the dice have rolled RESIGN_AT_ROLL times
 RESIGN_AT_ROLL = 50
+FOG_SETTINGS = {"visibility": {"map": "growing", "hidden_numbers": True}}   # a second, short game
+FOG_ROLLS = 10
 
 
 # ------------------------------------------------------------------- codes
@@ -106,17 +108,25 @@ def fixtures() -> dict[str, Any]:
         if mid is None and sim.state.dice_history and len(sim.state.dice_history) >= 5:
             mid = {str(v): views.project_state(sim.state, v) for v in (0, None)}
     assert mid is not None
+    fog_batches: list[list[Any]] = []
+    fog = Simulation(make_settings(FOG_SETTINGS, implemented_stage=3), make_seats(FIXTURE_SEATS), FIXTURE_SEED,
+                     [make_bot("greedy", i, FIXTURE_SEED * 1000 + i) for i in range(FIXTURE_SEATS)],
+                     board=standard_board(), on_events=fog_batches.append)
+    while not fog.state.finished and len(fog.state.dice_history) < FOG_ROLLS:
+        fog.step()
     out: dict[str, Any] = {
         "board.json": {"t": "board", **sim.state.board.to_dict()},
         "state_seat0.json": {"t": "state", "seq": 1, "now": mid["0"]["now"], "state": mid["0"]},
         "state_spectator.json": {"t": "state", "seq": 1, "now": mid["None"]["now"], "state": mid["None"]},
+        "board_seat0_fog.json": {"t": "board", **views.board_for(fog.state, 0)},
         "reject.json": {"t": "reject", "cid": "a19",
                         **RuleError("build.distance_rule", {"kind": "settlement", "target": 41}).to_dict()},
     }
     for viewer, name in ((0, "seat0"), (1, "seat1"), (None, "spectator")):
         first: dict[str, dict[str, Any]] = {}
-        for batch in batches:
-            for d in views.filter_events(batch, viewer, sim.state):
+        runs = [(b, sim.state) for b in batches] + [(b, fog.state) for b in fog_batches]
+        for batch, state in runs:
+            for d in views.filter_events(batch, viewer, state):
                 key = d["k"] if d["k"] != "robber_stole" else f"robber_stole.{'own' if d['seat'] == viewer else 'other'}"
                 first.setdefault(key, d)
         evs = [first[k] for k in sorted(first)]

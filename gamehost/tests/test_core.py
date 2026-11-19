@@ -87,6 +87,16 @@ class GameCoreTests(SimpleTestCase):
         self.assertEqual(state["seq"], core.seqs.get("1", 0))
         self.assertEqual(core.sync({"seat": 1}), [])
 
+    def test_sync_board_follows_growing_sight(self):
+        settings = make_settings({"visibility": {"map": "growing"}}, implemented_stage=3)
+        state, _ = engine.new_game(settings, make_seats(3), 7, board=standard_board())
+        core = GameCore(1, state)
+        board = core.sync({"seat": 1, "reply_channel": REPLY})[0].message["msg"]
+        self.assertTrue(board["partial"])
+        self.assertLess(len(board["hexes"]), len(state.board.board.hexes))
+        spect = core.sync({"seat": None, "reply_channel": REPLY})[0].message["msg"]
+        self.assertEqual(len(spect["hexes"]), len(state.board.board.hexes))
+
     def test_resumed_messages_go_to_every_audience(self):
         core, _ = new_core(3)
         out = core.resumed_messages()

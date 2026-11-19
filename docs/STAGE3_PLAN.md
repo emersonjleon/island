@@ -48,19 +48,27 @@ this order. Each one leaves the game playable.
   migration, templates.
 
 ### WP21 Growing sight and hidden numbers (engine)
-- `engine/rules/visibility.py`: per seat `seen` hexes (never shrinks) and
-  `visible` hexes (in sight now), from `visibility.sight` around roads,
-  settlements, cities and megacities; stored in `state.ext["visibility"]`,
-  updated on `SIG_BUILT`.
-- `visibility.map = growing` and `hidden_numbers` unlocked.
-- Per-viewer board: hexes, numbers, harbors and fishing grounds never seen are
-  left out of the `board` message and arrive in a `reveal` event when first seen.
-  `project_state` and `filter_events` drop buildings, roads, constructions, robber
-  moves and production on hexes the viewer has not seen. Spectators see everything.
+- `engine/sight.py` (pure helpers) and `engine/rules/visibility.py` (an
+  `after_step` hook): per seat `seen` hexes (never shrinks) in
+  `state.ext["visibility"]`, from `visibility.sight` around the seat's roads,
+  settlements, cities and megacities. Settlers see around them too: with Growing
+  sight only until the player's first settlements are done, with Explored / Live
+  fog always. In sight now (`in_sight`) is worked out from the pieces.
+- `hidden_numbers`: a token shows once a building stands next to its hex
+  (`ext["visibility"]["numbers"]`, `numbers_revealed` event).
+- Per-viewer board (`engine.sight.board_for`, sent by `gamehost.core.sync`):
+  only seen hexes and the vertices, edges, fishing grounds and harbors on them,
+  with `partial: true`; vertices and edges list only seen hexes. New land arrives
+  in a private `revealed` event with the board there and the pieces on it.
+  `project_state` and `filter_events` drop other players' buildings, roads,
+  constructions, settlers (and their paths) and the robber on unseen hexes.
+  Spectators see everything.
 - Bots keep reading the full state (they are not told what they cannot see in
   this stage; noted as a later fix).
-- Tests: no leak of unseen hexes or numbers in any message for any seat, over
-  seeded games.
+- Tests: no leak of unseen hexes, pieces or numbers in any message for any seat,
+  over seeded games (`engine/tests/test_visibility.py`).
+- `visibility.map = growing` and `hidden_numbers` stay locked in the lobby until
+  WP22 can draw them; WP22 adds them to `EARLY_FEATURES`.
 
 ### WP22 Fog and the growing view in the client
 - 2D renderer: unseen sea of cloud, seen-but-not-in-sight land dimmed, in sight

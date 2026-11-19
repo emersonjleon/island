@@ -266,6 +266,10 @@
       ]
     },
     "viewer": null,
+    "visibility": {
+      "hidden_numbers": false,
+      "map": "open"
+    },
     "winner": null
   },
   "t": "state"

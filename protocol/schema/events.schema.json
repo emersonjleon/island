@@ -626,6 +626,35 @@
       "title": "LongestRoad",
       "type": "object"
     },
+    "NumbersRevealed": {
+      "additionalProperties": false,
+      "description": "Number tokens shown because a building now stands next to their hex\n(``visibility.hidden_numbers``). ``tokens``: hex id -> token. Players get only\nthe hexes they have seen.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "numbers_revealed",
+          "default": "numbers_revealed",
+          "title": "K",
+          "type": "string"
+        },
+        "tokens": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Tokens",
+          "type": "object"
+        }
+      },
+      "required": [
+        "at",
+        "tokens"
+      ],
+      "title": "NumbersRevealed",
+      "type": "object"
+    },
     "OfferClosed": {
       "additionalProperties": false,
       "description": "Offer ``offer`` of ``seat`` left the board. ``reason``: ``\"accepted\"`` (``by``\ntook it; the cards moved, see ``Hand``), ``\"cancelled\"``, ``\"expired\"`` or\n``\"resigned\"`` (its poster left the game).",
@@ -894,8 +923,47 @@
       "title": "Resource",
       "type": "string"
     },
+    "Revealed": {
+      "additionalProperties": false,
+      "description": "``seat`` saw new land (Growing sight). ``board`` holds the newly seen hexes\nand the vertices, edges, fishing grounds and harbors on them, shaped like the\n``board`` message (vertices and edges already known come again with their seen\nhexes). ``pieces`` holds what stands there now (``buildings``, ``roads``,\n``settlers``, ``constructions``, ``robber``), shaped like the ``state`` message;\na client replaces what it had at those places.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "board": {
+          "additionalProperties": true,
+          "title": "Board",
+          "type": "object"
+        },
+        "k": {
+          "const": "revealed",
+          "default": "revealed",
+          "title": "K",
+          "type": "string"
+        },
+        "pieces": {
+          "additionalProperties": true,
+          "title": "Pieces",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "board",
+        "pieces"
+      ],
+      "title": "Revealed",
+      "type": "object"
+    },
     "RobberMoved": {
       "additionalProperties": false,
+      "description": "Under fog a player gets ``None`` for a hex they have not seen (and nothing\nwhen neither hex is seen).",
       "properties": {
         "at": {
           "title": "At",
@@ -1320,11 +1388,13 @@
       "hand": "#/$defs/Hand",
       "largest_army": "#/$defs/LargestArmy",
       "longest_road": "#/$defs/LongestRoad",
+      "numbers_revealed": "#/$defs/NumbersRevealed",
       "offer_closed": "#/$defs/OfferClosed",
       "offer_posted": "#/$defs/OfferPosted",
       "points": "#/$defs/Points",
       "produced": "#/$defs/Produced",
       "resigned": "#/$defs/Resigned",
+      "revealed": "#/$defs/Revealed",
       "robber_moved": "#/$defs/RobberMoved",
       "robber_stole": "#/$defs/RobberStole",
       "settler_arrived": "#/$defs/SettlerArrived",
@@ -1423,6 +1493,12 @@
     },
     {
       "$ref": "#/$defs/GameOver"
+    },
+    {
+      "$ref": "#/$defs/Revealed"
+    },
+    {
+      "$ref": "#/$defs/NumbersRevealed"
     }
   ]
 }
