@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { customValues, formatStat, keepText, presetValues, type PresetsData } from "./create";
+import { customValues, formatStat, keepText, presetValues, savesOnEnter, type PresetsData } from "./create";
 
 const data: PresetsData = {
   presets: {
@@ -46,5 +46,13 @@ describe("create-game form", () => {
     const options = [{ value: "", text: "–" }, { value: "1", text: "Yes" }, { value: "0", text: "No" }];
     expect(keepText(options, "0")).toBe("(No)");
     expect(keepText(options, undefined)).toBe("–");
+  });
+});
+
+describe("savesOnEnter", () => {
+  it("saves only from the name box", () => {
+    expect(savesOnEnter("Enter", "save_name")).toBe(true);
+    expect(savesOnEnter("Enter", "target")).toBe(false);
+    expect(savesOnEnter("a", "save_name")).toBe(false);
   });
 });

@@ -43,7 +43,49 @@ class SavedSettingsTests(TestCase):
         self.assertContains(page, "Rápida 9")
         use = page.context["saved_settings"][0]["use_url"]
         filled = self.client.get(use)
-        self.assertEqual(filled.context["code_preview"]["players"], 3)
+        self.assertEqual(filled.context["active_saved"], saved)
+        self.assertTrue(filled.context["saved_settings"][0]["active"])
+        self.assertEqual(filled.context["chosen_preset"], "custom")
+        form = filled.context["form"]
+        self.assertEqual((form.data["base"], form.data["max_players"], form.data["target"]), ("blitz", "3", "9"))
+        # one click on "Create game" with what the form now holds
+        created = self.client.post(reverse("lobby:list"), dict(form.data))
+        game = Game.objects.exclude(pk=self.game.pk).get()
+        self.assertRedirects(created, reverse("lobby:detail", args=[game.code]))
+        self.assertEqual(load_preset(game.preset, game.overrides).victory.target, 9)
+
+    def test_save_from_create_form(self):
+        self.client.force_login(self.bo)
+        data = settings_form_data("classic", {"players": {"max": 5}, "victory": {"target": 12}})
+        res = self.client.post(reverse("lobby:list"), {**data, "save_as": "1", "save_name": "Larga"})
+        saved = SavedSettings.objects.get(owner=self.bo)
+        self.assertRedirects(res, reverse("lobby:list") + f"?saved={saved.pk}#create-game", fetch_redirect_response=False)
+        self.assertFalse(Game.objects.exclude(pk=self.game.pk).exists())
+        self.assertEqual(load_preset(saved.preset, saved.overrides).victory.target, 12)
+        res = self.client.post(reverse("lobby:list"), {**data, "save_as": "1", "save_name": " "})
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.context["form"].non_field_errors())
+
+    def test_at_most_ten(self):
+        for i in range(services.MAX_SAVED_PER_USER):
+            services.save_settings(self.bo, f"s{i}", "classic", {})
+        with self.assertRaises(LobbyError):
+            services.save_settings(self.bo, "one more", "classic", {})
+        services.save_settings(self.bo, "s3", "blitz", {})  # replacing by name still works
+        self.assertEqual(services.MAX_SAVED_PER_USER, 10)
+
+    def test_other_users_saved_settings_are_not_used(self):
+        mine = services.save_settings(self.host, "ana's", "blitz", {})
+        self.client.force_login(self.bo)
+        page = self.client.get(reverse("lobby:list") + f"?saved={mine.pk}")
+        self.assertIsNone(page.context["active_saved"])
+        self.assertEqual(page.context["chosen_preset"], "classic")
+
+    def test_settings_code_link_opens_custom(self):
+        self.client.force_login(self.bo)
+        page = self.client.get(reverse("lobby:list") + "?config=blitz.1.")
+        self.assertEqual(page.context["chosen_preset"], "custom")
+        self.assertContains(page, 'id="code-box" open')
 
     def test_same_name_replaces_and_delete(self):
         services.save_settings(self.bo, "x", "classic", {})

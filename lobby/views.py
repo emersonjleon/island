@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from engine.settings import encode_share_code, load_preset
+from engine.settings import load_preset
 from engine.settings.share import MAX_CODE_LENGTH
 
 from . import services
@@ -19,18 +19,33 @@ from .presets import (
 )
 from .settings_editor import changed_settings, editor_data, editor_view
 from .prefill import settings_form_data
-from .sharing import CONFIG_PARAM, code_context, create_path, read_code
+from .sharing import CONFIG_PARAM, code_context, read_code
 
 
 def _game(code: str) -> Game:
     return get_object_or_404(Game.objects.select_related("host"), code=code.upper())
 
 
+SAVED_PARAM = "saved"
+
+
 @login_required
 def game_list(request: HttpRequest) -> HttpResponse:
-    initial = {"config": request.GET.get(CONFIG_PARAM, "")[:MAX_CODE_LENGTH]}
-    form = CreateGameForm(request.POST or None, initial=initial)
-    if request.method == "POST" and form.is_valid():
+    """The lobby: open games, the player's saved settings and the create form. ``?saved=<id>``
+    fills the form with saved settings; ``?config=<code>`` with a settings code."""
+    active = _saved_from(request)
+    if request.method == "POST":
+        form = CreateGameForm(request.POST)
+    elif active is not None:
+        form = CreateGameForm(settings_form_data(active.preset, active.overrides))
+    else:
+        code = request.GET.get(CONFIG_PARAM, "")[:MAX_CODE_LENGTH]
+        form = CreateGameForm(initial={"config": code, "preset": CUSTOM} if code else {})
+    if request.method == "POST" and request.POST.get("save_as"):
+        saved = _save_from_form(request, form)
+        if saved is not None:
+            return redirect(f"{reverse('lobby:list')}?{SAVED_PARAM}={saved.pk}#create-game")
+    elif request.method == "POST" and form.is_valid():
         try:
             game = services.create_game(request.user, form.chosen_preset(), form.overrides())
         except services.LobbyError as exc:
@@ -45,8 +60,33 @@ def game_list(request: HttpRequest) -> HttpResponse:
         .select_related("host")
         .distinct()
     )
-    context = {"form": form, "open_games": open_games[:50], "my_games": mine, "saved_settings": saved_rows(request.user)}
+    context = {"form": form, "open_games": open_games[:50], "my_games": mine,
+               "saved_settings": saved_rows(request.user, active), "active_saved": active,
+               "max_saved": services.MAX_SAVED_PER_USER,
+               "save_name": request.POST.get("save_name", "") if request.method == "POST"
+               else (active.name if active else "")}
     return render(request, "lobby/list.html", context | create_form_context(form))
+
+
+def _saved_from(request: HttpRequest):
+    raw = request.GET.get(SAVED_PARAM, "")
+    if not raw.isdigit():
+        return None
+    return request.user.saved_settings.filter(pk=int(raw)).first()
+
+
+def _save_from_form(request: HttpRequest, form: CreateGameForm):
+    """Keep the form's settings under the posted name; None (with the error on the form) if not."""
+    if not form.is_valid():
+        return None
+    try:
+        saved = services.save_settings(request.user, request.POST.get("save_name", ""),
+                                       form.chosen_preset(), form.overrides())
+    except services.LobbyError as exc:
+        form.add_error(None, error_message(exc.code))
+        return None
+    messages.success(request, _("Saved as \u201c%(name)s\u201d. It is ready under My settings.") % {"name": saved.name})
+    return saved
 
 
 def _play_against_bots(request: HttpRequest, game: Game, level: str) -> None:
@@ -60,7 +100,7 @@ def _play_against_bots(request: HttpRequest, game: Game, level: str) -> None:
 
 def _chosen(form: CreateGameForm) -> tuple[str, int]:
     """The game type and table size the form shows (what was posted, else the initial ones)."""
-    preset = form.data.get("preset") or form.fields["preset"].initial
+    preset = form.data.get("preset") or form.initial.get("preset") or form.fields["preset"].initial
     if preset not in dict(form.fields["preset"].choices):
         preset = form.fields["preset"].initial
     try:
@@ -209,12 +249,12 @@ def delete_saved(request: HttpRequest, saved_id: int) -> HttpResponse:
     return redirect(reverse("lobby:list") + "#my-settings")
 
 
-def saved_rows(user) -> list[dict]:
-    rows = []
-    for saved in user.saved_settings.all():
-        code = encode_share_code(saved.preset, saved.overrides)
-        rows.append({"saved": saved, "use_url": create_path(code)})
-    return rows
+def saved_rows(user, active=None) -> list[dict]:
+    """The player's saved settings, each with the link that fills the create form with them."""
+    base = reverse("lobby:list")
+    return [{"saved": saved, "use_url": f"{base}?{SAVED_PARAM}={saved.pk}#create-game",
+             "active": active is not None and saved.pk == active.pk}
+            for saved in user.saved_settings.all()]
 
 
 @login_required
