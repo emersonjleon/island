@@ -90,6 +90,14 @@
     "bad_victim": "Ese jugador no tiene construcciones junto a ese hexágono",
     "need_resources": "Elige {{count}} recursos",
     "bank_short": "El banco no tiene esos recursos",
-    "need_resource": "Elige un recurso"
+    "need_resource": "Elige un recurso",
+    "blocked_by_settler": "Un colono protege ese hexágono: el ladrón no puede ir allí"
+  },
+  "settler": {
+    "setup_not_done": "Primero termina tu preparación",
+    "max": "Ya tienes el máximo de colonos ({{max}})",
+    "cannot_afford": "No te alcanzan los recursos para un colono",
+    "no_building": "Necesitas un edificio donde aparezca el colono",
+    "not_your_building": "El colono debe aparecer en uno de tus edificios"
   }
 }

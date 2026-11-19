@@ -527,9 +527,9 @@
           },
           "default": {
             "fish": 2,
-            "grain": 5,
-            "lumber": 3,
-            "wool": 5
+            "grain": 1,
+            "lumber": 1,
+            "wool": 1
           },
           "label": "settings.economy.costs.settler",
           "propertyNames": {
@@ -1232,6 +1232,14 @@
     "SettlerSettings": {
       "additionalProperties": false,
       "properties": {
+        "block_robber": {
+          "default": false,
+          "description": "The robber cannot move onto a hex with a settler on one of its corners.",
+          "label": "settings.settlers.block_robber",
+          "stage": 3,
+          "title": "Block Robber",
+          "type": "boolean"
+        },
         "build_reach_edges": {
           "default": 0,
           "label": "settings.settlers.build_reach_edges",
@@ -1246,6 +1254,54 @@
           "default": "setup_only",
           "label": "settings.settlers.builder_required",
           "stage": 1
+        },
+        "gather": {
+          "default": false,
+          "description": "A settler at rest gathers from the hexes around it when one of its numbers is rolled.",
+          "label": "settings.settlers.gather",
+          "stage": 3,
+          "title": "Gather",
+          "type": "boolean"
+        },
+        "gather_cards": {
+          "default": 1,
+          "label": "settings.settlers.gather_cards",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Gather Cards",
+          "type": "integer"
+        },
+        "gather_rolls": {
+          "default": [
+            [
+              3
+            ],
+            [
+              11
+            ],
+            [
+              2,
+              12
+            ]
+          ],
+          "description": "Numbers of the 1st, 2nd, 3rd... settler of a player (repeating).",
+          "items": {
+            "items": {
+              "maximum": 80,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "type": "array"
+          },
+          "label": "settings.settlers.gather_rolls",
+          "maxItems": 6,
+          "minItems": 1,
+          "stage": 3,
+          "title": "Gather Rolls",
+          "type": "array"
         },
         "landing": {
           "$ref": "#/$defs/Landing",

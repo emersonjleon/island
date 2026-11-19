@@ -17,7 +17,8 @@ and ``settings.robber.enabled``. Nothing is produced on that roll.
 3. ``move_on_seven == "random_neighbour"``: the robber moves to a random
    neighbouring hex chosen from :func:`legal_neighbours` (land hexes; deserts only
    with ``may_enter_desert``; fishing grounds only with ``may_enter_fishing``; other
-   sea never). With no legal neighbour it stays. ``RobberMoved`` is emitted in both
+   sea never; with ``settlers.block_robber`` no hex with a settler on a corner).
+   With no legal neighbour it stays. ``RobberMoved`` is emitted in both
    cases (``from_hex == to_hex`` when it stayed). Other ``move_on_seven`` values
    (stage 3) leave the robber where it is and emit nothing.
 
@@ -117,10 +118,14 @@ def _steal_from_targets(state: GameState, hex_id: int | None, now_ms: int) -> li
 
 def legal_neighbours(state: GameState, hex_id: int) -> list[int]:
     """Neighbouring hexes the robber may move to from ``hex_id`` (board order)."""
+    from engine.rules import settlers  # lazy: settlers imports placement, which may import this
     rs = state.settings.robber
     gb = state.board
+    blocked = settlers.blocked_hexes(state)
     out: list[int] = []
     for n in gb.board.hex_neighbors[hex_id]:
+        if n in blocked:
+            continue
         if gb.board.is_land(n):
             if gb.terrain[n] is Terrain.DESERT and not rs.may_enter_desert:
                 continue

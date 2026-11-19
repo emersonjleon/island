@@ -55,5 +55,6 @@
     "resigned": "se rindió"
   },
   "resigned": "{{who}} se rindió",
-  "resigned_you": "Te rendiste"
+  "resigned_you": "Te rendiste",
+  "settlers_gathered_you": "Tus colonos recogieron {{res}}"
 }

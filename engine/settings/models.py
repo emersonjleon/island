@@ -213,7 +213,7 @@ class CostSettings(_Group):
     dev_card: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1},
                                     label="settings.economy.costs.dev_card", stage=2)
     settler: ResourceMap = setting(
-        {Resource.GRAIN: 5, Resource.WOOL: 5, Resource.LUMBER: 3, Resource.FISH: 2},
+        {Resource.LUMBER: 1, Resource.WOOL: 1, Resource.GRAIN: 1, Resource.FISH: 2},
         label="settings.economy.costs.settler", stage=3)
 
 
@@ -338,6 +338,14 @@ class SettlerSettings(_Group):
     leave_after_setup: bool = setting(True, label="settings.settlers.leave_after_setup", stage=3)
     builder_required: BuilderRequired = setting(BuilderRequired.SETUP_ONLY, label="settings.settlers.builder_required")
     spawn_at: SpawnAt = setting(SpawnAt.OWN_BUILDING, label="settings.settlers.spawn_at")
+    gather: bool = setting(False, label="settings.settlers.gather", stage=3)
+    """A settler at rest gathers from the hexes around it when one of its numbers is rolled."""
+    gather_rolls: list[Annotated[list[Token], Field(min_length=1, max_length=4)]] = setting(
+        [[3], [11], [2, 12]], label="settings.settlers.gather_rolls", stage=3, min_length=1, max_length=6)
+    """Numbers of the 1st, 2nd, 3rd... settler of a player (repeating)."""
+    gather_cards: int = setting(1, label="settings.settlers.gather_cards", stage=3, ge=0, le=5)
+    block_robber: bool = setting(False, label="settings.settlers.block_robber", stage=3)
+    """The robber cannot move onto a hex with a settler on one of its corners."""
 
     @model_validator(mode="after")
     def _start_le_max(self) -> Self:
@@ -489,6 +497,8 @@ class GameSettings(_Group):
         clock = self.clock
         resolved = resolve_board_counts(self)
         values = set(resolved.number_tokens) | set(resolved.fishing_tokens) | set(self.board.red_numbers)
+        if self.settlers.gather:
+            values |= {v for group in self.settlers.gather_rolls for v in group}
         bad = sorted(v for v in values if not clock.min_roll <= v <= clock.max_roll or v == clock.robber_roll)
         if bad:
             raise _error("settings.board.token_out_of_range",

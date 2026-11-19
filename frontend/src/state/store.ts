@@ -123,6 +123,7 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       pushPoints(state, num(ev.seat), num(ev.at ?? state.now), num(ev.points));
       break;
     case "produced":
+    case "settlers_gathered":
       addProduced(state, (ev.gains ?? {}) as Record<string, ResMap>);
       break;
     case "resigned":
