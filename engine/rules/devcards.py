@@ -21,7 +21,8 @@
   ``dev_cards.road_building_roads`` free roads (built normally, at no cost; see
   :func:`engine.rules.placement.build_cost`); **year of plenty** takes
   ``dev_cards.year_of_plenty_cards`` named resources from the bank; **monopoly**
-  takes every card of one resource from the other players.
+  takes every card of one resource from the other players (players still in setup
+  are spared with ``robber.spare_setup``).
 
   Emits ``DevCardPlayed`` (public) and the ``RobberMoved`` / ``Hand`` / ``Points`` /
   ``LargestArmy`` events that follow from it.
@@ -325,7 +326,7 @@ def _play_monopoly(state: GameState, seat: int, res: Resource, now_ms: int) -> l
     me = state.player(seat)
     taken: dict[int, int] = {}
     for p in state.players:
-        if p.seat != seat and p.hand[res] > 0:
+        if p.seat != seat and p.hand[res] > 0 and not robber.is_spared(state, p.seat):
             taken[p.seat] = p.hand[res]
             me.hand[res] += p.hand[res]
             p.hand[res] = 0

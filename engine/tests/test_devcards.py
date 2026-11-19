@@ -161,6 +161,27 @@ class DevCardTest(unittest.TestCase):
         self.assertEqual(played.taken, {1: 3, 2: 2})
         self.assertEqual((s.players[0].hand[Resource.WOOL], s.players[1].hand_count), (5, 1))
 
+    def test_monopoly_spares_players_still_in_setup(self) -> None:
+        s = self.state(deck_of("monopoly"))
+        self.buy(s, 0)
+        self.roll(s)
+        set_hand(s, 1, wool=3)
+        set_hand(s, 2, wool=2)
+        s.players[2].setup_done = False
+        ev = self.play(s, 0, "monopoly", resource="wool")
+        played = next(e for e in ev if isinstance(e, DevCardPlayed))
+        self.assertEqual(played.taken, {1: 3})
+        self.assertEqual(s.players[2].hand[Resource.WOOL], 2)
+
+    def test_monopoly_takes_from_setup_players_when_spare_setup_off(self) -> None:
+        s = self.state({**deck_of("monopoly"), "robber": {"spare_setup": False}})
+        self.buy(s, 0)
+        self.roll(s)
+        set_hand(s, 2, wool=2)
+        s.players[2].setup_done = False
+        ev = self.play(s, 0, "monopoly", resource="wool")
+        self.assertEqual(next(e for e in ev if isinstance(e, DevCardPlayed)).taken, {2: 2})
+
     # ------------------------------------------------------------ knight
     def hex_at(self, s: GameState, dist: int) -> int:
         board = s.board.board

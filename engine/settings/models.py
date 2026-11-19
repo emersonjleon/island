@@ -323,7 +323,7 @@ class RobberSettings(_Group):
     knight_steal: int = setting(1, label="settings.robber.knight_steal", stage=2, ge=0, le=20)
     friendly_min_points: int = setting(0, label="settings.robber.friendly_min_points", stage=3, ge=0, le=20)
     spare_setup: bool = setting(True, label="settings.robber.spare_setup")
-    """Players still building their setup settlements and roads are never robbed (sevens or knights)."""
+    """Players still building their setup settlements and roads are never robbed (sevens, knights or monopoly)."""
 
 
 # --------------------------------------------------------------------- settlers
