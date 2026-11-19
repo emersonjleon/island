@@ -35,8 +35,9 @@ y guardable en códigos y configuraciones.
 - Modo premium: Personalizada y las partidas de más de 4 jugadores (Isla grande y
   Enorme) son solo para premium. Por ahora todos son premium (ver "Modo premium").
 - Sin preset gratis de 4 jugadores con edades por ahora.
-- Un jugador gratis entra a partidas premium solo invitado; cada premium tiene 10
-  invitados. No se muestra hasta que el modo premium se active.
+- Un jugador gratis entra a partidas premium solo invitado: cada premium tiene 3
+  invitados fijos para todas sus partidas y 15 invitaciones sueltas al mes. No se
+  muestra hasta que el modo premium se active.
 
 ## Por qué así
 
@@ -279,19 +280,32 @@ La regla la aplica el servidor, no solo la pantalla: es el **anfitrión** quien
 necesita premium para crear la partida.
 
 **Invitados.** Un jugador gratis entra a una partida premium solo con invitación
-del anfitrión. Cada jugador premium tiene derecho a 10 invitados no premium
-(ajuste del sitio `PREMIUM_GUEST_LIMIT = 10`). Lectura elegida: es una lista de
-hasta 10 personas que el premium elige y que pueden entrar a cualquiera de sus
-partidas premium; puede cambiarla cuando quiera. Si Emerson prefería "hasta 10
-invitados por partida", es el mismo campo con otra regla.
+del anfitrión. Cada jugador premium tiene dos tipos de invitación (decisión de
+Emerson):
 
-- Modelo `lobby.PremiumGuest` (anfitrión, invitado, fecha).
-- La invitación se manda desde el perfil o la sala, con la lista de amigos que ya
-  existe en el chat.
+- **Invitados fijos: 3.** Una lista de hasta 3 personas que pueden entrar a
+  todas sus partidas premium, sin gastar nada. Se puede cambiar cuando quiera
+  (ajuste del sitio `PREMIUM_FIXED_GUESTS = 3`).
+- **Invitaciones sueltas: 15 al mes.** Cada una deja entrar a un jugador gratis a
+  una partida. Se pueden usar varias en la misma partida. Se renuevan cada mes y
+  no se acumulan (ajuste `PREMIUM_MONTHLY_INVITES = 15`).
+
+Detalles de la propuesta:
+
+- La invitación suelta se gasta cuando el invitado ocupa el asiento, no al
+  mandarla; si la partida se cancela antes de empezar, se devuelve.
+- Un invitado fijo nunca gasta invitaciones sueltas.
+- El mes es el mes calendario (se renueva el día 1).
+- Modelos `lobby.PremiumGuest` (anfitrión, invitado) para la lista fija y
+  `lobby.GuestInvite` (anfitrión, invitado, partida, fecha) para las sueltas.
+- La invitación se manda desde la sala, con la lista de amigos que ya existe en
+  el chat.
 - Al unirse, el servidor revisa: la partida es premium y el jugador no lo es →
-  debe estar en la lista del anfitrión; si no, error `lobby.premium_invite_required`.
-- **No se muestra todavía:** mientras `PREMIUM_FOR_ALL = True`, la lista de
-  invitados, el contador y los mensajes no aparecen en ninguna pantalla.
+  debe ser invitado fijo o tener una invitación suelta para esa partida; si no,
+  error `lobby.premium_invite_required`. Si al anfitrión no le quedan invitaciones,
+  error `lobby.premium_no_invites_left`.
+- **No se muestra todavía:** mientras `PREMIUM_FOR_ALL = True`, las listas, el
+  contador y los mensajes no aparecen en ninguna pantalla.
 
 Los códigos y enlaces de configuración siguen la misma regla: crear una partida
 desde un código de Personalizada, o con más de 4 jugadores, pide premium.
@@ -418,15 +432,13 @@ WP26 a WP28 ya dan un juego completo con edades y megaciudades.
 ## Preguntas abiertas para Emerson
 
 Ya respondidas: preset gratis de 4 con edades (por ahora no); jugadores gratis en
-partidas premium (sí, invitados, 10 por jugador premium).
+partidas premium (sí: 3 invitados fijos y 15 invitaciones sueltas al mes).
 
-1. ¿Los 10 invitados son una lista fija del jugador premium (lo propuesto) o 10
-   por partida?
-2. ¿Te gustan los desarrollos mejorados propuestos? ¿Alguna carta que quieras
+1. ¿Te gustan los desarrollos mejorados propuestos? ¿Alguna carta que quieras
    agregar, quitar o cambiar?
-3. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
-4. ¿Tres edades, o cuatro con una "Edad de los Navegantes" reservada para barcos y
+2. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
+3. ¿Tres edades, o cuatro con una "Edad de los Navegantes" reservada para barcos y
    combate más adelante? Propongo tres ahora.
-5. ¿Las ciudades siguen en la Edad I (como Catan)? Propongo que sí.
-6. ¿Te gustan los nombres (Colonos, Mar, Dorada)?
-7. ¿Las edades de los demás siempre visibles, incluso con niebla? Propongo que sí.
+4. ¿Las ciudades siguen en la Edad I (como Catan)? Propongo que sí.
+5. ¿Te gustan los nombres (Colonos, Mar, Dorada)?
+6. ¿Las edades de los demás siempre visibles, incluso con niebla? Propongo que sí.
