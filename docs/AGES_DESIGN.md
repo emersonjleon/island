@@ -34,6 +34,9 @@ y guardable en códigos y configuraciones.
 - Puerto 2:1 de pescado: sin decidir (ver "El pescado").
 - Modo premium: Personalizada y las partidas de más de 4 jugadores (Isla grande y
   Enorme) son solo para premium. Por ahora todos son premium (ver "Modo premium").
+- Sin preset gratis de 4 jugadores con edades por ahora.
+- Un jugador gratis entra a partidas premium solo invitado; cada premium tiene 10
+  invitados. No se muestra hasta que el modo premium se active.
 
 ## Por qué así
 
@@ -258,9 +261,8 @@ Presets:
 | Enorme (7 o más) | sí | 14 | sí |
 | Personalizada | lo que elija el anfitrión | la que elija | sí |
 
-Pregunta abierta: ¿quieres además un preset de 4 jugadores con edades y meta 13,
-para jugar edades sin ser premium? Si no, en una mesa de 4 las edades solo se
-juegan en Personalizada.
+Por ahora no hay un preset gratis de 4 jugadores con edades (decisión de Emerson):
+en una mesa de 4 las edades se juegan en Personalizada.
 
 ## Modo premium
 
@@ -271,12 +273,25 @@ juegan en Personalizada.
 | Clásica y Rápida (hasta 4 jugadores) | sí | sí |
 | Isla grande y Enorme (más de 4 jugadores) | no | sí |
 | Personalizada (todos los ajustes, configuraciones guardadas) | no | sí |
-| Unirse a una partida premium creada por otro | sí (propuesta) | sí |
+| Unirse a una partida premium creada por otro | solo invitado | sí |
 
 La regla la aplica el servidor, no solo la pantalla: es el **anfitrión** quien
-necesita premium para crear la partida. Propongo que cualquiera pueda unirse a
-una partida premium ya creada, porque así un jugador premium puede invitar a sus
-amigos (pregunta abierta).
+necesita premium para crear la partida.
+
+**Invitados.** Un jugador gratis entra a una partida premium solo con invitación
+del anfitrión. Cada jugador premium tiene derecho a 10 invitados no premium
+(ajuste del sitio `PREMIUM_GUEST_LIMIT = 10`). Lectura elegida: es una lista de
+hasta 10 personas que el premium elige y que pueden entrar a cualquiera de sus
+partidas premium; puede cambiarla cuando quiera. Si Emerson prefería "hasta 10
+invitados por partida", es el mismo campo con otra regla.
+
+- Modelo `lobby.PremiumGuest` (anfitrión, invitado, fecha).
+- La invitación se manda desde el perfil o la sala, con la lista de amigos que ya
+  existe en el chat.
+- Al unirse, el servidor revisa: la partida es premium y el jugador no lo es →
+  debe estar en la lista del anfitrión; si no, error `lobby.premium_invite_required`.
+- **No se muestra todavía:** mientras `PREMIUM_FOR_ALL = True`, la lista de
+  invitados, el contador y los mensajes no aparecen en ninguna pantalla.
 
 Los códigos y enlaces de configuración siguen la misma regla: crear una partida
 desde un código de Personalizada, o con más de 4 jugadores, pide premium.
@@ -402,14 +417,16 @@ WP26 a WP28 ya dan un juego completo con edades y megaciudades.
 
 ## Preguntas abiertas para Emerson
 
-1. ¿Un preset de 4 jugadores con edades y meta 13, gratis? ¿O las edades en mesas
-   de 4 solo en Personalizada (premium)?
-2. ¿Puede un jugador gratis unirse a una partida premium creada por otro?
-3. ¿Te gustan los desarrollos mejorados propuestos? ¿Alguna carta que quieras
+Ya respondidas: preset gratis de 4 con edades (por ahora no); jugadores gratis en
+partidas premium (sí, invitados, 10 por jugador premium).
+
+1. ¿Los 10 invitados son una lista fija del jugador premium (lo propuesto) o 10
+   por partida?
+2. ¿Te gustan los desarrollos mejorados propuestos? ¿Alguna carta que quieras
    agregar, quitar o cambiar?
-4. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
-5. ¿Tres edades, o cuatro con una "Edad de los Navegantes" reservada para barcos y
+3. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
+4. ¿Tres edades, o cuatro con una "Edad de los Navegantes" reservada para barcos y
    combate más adelante? Propongo tres ahora.
-6. ¿Las ciudades siguen en la Edad I (como Catan)? Propongo que sí.
-7. ¿Te gustan los nombres (Colonos, Mar, Dorada)?
-8. ¿Las edades de los demás siempre visibles, incluso con niebla? Propongo que sí.
+5. ¿Las ciudades siguen en la Edad I (como Catan)? Propongo que sí.
+6. ¿Te gustan los nombres (Colonos, Mar, Dorada)?
+7. ¿Las edades de los demás siempre visibles, incluso con niebla? Propongo que sí.
