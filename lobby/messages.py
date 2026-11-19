@@ -6,6 +6,7 @@ ERROR_MESSAGES = {
     "lobby.board_impossible": _("An island cannot be generated with these settings."),
     "lobby.not_open": _("This game is no longer open."),
     "lobby.not_joined": _("You are not in this game."),
+    "lobby.not_finished": _("This game has not finished yet."),
     "lobby.full": _("This game is full."),
     "lobby.bad_colour": _("Unknown colour."),
     "lobby.colour_taken": _("Another player already has that colour."),

@@ -322,3 +322,47 @@ def delete_saved(user, saved_id: int) -> None:
     deleted, _rows = SavedSettings.objects.filter(owner=user, pk=saved_id).delete()
     if not deleted:
         raise LobbyError("lobby.no_such_saved")
+
+
+# ------------------------------------------------------------------ play again
+def _old_seat(game: Game, user) -> GamePlayer | None:
+    return game.players.filter(user=user).first()
+
+
+def _rematch_of(game: Game) -> Game | None:
+    """The new game started from ``game`` with Play again, while people can still join it."""
+    rematch = game.rematch
+    return rematch if rematch is not None and rematch.status == GameStatus.LOBBY else None
+
+
+@transaction.atomic
+def play_again(game: Game, user) -> Game:
+    """A player of a finished game starts the same game again, or joins the one another player started.
+
+    The new game keeps the game type, every changed setting and the table size; the bots come back
+    with the same names, levels and colours. The other people are invited back (the old game's page
+    shows them the new game) and get their old colour when they join, if it is still free.
+    """
+    game = _locked(game)
+    if game.status != GameStatus.FINISHED:
+        raise LobbyError("lobby.not_finished")
+    old = _old_seat(game, user)
+    if old is None:
+        raise LobbyError("lobby.not_joined")
+    rematch = _rematch_of(game)
+    if rematch is not None:
+        seat = join_game(rematch, user)
+        if seat.colour != old.colour and not rematch.players.filter(colour=old.colour).exists():
+            seat.colour = old.colour
+            seat.save(update_fields=["colour"])
+            broadcast_changed(rematch)
+        return rematch
+    rematch = create_game(user, game.preset, game.overrides)
+    rematch.players.filter(user=user).update(colour=old.colour)
+    for bot in game.players.filter(user=None).order_by("seat", "id"):
+        GamePlayer.objects.create(game=rematch, user=None, bot_level=bot.bot_level, bot_name=bot.bot_name,
+                                  colour=bot.colour, ready=True)
+    game.rematch = rematch
+    game.save(update_fields=["rematch"])
+    broadcast_changed(game)
+    return rematch

@@ -19,4 +19,5 @@ urlpatterns = [
     path("<str:code>/settings/save/", views.save_game_settings, name="save_settings"),
     path("saved/<int:saved_id>/delete/", views.delete_saved, name="delete_saved"),
     path("<str:code>/cancel/", views.cancel, name="cancel"),
+    path("<str:code>/again/", views.play_again, name="play_again"),
 ]
