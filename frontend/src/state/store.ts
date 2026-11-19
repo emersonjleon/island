@@ -2,7 +2,7 @@
 // resulting values that events carry; no game rule lives here. No DOM or Pixi
 // imports, so a later 3D renderer reuses it unchanged.
 import type {
-  BoardMsg, BuildKind, ConstructionView, DevCardKind, DevCardsPlayer, DevCardsView, GameEvent, GameStateView, PlayerView,
+  BoardMsg, BoardParts, BuildKind, ConstructionView, DevCardKind, DevCardsPlayer, DevCardsView, GameEvent, GameStateView, PlayerView,
   ResMap, Resource, ServerMsg, SettlerView, StatsView,
 } from "../protocol/types";
 
@@ -42,7 +42,7 @@ export class GameStore {
         this.gameCode = msg.game;
         return this.changed();
       case "board":
-        this.board = msg;
+        this.board = indexBoard(msg);
         return this.changed();
       case "state":
         this.state = msg.state;
@@ -55,7 +55,10 @@ export class GameStore {
         if (msg.seq !== this.seq + 1) return "gap";
         this.seq = msg.seq;
         this.state.now = msg.now;
-        for (const ev of msg.events) applyEvent(this.state, ev);
+        for (const ev of msg.events) {
+          if (this.board && (ev.k === "revealed" || ev.k === "numbers_revealed")) this.board = applyBoardEvent(this.board, ev);
+          applyEvent(this.state, ev);
+        }
         this.lastEvents = msg.events;
         return this.changed();
       default:
@@ -89,6 +92,62 @@ export class GameStore {
 
 const num = (v: unknown): number => v as number;
 
+/** The board with hexes, vertices and edges stored at their ids. A partial board
+ * (Growing sight) leaves holes: use ``known`` to loop over what is there. */
+export function indexBoard(msg: BoardMsg): BoardMsg {
+  const at = <T extends { id: number }>(items: T[]): T[] => {
+    const out: T[] = [];
+    for (const item of items) if (item) out[item.id] = item;
+    return out;
+  };
+  return { ...msg, hexes: at(msg.hexes), vertices: at(msg.vertices), edges: at(msg.edges) };
+}
+
+/** The entries of a board list that are known (skips the holes of a partial board). */
+export function known<T>(items: T[]): T[] {
+  return items.filter((x) => x !== undefined);
+}
+
+/** A new board with newly seen land (``revealed``) or newly shown numbers (``numbers_revealed``). */
+export function applyBoardEvent(board: BoardMsg, ev: GameEvent): BoardMsg {
+  if (ev.k === "revealed") {
+    const parts = ev.board as BoardParts;
+    const next = indexBoard({ ...board, hexes: [...known(board.hexes), ...parts.hexes],
+                              vertices: [...known(board.vertices), ...parts.vertices],
+                              edges: [...known(board.edges), ...parts.edges] });
+    const fish = new Set(board.fishing.map((f) => f.hex));
+    const harbors = new Set(board.harbors.map((h) => h.edge));
+    next.fishing = [...board.fishing, ...parts.fishing.filter((f) => !fish.has(f.hex))];
+    next.harbors = [...board.harbors, ...parts.harbors.filter((h) => !harbors.has(h.edge))];
+    return next;
+  }
+  const tokens = (ev.tokens ?? {}) as Record<string, number>;
+  const hexes = board.hexes.slice();
+  for (const [id, token] of Object.entries(tokens)) {
+    const h = hexes[Number(id)];
+    if (h) hexes[Number(id)] = { ...h, token: h.land ? token : h.token };
+  }
+  const fishing = board.fishing.map((f) => (String(f.hex) in tokens ? { ...f, token: tokens[String(f.hex)]! } : f));
+  return { ...board, hexes, fishing };
+}
+
+/** Pieces standing on newly seen land replace what the client had at those places. */
+function applyRevealedPieces(state: GameStateView, pieces: Partial<GameStateView>): void {
+  const buildings = pieces.buildings ?? [];
+  const at = new Set(buildings.map((b) => b.vertex));
+  state.buildings = [...state.buildings.filter((b) => !at.has(b.vertex)), ...buildings];
+  const roads = pieces.roads ?? [];
+  const edges = new Set(roads.map((r) => r.edge));
+  state.roads = [...state.roads.filter((r) => !edges.has(r.edge)), ...roads];
+  const settlers = pieces.settlers ?? [];
+  const sids = new Set(settlers.map((s) => s.id));
+  state.settlers = [...state.settlers.filter((s) => !sids.has(s.id)), ...settlers];
+  const cons = pieces.constructions ?? [];
+  const cids = new Set(cons.map((c) => c.id));
+  state.constructions = [...state.constructions.filter((c) => !cids.has(c.id)), ...cons];
+  if (pieces.robber !== undefined && pieces.robber !== null) state.robber = pieces.robber;
+}
+
 function settler(state: GameStateView, id: number): SettlerView | undefined {
   return state.settlers.find((s) => s.id === id);
 }
@@ -111,7 +170,15 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
       state.next_roll_at = ev.next_roll_at as number | null;
       break;
     case "robber_moved":
-      state.robber = num(ev.to_hex);
+      state.robber = ev.to_hex as number | null;   // null: it went where this player cannot see
+      break;
+    case "revealed":
+      if (state.viewer === num(ev.seat)) {
+        applyRevealedPieces(state, ev.pieces as Partial<GameStateView>);
+        const vis = state.visibility;
+        const ids = ((ev.board as BoardParts).hexes ?? []).map((h) => h.id);
+        if (vis) vis.seen = [...new Set([...(vis.seen ?? []), ...ids])].sort((a, b) => a - b);
+      }
       break;
     case "hand":
       setPlayer(state, num(ev.seat), ev.hand

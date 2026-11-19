@@ -213,7 +213,8 @@ class StageTest(unittest.TestCase):
     def test_later_stage_field_rejected(self) -> None:
         for raw, field in (({"victory": {"time_limit_ms": 600000}}, "victory.time_limit_ms"),
                            ({"settlers": {"leave_after_setup": False}}, "settlers.leave_after_setup"),
-                           ({"visibility": {"sight": {"city": 3}}}, "visibility.sight.city")):
+                           ({"visibility": {"hidden_numbers": False, "dev_cards": "counts"},
+                             "robber": {"stolen_to_bank": False}}, "robber.stolen_to_bank")):
             with self.subTest(field=field), self.assertRaises(ValidationError) as ctx:
                 GameSettings.model_validate(raw)
             err = ctx.exception.errors()[0]
@@ -224,11 +225,18 @@ class StageTest(unittest.TestCase):
     def test_later_stage_enum_value_rejected(self) -> None:
         for raw in ({"board": {"layout": "beginner"}}, {"board": {"shape": "hexagon"}},
                     {"clock": {"dice_mode": "deck"}}, {"setup": {"mode": "snake_click"}},
-                    {"visibility": {"map": "growing"}}, {"settlers": {"builder_required": "always"}},
+                    {"visibility": {"map": "explored"}}, {"settlers": {"builder_required": "always"}},
                     {"robber": {"move_on_seven": "player"}}):
             with self.subTest(raw=raw), self.assertRaises(ValidationError) as ctx:
                 GameSettings.model_validate(raw)
             self.assertEqual(error_types(ctx.exception), ["settings.later_stage"])
+
+    def test_early_features_allowed(self) -> None:
+        s = GameSettings.model_validate({"visibility": {"map": "growing", "hidden_numbers": True,
+                                                        "sight": {"city": 3}}})
+        self.assertTrue(s.visibility.hidden_numbers)
+        with self.assertRaises(ValidationError):  # not before their own stage when asked for one below
+            GameSettings.model_validate({"visibility": {"map": "growing"}}, context={"implemented_stage": 1})
 
     def test_big_tables_allowed(self) -> None:
         s = GameSettings.model_validate({"players": {"max": 12}, "board": {"land_hexes": 57},

@@ -18,10 +18,15 @@ export interface BoardMsg {
   hexes: HexInfo[];
   vertices: VertexInfo[];
   edges: EdgeInfo[];
-  fishing: { hex: number; token: number }[];
+  fishing: { hex: number; token: number | null }[];
   harbors: HarborInfo[];
   robber_start: number | null;
+  /** Growing sight: only the hexes this player has seen are listed. */
+  partial?: boolean;
 }
+
+/** Board pieces newly seen, as in a ``revealed`` event (shaped like the board message). */
+export type BoardParts = Pick<BoardMsg, "hexes" | "vertices" | "edges" | "fishing" | "harbors">;
 
 export interface SettlerStep { edge: number; from_v: number; to_v: number; t0: number; t1: number }
 export interface SettlerView { id: number; seat: number; vertex: number; path: number[]; step: SettlerStep | null }
@@ -67,6 +72,8 @@ export interface GameStateView {
   /** Why the game ended (set once finished). */
   end_reason?: "target" | "resign" | null;
   buildable?: BuildableSets;
+  /** Stage 3: the map rule, and for players under fog the hexes seen and in sight now. */
+  visibility?: { map: string; hidden_numbers: boolean; seen?: number[]; in_sight?: number[] };
 }
 
 /** ``timeline``: [game ms, points] whenever the score changed; ``produced``: cards from dice. */

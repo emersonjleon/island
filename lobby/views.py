@@ -17,6 +17,7 @@ from .presets import (
     CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, default_players, preset_description, preset_label, preset_values,
     presets_data, settings_values, stats_rows,
 )
+from .setting_labels import CHOICES, LABELS
 from .settings_editor import changed_settings, editor_data, editor_view
 from .prefill import settings_form_data
 from .sharing import CONFIG_PARAM, code_context, read_code
@@ -166,7 +167,7 @@ def code_preview(form: CreateGameForm) -> dict | None:
     return {
         "label": preset_label(shared.preset),
         "players": settings.players.max,
-        "stats": stats_rows(settings_values(settings)),
+        "stats": stats_rows(settings_values(settings)) + visibility_rows(settings),
         "changes": rule_changes(shared.preset, settings),
     }
 
@@ -190,16 +191,23 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
         "free_seats": max(settings.players.max - len(seats), 0),
         "start_problems": [error_message(p) for p in services.start_problems(game, settings)] if game.is_open else [],
         "roll_seconds": settings.clock.roll_interval_ms // 1000,
-        "stats": stats_rows(settings_values(settings)),
+        "stats": stats_rows(settings_values(settings)) + visibility_rows(settings),
         "rule_changes": rule_changes(game.preset, settings),
     } | code_context(request, game)
+
+
+def visibility_rows(settings) -> list[tuple]:
+    """A summary line when players do not see the whole map (Growing sight)."""
+    if settings.visibility.map.value == "open":
+        return []
+    return [(LABELS["visibility.map"][0], CHOICES.get(("MapVisibility", settings.visibility.map.value), ""))]
 
 
 def rule_changes(preset: str, settings) -> list[tuple]:
     """The settings changed from the game type that the summary does not already show."""
     players = settings.players.max
     base = load_preset(preset, {"players": {"max": players}}, players=players)
-    shown = {".".join(KNOBS_BY_NAME[k].path) for _label, knobs in STATS for k in knobs}
+    shown = {".".join(KNOBS_BY_NAME[k].path) for _label, knobs in STATS for k in knobs} | {"visibility.map"}
     return changed_settings(base, settings, exclude=shown)
 
 

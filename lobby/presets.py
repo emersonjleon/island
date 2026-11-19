@@ -22,7 +22,7 @@ PRESET_INFO = {
     "blitz": (_("Blitz"), _("Fast dice, quicker builds and fewer points to win.")),
     "classic": (_("Classic"), _("The standard island for 3 or 4 players.")),
     "expanded": (_("Big"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
-    "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game.")),
+    "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game. You see the land around your own pieces.")),
     CUSTOM: (_("Custom"), _("Start from the game type you chose and change the rules yourself.")),
 }
 

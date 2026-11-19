@@ -41,11 +41,11 @@ export class BoardGeometry {
 
   constructor(readonly board: BoardMsg) {
     this.hex = [];
-    for (const h of board.hexes) this.hex[h.id] = hexCenter(h.q, h.r);
+    for (const h of board.hexes) if (h) this.hex[h.id] = hexCenter(h.q, h.r);
     this.vertex = [];
-    for (const v of board.vertices) this.vertex[v.id] = vertexPos(v.q, v.r, v.c);
+    for (const v of board.vertices) if (v) this.vertex[v.id] = vertexPos(v.q, v.r, v.c);
     this.edgeMid = [];
-    for (const e of board.edges) this.edgeMid[e.id] = lerp(this.vertex[e.v[0]]!, this.vertex[e.v[1]]!, 0.5);
+    for (const e of board.edges) if (e) this.edgeMid[e.id] = lerp(this.vertex[e.v[0]]!, this.vertex[e.v[1]]!, 0.5);
     const pts = board.hexes.flatMap((h) => hexCorners(h.q, h.r));
     this.bounds = {
       minX: Math.min(...pts.map((p) => p.x)), minY: Math.min(...pts.map((p) => p.y)),

@@ -13,7 +13,8 @@ class EditorTests(TestCase):
     def test_every_label_names_a_real_setting_and_most_settings_are_shown(self):
         paths = {s.path for s in all_settings()}
         self.assertGreater(len(paths), 70)
-        later = {"visibility.map", "visibility.scores", "visibility.trade_offers", "settlers.builder_required",
+        self.assertTrue({"visibility.map", "visibility.hidden_numbers", "visibility.sight.city"} <= paths)
+        later = {"visibility.scores", "visibility.trade_offers", "settlers.builder_required",
                  "clock.dice_mode", "robber.steal_rounding", "robber.move_on_seven", "robber.adjacency_timing"}
         self.assertEqual(set(LABELS) - paths, later)  # labelled, but only one choice exists yet
 
