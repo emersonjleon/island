@@ -89,10 +89,13 @@
     "privacy_note": "El chat de cada partida funciona siempre, sea cual sea este ajuste. Cualquiera puede enviarte una solicitud de amistad.",
     "room": "Sala",
     "rooms": {
+      "general": "General (todos)",
       "en": "Inglés",
       "es": "Español"
     }
   },
   "older": "Ver mensajes anteriores",
-  "loading": "Cargando…"
+  "loading": "Cargando…",
+  "today": "Hoy",
+  "yesterday": "Ayer"
 }

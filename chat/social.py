@@ -8,7 +8,8 @@ calls them. Privacy settings (see ``Privacy``):
 * games    - no public room and no private messages; only the game chats.
 
 Friend requests are not messages, so they can be sent to anyone whatever their setting.
-The public room is one per language ("public:es"); private conversations are "dm:<a>:<b>"
+Everyone starts in the one general public room ("public:general"); a room per language
+("public:es") can be picked afterwards. Private conversations are "dm:<a>:<b>"
 channels whose two memberships keep what each person has read.
 """
 from typing import Any
@@ -50,14 +51,18 @@ def reads_public(user_id: int) -> bool:
 
 # --- public rooms ----------------------------------------------------------------
 
+GENERAL = "general"
+
+
 def rooms() -> list[str]:
-    """One public room per site language."""
-    return [code for code, _name in settings.LANGUAGES]
+    """The general room everyone starts in, then one room per site language."""
+    return [GENERAL, *(code for code, _name in settings.LANGUAGES)]
 
 
 def room_of(user) -> str:
-    chosen = _settings(user.pk)["room"] or getattr(user, "preferred_language", "") or settings.LANGUAGE_CODE
-    return chosen if chosen in rooms() else settings.LANGUAGE_CODE
+    """The room picked in the settings; the general room until one is picked."""
+    chosen = _settings(user.pk)["room"]
+    return chosen if chosen in rooms() else GENERAL
 
 
 def set_room(user, value: Any) -> str:

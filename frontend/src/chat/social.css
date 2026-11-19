@@ -66,10 +66,6 @@
 .social-privacy span { display: grid; gap: 2px; }
 .social-privacy small { color: var(--muted, #5d6a6e); }
 
-@media (max-width: 600px) {
-  .social-panel { inset: 0; width: auto; height: auto; border-radius: 0; border: 0;
-    padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
-}
 
 /* The site's round accent buttons (site.css) do not suit the panel's tabs and links. */
 .social-panel button { box-shadow: none; transform: none; }
@@ -83,3 +79,51 @@
 .social-room { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted, #5d6a6e); }
 .social-room select { font: inherit; padding: 3px 8px; border-radius: 8px; border: 1px solid var(--border, #ddd3bd);
   background: var(--bg, #fff); color: var(--fg, #1f2a2e); }
+
+/* Dated conversations (public room, private messages): the name and time on top, the text
+   below, a heading for each day, and your own lines tinted so they are easy to find. */
+.social-panel .chat-view.dated .chat-lines { padding: 2px 6px; }
+.chat-view.dated .chat-lines li { display: grid; grid-template-columns: 1fr auto; column-gap: 8px; align-items: baseline;
+  padding: 5px 6px; border-radius: 8px; }
+.chat-view.dated .chat-lines li + li { border-top: 0; }
+.chat-view.dated .chat-lines li.chat-more, .chat-view.dated .chat-lines li.chat-empty { display: block; }
+.chat-view.dated .chat-who { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; justify-self: start; max-width: 100%; }
+.chat-view.dated .chat-who::after { content: none; }
+.chat-view.dated .chat-time { float: none; margin: 0; font-size: 0.74rem; }
+.chat-view.dated .chat-text { grid-column: 1 / -1; margin-top: 1px; }
+.chat-view.dated .chat-lines li.mine { background: color-mix(in srgb, var(--accent, #17607f) 10%, transparent); }
+.chat-view.dated .chat-lines li.chat-day { display: flex; align-items: center; gap: 8px; padding: 8px 0 4px; border-radius: 0;
+  color: var(--chat-muted); font-size: 0.75rem; font-weight: 600; }
+.chat-view.dated .chat-lines li.chat-day::before, .chat-view.dated .chat-lines li.chat-day::after {
+  content: ""; flex: 1; height: 1px; background: var(--chat-line); }
+.social-convo-top { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.social-when { flex: none; color: var(--muted, #5d6a6e); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+
+/* Phones: the panel fills the screen (dvh follows the on-screen keyboard), with bigger
+   touch targets, the room picker across the top and the hint left out to save room. */
+@media (max-width: 600px) {
+  .social-fab { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); padding: 12px 18px; }
+  .social-panel { inset: 0; width: auto; height: 100vh; height: 100dvh; border-radius: 0; border: 0; box-shadow: none;
+    padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+  .social-head { padding: 8px 8px 4px 14px; }
+  .social-head h2 { font-size: 1.15rem; }
+  .social-close { min-width: 44px; min-height: 44px; font-size: 1.8rem; }
+  .social-tabs { padding: 0 4px; overflow-x: auto; scrollbar-width: none; }
+  .social-tabs::-webkit-scrollbar { display: none; }
+  .social-tabs button { min-height: 44px; padding: 8px 6px; font-size: 0.9rem; }
+  .social-body { padding: 8px 10px 10px; gap: 6px; }
+  .social-body button { min-height: 40px; padding: 6px 12px; font-size: 0.92rem; }
+  .social-body .chat-who-btn, .social-body .social-x { min-height: 0; }
+  .social-body .chat-more button { min-height: 36px; }
+  .social-panel .chat-lines { border: 0; border-radius: 0; padding: 0 2px; background: transparent; }
+  .chat-view.dated .chat-lines li { padding: 7px 8px; font-size: 0.98rem; }
+  .social-room { justify-content: space-between; }
+  .social-room select { flex: 1; max-width: 70%; min-height: 38px; font-size: 16px; }
+  .social-hint { display: none; }
+  .social-panel .chat-form { gap: 8px; padding-top: 6px; border-top: 1px solid var(--border, #ebe1c8); }
+  .social-panel .chat-form input { min-height: 44px; border-radius: 22px; padding: 8px 14px; }
+  .social-panel .chat-form .chat-send { min-height: 44px; border-radius: 22px; padding: 0 16px; }
+  .social-body .social-convos button { padding: 12px 8px; }
+  .social-person { padding: 8px 0; }
+  .social-picked { padding: 8px 10px; }
+}
