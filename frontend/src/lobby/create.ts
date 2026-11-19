@@ -147,5 +147,19 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
     render();
   });
   form.addEventListener("input", render);
+  form.addEventListener("keydown", (event) => onEnter(form, event));
   render();
+}
+
+/** Enter in the "save as" box saves the settings instead of creating the game. */
+export function savesOnEnter(key: string, inputName: string | undefined): boolean {
+  return key === "Enter" && inputName === "save_name";
+}
+
+function onEnter(form: HTMLFormElement, event: KeyboardEvent): void {
+  const target = event.target as HTMLInputElement | null;
+  const save = form.querySelector<HTMLButtonElement>('button[name="save_as"]');
+  if (!save || !savesOnEnter(event.key, target?.name)) return;
+  event.preventDefault();
+  form.requestSubmit(save);
 }
