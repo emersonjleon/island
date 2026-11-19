@@ -281,7 +281,7 @@ def start_game(game: Game, user) -> Game:
 
 
 # ------------------------------------------------------------------ settings
-MAX_SAVED_PER_USER = 30
+MAX_SAVED_PER_USER = 10
 
 
 @transaction.atomic

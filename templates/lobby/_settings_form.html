@@ -1,22 +1,5 @@
 {% load i18n %}    {{ form.base }}
     {{ form.non_field_errors }}
-    <div class="config-field">
-      <label for="{{ form.config.id_for_label }}">{{ form.config.label }}</label>
-      {{ form.config }}
-      <span class="helptext">{{ form.config.help_text }}</span>
-      {{ form.config.errors }}
-      {% if code_preview %}
-      <div class="preset-stats code-preview">
-        <h3>{% blocktranslate with type=code_preview.label players=code_preview.players trimmed %}
-          This code: {{ type }} for {{ players }} players{% endblocktranslate %}</h3>
-        <dl class="stats-list">
-          {% for label, value in code_preview.stats %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
-          {% endfor %}{% for label, value in code_preview.changes %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
-          {% endfor %}
-        </dl>
-      </div>
-      {% endif %}
-    </div>
     <fieldset class="preset-picker">
       <legend>{{ form.preset.label }}</legend>
       {{ form.preset.errors }}
@@ -52,6 +35,26 @@
 
     <div class="custom-settings" id="custom-settings">
       <h3>{% translate "Custom rules" %}</h3>
+      <details class="code-box config-field" id="code-box"{% if form.config.value or form.config.errors %} open{% endif %}>
+        <summary>{% translate "Use a settings code" %}</summary>
+        <p class="helptext">{{ form.config.help_text }}</p>
+        <div class="code-input">
+          <label for="{{ form.config.id_for_label }}" class="visually-hidden">{{ form.config.label }}</label>
+          {{ form.config }}
+        </div>
+        {{ form.config.errors }}
+        {% if code_preview %}
+        <div class="preset-stats code-preview">
+          <h4>{% blocktranslate with type=code_preview.label players=code_preview.players trimmed %}
+            This code: {{ type }} for {{ players }} players{% endblocktranslate %}</h4>
+          <dl class="stats-list">
+            {% for label, value in code_preview.stats %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+            {% endfor %}{% for label, value in code_preview.changes %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
+            {% endfor %}
+          </dl>
+        </div>
+        {% endif %}
+      </details>
       <p class="helptext">{% blocktranslate trimmed %}
         Starting from <b data-base-label>{{ base_label }}</b>. Blank fields keep its value, shown in grey.
       {% endblocktranslate %}</p>

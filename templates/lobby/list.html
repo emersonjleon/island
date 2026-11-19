@@ -38,25 +38,28 @@
   {% endif %}
 </section>
 
-{% if saved_settings %}
-<section class="my-settings" id="my-settings">
-  <h2>{% translate "My settings" %}</h2>
-  <ul class="saved-list">
-    {% for row in saved_settings %}
-    <li>
-      <span class="saved-name">{{ row.saved.name }}</span> <span class="muted">{{ row.saved.preset_label }}</span>
-      <a class="button secondary" href="{{ row.use_url }}">{% translate "Use" %}</a>
-      <form method="post" action="{% url 'lobby:delete_saved' row.saved.pk %}" class="inline">{% csrf_token %}
-        <button type="submit" class="secondary">{% translate "Delete" %}</button>
-      </form>
-    </li>
-    {% endfor %}
-  </ul>
-</section>
-{% endif %}
-
 <section class="create-game">
   <h2>{% translate "Create a game" %}</h2>
+  <div class="my-settings" id="my-settings">
+    <h3>{% translate "My settings" %} <span class="muted">{{ saved_settings|length }}/{{ max_saved }}</span></h3>
+    {% if saved_settings %}
+    <ul class="saved-chips">
+      {% for row in saved_settings %}
+      <li class="saved-chip{% if row.active %} active{% endif %}">
+        <a href="{{ row.use_url }}"{% if row.active %} aria-current="true"{% endif %} title="{% translate 'Use these settings' %}">
+          <span class="saved-name">{{ row.saved.name }}</span>
+          <span class="saved-type">{{ row.saved.preset_label }}</span>
+        </a>
+        <form method="post" action="{% url 'lobby:delete_saved' row.saved.pk %}">{% csrf_token %}
+          <button type="submit" class="chip-delete" aria-label="{% blocktranslate with name=row.saved.name %}Delete {{ name }}{% endblocktranslate %}" title="{% translate 'Delete' %}">×</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="helptext">{% translate "Choose Custom, set the rules you like and save them here to use them again with one click." %}</p>
+    {% endif %}
+  </div>
   <form method="post" class="stacked create-form" id="create-game" data-preset="{{ chosen_preset }}" data-custom="{{ custom_preset }}">
     {% csrf_token %}
     {% include "lobby/_settings_form.html" %}
@@ -71,6 +74,13 @@
       </span>
     </div>
     <p class="helptext">{% translate "Play now fills every other seat with bots and starts the game straight away." %}</p>
+    <div class="save-settings">
+      <label for="id_save_name">{% translate "Save these settings as" %}</label>
+      <span class="save-row">
+        <input type="text" id="id_save_name" name="save_name" maxlength="40" placeholder="{% translate 'Name for these settings' %}" value="{{ save_name }}">
+        <button type="submit" name="save_as" value="1" class="secondary">{% translate "Save to My settings" %}</button>
+      </span>
+    </div>
   </form>
   {{ presets_data|json_script:"presets-data" }}
   {{ editor_data|json_script:"editor-data" }}
