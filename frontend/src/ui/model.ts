@@ -102,6 +102,10 @@ export function logLine(
       if (!Object.values(gains).some((g) => handTotal(g) > 0)) return { text: t("events:produced_none"), seat: null };
       return null;
     }
+    case "settlers_gathered": {
+      const mine = viewer === null ? undefined : ((ev.gains ?? {}) as Record<string, ResMap>)[String(viewer)];
+      return mine && handTotal(mine) > 0 ? { text: t("events:settlers_gathered_you", { res: formatRes(t, mine) }), seat: viewer } : null;
+    }
     case "robber_moved": return { text: t("events:robber_moved"), seat: null };
     case "robber_stole": {
       const lost = ev.lost as ResMap | undefined;

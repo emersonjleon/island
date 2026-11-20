@@ -32,7 +32,7 @@ __all__ = [
     "ClockStarted", "DiceRolled", "Produced", "RobberStole", "RobberMoved", "Hand", "SettlerLanded",
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
-    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver", "Revealed", "NumbersRevealed",
+    "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver", "Revealed", "NumbersRevealed", "SettlersGathered",
 ]
 
 ResMap = dict[Resource, int]
@@ -356,6 +356,22 @@ class GameOver(Event):
     reason: Literal["target", "resign"] = "target"
 
 
+class SettlersGathered(Event):
+    """Settlers at rest gathered from the hexes around them on ``roll`` (Settlers
+    variation). ``gains``: seat -> resources; like :class:`Produced`, others' gains are
+    left out with ``visibility.production_log = own``."""
+    k: Literal["settlers_gathered"] = "settlers_gathered"
+    roll: int
+    gains: dict[int, ResMap]
+    settlers: list[int] = Field(default_factory=list)          # ids of the settlers that gathered
+
+    def public(self, viewer: int | None, vis: VisibilitySettings) -> dict[str, Any] | None:
+        d = self.to_dict()
+        if vis.production_log is ProductionLog.OWN:
+            d["gains"] = {k: v for k, v in d["gains"].items() if viewer is not None and k == str(viewer)}
+        return d
+
+
 class Revealed(Event):
     """``seat`` saw new land (Growing sight). ``board`` holds the newly seen hexes
     and the vertices, edges, fishing grounds and harbors on them, shaped like the
@@ -382,7 +398,7 @@ _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
     SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, OfferPosted, OfferClosed, Buildable, Resigned, GameOver,
-    Revealed, NumbersRevealed,
+    Revealed, NumbersRevealed, SettlersGathered,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
@@ -390,7 +406,8 @@ AnyEvent = Annotated[
     ClockStarted | DiceRolled | Produced | RobberStole | RobberMoved | Hand | SettlerLanded | SettlerPath
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
     | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
-    | OfferPosted | OfferClosed | Buildable | Resigned | GameOver | Revealed | NumbersRevealed,
+    | OfferPosted | OfferClosed | Buildable | Resigned | GameOver | Revealed | NumbersRevealed
+    | SettlersGathered,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

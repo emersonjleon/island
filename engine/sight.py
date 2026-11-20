@@ -94,14 +94,9 @@ def piece_sight(state: GameState, kind: BuildKind, target: int) -> set[int]:
 
 
 def settlers_reveal(state: GameState, seat: int) -> bool:
-    """Whether ``seat``'s settlers see land around them: always with ``explored``
-    and ``live_fog``; with ``growing`` only until the player's first settlements are done."""
-    mode = state.settings.visibility.map
-    if mode is MapVisibility.OPEN:
-        return False
-    if mode is MapVisibility.GROWING:
-        return not state.player(seat).setup_done
-    return True
+    """Whether ``seat``'s settlers see land around them: always under fog (Emerson,
+    Nov 19, 2026: you see the land around your settlers, buildings and roads)."""
+    return state.settings.visibility.map is not MapVisibility.OPEN
 
 
 def settler_sight(state: GameState, s: Settler) -> set[int]:

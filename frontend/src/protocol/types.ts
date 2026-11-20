@@ -103,6 +103,7 @@ export type Intent =
   | { a: "cancel_build"; construction: number }
   | { a: "bank_trade"; give: ResMap; get: ResMap }
   | { a: "buy_dev_card" }
+  | { a: "buy_settler"; vertex?: number }
   | { a: "play_dev_card"; card: DevCardKind; hex?: number; victim?: number; resources?: Resource[]; resource?: Resource }
   | { a: "post_offer"; give: ResMap; get: ResMap }
   | { a: "cancel_offer"; offer: number }

@@ -44,7 +44,8 @@ FIXTURE_SEED = 3
 FIXTURE_SEATS = 3
 RESIGN_SEAT = 1           # this seat resigns once the dice have rolled RESIGN_AT_ROLL times
 RESIGN_AT_ROLL = 50
-FOG_SETTINGS = {"visibility": {"map": "growing", "hidden_numbers": True}}   # a second, short game
+FOG_SETTINGS = {"visibility": {"map": "growing", "hidden_numbers": True},
+                "settlers": {"leave_after_setup": False, "gather": True, "block_robber": True}}   # a second, short game
 FOG_ROLLS = 10
 
 
