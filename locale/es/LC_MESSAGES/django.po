@@ -2030,6 +2030,25 @@ msgstr "Números ocultos hasta que haya un edificio al lado"
 msgid "Settler"
 msgstr "Colono"
 
+#: templates/accounts/dev/overview.html
+msgid "See all games"
+msgstr "Ver todas las partidas"
+
+#: templates/accounts/dev/games.html
+#, python-format
+msgid "%(n)s game, newest first"
+msgid_plural "%(n)s games, newest first"
+msgstr[0] "%(n)s partida, la más reciente primero"
+msgstr[1] "%(n)s partidas, las más recientes primero"
+
+#: templates/accounts/dev/games.html
+msgid "Newer"
+msgstr "Más recientes"
+
+#: templates/accounts/dev/games.html
+msgid "Older"
+msgstr "Más antiguas"
+
 msgid "Settlers at the start"
 msgstr "Colonos al empezar"
 

@@ -18,6 +18,7 @@ urlpatterns = [
     path("language/", views.set_language, name="set_language"),
     path("keybindings/", views.keybindings, name="keybindings"),
     path("dev/", views.dev_overview, name="dev_overview"),
+    path("dev/games/", views.dev_games, name="dev_games"),
     path("dev/users/", views.dev_users, name="dev_users"),
     path(
         "password/change/",

@@ -80,6 +80,12 @@ def dev_overview(request: HttpRequest) -> HttpResponse:
 
 
 @devmode.developer_required
+def dev_games(request: HttpRequest) -> HttpResponse:
+    page = Paginator(devmode.game_table(), devmode.GAMES_PER_PAGE).get_page(request.GET.get("page"))
+    return render(request, "accounts/dev/games.html", {"page": page})
+
+
+@devmode.developer_required
 def dev_users(request: HttpRequest) -> HttpResponse:
     query = request.GET.get("q", "").strip()
     sort = request.GET.get("sort", devmode.DEFAULT_USER_SORT)
