@@ -196,5 +196,5 @@ def board_for(state: GameState, viewer: int | None) -> dict[str, Any]:
     seen = seen_hexes(state, viewer)
     out = board_parts(gb, seen, seen, shown_numbers(state))
     out["robber_start"] = gb.robber_start if gb.robber_start in seen else None
-    out["partial"] = fog_on(state)
+    out["partial"] = fog_on(state) and state.phase != "finished"
     return out
