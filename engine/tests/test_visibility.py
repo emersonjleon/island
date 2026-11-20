@@ -9,11 +9,14 @@ from engine.settings import load_preset
 from engine.sim.bots import make_bot
 from engine.sim.runner import Simulation
 from engine.rules.visibility import update_visibility
+from engine.events import Built
 from engine.state import Building
 from engine.tests.fixtures import make_seats, make_settings, standard_board
 
 GROWING = {"visibility": {"map": "growing"}}
 GROWING_HIDDEN = {"visibility": {"map": "growing", "hidden_numbers": True}}
+LIVE = {"visibility": {"map": "live_fog"}}
+EXPLORED = {"visibility": {"map": "explored"}}
 
 
 def fog_settings(overrides: dict[str, Any] = GROWING):  # type: ignore[no-untyped-def]
@@ -132,6 +135,86 @@ class HiddenNumbersTest(unittest.TestCase):
         self.assertEqual(tokens, shown)
 
 
+class LiveFogTest(unittest.TestCase):
+    """Live fog: others' settlers and new buildings show only while in sight; buildings
+    and roads out of sight stay as last seen."""
+
+    def setUp(self) -> None:
+        self.state, _ = new_state(LIVE)
+        s = self.state
+        self.sid = s.players[0].settler_ids[0]
+        self.home = s.settlers[self.sid].vertex
+        gb = s.board
+        seen = sight.seen_hexes(s, 0)
+        # a corner next to the settler's sight that seat 0 sees, for seat 1's pieces
+        self.spot = next(v for v in gb.board.land_vertices if set(gb.board.vertex_hexes[v]) <= seen)
+        # far away: where the settler goes so the spot leaves its sight
+        self.far = next(v for v in gb.board.land_vertices
+                        if not set(sight.vertex_sight(gb, v, 1)) & set(sight.vertex_sight(gb, self.spot, 2)))
+
+    def move(self, vertex: int, now: int) -> list:
+        self.state.settlers[self.sid].vertex = vertex
+        return update_visibility(self.state, now)
+
+    def buildings0(self) -> list:
+        return views.project_state(self.state, 0)["buildings"]
+
+    def test_remembers_buildings_and_drops_settlers_out_of_sight(self) -> None:
+        s = self.state
+        s.buildings[self.spot] = Building(1, BuildKind.SETTLEMENT)
+        update_visibility(s, 1)
+        other = s.players[1].settler_ids[0]
+        s.settlers[other].vertex = self.spot
+        self.assertIn({"vertex": self.spot, "seat": 1, "kind": "settlement"}, self.buildings0())
+        evs = self.move(self.far, 2)
+        sights = [e for e in evs if e.k == "sight" and e.seat == 0]
+        self.assertEqual(len(sights), 1)
+        self.assertFalse(set(s.board.board.vertex_hexes[self.spot]) & set(sights[0].in_sight))
+        # out of sight: the settlement is remembered, the settler is not shown
+        p0 = views.project_state(s, 0)
+        self.assertIn({"vertex": self.spot, "seat": 1, "kind": "settlement"}, p0["buildings"])
+        self.assertNotIn(other, [x["id"] for x in p0["settlers"]])
+        # it becomes a city out of sight: still a settlement for seat 0
+        s.buildings[self.spot] = Building(1, BuildKind.CITY)
+        update_visibility(s, 3)
+        self.assertIn({"vertex": self.spot, "seat": 1, "kind": "settlement"}, self.buildings0())
+        built = views.filter_events([Built(at=3, seat=1, kind=BuildKind.CITY, target=self.spot, points_after=3)], 0, s)
+        self.assertEqual(built, [])
+        # back in sight: the city shows, sent in a revealed event
+        evs = self.move(self.home, 4)
+        rev = [e for e in evs if e.k == "revealed" and e.seat == 0]
+        self.assertEqual(len(rev), 1)
+        self.assertIn({"vertex": self.spot, "seat": 1, "kind": "city"}, rev[0].pieces["buildings"])
+        self.assertIn({"vertex": self.spot, "seat": 1, "kind": "city"}, self.buildings0())
+
+    def test_new_building_out_of_sight_is_not_known(self) -> None:
+        s = self.state
+        self.move(self.far, 1)
+        s.buildings[self.spot] = Building(1, BuildKind.SETTLEMENT)
+        update_visibility(s, 2)
+        self.assertNotIn(self.spot, [b["vertex"] for b in self.buildings0()])
+        self.assertIn(self.spot, [b["vertex"] for b in views.project_state(s, None)["buildings"]])
+
+    def test_state_lists_hexes_in_sight(self) -> None:
+        vis = views.project_state(self.state, 0)["visibility"]
+        self.assertEqual(vis["map"], "live_fog")
+        self.assertEqual(set(vis["in_sight"]), set(sight.seat_sight(self.state, 0)))
+
+
+class SettlerWalkTest(unittest.TestCase):
+    def test_growing_reveals_where_the_settler_stops_explored_as_it_walks(self) -> None:
+        from engine.state import SettlerStep
+        for overrides, walking_sees in ((GROWING, False), (EXPLORED, True)):
+            with self.subTest(map=overrides["visibility"]["map"]):
+                state, _ = new_state(overrides)
+                st = state.settlers[state.players[0].settler_ids[0]]
+                w = state.board.board.vertex_neighbors[st.vertex][0]
+                st.step = SettlerStep(edge=state.board.board.vertex_edges[st.vertex][0], from_v=st.vertex, to_v=w, t0=0, t1=10)
+                self.assertEqual(bool(sight.settler_sight(state, st)), walking_sees)
+                st.step = None
+                self.assertTrue(sight.settler_sight(state, st))
+
+
 # ------------------------------------------------------------------ no leaks
 class NoLeakTest(unittest.TestCase):
     """Over seeded bot games, nothing a player receives is about land it has not seen,
@@ -157,8 +240,9 @@ class NoLeakTest(unittest.TestCase):
 
     def check_pieces(self, state, seat: int, d: dict[str, Any]) -> None:  # type: ignore[no-untyped-def]
         gb, seen = state.board, sight.seen_hexes(state, seat)
+        live = sight.live_hexes(state, seat)
         if d.get("robber") is not None:
-            self.assertIn(d["robber"], seen)
+            self.assertIn(d["robber"], live)
         for b in d.get("buildings", []):
             if b["seat"] != seat:
                 self.assertTrue(sight.vertex_seen(gb, seen, b["vertex"]))
@@ -167,11 +251,12 @@ class NoLeakTest(unittest.TestCase):
                 self.assertTrue(sight.edge_seen(gb, seen, r["edge"]))
         for s in d.get("settlers", []):
             if s["seat"] != seat:
-                self.assertTrue(sight.vertex_seen(gb, seen, s["vertex"]))
+                self.assertTrue(sight.vertex_seen(gb, live, s["vertex"]))
                 self.assertEqual(s["path"], [])
 
     def check_event(self, state, seat: int, d: dict[str, Any]) -> None:  # type: ignore[no-untyped-def]
         gb, seen = state.board, sight.seen_hexes(state, seat)
+        live = sight.live_hexes(state, seat)
         k = d["k"]
         if k == "revealed":
             self.assertEqual(d["seat"], seat)
@@ -182,12 +267,15 @@ class NoLeakTest(unittest.TestCase):
                 self.assertIn(int(h), seen)
         elif k in ("built", "construction_started") and d["seat"] != seat:
             if d["kind"] == "road":
-                self.assertTrue(sight.edge_seen(gb, seen, d["target"]))
+                self.assertTrue(sight.edge_seen(gb, live, d["target"]))
             else:
-                self.assertTrue(sight.vertex_seen(gb, seen, d["target"]))
+                self.assertTrue(sight.vertex_seen(gb, live, d["target"]))
         elif k == "robber_moved":
             for key in ("from_hex", "to_hex"):
-                self.assertTrue(d[key] is None or d[key] in seen)
+                self.assertTrue(d[key] is None or d[key] in live)
+        elif k == "sight":
+            self.assertEqual(d["seat"], seat)
+            self.assertEqual(set(d["in_sight"]), set(sight.seat_sight(state, seat)))
         elif k == "dev_card_played" and d.get("hex") is not None and d["seat"] != seat:
             self.assertIn(d["hex"], seen)
 
@@ -219,6 +307,9 @@ class NoLeakTest(unittest.TestCase):
         for seed in (1, 2, 3):
             with self.subTest(seed=seed):
                 self.run_game(seed, GROWING_HIDDEN, 3, 25)
+        with self.subTest(live=True):
+            self.run_game(5, {"visibility": {"map": "live_fog", "hidden_numbers": True},
+                              "settlers": {"leave_after_setup": False, "gather": True}}, 3, 25)
         with self.subTest(huge=True):
             self.run_game(11, GROWING, 8, 15, preset="huge")
 

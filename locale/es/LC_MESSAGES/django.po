@@ -2025,8 +2025,8 @@ msgid_plural "%(n)s registered users"
 msgstr[0] "%(n)s usuario registrado"
 msgstr[1] "%(n)s usuarios registrados"
 
-msgid "Growing sight: each player sees only the land around their own pieces."
-msgstr "Vista creciente: cada jugador ve solo la tierra alrededor de sus propias piezas."
+msgid "Growing sight: each player sees only the land around their own pieces, and settlers where they stop. Explored: settlers also see as they walk. Live fog: like Explored, but other players' settlers and new buildings show only while in sight."
+msgstr "Vista creciente: cada jugador ve solo la tierra alrededor de sus propias piezas, y los colonos donde se detienen. Explorado: los colonos también ven mientras caminan. Niebla en vivo: como Explorado, pero los colonos y los edificios nuevos de los demás solo se ven mientras están a la vista."
 
 msgid "Numbers hidden until a building is next to them"
 msgstr "Números ocultos hasta que haya un edificio al lado"
@@ -2082,3 +2082,9 @@ msgstr "El ladrón no puede ir a un hexágono con un colono en una de sus esquin
 
 msgid "Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
 msgstr "Los colonos se quedan después de los primeros poblados: compra más, déjalos recoger con el 3, el 11 y el 2 o 12, y úsalos para alejar al ladrón."
+
+msgid "Explorer"
+msgstr "Explorador"
+
+msgid "Discover the island with your settlers: you see only the land around your pieces, numbers show once you build next to them, and settlers stay to gather and guard."
+msgstr "Descubre la isla con tus colonos: solo ves la tierra alrededor de tus piezas, los números aparecen cuando construyes al lado, y los colonos se quedan para recoger y proteger."

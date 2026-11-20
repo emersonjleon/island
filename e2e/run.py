@@ -10,7 +10,7 @@ e2e/settings.py, runs e2e/two_player.cjs (two desktop browsers), e2e/phone.cjs
 (a desktop against a touch-screen phone), e2e/bots.cjs (one person against two
 computer players), e2e/resign_stats.cjs (statistics and resigning on a phone),
 e2e/big_table.cjs (eight seats, the guide and the rules), e2e/reconnect.cjs (a
-player's connection drops mid-game and comes back), e2e/fog.cjs (Growing sight
+player's connection drops mid-game and comes back), e2e/fog.cjs (Live fog
 against bots), e2e/settlers.cjs (the Settlers game type against bots) and e2e/chat.cjs (the
 chat in the waiting room and in the game, desktop and phone)
 and stops both servers again.

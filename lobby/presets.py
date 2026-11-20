@@ -24,6 +24,7 @@ PRESET_INFO = {
     "expanded": (_("Big"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
     "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game. You see the land around your own pieces.")),
     "settlers": (_("Settlers"), _("Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away.")),
+    "explorer": (_("Explorer"), _("Discover the island with your settlers: you see only the land around your pieces, numbers show once you build next to them, and settlers stay to gather and guard.")),
     CUSTOM: (_("Custom"), _("Start from the game type you chose and change the rules yourself.")),
 }
 
