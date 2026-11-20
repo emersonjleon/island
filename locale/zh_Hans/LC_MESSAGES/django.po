@@ -1933,3 +1933,33 @@ msgstr "数字在旁边有建筑之前保持隐藏"
 
 msgid "Settler"
 msgstr "拓荒者"
+
+msgid "Settlers at the start"
+msgstr "开局时的拓荒者"
+
+msgid "Most settlers per player"
+msgstr "每位玩家最多拓荒者数"
+
+msgid "Settlers leave after the first settlements"
+msgstr "拓荒者在首批村庄建成后离开"
+
+msgid "Turn off to keep settlers in the game: players can buy more, and they gather and guard."
+msgstr "关闭后拓荒者会留在游戏中：玩家可以购买更多拓荒者，它们会采集资源并守护。"
+
+msgid "Settlers gather"
+msgstr "拓荒者采集资源"
+
+msgid "A settler standing still takes one card from each hex around it on its numbers: 3 for the first settler, 11 for the second, 2 or 12 for the third."
+msgstr "静止的拓荒者在掷出其数字时，从周围每个六边形拿取一张卡：第一个拓荒者是 3，第二个是 11，第三个是 2 或 12。"
+
+msgid "Cards a settler gathers per hex"
+msgstr "拓荒者每个六边形采集的卡牌数"
+
+msgid "Settlers guard against the robber"
+msgstr "拓荒者抵御强盗"
+
+msgid "The robber cannot move onto a hex with a settler on one of its corners."
+msgstr "强盗不能移动到某个路口上有拓荒者的六边形。"
+
+msgid "Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
+msgstr "拓荒者在首批村庄建成后留下：购买更多拓荒者，让它们在 3、11 以及 2 或 12 时采集资源，并用它们赶走强盗。"

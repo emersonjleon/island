@@ -90,6 +90,15 @@
     "bad_victim": "该玩家在那个六边形旁边没有建筑",
     "need_resources": "请选择 {{count}} 份资源",
     "bank_short": "银行没有这些资源",
-    "need_resource": "请选择一种资源"
+    "need_resource": "请选择一种资源",
+    "blocked_by_settler": "有拓荒者守护那个六边形：强盗不能去那里"
+  },
+  "settler": {
+    "setup_not_done": "请先完成准备阶段",
+    "max": "你的拓荒者已达上限（{{max}}）",
+    "cannot_afford": "资源不足，无法购买拓荒者",
+    "no_building": "你需要一座建筑作为拓荒者的出发点",
+    "not_your_building": "拓荒者必须从你的一座建筑出发",
+    "not_available": "这局游戏中，拓荒者在首批村庄建成后离开"
   }
 }

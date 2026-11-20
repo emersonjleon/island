@@ -55,5 +55,6 @@
     "resigned": "已认输"
   },
   "resigned": "{{who}} 认输了",
-  "resigned_you": "你认输了"
+  "resigned_you": "你认输了",
+  "settlers_gathered_you": "你的拓荒者采集了 {{res}}"
 }

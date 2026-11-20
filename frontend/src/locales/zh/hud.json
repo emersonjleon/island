@@ -136,7 +136,8 @@
     "zoom_out": "缩小",
     "center_selected": "以拓荒者为中心",
     "buy_dev_card": "购买发展卡",
-    "open_trade": "打开交易"
+    "open_trade": "打开交易",
+    "buy_settler": "购买拓荒者"
   },
   "spectator": "你正在观看这局游戏",
   "youObject": "你",
@@ -257,5 +258,12 @@
     "keys": "WASD 或方向键走动 · 右键：走动或建造 · R 道路 · E 村庄 · C 城市 · T 交易 · Shift+WASD 镜头。",
     "touch": "轻触地图走动或建造 · 拖动移动地图 · 双指缩放 · 下方按钮用于建造和交易。",
     "full": "完整规则"
+  },
+  "settler": {
+    "button": "拓荒者",
+    "help": "购买拓荒者：它会出现在你的第一座建筑旁",
+    "gathers": "下一个在 {{nums}} 时采集",
+    "yours": "你的拓荒者",
+    "numbers": "在 {{nums}} 时采集"
   }
 }
