@@ -6,6 +6,9 @@ import enHud from "../locales/en/hud.json";
 import esErrors from "../locales/es/errors.json";
 import esEvents from "../locales/es/events.json";
 import esHud from "../locales/es/hud.json";
+import zhErrors from "../locales/zh/errors.json";
+import zhEvents from "../locales/zh/events.json";
+import zhHud from "../locales/zh/hud.json";
 
 export function addHudCatalogues(i: i18n): void {
   i.addResourceBundle("en", "hud", enHud);
@@ -14,4 +17,7 @@ export function addHudCatalogues(i: i18n): void {
   i.addResourceBundle("es", "hud", esHud);
   i.addResourceBundle("es", "errors", esErrors);
   i.addResourceBundle("es", "events", esEvents);
+  i.addResourceBundle("zh", "hud", zhHud);
+  i.addResourceBundle("zh", "errors", zhErrors);
+  i.addResourceBundle("zh", "events", zhEvents);
 }

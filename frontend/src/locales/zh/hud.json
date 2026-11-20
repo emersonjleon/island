@@ -1,0 +1,269 @@
+{
+  "res": {
+    "lumber": "木材",
+    "brick": "砖块",
+    "wool": "羊毛",
+    "grain": "粮食",
+    "ore": "矿石",
+    "fish": "鱼"
+  },
+  "resCount": "{{count}} 份{{res}}",
+  "kind": {
+    "road": "道路",
+    "settlement": "村庄",
+    "city": "城市",
+    "megacity": "大都市"
+  },
+  "you": "你",
+  "hand": "你的手牌",
+  "build": {
+    "road": "道路",
+    "settlement": "村庄",
+    "city": "城市",
+    "cost": "花费 {{res}}",
+    "free": "免费"
+  },
+  "trade": {
+    "open": "交易",
+    "title": "与银行交易",
+    "titleAll": "交易",
+    "bankTab": "银行",
+    "playersTab": "玩家",
+    "give": "给出",
+    "get": "换取",
+    "ratio": "{{ratio}} : 1",
+    "summary": "用 {{give}} 换 {{get}}",
+    "confirm": "交易",
+    "close": "关闭"
+  },
+  "offers": {
+    "open": "交易板上的报价",
+    "none": "还没有报价。在下方发布一个：任何人都可以接受。",
+    "new": "新报价",
+    "youGive": "你给出",
+    "youGet": "你换取",
+    "post": "发布报价",
+    "line": "{{who}}：用 {{give}} 换 {{get}}",
+    "left_one": "剩余 {{count}} 秒",
+    "left_other": "剩余 {{count}} 秒",
+    "accept": "接受",
+    "withdraw": "撤回",
+    "less": "减少一份{{res}}",
+    "more": "增加一份{{res}}",
+    "waiting_one": "其他玩家的 {{count}} 个报价",
+    "waiting_other": "其他玩家的 {{count}} 个报价"
+  },
+  "net": {
+    "lost": "连接已断开。",
+    "trying": "正在重新连接…",
+    "retryIn_one": "{{count}} 秒后重试（第 {{attempt}} 次）。游戏会继续进行。",
+    "retryIn_other": "{{count}} 秒后重试（第 {{attempt}} 次）。游戏会继续进行。",
+    "retryNow": "立即重试"
+  },
+  "dice": {
+    "next": "下次掷骰",
+    "last": "上次掷骰",
+    "history": "最近的掷骰",
+    "waiting": "第一座村庄建成后开始掷骰"
+  },
+  "scores": {
+    "offline": "离线",
+    "offlineHelp": "连接已断开；游戏会继续进行，对方可以回来",
+    "title": "玩家",
+    "points": "{{points}} / {{target}}",
+    "cards": "{{count}} 份资源",
+    "you": "（你）",
+    "road": "道路 {{count}}",
+    "longest_road": "最长道路",
+    "dev": "{{count}} 张发展卡",
+    "knights": "{{count}} 名骑士",
+    "largest_army": "最大军队",
+    "resigned": "已认输",
+    "show_all": "显示全部 {{count}} 人",
+    "show_less": "收起"
+  },
+  "camera": {
+    "center": "以我的拓荒者为中心",
+    "fit": "显示整个岛屿",
+    "fullscreen": "全屏",
+    "exitFullscreen": "退出全屏"
+  },
+  "log": {
+    "title": "动态"
+  },
+  "over": {
+    "title": "游戏结束",
+    "winner": "{{name}} 获胜！",
+    "youWin": "你赢了！",
+    "noWinner": "没有获胜者",
+    "back": "返回大厅",
+    "byResign": "其他玩家都认输了",
+    "showBoard": "查看棋盘",
+    "results": "结果"
+  },
+  "keys": {
+    "open": "按键",
+    "title": "键盘控制",
+    "press": "请按一个键…",
+    "add": "添加按键",
+    "remove": "删除 {{key}}",
+    "reset": "恢复默认",
+    "save": "保存",
+    "saved": "已保存",
+    "saveFailed": "仅保存在此设备上",
+    "conflict": "也用于：{{actions}}",
+    "close": "关闭"
+  },
+  "action": {
+    "move_up": "向上走",
+    "move_down": "向下走",
+    "move_left": "向左走",
+    "move_right": "向右走",
+    "select_next": "下一个拓荒者",
+    "select_1": "拓荒者 1",
+    "select_2": "拓荒者 2",
+    "select_3": "拓荒者 3",
+    "build_road": "修建道路",
+    "build_settlement": "建造村庄",
+    "build_city": "建造城市",
+    "confirm": "确认",
+    "cancel": "取消",
+    "camera_up": "镜头向上",
+    "camera_down": "镜头向下",
+    "camera_left": "镜头向左",
+    "camera_right": "镜头向右",
+    "zoom_in": "放大",
+    "zoom_out": "缩小",
+    "center_selected": "以拓荒者为中心",
+    "buy_dev_card": "购买发展卡",
+    "open_trade": "打开交易",
+    "buy_settler": "购买拓荒者"
+  },
+  "spectator": "你正在观看这局游戏",
+  "youObject": "你",
+  "dev": {
+    "buyCost": "发展卡：花费 {{res}}",
+    "title": "你的发展卡",
+    "none": "你没有发展卡。",
+    "play": "使用",
+    "close": "关闭",
+    "take": "拿取",
+    "pickPlenty": "选择要从银行拿取的 {{count}} 份资源",
+    "pickMonopoly": "选择要从所有人那里拿走的资源",
+    "victimTitle": "你要抢夺谁？",
+    "kind": {
+      "knight": "骑士",
+      "victory_point": "胜利分",
+      "road_building": "道路建设",
+      "year_of_plenty": "丰收之年",
+      "monopoly": "垄断"
+    },
+    "help": {
+      "knight": "把强盗移动最多 3 格并偷取一份资源",
+      "victory_point": "打出时得 1 分",
+      "road_building": "免费修建 2 条道路",
+      "year_of_plenty": "从银行拿取 2 份资源",
+      "monopoly": "从每位玩家那里拿走一种资源"
+    },
+    "menu": "发展卡",
+    "menuHelp": "购买和使用发展卡",
+    "button": "发展卡",
+    "buyTitle": "购买发展卡",
+    "buyHelp": "随机一张卡：骑士、道路建设、丰收之年、垄断或胜利分",
+    "deckLeft_one": "牌堆还剩 {{count}} 张",
+    "deckLeft_other": "牌堆还剩 {{count}} 张",
+    "buyNow": "购买",
+    "yours": "你的卡牌"
+  },
+  "stats": {
+    "open": "统计",
+    "title": "游戏统计",
+    "close": "关闭",
+    "points": "分数来源",
+    "timeline": "分数变化",
+    "produced": "掷骰获得的资源",
+    "resigned": "已认输",
+    "hidden": "对方的分数将在游戏结束时显示",
+    "noPoints": "还没有分数",
+    "pointsOf": "{{name}}：{{count}} 分",
+    "label": {
+      "settlement": "村庄",
+      "city": "城市",
+      "megacity": "大都市",
+      "longest_road": "最长道路",
+      "largest_army": "最大军队",
+      "victory_point": "胜利分"
+    },
+    "part": {
+      "settlement_one": "{{count}} 座村庄（{{points}}）",
+      "settlement_other": "{{count}} 座村庄（{{points}}）",
+      "city_one": "{{count}} 座城市（{{points}}）",
+      "city_other": "{{count}} 座城市（{{points}}）",
+      "megacity_one": "{{count}} 座大都市（{{points}}）",
+      "megacity_other": "{{count}} 座大都市（{{points}}）",
+      "longest_road_one": "最长道路（{{points}}）",
+      "longest_road_other": "最长道路（{{points}}）",
+      "largest_army_one": "最大军队（{{points}}）",
+      "largest_army_other": "最大军队（{{points}}）",
+      "victory_point_one": "{{count}} 张胜利分发展卡（{{points}}）",
+      "victory_point_other": "{{count}} 张胜利分发展卡（{{points}}）"
+    }
+  },
+  "resign": {
+    "open": "认输",
+    "title": "确定认输？",
+    "body": "你将永久退出这局游戏：你的道路和建筑会留在地图上但不再产出，你的资源会归还银行，你也不能再获胜。你可以继续观战直到结束。",
+    "confirm": "是的，我认输",
+    "cancel": "继续游戏",
+    "done": "你已认输，正在观战。",
+    "back": "返回大厅"
+  },
+  "fullscreen": {
+    "title": "全屏游戏",
+    "body": "此浏览器不允许页面隐藏工具栏。在 iPhone 上，点击“分享”，然后选择“添加到主屏幕”：从该图标打开时，游戏会铺满整个屏幕，不显示浏览器栏。"
+  },
+  "guide": {
+    "title": "指南",
+    "hide": "隐藏指南",
+    "show": "指南",
+    "help": "玩法说明",
+    "setup_settlement": "第 {{step}} 步，共 {{total}} 步：带着你的拓荒者走到一个空的路口（相邻路口没有村庄），在那里建造村庄。",
+    "setup_road": "第 {{step}} 步，共 {{total}} 步：在新村庄旁边的一条边上修建道路。",
+    "building": "正在建造你的{{kind}}…你的拓荒者必须留在原地直到完工。",
+    "wait_clock": "准备完成！骰子时钟会在第一座村庄建成后启动；很快你的村庄就会收集资源。",
+    "keys": "按键：WASD 或方向键走动，右键点击位置建造，R 道路，E 村庄，C 城市。",
+    "touch": "轻触地图上的位置可走过去或建造。拖动可移动地图，双指缩放。",
+    "tips": {
+      "produce": "每隔几秒掷一次骰子。数字被掷中的每个六边形，都会给相邻的每座村庄一份资源（城市得 2 份）。",
+      "roads": "从你的道路网修路，到达新的路口；新村庄必须连接你的一条道路。",
+      "settle": "一座村庄花费 {{settlement}}，值 1 分。6 和 8 上的位置产出最频繁。",
+      "city": "把村庄升级为城市（{{city}}）：产出翻倍，值 2 分。",
+      "trade": "某种资源太多了？与银行用 {{ratio}} 份同种资源换任意一份其他资源，在港口还能更划算。也可以在交易板上向其他玩家发布报价。",
+      "robber": "掷出 7 时没有产出，强盗会拿走每位持有超过 {{limit}} 份资源的玩家一半的资源。在 7 之前花掉它们！",
+      "cards": "发展卡（{{card}}）提供骑士、免费道路、资源或隐藏分数。",
+      "goal": "第一个达到 {{target}} 分的玩家获胜。最长道路和最大军队可获得额外分数。"
+    }
+  },
+  "help": {
+    "title": "玩法说明",
+    "close": "关闭",
+    "goal": "目标：第一个达到 {{target}} 分。村庄值 1 分，城市值 2 分。",
+    "dice": "没有回合。时钟每 {{seconds}} 秒为所有人掷两颗骰子；带有该数字的六边形会给周围的村庄和城市提供资源。",
+    "setup": "开始时，你的拓荒者在岛上行走，免费建造你的前 2 座村庄和 2 条道路。仍在进行准备的玩家不会被抢夺。",
+    "build": "花费：道路 {{road}} · 村庄 {{settlement}} · 城市 {{city}}。建筑需要几秒钟才能完工。",
+    "robber": "掷出 7 时没有产出，强盗会拿走持有超过 {{limit}} 份资源的玩家一半的资源，然后移动到相邻的六边形，强盗停留期间该六边形不产出。",
+    "trade": "与银行以 {{ratio}}:1 交易，在你有村庄的港口可以 3:1 或 2:1 交易。玩家之间在交易板上交易：发布报价，任何人都可以接受。",
+    "cards": "发展卡花费 {{card}}：骑士可以移动强盗并偷取资源，其他卡提供道路、资源或分数。",
+    "controls": "操作",
+    "keys": "WASD 或方向键走动 · 右键：走动或建造 · R 道路 · E 村庄 · C 城市 · T 交易 · Shift+WASD 镜头。",
+    "touch": "轻触地图走动或建造 · 拖动移动地图 · 双指缩放 · 下方按钮用于建造和交易。",
+    "full": "完整规则"
+  },
+  "settler": {
+    "button": "拓荒者",
+    "help": "购买拓荒者：它会出现在你的第一座建筑旁",
+    "gathers": "下一个在 {{nums}} 时采集",
+    "yours": "你的拓荒者",
+    "numbers": "在 {{nums}} 时采集"
+  }
+}

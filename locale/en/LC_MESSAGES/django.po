@@ -50,6 +50,10 @@ msgstr ""
 msgid "Español"
 msgstr ""
 
+#: config/settings/base.py:113
+msgid "简体中文"
+msgstr ""
+
 #: lobby/forms.py:14 templates/lobby/detail.html:8 templates/lobby/list.html:21
 msgid "Preset"
 msgstr ""

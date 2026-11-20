@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { GameStateView } from "../protocol/types";
 import enHud from "../locales/en/hud.json";
 import esHud from "../locales/es/hud.json";
+import zhHud from "../locales/zh/hud.json";
 import { TIPS, TIP_ROLLS, guideStep } from "./guide";
 
 const player = (over: Record<string, unknown> = {}) => ({
@@ -32,8 +33,8 @@ describe("in-game guide", () => {
     expect(guideStep(state({ phase: "finished" }), 0, {})).toBeNull();
   });
 
-  it("has every guide text in both languages", () => {
-    for (const hud of [enHud, esHud] as unknown as { guide: Record<string, unknown>; help: Record<string, unknown> }[]) {
+  it("has every guide text in every language", () => {
+    for (const hud of [enHud, esHud, zhHud] as unknown as { guide: Record<string, unknown>; help: Record<string, unknown> }[]) {
       for (const k of ["setup_settlement", "setup_road", "building", "wait_clock", "title", "hide", "show", "help"]) {
         expect(hud.guide[k], k).toBeTruthy();
       }

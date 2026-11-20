@@ -91,7 +91,8 @@
     "rooms": {
       "general": "General (todos)",
       "en": "Inglés",
-      "es": "Español"
+      "es": "Español",
+      "zh-hans": "Chino"
     }
   },
   "older": "Ver mensajes anteriores",

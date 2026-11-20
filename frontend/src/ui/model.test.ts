@@ -12,6 +12,9 @@ import enHud from "../locales/en/hud.json";
 import esErrors from "../locales/es/errors.json";
 import esEvents from "../locales/es/events.json";
 import esHud from "../locales/es/hud.json";
+import zhErrors from "../locales/zh/errors.json";
+import zhEvents from "../locales/zh/events.json";
+import zhHud from "../locales/zh/hud.json";
 import {
   bestRatio, canAfford, checkTrade, costOf, countdownShare, csrfFromCookie, errorText, formatRes, logLine,
   ownedHarbors, prettyCombo, victoryTarget, visibleScoreSeats,
@@ -45,16 +48,19 @@ function state(over: Partial<GameStateView> = {}): GameStateView {
 
 let t: TFunction;
 let tEs: TFunction;
+let tZh: TFunction;
 beforeAll(async () => {
   const make = async (lng: string) => {
     const i = i18next.createInstance();
     await i.init({ lng, fallbackLng: "en", resources: {
       en: { hud: enHud, errors: enErrors, events: enEvents }, es: { hud: esHud, errors: esErrors, events: esEvents },
+      zh: { hud: zhHud, errors: zhErrors, events: zhEvents },
     }, interpolation: { escapeValue: false } });
     return i.t.bind(i) as TFunction;
   };
   t = await make("en");
   tEs = await make("es");
+  tZh = await make("zh");
 });
 
 describe("costs and trade", () => {
@@ -105,6 +111,8 @@ describe("texts", () => {
     for (const code of [...codes.errors, ...GAMEPLAY_CODES]) {
       expect(errorText(t, code)).not.toContain(code);
       expect(errorText(tEs, code)).not.toContain(code);
+      expect(errorText(tZh, code)).not.toContain(code);
+      expect(errorText(tZh, code)).not.toBe(errorText(t, code));
     }
     expect(errorText(t, "made.up")).toContain("made.up");
   });

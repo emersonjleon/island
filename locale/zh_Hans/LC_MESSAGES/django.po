@@ -1,0 +1,1965 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-17 02:18+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: accounts/admin.py:12
+msgid "Game"
+msgstr "游戏"
+
+#: accounts/models.py:12
+msgid "display name"
+msgstr "显示名称"
+
+#: accounts/models.py:14
+msgid "language"
+msgstr "语言"
+
+#: accounts/models.py:17
+msgid "key bindings"
+msgstr "按键绑定"
+
+#: accounts/models.py:19
+msgid "interface preferences"
+msgstr "界面偏好"
+
+#: accounts/views.py:35
+msgid "Profile saved."
+msgstr "个人资料已保存。"
+
+#: common/views.py:9
+msgid "lumber"
+msgstr "木材"
+
+#: common/views.py:10
+msgid "brick"
+msgstr "砖块"
+
+#: common/views.py:11
+msgid "wool"
+msgstr "羊毛"
+
+#: common/views.py:12
+msgid "grain"
+msgstr "粮食"
+
+#: common/views.py:13
+msgid "ore"
+msgstr "矿石"
+
+#: common/views.py:14
+msgid "fish"
+msgstr "鱼"
+
+#: common/views.py:32
+msgid "Road"
+msgstr "道路"
+
+#: common/views.py:33
+msgid "Settlement"
+msgstr "村庄"
+
+#: common/views.py:35
+msgid "City"
+msgstr "城市"
+
+#: common/views.py:36
+msgid "Megacity"
+msgstr "大都市"
+
+#: config/settings/base.py:110
+msgid "English"
+msgstr "English"
+
+#: config/settings/base.py:111
+msgid "Español"
+msgstr "Español"
+
+#: config/settings/base.py:113
+msgid "简体中文"
+msgstr "简体中文"
+
+#: lobby/forms.py:18 templates/lobby/detail.html:8
+msgid "Game type"
+msgstr "游戏类型"
+
+#: lobby/forms.py:20 templates/lobby/detail.html:9 templates/lobby/list.html:24
+msgid "Players"
+msgstr "玩家"
+
+#: lobby/forms.py:21
+msgid ""
+"More players than the game type is made for get a bigger island and bank "
+"automatically."
+msgstr "玩家人数超过该游戏类型的设计人数时，岛屿和银行会自动变大。"
+
+#: lobby/messages.py:4
+msgid "That preset does not exist."
+msgstr "该预设不存在。"
+
+#: lobby/messages.py:5
+msgid "These settings are not valid together."
+msgstr "这些设置不能同时使用。"
+
+#: lobby/messages.py:6
+msgid "An island cannot be generated with these settings."
+msgstr "无法用这些设置生成岛屿。"
+
+#: lobby/messages.py:7
+msgid "This game is no longer open."
+msgstr "这局游戏已不再开放。"
+
+#: lobby/messages.py:8
+msgid "You are not in this game."
+msgstr "你不在这局游戏中。"
+
+#: lobby/messages.py:9
+msgid "This game is full."
+msgstr "这局游戏已满。"
+
+#: lobby/messages.py:10
+msgid "Unknown colour."
+msgstr "未知的颜色。"
+
+#: lobby/messages.py:11
+msgid "Another player already has that colour."
+msgstr "另一位玩家已经选了这个颜色。"
+
+#: lobby/messages.py:12
+msgid "Only the host can do that."
+msgstr "只有房主可以这样做。"
+
+#: lobby/messages.py:13
+msgid "More players need to join first."
+msgstr "需要更多玩家先加入。"
+
+#: lobby/messages.py:14
+msgid "Every player must be ready first."
+msgstr "每位玩家都必须先准备好。"
+
+#: lobby/messages.py:15
+msgid "Unknown bot level."
+msgstr "未知的机器人等级。"
+
+#: lobby/messages.py:16
+msgid "That bot is no longer in the game."
+msgstr "该机器人已不在游戏中。"
+
+#: lobby/messages.py:21
+msgid "That action was refused."
+msgstr "该操作被拒绝。"
+
+#: lobby/models.py:15
+msgid "Red"
+msgstr "红色"
+
+#: lobby/models.py:16
+msgid "Blue"
+msgstr "蓝色"
+
+#: lobby/models.py:17
+msgid "White"
+msgstr "白色"
+
+#: lobby/models.py:18
+msgid "Orange"
+msgstr "橙色"
+
+#: lobby/models.py:19
+msgid "Green"
+msgstr "绿色"
+
+#: lobby/models.py:20
+msgid "Brown"
+msgstr "棕色"
+
+#: lobby/models.py:21
+msgid "Purple"
+msgstr "紫色"
+
+#: lobby/models.py:22
+msgid "Teal"
+msgstr "青色"
+
+#: lobby/models.py:23
+msgid "Pink"
+msgstr "粉色"
+
+#: lobby/models.py:24
+msgid "Yellow"
+msgstr "黄色"
+
+#: lobby/models.py:25
+msgid "Black"
+msgstr "黑色"
+
+#: lobby/models.py:26
+msgid "Navy"
+msgstr "藏青色"
+
+#: lobby/models.py:32
+msgid "Easy"
+msgstr "简单"
+
+#: lobby/models.py:33
+msgid "Medium"
+msgstr "中等"
+
+#: lobby/models.py:34
+msgid "Hard"
+msgstr "困难"
+
+#: lobby/models.py:45
+msgid "Waiting for players"
+msgstr "等待玩家"
+
+#: lobby/models.py:46
+msgid "Starting"
+msgstr "正在开始"
+
+#: lobby/models.py:47
+msgid "Running"
+msgstr "进行中"
+
+#: lobby/models.py:48
+msgid "Finished"
+msgstr "已结束"
+
+#: lobby/models.py:49
+msgid "Cancelled"
+msgstr "已取消"
+
+#: lobby/presets.py:22
+msgid "Blitz"
+msgstr "闪电战"
+
+#: lobby/presets.py:22
+msgid "Fast dice, quicker builds and fewer points to win."
+msgstr "骰子更快，建造更快，获胜所需分数更少。"
+
+#: lobby/presets.py:23
+msgid "Classic"
+msgstr "经典"
+
+#: lobby/presets.py:23
+msgid "The standard island for 3 or 4 players."
+msgstr "适合 3 或 4 名玩家的标准岛屿。"
+
+#: lobby/presets.py:24
+msgid "Big"
+msgstr "大型"
+
+#: lobby/presets.py:24
+msgid ""
+"A bigger island, bank and set of pieces for 5 or 6 players, and more points "
+"to win."
+msgstr "为 5 或 6 名玩家准备的更大岛屿、银行和棋子，获胜所需分数也更多。"
+
+#: lobby/presets.py:25
+msgid "Huge"
+msgstr "超大"
+
+#: lobby/presets.py:25
+msgid ""
+"A very big island for 7 or more players, and a long game. You see the land "
+"around your own pieces."
+msgstr "为 7 名或更多玩家准备的超大岛屿，游戏时间较长。你只能看到自己棋子周围的陆地。"
+
+#: lobby/presets.py:26
+msgid "Custom"
+msgstr "自定义"
+
+#: lobby/presets.py:26
+msgid "Start from the game type you chose and change the rules yourself."
+msgstr "从你选择的游戏类型开始，自己修改规则。"
+
+#: lobby/presets.py:85
+msgid "Island"
+msgstr "岛屿"
+
+#: lobby/presets.py:86
+msgid "Pace"
+msgstr "节奏"
+
+#: lobby/presets.py:87
+msgid "Bank and trade"
+msgstr "银行与交易"
+
+#: lobby/presets.py:88
+msgid "Pieces per player"
+msgstr "每位玩家的棋子"
+
+#: lobby/presets.py:89
+msgid "Robber"
+msgstr "强盗"
+
+#: lobby/presets.py:90
+msgid "Victory"
+msgstr "胜利"
+
+#: lobby/presets.py:94 lobby/presets.py:129
+msgid "Island size (land hexes)"
+msgstr "岛屿大小（陆地六边形数）"
+
+#: lobby/presets.py:95
+msgid "Blank grows the island with the number of players."
+msgstr "留空则岛屿随玩家人数变大。"
+
+#: lobby/presets.py:96
+msgid "6 and 8 may be next to each other"
+msgstr "6 和 8 可以相邻"
+
+#: lobby/presets.py:97
+msgid "Generic harbor trade (cards for 1)"
+msgstr "通用港口交易（几张换 1 张）"
+
+#: lobby/presets.py:99
+msgid "Special harbor trade (cards for 1)"
+msgstr "专用港口交易（几张换 1 张）"
+
+#: lobby/presets.py:100 lobby/presets.py:131
+msgid "Seconds between dice rolls"
+msgstr "每次掷骰间隔秒数"
+
+#: lobby/presets.py:102
+msgid "Seconds to build a road"
+msgstr "修建道路所需秒数"
+
+#: lobby/presets.py:104
+msgid "Seconds to build a settlement"
+msgstr "建造村庄所需秒数"
+
+#: lobby/presets.py:106
+msgid "Seconds to build a city"
+msgstr "建造城市所需秒数"
+
+#: lobby/presets.py:108 lobby/presets.py:132
+msgid "Bank cards of each resource"
+msgstr "银行每种资源的卡牌数"
+
+#: lobby/presets.py:109
+msgid "Blank grows the bank with the number of players."
+msgstr "留空则银行随玩家人数变大。"
+
+#: lobby/presets.py:110 lobby/presets.py:135
+msgid "Bank trade (cards for 1)"
+msgstr "银行交易（几张换 1 张）"
+
+#: lobby/presets.py:112
+msgid "Resources a settlement produces"
+msgstr "村庄产出的资源数"
+
+#: lobby/presets.py:113
+msgid "Resources a city produces"
+msgstr "城市产出的资源数"
+
+#: lobby/presets.py:114
+msgid "Roads"
+msgstr "道路"
+
+#: lobby/presets.py:115
+msgid "Settlements"
+msgstr "村庄"
+
+#: lobby/presets.py:116
+msgid "Cities"
+msgstr "城市"
+
+#: lobby/presets.py:117 lobby/presets.py:136
+msgid "Robber on a 7"
+msgstr "掷出 7 时出现强盗"
+
+#: lobby/presets.py:118
+msgid "Safe hand size on a 7"
+msgstr "掷出 7 时的安全手牌数"
+
+#: lobby/presets.py:119
+msgid "Players holding more cards than this lose some on a 7."
+msgstr "手牌超过此数量的玩家在掷出 7 时会损失一部分。"
+
+#: lobby/presets.py:120
+msgid "Share of the hand lost on a 7 (%)"
+msgstr "掷出 7 时损失的手牌比例（%）"
+
+#: lobby/presets.py:122
+msgid "Spare players still placing their first settlements"
+msgstr "放过仍在放置首批村庄的玩家"
+
+#: lobby/presets.py:123 lobby/presets.py:130
+msgid "Points to win"
+msgstr "获胜分数"
+
+#: lobby/presets.py:133
+msgid "Roads / settlements / cities"
+msgstr "道路 / 村庄 / 城市"
+
+#: lobby/presets.py:134
+msgid "Seconds to build a road / settlement / city"
+msgstr "修建道路 / 村庄 / 城市所需秒数"
+
+#: lobby/presets.py:168 templates/lobby/list.html:72
+msgid "Yes"
+msgstr "是"
+
+#: lobby/presets.py:168 templates/lobby/list.html:72
+msgid "No"
+msgstr "否"
+
+#: templates/accounts/login.html:2 templates/accounts/login.html:4
+#: templates/accounts/login.html:10
+#: templates/accounts/password_reset_complete.html:5
+#: templates/accounts/signup.html:11 templates/base.html:28
+#: templates/home.html:15
+msgid "Log in"
+msgstr "登录"
+
+#: templates/accounts/login.html:12
+msgid "Forgot your password?"
+msgstr "忘记密码？"
+
+#: templates/accounts/login.html:13
+msgid "New here?"
+msgstr "第一次来？"
+
+#: templates/accounts/login.html:13 templates/accounts/signup.html:2
+#: templates/accounts/signup.html:4 templates/base.html:29
+#: templates/home.html:14
+msgid "Sign up"
+msgstr "注册"
+
+#: templates/accounts/password_change.html:2
+#: templates/accounts/password_change.html:4
+#: templates/accounts/password_change.html:9 templates/accounts/profile.html:11
+msgid "Change password"
+msgstr "修改密码"
+
+#: templates/accounts/password_change_done.html:2
+#: templates/accounts/password_change_done.html:4
+msgid "Password changed"
+msgstr "密码已修改"
+
+#: templates/accounts/password_change_done.html:5
+msgid "Your password was changed."
+msgstr "你的密码已修改。"
+
+#: templates/accounts/password_reset.html:2
+#: templates/accounts/password_reset.html:4
+msgid "Reset password"
+msgstr "重置密码"
+
+#: templates/accounts/password_reset.html:5
+msgid ""
+"Enter your email address and we will send you a link to choose a new "
+"password."
+msgstr "输入你的电子邮件地址，我们会发送一个链接让你设置新密码。"
+
+#: templates/accounts/password_reset.html:9
+msgid "Send reset link"
+msgstr "发送重置链接"
+
+#: templates/accounts/password_reset_complete.html:2
+#: templates/accounts/password_reset_complete.html:4
+msgid "Password set"
+msgstr "密码已设置"
+
+#: templates/accounts/password_reset_complete.html:5
+msgid "Your new password is set."
+msgstr "你的新密码已设置。"
+
+#: templates/accounts/password_reset_confirm.html:2
+#: templates/accounts/password_reset_confirm.html:4
+msgid "Choose a new password"
+msgstr "设置新密码"
+
+#: templates/accounts/password_reset_confirm.html:10
+msgid "Set password"
+msgstr "设置密码"
+
+#: templates/accounts/password_reset_confirm.html:13
+msgid ""
+"This reset link is invalid or has already been used. Please ask for a new "
+"one."
+msgstr "此重置链接无效或已被使用。请重新申请。"
+
+#: templates/accounts/password_reset_done.html:2
+#: templates/accounts/password_reset_done.html:4
+msgid "Check your email"
+msgstr "请查看你的电子邮件"
+
+#: templates/accounts/password_reset_done.html:5
+msgid "If an account uses that address, we sent a link to reset its password."
+msgstr "如果有账户使用该地址，我们已发送重置密码的链接。"
+
+#: templates/accounts/password_reset_email.txt:1
+#, python-format
+msgid "Someone asked to reset the password for %(user)s on %(site_name)s."
+msgstr "有人请求在 %(site_name)s 上重置 %(user)s 的密码。"
+
+#: templates/accounts/password_reset_email.txt:3
+msgid "Open this link to choose a new password:"
+msgstr "打开此链接设置新密码："
+
+#: templates/accounts/password_reset_email.txt:6
+msgid "If you did not ask for this, you can ignore this email."
+msgstr "如果这不是你本人的请求，可以忽略此邮件。"
+
+#: templates/accounts/password_reset_subject.txt:1
+msgid "Reset your Ages of the Island password"
+msgstr "重置你的岛屿时代密码"
+
+#: templates/accounts/profile.html:2 templates/accounts/profile.html:4
+msgid "Profile"
+msgstr "个人资料"
+
+#: templates/accounts/profile.html:9
+msgid "Save"
+msgstr "保存"
+
+#: templates/accounts/signup.html:9
+msgid "Create account"
+msgstr "创建账户"
+
+#: templates/accounts/signup.html:11
+msgid "Already have an account?"
+msgstr "已经有账户了？"
+
+#: templates/base.html:13 templates/base.html:19 templates/home.html:5
+msgid "Ages of the Island"
+msgstr "岛屿时代"
+
+#: templates/base.html:21 templates/home.html:17 templates/how_to_play.html:2
+#: templates/how_to_play.html:4
+msgid "How to play"
+msgstr "玩法说明"
+
+#: templates/base.html:25
+msgid "Log out"
+msgstr "退出登录"
+
+#: templates/base.html:34
+msgid "Language"
+msgstr "语言"
+
+#: templates/base.html:41 templates/lobby/_seats.html:40
+msgid "Change"
+msgstr "切换"
+
+#: templates/gameplay/game.html:2 templates/lobby/detail.html:2
+#: templates/lobby/detail.html:4
+#, python-format
+msgid "Game %(code)s"
+msgstr "游戏 %(code)s"
+
+#: templates/gameplay/game.html:8
+msgid "Loading the island…"
+msgstr "正在加载岛屿…"
+
+#: templates/gameplay/game.html:9
+msgid "You are watching as a spectator."
+msgstr "你正在以观战者身份观看。"
+
+#: templates/gameplay/game.html:11
+msgid "The game needs JavaScript."
+msgstr "游戏需要启用 JavaScript。"
+
+#: templates/home.html:6
+msgid ""
+"Settle an island in real time. The clock rolls the dice for everyone, and "
+"your settlements collect what the land gives."
+msgstr "实时开拓一座岛屿。时钟为所有人掷骰子，你的村庄收集土地的馈赠。"
+
+#: templates/home.html:12
+msgid "Go to the lobby"
+msgstr "前往大厅"
+
+#: templates/home.html:23
+msgid "The clock rolls the dice"
+msgstr "时钟掷骰子"
+
+#: templates/home.html:24
+msgid "Every few seconds the dice roll for everyone. No waiting for turns."
+msgstr "每隔几秒就为所有人掷一次骰子。无需等待回合。"
+
+#: templates/home.html:25
+msgid "Walk and build"
+msgstr "行走与建造"
+
+#: templates/home.html:26
+msgid "Your settlers walk the island and build roads, settlements and cities."
+msgstr "你的拓荒者在岛上行走，修建道路、村庄和城市。"
+
+#: templates/home.html:27
+msgid "Play anywhere"
+msgstr "随时随地游玩"
+
+#: templates/home.html:28
+msgid "On a computer or a phone, with friends or against bots."
+msgstr "电脑或手机皆可，与朋友或机器人对战。"
+
+#: templates/how_to_play.html:5
+msgid ""
+"Ages of the Island is a race to build on an island, in real time. There are "
+"no turns: everyone plays at once while a clock rolls the dice for all."
+msgstr "岛屿时代是一场实时的岛屿建设竞赛。没有回合：所有人同时游戏，由时钟为所有人掷骰子。"
+
+#: templates/how_to_play.html:10
+msgid "Contents"
+msgstr "目录"
+
+#: templates/how_to_play.html:11 templates/how_to_play.html:19
+msgid "Goal"
+msgstr "目标"
+
+#: templates/how_to_play.html:11
+msgid "The start"
+msgstr "开局"
+
+#: templates/how_to_play.html:12 templates/how_to_play.html:42
+msgid "Dice and resources"
+msgstr "骰子与资源"
+
+#: templates/how_to_play.html:12 templates/how_to_play.html:52
+#: templates/how_to_play.html:54
+msgid "Building"
+msgstr "建造"
+
+#: templates/how_to_play.html:13 templates/how_to_play.html:71
+msgid "The robber"
+msgstr "强盗"
+
+#: templates/how_to_play.html:13 templates/how_to_play.html:80
+msgid "Trading"
+msgstr "交易"
+
+#: templates/how_to_play.html:14 templates/how_to_play.html:88
+msgid "Developments and awards"
+msgstr "发展卡与奖励"
+
+#: templates/how_to_play.html:14 templates/how_to_play.html:108
+msgid "Controls"
+msgstr "操作"
+
+#: templates/how_to_play.html:15
+msgid "Tips"
+msgstr "技巧"
+
+#: templates/how_to_play.html:20
+#, python-format
+msgid ""
+"The first player to reach <strong>%(target)s points</strong> wins. You earn "
+"points with settlements, cities, awards and some developments."
+msgstr "第一个达到 <strong>%(target)s 分</strong>的玩家获胜。你可以通过村庄、城市、奖励和部分发展卡获得分数。"
+
+#: templates/how_to_play.html:27
+msgid "The start: your settler"
+msgstr "开局：你的拓荒者"
+
+#: templates/how_to_play.html:29
+msgid ""
+"Your settler lands on the coast. Walk it from corner to corner to the spot "
+"you like."
+msgstr "你的拓荒者在海岸登陆。带着它从一个路口走到另一个路口，前往你喜欢的位置。"
+
+#: templates/how_to_play.html:30
+#, python-format
+msgid ""
+"Build your first %(settlements)s settlements and %(roads)s roads. You "
+"already have the materials for them, and each road goes next to the "
+"settlement you just built."
+msgstr "建造你的前 %(settlements)s 座村庄和 %(roads)s 条道路。你已经有建造它们的材料，每条道路都要修在你刚建好的村庄旁边。"
+
+#: templates/how_to_play.html:34
+msgid ""
+"A settlement needs a free corner: no other settlement may stand on a "
+"neighbouring corner."
+msgstr "村庄需要一个空的路口：相邻的路口上不能有其他村庄。"
+
+#: templates/how_to_play.html:35
+msgid ""
+"Each of your first two settlements gives you one resource from every hex "
+"around it."
+msgstr "你的前两座村庄各会从周围每个六边形给你一份资源。"
+
+#: templates/how_to_play.html:36
+msgid ""
+"If someone finishes building on that corner first, your build is cancelled "
+"and refunded. Be quick!"
+msgstr "如果有人先在那个路口完成建造，你的建造会被取消并退还材料。动作要快！"
+
+#: templates/how_to_play.html:38
+msgid ""
+"While a player is still building their starting settlements and roads, the "
+"robber never steals from them."
+msgstr "玩家仍在建造起始村庄和道路时，强盗永远不会抢夺他们。"
+
+#: templates/how_to_play.html:43
+#, python-format
+msgid ""
+"The clock starts with the first settlement and rolls two dice every "
+"<strong>%(seconds)s seconds</strong>. Every hex showing the rolled number "
+"gives its resource to each settlement around it (2 to a city)."
+msgstr "时钟在第一座村庄建成后启动，每 <strong>%(seconds)s 秒</strong>掷两颗骰子。每个显示掷出数字的六边形都会给周围的每座村庄一份资源（城市得 2 份）。"
+
+#: templates/how_to_play.html:47
+msgid ""
+"Forests give lumber, hills brick, pastures wool, fields grain, mountains ore "
+"and fishing grounds fish. The desert gives nothing."
+msgstr "森林产出木材，丘陵产出砖块，牧场产出羊毛，田地产出粮食，山脉产出矿石，渔场产出鱼。沙漠什么也不产出。"
+
+#: templates/how_to_play.html:48
+msgid ""
+"6 and 8 come up most often; 2 and 12 rarely. The dots under each number show "
+"how likely it is."
+msgstr "6 和 8 最常出现；2 和 12 很少出现。每个数字下方的圆点表示出现的可能性。"
+
+#: templates/how_to_play.html:54
+msgid "Cost"
+msgstr "花费"
+
+#: templates/how_to_play.html:54
+msgid "Points"
+msgstr "分数"
+
+#: templates/how_to_play.html:54
+msgid "Time"
+msgstr "时间"
+
+#: templates/how_to_play.html:57
+#, python-format
+msgid "%(n)s s"
+msgstr "%(n)s 秒"
+
+#: templates/how_to_play.html:62
+msgid ""
+"After the start, new roads and settlements must connect to your own roads."
+msgstr "开局之后，新的道路和村庄必须连接到你自己的道路。"
+
+#: templates/how_to_play.html:63
+msgid ""
+"A city replaces one of your settlements and a megacity replaces one of your "
+"cities."
+msgstr "城市取代你的一座村庄，大都市取代你的一座城市。"
+
+#: templates/how_to_play.html:64
+#, python-format
+msgid ""
+"Each player has %(roads)s roads, %(settlements)s settlements and %(cities)s "
+"cities."
+msgstr "每位玩家有 %(roads)s 条道路、%(settlements)s 座村庄和 %(cities)s 座城市。"
+
+#: templates/how_to_play.html:72
+#, python-format
+msgid ""
+"When the dice show a 7 nothing is produced. The robber takes %(pct)s%% of "
+"the resources of everyone holding more than %(limit)s, then moves by itself "
+"to a neighbouring hex. The hex where it stands produces nothing."
+msgstr "骰子掷出 7 时没有产出。强盗会拿走每位持有超过 %(limit)s 份资源的玩家 %(pct)s%% 的资源，然后自行移动到相邻的六边形。强盗所在的六边形不产出。"
+
+#: templates/how_to_play.html:76
+msgid "Tip: spend or trade your resources before a 7 comes."
+msgstr "技巧：在 7 出现之前花掉或交易掉你的资源。"
+
+#: templates/how_to_play.html:81
+#, python-format
+msgid ""
+"Trade %(ratio)s resources of one kind with the bank for 1 of any other. With "
+"a settlement or city on a harbor you trade at %(generic)s:1, or "
+"%(specific)s:1 for that harbor's resource."
+msgstr "与银行用 %(ratio)s 份同种资源换 1 份任意其他资源。在港口有村庄或城市时，你可以 %(generic)s:1 交易，或以 %(specific)s:1 交易该港口的资源。"
+
+#: templates/how_to_play.html:89
+#, python-format
+msgid ""
+"A development costs %(cost)s. It is drawn at random and can be used from the "
+"roll after you bought it, one per roll. They never run out."
+msgstr "一张发展卡花费 %(cost)s。它是随机抽取的，从购买后的下一次掷骰起可以使用，每次掷骰限用一张。发展卡永远不会用完。"
+
+#: templates/how_to_play.html:93
+#, python-format
+msgid ""
+"<strong>Knight</strong>: move the robber up to %(dist)s hexes and steal a "
+"resource from a player there."
+msgstr "<strong>骑士</strong>：把强盗移动最多 %(dist)s 格，并从那里的一位玩家处偷取一份资源。"
+
+#: templates/how_to_play.html:96
+msgid "<strong>Road building</strong>: two free roads."
+msgstr "<strong>道路建设</strong>：两条免费道路。"
+
+#: templates/how_to_play.html:97
+msgid ""
+"<strong>Year of plenty</strong>: two resources of your choice from the bank."
+msgstr "<strong>丰收之年</strong>：从银行拿取两份你选择的资源。"
+
+#: templates/how_to_play.html:98
+msgid "<strong>Monopoly</strong>: all of one resource from every player."
+msgstr "<strong>垄断</strong>：从每位玩家那里拿走某一种资源的全部。"
+
+#: templates/how_to_play.html:99
+msgid "<strong>Victory point</strong>: one point when used."
+msgstr "<strong>胜利分</strong>：使用时得 1 分。"
+
+#: templates/how_to_play.html:101
+#, python-format
+msgid ""
+"The longest road (at least %(road)s segments) is worth %(road_points)s "
+"points, and the largest army (at least %(army)s knights played) another "
+"%(army_points)s."
+msgstr "最长道路（至少 %(road)s 段）值 %(road_points)s 分，最大军队（至少打出 %(army)s 名骑士）另值 %(army_points)s 分。"
+
+#: templates/how_to_play.html:109
+msgid "Computer"
+msgstr "电脑"
+
+#: templates/how_to_play.html:111
+msgid ""
+"WASD or the arrow keys walk your settler; Shift + WASD moves the camera; the "
+"mouse wheel zooms."
+msgstr "WASD 或方向键移动你的拓荒者；Shift + WASD 移动镜头；鼠标滚轮缩放。"
+
+#: templates/how_to_play.html:112
+msgid "Right-click a corner or edge to walk there or build."
+msgstr "右键点击路口或边，即可走过去或建造。"
+
+#: templates/how_to_play.html:113
+msgid ""
+"R builds a road, E a settlement, C a city; T opens trading. You can change "
+"the keys in the game."
+msgstr "R 修建道路，E 建造村庄，C 建造城市；T 打开交易。你可以在游戏中更改按键。"
+
+#: templates/how_to_play.html:115
+msgid "Phone or tablet"
+msgstr "手机或平板"
+
+#: templates/how_to_play.html:117
+msgid "Tap a spot on the map to walk there or build."
+msgstr "轻触地图上的位置可走过去或建造。"
+
+#: templates/how_to_play.html:118
+msgid ""
+"Drag to move the map, pinch to zoom; the buttons at the bottom build and "
+"trade."
+msgstr "拖动可移动地图，双指缩放；底部的按钮用于建造和交易。"
+
+#: templates/how_to_play.html:120
+msgid ""
+"In the game, the Guide panel under the dice clock tells you the next step, "
+"and the ? button repeats these rules."
+msgstr "游戏中，骰子时钟下方的指南面板会告诉你下一步，? 按钮会重复这些规则。"
+
+#: templates/how_to_play.html:124
+msgid "Tips for your first game"
+msgstr "第一局游戏的技巧"
+
+#: templates/how_to_play.html:126
+msgid ""
+"Choose corners touching different resources and numbers like 5, 6, 8 and 9."
+msgstr "选择接触不同资源、数字为 5、6、8、9 等的路口。"
+
+#: templates/how_to_play.html:127
+msgid ""
+"Brick and lumber build roads; grain and ore build cities. You need both "
+"kinds."
+msgstr "砖块和木材用于修路；粮食和矿石用于建城市。两类资源你都需要。"
+
+#: templates/how_to_play.html:128
+msgid "Build roads toward free corners before someone else takes them."
+msgstr "在别人抢占之前，把道路修向空的路口。"
+
+#: templates/how_to_play.html:129
+msgid "Play against bots first: the host can add them in the game room."
+msgstr "先和机器人对战：房主可以在游戏房间里添加机器人。"
+
+#: templates/how_to_play.html:131
+#, python-format
+msgid ""
+"Games take 2 to %(max)s players. With more than %(sized)s players the island "
+"and the bank grow automatically."
+msgstr "每局游戏 2 到 %(max)s 名玩家。超过 %(sized)s 名玩家时，岛屿和银行会自动变大。"
+
+#: templates/lobby/_seats.html:2
+msgid "Status:"
+msgstr "状态："
+
+#: templates/lobby/_seats.html:4 templates/lobby/_seats.html:35
+msgid "Colour"
+msgstr "颜色"
+
+#: templates/lobby/_seats.html:4
+msgid "Player"
+msgstr "玩家"
+
+#: templates/lobby/_seats.html:4 templates/lobby/_seats.html:10
+msgid "Ready"
+msgstr "已准备"
+
+#: templates/lobby/_seats.html:9
+#, python-format
+msgid "bot · %(level)s"
+msgstr "机器人 · %(level)s"
+
+#: templates/lobby/_seats.html:9
+msgid "host"
+msgstr "房主"
+
+#: templates/lobby/_seats.html:10 templates/lobby/_seats.html:30
+msgid "Not ready"
+msgstr "未准备"
+
+#: templates/lobby/_seats.html:14
+msgid "Remove"
+msgstr "移除"
+
+#: templates/lobby/_seats.html:24
+msgid "Join"
+msgstr "加入"
+
+#: templates/lobby/_seats.html:30
+msgid "I'm ready"
+msgstr "我准备好了"
+
+#: templates/lobby/_seats.html:43
+msgid "Leave"
+msgstr "离开"
+
+#: templates/lobby/_seats.html:47
+msgid "Bot level"
+msgstr "机器人等级"
+
+#: templates/lobby/_seats.html:51
+msgid "Add bot"
+msgstr "添加机器人"
+
+#: templates/lobby/_seats.html:56
+msgid "Start game"
+msgstr "开始游戏"
+
+#: templates/lobby/_seats.html:58
+msgid "Cancel game"
+msgstr "取消游戏"
+
+#: templates/lobby/_seats.html:63
+msgid ""
+"The island is being prepared. You will be taken to the game when it is ready."
+msgstr "正在准备岛屿。准备好后你会被带到游戏中。"
+
+#: templates/lobby/_seats.html:65
+msgid "Go to the game"
+msgstr "前往游戏"
+
+#: templates/lobby/detail.html:5
+msgid "Share this code so friends can join."
+msgstr "分享这个代码，让朋友加入。"
+
+#: templates/lobby/detail.html:13
+#, python-format
+msgid ""
+"Island and bank are sized for %(players)s players; smaller if fewer join."
+msgstr "岛屿和银行按 %(players)s 名玩家设计；加入人数较少时会变小。"
+
+#: templates/chat/_lobby_chat.html:3
+msgid "Chat"
+msgstr "聊天"
+
+#: templates/chat/_lobby_chat.html:4
+msgid "The chat opens in a moment…"
+msgstr "聊天马上就会打开…"
+
+#: templates/lobby/detail.html:19
+msgid "Back to the lobby"
+msgstr "返回大厅"
+
+#: templates/lobby/list.html:2 templates/lobby/list.html:4
+msgid "Lobby"
+msgstr "大厅"
+
+#: templates/lobby/list.html:5
+#, python-format
+msgid ""
+"New to the island? Read <a href=\"%(help_url)s\">how to play</a>, then start "
+"a game against bots."
+msgstr "第一次来岛上？请阅读<a href=\"%(help_url)s\">玩法说明</a>，然后开始一局与机器人对战的游戏。"
+
+#: templates/lobby/list.html:11
+msgid "Your games"
+msgstr "你的游戏"
+
+#: templates/lobby/list.html:21
+msgid "Open games"
+msgstr "开放的游戏"
+
+#: templates/lobby/list.html:24
+msgid "Code"
+msgstr "代码"
+
+#: templates/lobby/list.html:24
+msgid "Host"
+msgstr "房主"
+
+#: templates/lobby/list.html:24
+msgid "Preset"
+msgstr "预设"
+
+#: templates/lobby/list.html:37
+msgid "No open games. Create one below."
+msgstr "没有开放的游戏。在下方创建一个吧。"
+
+#: templates/lobby/list.html:42
+msgid "Create a game"
+msgstr "创建游戏"
+
+#: templates/lobby/list.html:55
+msgid "hexes"
+msgstr "个六边形"
+
+#: templates/lobby/list.html:56
+msgid "points"
+msgstr "分"
+
+#: templates/lobby/list.html:57
+msgid "dice every"
+msgstr "掷骰间隔"
+
+#: templates/lobby/list.html:71
+msgid "This game"
+msgstr "这局游戏"
+
+#: templates/lobby/list.html:80
+msgid "Custom rules"
+msgstr "自定义规则"
+
+#: templates/lobby/list.html:81
+#, python-format
+msgid ""
+"Starting from <b data-base-label>%(base_label)s</b>. Blank fields keep its "
+"value, shown in grey."
+msgstr "以 <b data-base-label>%(base_label)s</b> 为基础。留空的字段保留其原值（灰色显示）。"
+
+#: templates/lobby/list.html:101
+msgid "Create game"
+msgstr "创建游戏"
+
+#: chat/models.py
+msgid "Everyone: public chat and messages from anyone"
+msgstr "所有人：公共聊天以及来自任何人的私信"
+
+#: chat/models.py
+msgid "Only friends: messages from friends, no public chat"
+msgstr "仅限好友：只接收好友的私信，不显示公共聊天"
+
+#: chat/models.py
+msgid "Only in games: no public chat or private messages"
+msgstr "仅限游戏内：不显示公共聊天和私信"
+
+#: templates/chat/_social_chat.html
+msgid "The chat needs JavaScript."
+msgstr "聊天需要启用 JavaScript。"
+
+#: chat/models.py
+msgid "Public room"
+msgstr "公共聊天室"
+
+#: chat/models.py
+msgid "Private conversation"
+msgstr "私人对话"
+
+#: lobby/forms.py
+msgid "Settings code"
+msgstr "设置代码"
+
+#: lobby/forms.py
+msgid ""
+"Paste a code copied from another game to play with its rules. It replaces "
+"the choices below."
+msgstr "粘贴从其他游戏复制的代码，以使用其规则进行游戏。它会替换下方的选项。"
+
+#: lobby/messages.py
+msgid "That settings code is not complete or not valid. Copy it again."
+msgstr "该设置代码不完整或无效。请重新复制。"
+
+#: lobby/messages.py
+msgid "That settings code is too long."
+msgstr "该设置代码太长。"
+
+#: lobby/messages.py
+msgid "That settings code was made by a newer version of the game."
+msgstr "该设置代码由更新版本的游戏生成。"
+
+#: lobby/messages.py
+msgid "That settings code uses a game type this server does not have."
+msgstr "该设置代码使用了本服务器没有的游戏类型。"
+
+#: templates/lobby/detail.html
+msgid ""
+"Copy this code, or the link, to create another game with these same rules."
+msgstr "复制此代码或链接，用相同的规则创建另一局游戏。"
+
+#: templates/lobby/detail.html
+msgid "Copied"
+msgstr "已复制"
+
+#: templates/lobby/detail.html
+msgid "Copy code"
+msgstr "复制代码"
+
+#: templates/lobby/detail.html
+msgid "Copy link"
+msgstr "复制链接"
+
+#: templates/lobby/list.html
+#, python-format
+msgid "This code: %(type)s for %(players)s players"
+msgstr "此代码：%(type)s，%(players)s 名玩家"
+
+#: lobby/models.py
+#, python-brace-format
+msgid "{type} (custom)"
+msgstr "{type}（自定义）"
+
+#: templates/lobby/list.html
+msgid "or"
+msgstr "或"
+
+#: templates/lobby/list.html
+msgid "Play now against bots"
+msgstr "立即与机器人对战"
+
+#: templates/lobby/list.html
+msgid ""
+"Play now fills every other seat with bots and starts the game straight away."
+msgstr "“立即开始”会用机器人填满其余所有座位，并马上开始游戏。"
+
+#: templates/lobby/_seats.html
+#, python-format
+msgid "Fill the free seat"
+msgid_plural "Fill the %(free)s free seats"
+msgstr[0] "填满 %(free)s 个空座位"
+
+msgid "Dice"
+msgstr "骰子"
+
+msgid "Bank and resources"
+msgstr "银行与资源"
+
+msgid "First settlements"
+msgstr "首批村庄"
+
+msgid "Settlers"
+msgstr "拓荒者"
+
+msgid "What players see"
+msgstr "玩家能看到什么"
+
+msgid "Trade"
+msgstr "交易"
+
+msgid "Developments"
+msgstr "发展卡"
+
+msgid "Fishing grounds"
+msgstr "渔场"
+
+msgid "Harbors"
+msgstr "港口"
+
+msgid "Costs"
+msgstr "花费"
+
+msgid "Resources produced per roll"
+msgstr "每次掷骰产出的资源"
+
+msgid "Resources for the first settlements"
+msgstr "首批村庄获得的资源"
+
+msgid "Bank"
+msgstr "银行"
+
+msgid "Bank trade"
+msgstr "银行交易"
+
+msgid "Seconds to build"
+msgstr "建造所需秒数"
+
+msgid "Sight range (hexes)"
+msgstr "视野范围（六边形）"
+
+msgid "Points per building"
+msgstr "每座建筑的分数"
+
+msgid "Longest road"
+msgstr "最长道路"
+
+msgid "Largest army"
+msgstr "最大军队"
+
+msgid "Fewest players to start"
+msgstr "开始所需最少玩家数"
+
+msgid "Order of the seats"
+msgstr "座位顺序"
+
+msgid "Players the island is made for"
+msgstr "岛屿按多少玩家设计"
+
+msgid "Bigger tables grow the island and bank from this size."
+msgstr "人数更多时，岛屿和银行从这个规模开始变大。"
+
+msgid "Grow island and bank for bigger tables"
+msgstr "人数更多时扩大岛屿和银行"
+
+msgid "Land hexes needed per player on big tables"
+msgstr "大桌时每位玩家所需的陆地六边形数"
+
+msgid "Island layout"
+msgstr "岛屿布局"
+
+msgid "Island number (same number, same island)"
+msgstr "岛屿编号（相同编号，相同岛屿）"
+
+msgid "Used by the fixed layout."
+msgstr "用于固定布局。"
+
+msgid "The 6 and 8 rule also counts fishing grounds"
+msgstr "6 和 8 规则也计入渔场"
+
+msgid "Number of fishing grounds"
+msgstr "渔场数量"
+
+msgid "Blank: grows with the island."
+msgstr "留空：随岛屿变大。"
+
+msgid "Hexes between fishing grounds"
+msgstr "渔场之间的六边形数"
+
+msgid "Generic harbors"
+msgstr "通用港口"
+
+msgid "Special harbors of each resource"
+msgstr "每种资源的专用港口"
+
+msgid "Where the robber starts"
+msgstr "强盗的起始位置"
+
+msgid "Sea around the island (hexes)"
+msgstr "岛屿周围的海域（六边形）"
+
+msgid "Development"
+msgstr "发展卡"
+
+msgid "Starting materials"
+msgstr "起始材料"
+
+msgid "What each player gets to build the first settlements."
+msgstr "每位玩家建造首批村庄所获得的材料。"
+
+msgid "Starting materials come from the bank"
+msgstr "起始材料来自银行"
+
+msgid "Settlements that give resources when built"
+msgstr "建成时给予资源的村庄"
+
+msgid "Resources per neighbouring hex"
+msgstr "每个相邻六边形的资源数"
+
+msgid "Fishing grounds count too"
+msgstr "渔场也计入"
+
+msgid "Blank: grows with the number of players."
+msgstr "留空：随玩家人数变大。"
+
+msgid "Megacities"
+msgstr "大都市"
+
+msgid "0 turns megacities off."
+msgstr "设为 0 则关闭大都市。"
+
+msgid "Building on the road network takes time"
+msgstr "在道路网上建造需要时间"
+
+msgid "Refund when a build is cancelled (%)"
+msgstr "建造取消时的退还比例（%）"
+
+msgid "First settlements per player"
+msgstr "每位玩家的首批村庄数"
+
+msgid "First roads per player"
+msgstr "每位玩家的首批道路数"
+
+msgid "A first road must touch its new settlement"
+msgstr "首批道路必须连接其新村庄"
+
+msgid "Build on the network before finishing the first settlements"
+msgstr "完成首批村庄之前可以在道路网上建造"
+
+msgid "Trade with the bank before finishing the first settlements"
+msgstr "完成首批村庄之前可以与银行交易"
+
+msgid "Rounding of the cards lost"
+msgstr "损失卡牌的取整方式"
+
+msgid "Only players over the safe hand size lose cards"
+msgstr "只有超过安全手牌数的玩家才会损失卡牌"
+
+msgid "Only players next to the robber lose cards"
+msgstr "只有强盗旁边的玩家才会损失卡牌"
+
+msgid "Next to the robber: before or after it moves"
+msgstr "强盗旁边：移动之前还是之后"
+
+msgid "How the robber moves on a 7"
+msgstr "掷出 7 时强盗如何移动"
+
+msgid "The robber may enter the desert"
+msgstr "强盗可以进入沙漠"
+
+msgid "Hexes a knight moves the robber"
+msgstr "骑士移动强盗的格数"
+
+msgid "Cards a knight steals"
+msgstr "骑士偷取的卡牌数"
+
+msgid "Seconds a settler takes per road length"
+msgstr "拓荒者每段道路所需秒数"
+
+msgid "Settler speed on own roads (%)"
+msgstr "拓荒者在自己道路上的速度（%）"
+
+msgid "When a settler must stand on the site"
+msgstr "拓荒者何时必须站在工地上"
+
+msgid "Map"
+msgstr "地图"
+
+msgid "Other players' resources"
+msgstr "其他玩家的资源"
+
+msgid "Other players' developments"
+msgstr "其他玩家的发展卡"
+
+msgid "Scores"
+msgstr "分数"
+
+msgid "Production log"
+msgstr "产出记录"
+
+msgid "Trade offers"
+msgstr "交易报价"
+
+msgid "Shortest road that wins the award"
+msgstr "赢得奖励的最短道路长度"
+
+msgid "Fewest knights that win the award"
+msgstr "赢得奖励的最少骑士数"
+
+msgid "Harbor trade"
+msgstr "港口交易"
+
+msgid "Trade between players"
+msgstr "玩家之间的交易"
+
+msgid "Seconds before an offer expires"
+msgstr "报价过期前的秒数"
+
+msgid "Blank: offers stay until taken or cancelled."
+msgstr "留空：报价一直保留，直到被接受或取消。"
+
+msgid "Open offers per player"
+msgstr "每位玩家的开放报价数"
+
+msgid "Developments in the deck"
+msgstr "牌堆中的发展卡"
+
+msgid "Shuffle in a new deck when it runs out"
+msgstr "用完后洗入新牌堆"
+
+msgid "Waiting time between developments"
+msgstr "两次使用发展卡之间的等待时间"
+
+msgid "Seconds between developments"
+msgstr "两次使用发展卡之间的秒数"
+
+msgid "Used when the waiting time is in seconds."
+msgstr "等待时间以秒计时使用。"
+
+msgid "Victory point developments must be played"
+msgstr "胜利分发展卡必须打出"
+
+msgid "Points of a victory point development"
+msgstr "胜利分发展卡的分数"
+
+msgid "Roads from a road building"
+msgstr "道路建设给予的道路数"
+
+msgid "Resources from a year of plenty"
+msgstr "丰收之年给予的资源数"
+
+msgid "Random"
+msgstr "随机"
+
+msgid "Order of joining"
+msgstr "加入顺序"
+
+msgid "Fixed (island number)"
+msgstr "固定（岛屿编号）"
+
+msgid "Beginner"
+msgstr "新手"
+
+msgid "Desert"
+msgstr "沙漠"
+
+msgid "Random land hex"
+msgstr "随机陆地六边形"
+
+msgid "Two dice"
+msgstr "两颗骰子"
+
+msgid "Dice deck"
+msgstr "骰子牌堆"
+
+msgid "Down"
+msgstr "向下取整"
+
+msgid "Up"
+msgstr "向上取整"
+
+msgid "Before it moves"
+msgstr "移动之前"
+
+msgid "After it moves"
+msgstr "移动之后"
+
+msgid "To a random neighbouring hex"
+msgstr "移到随机的相邻六边形"
+
+msgid "The player who rolled moves it"
+msgstr "由掷骰的玩家移动"
+
+msgid "Only for the first settlements"
+msgstr "仅限首批村庄"
+
+msgid "Always"
+msgstr "始终"
+
+msgid "Open map"
+msgstr "开放地图"
+
+msgid "Growing sight"
+msgstr "逐步扩展的视野"
+
+msgid "Explored"
+msgstr "已探索区域"
+
+msgid "Live fog"
+msgstr "实时迷雾"
+
+msgid "How many, not which"
+msgstr "显示数量，不显示种类"
+
+msgid "Everything"
+msgstr "全部"
+
+msgid "Nothing"
+msgstr "无"
+
+msgid "Shown"
+msgstr "显示"
+
+msgid "Hidden until the end"
+msgstr "结束前隐藏"
+
+msgid "Everyone's"
+msgstr "所有人的"
+
+msgid "Only your own"
+msgstr "仅自己的"
+
+msgid "Seen by everyone"
+msgstr "所有人可见"
+
+msgid "Private offers allowed"
+msgstr "允许私人报价"
+
+msgid "One per dice roll"
+msgstr "每次掷骰一张"
+
+msgid "A number of seconds"
+msgstr "若干秒"
+
+msgid "Lumber"
+msgstr "木材"
+
+msgid "Brick"
+msgstr "砖块"
+
+msgid "Wool"
+msgstr "羊毛"
+
+msgid "Grain"
+msgstr "粮食"
+
+msgid "Ore"
+msgstr "矿石"
+
+msgid "Fish"
+msgstr "鱼"
+
+msgid "Knight"
+msgstr "骑士"
+
+msgid "Victory point"
+msgstr "胜利分"
+
+msgid "Road building"
+msgstr "道路建设"
+
+msgid "Year of plenty"
+msgstr "丰收之年"
+
+msgid "Monopoly"
+msgstr "垄断"
+
+msgid "Enter a whole number."
+msgstr "请输入一个整数。"
+
+msgid "Enter a number of seconds."
+msgstr "请输入秒数。"
+
+#, python-format
+msgid "Enter a value from %(low)s to %(high)s."
+msgstr "请输入 %(low)s 到 %(high)s 之间的值。"
+
+msgid "Choose yes or no."
+msgstr "请选择是或否。"
+
+msgid "Choose one of the options."
+msgstr "请选择其中一个选项。"
+
+msgid "More players are needed to start than fit at the table."
+msgstr "开始所需的玩家数超过了座位数。"
+
+msgid "The island is too small for this many players."
+msgstr "岛屿太小，容纳不了这么多玩家。"
+
+msgid "The first settlements and roads need more pieces than a player has."
+msgstr "首批村庄和道路需要的棋子超过了玩家拥有的数量。"
+
+msgid "The bank cannot pay every player's starting materials."
+msgstr "银行无法支付每位玩家的起始材料。"
+
+msgid "Some number tokens cannot be rolled with these dice."
+msgstr "有些数字标记用这些骰子掷不出来。"
+
+msgid "Give the seconds between developments."
+msgstr "请填写两次使用发展卡之间的秒数。"
+
+msgid "This option is not available yet."
+msgstr "此选项暂不可用。"
+
+msgid "This value does not fit with the other settings."
+msgstr "此值与其他设置不匹配。"
+
+msgid "Some settings are not valid: they are marked below."
+msgstr "有些设置无效：已在下方标出。"
+
+msgid "auto"
+msgstr "自动"
+
+msgid "All settings"
+msgstr "全部设置"
+
+msgid "Leave a box blank to keep the game type's value, shown in grey."
+msgstr "留空则保留游戏类型的值（灰色显示）。"
+
+msgid "More players are seated than these settings allow."
+msgstr "已就座的玩家数超过了这些设置允许的人数。"
+
+msgid "Give the settings a name."
+msgstr "请为这些设置命名。"
+
+msgid "You have too many saved settings. Delete one first."
+msgstr "你保存的设置太多了。请先删除一个。"
+
+msgid "Those saved settings no longer exist."
+msgstr "这些已保存的设置已不存在。"
+
+msgid "Settings changed. Every player must get ready again."
+msgstr "设置已更改。每位玩家都必须重新准备。"
+
+#, python-format
+msgid "Saved as “%(name)s”. Find it under My settings when you create a game."
+msgstr "已保存为“%(name)s”。创建游戏时可以在“我的设置”中找到它。"
+
+#, python-format
+msgid "Settings of game %(code)s"
+msgstr "游戏 %(code)s 的设置"
+
+msgid "Change the rules before the game starts. Every player must get ready again afterwards."
+msgstr "在游戏开始前修改规则。修改后每位玩家都必须重新准备。"
+
+msgid "Save changes"
+msgstr "保存更改"
+
+msgid "Back to the game"
+msgstr "返回游戏"
+
+msgid "Name"
+msgstr "名称"
+
+msgid "Name for these settings"
+msgstr "这些设置的名称"
+
+msgid "Save to My settings"
+msgstr "保存到“我的设置”"
+
+msgid "Change settings"
+msgstr "更改设置"
+
+msgid "My settings"
+msgstr "我的设置"
+
+msgid "Delete"
+msgstr "删除"
+
+#: gameplay/views.py
+msgid "That game does not exist any more."
+msgstr "该游戏已不存在。"
+
+#: gameplay/views.py
+msgid "This game is over and its board is no longer kept."
+msgstr "这局游戏已经结束，棋盘不再保留。"
+
+#: lobby/messages.py
+msgid "This game has not finished yet."
+msgstr "这局游戏还没有结束。"
+
+#: templates/lobby/_seats.html
+msgid "You are in the new game."
+msgstr "你已在新游戏中。"
+
+#: templates/lobby/_seats.html
+msgid "Go to the new game"
+msgstr "前往新游戏"
+
+#: templates/lobby/_seats.html
+#, python-format
+msgid "%(name)s wants to play again with the same settings."
+msgstr "%(name)s 想用相同的设置再玩一局。"
+
+#: templates/lobby/_seats.html
+msgid "Join the new game"
+msgstr "加入新游戏"
+
+#: templates/lobby/_seats.html
+msgid "See the new game"
+msgstr "查看新游戏"
+
+#: templates/lobby/_seats.html
+msgid "Play again"
+msgstr "再玩一局"
+
+#: templates/lobby/_seats.html
+msgid ""
+"A new game with the same settings, table size and bots. The other players "
+"are invited back."
+msgstr "使用相同的设置、座位数和机器人开始新游戏。其他玩家会被邀请回来。"
+
+msgid "Use a settings code"
+msgstr "使用设置代码"
+
+msgid "Save these settings as"
+msgstr "将这些设置保存为"
+
+msgid "Use these settings"
+msgstr "使用这些设置"
+
+#, python-format
+msgid "Delete %(name)s"
+msgstr "删除 %(name)s"
+
+msgid ""
+"Choose Custom, set the rules you like and save them here to use them again "
+"with one click."
+msgstr "选择“自定义”，设置你喜欢的规则并保存在这里，以后一键即可再次使用。"
+
+#, python-format
+msgid "Saved as “%(name)s”. It is ready under My settings."
+msgstr "已保存为“%(name)s”。它已在“我的设置”中准备好。"
+
+# Developer panel (accounts/dev)
+msgid "User"
+msgstr "用户"
+
+msgid "Last login"
+msgstr "最后登录"
+
+msgid "Wins"
+msgstr "胜场"
+
+msgid "Messages"
+msgstr "消息"
+
+msgid "Overview"
+msgstr "概览"
+
+msgid "Registered users"
+msgstr "注册用户"
+
+msgid "Django admin"
+msgstr "Django 管理后台"
+
+msgid "Email"
+msgstr "电子邮件"
+
+msgid "inactive"
+msgstr "未激活"
+
+#, python-format
+msgid "%(t)s ago"
+msgstr "%(t)s 前"
+
+msgid "never"
+msgstr "从未"
+
+msgid "No users found."
+msgstr "没有找到用户。"
+
+#, python-format
+msgid "Figures as of %(when)s (UTC). Only developers can see this page."
+msgstr "数据截至 %(when)s（UTC）。只有开发者可以看到此页面。"
+
+msgid "Logged in, last 24 h"
+msgstr "已登录，最近 24 小时"
+
+msgid "Playing now"
+msgstr "正在游戏"
+
+#, python-format
+msgid "%(n)s today · %(m)s this week"
+msgstr "今天 %(n)s · 本周 %(m)s"
+
+#, python-format
+msgid "%(n)s min on average"
+msgstr "平均 %(n)s 分钟"
+
+msgid "Chat messages"
+msgstr "聊天消息"
+
+msgid "Friendships"
+msgstr "好友关系"
+
+#, python-format
+msgid "Games per day (last %(n)s days)"
+msgstr "每日游戏数（最近 %(n)s 天）"
+
+msgid "Users"
+msgstr "用户"
+
+msgid "New in the last 7 days"
+msgstr "最近 7 天新增"
+
+msgid "New in the last 30 days"
+msgstr "最近 30 天新增"
+
+msgid "Logged in, last 7 days"
+msgstr "已登录，最近 7 天"
+
+msgid "Logged in, last 30 days"
+msgstr "已登录，最近 30 天"
+
+#, python-format
+msgid "Language: %(label)s"
+msgstr "语言：%(label)s"
+
+msgid "Seats taken by people"
+msgstr "真人占用的座位"
+
+msgid "Seats taken by bots"
+msgstr "机器人占用的座位"
+
+msgid "Messages, last 7 days"
+msgstr "消息，最近 7 天"
+
+msgid "People who wrote, last 7 days"
+msgstr "发言人数，最近 7 天"
+
+#, python-format
+msgid "Messages: %(label)s"
+msgstr "消息：%(label)s"
+
+msgid "Nobody has played yet."
+msgstr "还没有人玩过。"
+
+msgid "Type"
+msgstr "类型"
+
+msgid "Newest users"
+msgstr "最新用户"
+
+msgid "See all registered users"
+msgstr "查看所有注册用户"
+
+msgid "Search"
+msgstr "搜索"
+
+msgid "Name, username or email"
+msgstr "名称、用户名或电子邮件"
+
+msgid "Clear"
+msgstr "清除"
+
+msgid "Previous"
+msgstr "上一页"
+
+#, python-format
+msgid "Page %(n)s of %(total)s"
+msgstr "第 %(n)s 页，共 %(total)s 页"
+
+msgid "Next"
+msgstr "下一页"
+
+msgid "Joined"
+msgstr "加入时间"
+
+msgid "Games"
+msgstr "游戏"
+
+msgid "Developer panel"
+msgstr "开发者面板"
+
+msgid "developer"
+msgstr "开发者"
+
+#, python-format
+msgid "+%(n)s this week"
+msgstr "本周 +%(n)s"
+
+#, python-format
+msgid "%(n)s in 7 days"
+msgstr "7 天内 %(n)s"
+
+msgid "Games waiting for players"
+msgstr "等待玩家的游戏"
+
+msgid "Games created"
+msgstr "已创建的游戏"
+
+msgid "Games finished"
+msgstr "已结束的游戏"
+
+#, python-format
+msgid "%(n)s in 24 h"
+msgstr "24 小时内 %(n)s"
+
+#, python-format
+msgid "%(n)s pending"
+msgstr "%(n)s 待处理"
+
+msgid "Never played a game"
+msgstr "从未玩过游戏"
+
+msgid "Longest game"
+msgstr "最长的游戏"
+
+#, python-format
+msgid "%(n)s min"
+msgstr "%(n)s 分钟"
+
+#, python-format
+msgid "Bots: %(label)s"
+msgstr "机器人：%(label)s"
+
+msgid "Saved game settings"
+msgstr "已保存的游戏设置"
+
+msgid "Game types"
+msgstr "游戏类型"
+
+msgid "No games yet."
+msgstr "还没有游戏。"
+
+msgid "Private conversations"
+msgstr "私人对话"
+
+msgid "Public rooms"
+msgstr "公共聊天室"
+
+msgid "Top players"
+msgstr "最佳玩家"
+
+msgid "Latest games"
+msgstr "最近的游戏"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Created"
+msgstr "创建时间"
+
+msgid "Winner"
+msgstr "获胜者"
+
+msgid "Developer"
+msgstr "开发者"
+
+#, python-format
+msgid "%(n)s game running"
+msgid_plural "%(n)s games running"
+msgstr[0] "%(n)s 局游戏进行中"
+
+#, python-format
+msgid "%(n)s registered user"
+msgid_plural "%(n)s registered users"
+msgstr[0] "%(n)s 名注册用户"
+
+msgid "Growing sight: each player sees only the land around their own pieces."
+msgstr "逐步扩展的视野：每位玩家只能看到自己棋子周围的陆地。"
+
+msgid "Numbers hidden until a building is next to them"
+msgstr "数字在旁边有建筑之前保持隐藏"
+
+msgid "Settler"
+msgstr "拓荒者"
+
+msgid "Settlers at the start"
+msgstr "开局时的拓荒者"
+
+msgid "Most settlers per player"
+msgstr "每位玩家最多拓荒者数"
+
+msgid "Settlers leave after the first settlements"
+msgstr "拓荒者在首批村庄建成后离开"
+
+msgid "Turn off to keep settlers in the game: players can buy more, and they gather and guard."
+msgstr "关闭后拓荒者会留在游戏中：玩家可以购买更多拓荒者，它们会采集资源并守护。"
+
+msgid "Settlers gather"
+msgstr "拓荒者采集资源"
+
+msgid "A settler standing still takes one card from each hex around it on its numbers: 3 for the first settler, 11 for the second, 2 or 12 for the third."
+msgstr "静止的拓荒者在掷出其数字时，从周围每个六边形拿取一张卡：第一个拓荒者是 3，第二个是 11，第三个是 2 或 12。"
+
+msgid "Cards a settler gathers per hex"
+msgstr "拓荒者每个六边形采集的卡牌数"
+
+msgid "Settlers guard against the robber"
+msgstr "拓荒者抵御强盗"
+
+msgid "The robber cannot move onto a hex with a settler on one of its corners."
+msgstr "强盗不能移动到某个路口上有拓荒者的六边形。"
+
+msgid "Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
+msgstr "拓荒者在首批村庄建成后留下：购买更多拓荒者，让它们在 3、11 以及 2 或 12 时采集资源，并用它们赶走强盗。"

@@ -89,6 +89,10 @@ msgstr "English"
 msgid "Español"
 msgstr "Español"
 
+#: config/settings/base.py:113
+msgid "简体中文"
+msgstr "简体中文"
+
 #: lobby/forms.py:18 templates/lobby/detail.html:8
 msgid "Game type"
 msgstr "Tipo de partida"
