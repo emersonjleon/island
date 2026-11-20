@@ -7,7 +7,7 @@ export const ACTIONS = [
   "build_road", "build_settlement", "build_city", "confirm", "cancel",
   "camera_up", "camera_down", "camera_left", "camera_right",
   "zoom_in", "zoom_out", "center_selected",
-  "buy_dev_card", "open_trade",
+  "buy_dev_card", "open_trade", "buy_settler",
 ] as const;
 export type Action = (typeof ACTIONS)[number];
 export type Bindings = Record<Action, string[]>;
@@ -36,6 +36,7 @@ export const DEFAULT_BINDINGS: Bindings = {
   center_selected: ["Space"],
   buy_dev_card: ["KeyV"],
   open_trade: ["KeyT"],
+  buy_settler: ["KeyB"],
 };
 
 const MODIFIERS = ["Ctrl", "Alt", "Shift", "Meta"] as const;

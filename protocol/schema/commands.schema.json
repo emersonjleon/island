@@ -147,6 +147,33 @@
       "title": "BuyDevCard",
       "type": "object"
     },
+    "BuySettler": {
+      "additionalProperties": false,
+      "description": "Buy a settler (Settlers variation, stage 3). It appears at ``vertex``, one of the\nplayer's buildings, or at their first building when left out.",
+      "properties": {
+        "a": {
+          "const": "buy_settler",
+          "default": "buy_settler",
+          "title": "A",
+          "type": "string"
+        },
+        "vertex": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vertex"
+        }
+      },
+      "title": "BuySettler",
+      "type": "object"
+    },
     "CancelBuild": {
       "additionalProperties": false,
       "properties": {
@@ -386,6 +413,7 @@
       "bank_trade": "#/$defs/BankTrade",
       "build": "#/$defs/Build",
       "buy_dev_card": "#/$defs/BuyDevCard",
+      "buy_settler": "#/$defs/BuySettler",
       "cancel_build": "#/$defs/CancelBuild",
       "cancel_offer": "#/$defs/CancelOffer",
       "move_settler": "#/$defs/MoveSettler",
@@ -422,6 +450,9 @@
     },
     {
       "$ref": "#/$defs/AcceptOffer"
+    },
+    {
+      "$ref": "#/$defs/BuySettler"
     },
     {
       "$ref": "#/$defs/Resign"

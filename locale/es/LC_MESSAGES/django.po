@@ -2048,3 +2048,33 @@ msgstr "Más recientes"
 #: templates/accounts/dev/games.html
 msgid "Older"
 msgstr "Más antiguas"
+
+msgid "Settlers at the start"
+msgstr "Colonos al empezar"
+
+msgid "Most settlers per player"
+msgstr "Máximo de colonos por jugador"
+
+msgid "Settlers leave after the first settlements"
+msgstr "Los colonos se van después de los primeros poblados"
+
+msgid "Turn off to keep settlers in the game: players can buy more, and they gather and guard."
+msgstr "Desactívalo para que los colonos sigan en el juego: se pueden comprar más, recogen recursos y protegen."
+
+msgid "Settlers gather"
+msgstr "Los colonos recogen"
+
+msgid "A settler standing still takes one card from each hex around it on its numbers: 3 for the first settler, 11 for the second, 2 or 12 for the third."
+msgstr "Un colono quieto toma una carta de cada hexágono que toca cuando sale su número: 3 para el primer colono, 11 para el segundo, 2 o 12 para el tercero."
+
+msgid "Cards a settler gathers per hex"
+msgstr "Cartas que recoge un colono por hexágono"
+
+msgid "Settlers guard against the robber"
+msgstr "Los colonos protegen del ladrón"
+
+msgid "The robber cannot move onto a hex with a settler on one of its corners."
+msgstr "El ladrón no puede ir a un hexágono con un colono en una de sus esquinas."
+
+msgid "Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
+msgstr "Los colonos se quedan después de los primeros poblados: compra más, déjalos recoger con el 3, el 11 y el 2 o 12, y úsalos para alejar al ladrón."

@@ -55,5 +55,6 @@
     "resigned": "resigned"
   },
   "resigned": "{{who}} resigned",
-  "resigned_you": "You resigned"
+  "resigned_you": "You resigned",
+  "settlers_gathered_you": "Your settlers gathered {{res}}"
 }

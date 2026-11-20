@@ -136,7 +136,8 @@
     "zoom_out": "Zoom out",
     "center_selected": "Centre on settler",
     "buy_dev_card": "Buy development",
-    "open_trade": "Open trade"
+    "open_trade": "Open trade",
+    "buy_settler": "Buy settler"
   },
   "spectator": "You are watching this game",
   "youObject": "you",
@@ -257,5 +258,12 @@
     "keys": "WASD or arrows walk · right-click: walk or build · R road · E settlement · C city · T trade · Shift+WASD camera.",
     "touch": "Tap the map to walk or build · drag to move the map · pinch to zoom · buttons below build and trade.",
     "full": "Full rules"
+  },
+  "settler": {
+    "button": "Settler",
+    "help": "Buy a settler: it appears at your first building",
+    "gathers": "next one gathers on {{nums}}",
+    "yours": "Your settlers",
+    "numbers": "Gathers on {{nums}}"
   }
 }

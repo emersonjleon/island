@@ -10,7 +10,7 @@
   On a robber roll nothing is produced, even with the robber disabled.
 
 Event order of one roll: ``DiceRolled`` then either the production events
-(``Produced``, ``Hand``...) or the robber events (``RobberStole``/``Hand`` per
+(``Produced``, ``Hand``..., then the settlers' ``SettlersGathered``, ``Hand``...) or the robber events (``RobberStole``/``Hand`` per
 target, ``RobberMoved``).
 
 The first roll is scheduled by setup (WP6) when the first settlement is completed.
@@ -59,6 +59,7 @@ def on_dice_roll(state: GameState, timer: Timer, now_ms: int) -> list[Event]:
             from engine.rules import robber
             events += robber.on_seven(state, now_ms)
     else:
-        from engine.rules import production
+        from engine.rules import production, settlers
         events += production.produce(state, total, now_ms)
+        events += settlers.gather(state, total, now_ms)
     return events

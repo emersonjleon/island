@@ -212,7 +212,7 @@ class StageTest(unittest.TestCase):
 
     def test_later_stage_field_rejected(self) -> None:
         for raw, field in (({"victory": {"time_limit_ms": 600000}}, "victory.time_limit_ms"),
-                           ({"settlers": {"leave_after_setup": False}}, "settlers.leave_after_setup"),
+                           ({"settlers": {"build_reach_edges": 1}}, "settlers.build_reach_edges"),
                            ({"visibility": {"hidden_numbers": False, "dev_cards": "counts"},
                              "robber": {"stolen_to_bank": False}}, "robber.stolen_to_bank")):
             with self.subTest(field=field), self.assertRaises(ValidationError) as ctx:
@@ -277,7 +277,7 @@ class StageTest(unittest.TestCase):
 
 class PresetTest(unittest.TestCase):
     def test_available(self) -> None:
-        self.assertEqual(available_presets(), ["blitz", "classic", "custom", "expanded", "huge"])
+        self.assertEqual(available_presets(), ["blitz", "classic", "custom", "expanded", "huge", "settlers"])
 
     def test_custom_starts_from_defaults(self) -> None:
         self.assertEqual(load_preset("custom").model_dump(exclude={"preset"}),
@@ -323,7 +323,7 @@ class PresetTest(unittest.TestCase):
         self.assertEqual(base, {"clock": {"roll_interval_ms": 8000}})
 
     def test_unknown_preset(self) -> None:
-        for name in ("nope", "../classic", "settlers"):
+        for name in ("nope", "../classic", "explorer"):
             with self.subTest(name=name), self.assertRaises(UnknownPresetError):
                 load_preset(name)
 

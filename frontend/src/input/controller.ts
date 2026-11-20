@@ -37,7 +37,7 @@ export interface InputOptions {
   onMode?: (mode: ModeInfo | null) => void;
   /** Robber mode picked a hex (knight card). */
   onRobber?: (hex: number) => void;
-  /** Actions the HUD owns (open_trade, buy_dev_card). */
+  /** Actions the HUD owns (open_trade, buy_dev_card, buy_settler). */
   onAction?: (action: Action) => void;
   /** Show a right-click menu at a screen point; returns a close function. */
   showMenu?: (x: number, y: number, items: MenuItem[]) => () => void;

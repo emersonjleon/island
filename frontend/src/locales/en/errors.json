@@ -90,6 +90,15 @@
     "bad_victim": "That player has no building next to that hex",
     "need_resources": "Choose {{count}} resources",
     "bank_short": "The bank doesn't have those resources",
-    "need_resource": "Choose a resource"
+    "need_resource": "Choose a resource",
+    "blocked_by_settler": "A settler guards that hex: the robber can't go there"
+  },
+  "settler": {
+    "setup_not_done": "Finish your setup first",
+    "max": "You already have the most settlers allowed ({{max}})",
+    "cannot_afford": "Not enough resources for a settler",
+    "no_building": "You need a building for the settler to start from",
+    "not_your_building": "The settler must start at one of your buildings",
+    "not_available": "Settlers leave after the first settlements in this game"
   }
 }

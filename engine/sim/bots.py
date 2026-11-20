@@ -10,6 +10,9 @@ a game can be replayed from its command log alone.
 * :class:`GreedyBot` -- prefers high-yield spots, cities over settlements over
   roads, saves for settlements, trades with the bank for what it lacks, offers
   1:1 swaps on the trade board and takes other players' offers that help it.
+  When settlers stay after setup, it buys settlers it can afford (when it has
+  nothing to build) and parks each idle one where it gathers most, near its own
+  buildings.
 """
 from __future__ import annotations
 
@@ -17,7 +20,8 @@ from typing import Any
 
 from engine.rng import Rng
 from engine.board import coords
-from engine.rules import devcards, movement, placement, robber, trade, trade_board
+from engine import sight
+from engine.rules import devcards, movement, placement, robber, settlers, trade, trade_board
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
@@ -298,10 +302,51 @@ class GreedyBot(Bot):
             return plays + swaps
         builds = self.network_builds(state)
         if not builds or builds[0]["a"] == "bank_trade":
-            buy = self._buy_card(state)
+            buy = self._buy_settler(state) or self._buy_card(state)
             if buy is not None:
                 builds = [buy]
-        return plays + swaps + builds
+        return plays + swaps + builds + self.settler_moves(state)
+
+    # -------------------------------------------------------------- settlers
+    def _buy_settler(self, state: GameState) -> Intent | None:
+        if state.settings.settlers.gather and settlers.can_buy(state, self.seat):
+            return {"a": "buy_settler"}
+        return None
+
+    def _gather_score(self, state: GameState, v: int) -> int:
+        gb = state.board
+        return sum(1 for h in gb.board.vertex_hexes[v]
+                   if gb.hex_resource(h) is not None and h != state.robber_hex)
+
+    def settler_moves(self, state: GameState) -> list[Intent]:
+        """Send each idle settler to the best gathering corner near the bot's buildings
+        (one settler per corner)."""
+        ss = state.settings.settlers
+        if ss.leave_after_setup or not ss.gather:
+            return []
+        gb = state.board
+        own = [v for v, b in state.buildings.items() if b.seat == self.seat]
+        if not own:
+            return []
+        near = sight.hexes_around(gb, {h for v in own for h in gb.board.vertex_hexes[v]}, 1)
+        land = set(gb.board.land_vertices)
+        spots = sorted(v for v in sight.seen_vertices(gb, near) if v in land)
+        mine = sorted(state.player(self.seat).settler_ids)
+        taken = {_destination(state.settlers[sid]) for sid in mine}
+        out: list[Intent] = []
+        for sid in mine:
+            here = settlers.settler_at_work(state, sid)
+            if here is None:
+                continue
+            free = [v for v in spots if v not in taken or v == here]
+            if not free:
+                continue
+            best = max(free, key=lambda v: (self._gather_score(state, v), v == here, -v))
+            if self._gather_score(state, best) > self._gather_score(state, here):
+                taken.discard(here)
+                taken.add(best)
+                out.append({"a": "move_settler", "settler": sid, "to_vertex": best})
+        return out
 
     def network_builds(self, state: GameState) -> list[Intent]:
         megas = placement.legal_targets(state, self.seat, MEGACITY)
