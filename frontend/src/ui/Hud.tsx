@@ -21,6 +21,7 @@ import { CostPips, Die, ResChips, ResIcon, TradeArrow } from "./icons";
 import { KeySettings } from "./KeySettings";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
+import { buySettlerBlock, gatherNumbers, settlerMax, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
   MANY_PLAYERS, RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
@@ -77,6 +78,8 @@ export interface HudHandle {
   robberPicked(hex: number): void;
   /** Buy a development card (keyboard shortcut). */
   buyCard(): void;
+  /** Buy a settler (keyboard shortcut; settlers variation). */
+  buySettler(): void;
 }
 
 const LOG_KEEP = 50;
@@ -87,7 +90,7 @@ type Notice = { id: number; text: string };
 
 export function mountHud(el: HTMLElement, props: HudProps): HudHandle {
   const handle: HudHandle = {
-    setLink: () => {}, setMode: () => {}, notify: () => {}, notifyText: () => {}, openTrade: () => {}, robberPicked: () => {}, buyCard: () => {},
+    setLink: () => {}, setMode: () => {}, notify: () => {}, notifyText: () => {}, openTrade: () => {}, robberPicked: () => {}, buyCard: () => {}, buySettler: () => {},
   };
   render(<Hud {...props} handle={handle} />, el);
   return handle;
@@ -147,6 +150,11 @@ function Hud(props: HudProps & { handle: HudHandle }) {
     handle.notify = (code, params) => handle.notifyText(errorText(t, code, params));
     handle.openTrade = () => setDialog((d) => (d === "trade" ? null : "trade"));
     handle.buyCard = () => props.send({ a: "buy_dev_card" });
+    handle.buySettler = () => {
+      const why = buySettlerBlock(store.settings, store.state, store.seat);
+      if (why && why !== "settler.not_available") handle.notify(why, why === "settler.max" ? { max: settlerMax(store.settings) } : {});
+      else if (!why) props.send({ a: "buy_settler" });
+    };
     handle.robberPicked = (hex) => {
       const s = store.state;
       const seat = store.seat;
@@ -393,7 +401,29 @@ const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Acti
   { kind: "city", action: "build_city" },
 ];
 
-function HandBar({ store, t, controls, touch, mode, devOpen, onTrade, onKeys, onDev }:
+/** Buying a settler (settlers variation): cost, how many you have, the next one's numbers. */
+function SettlerButton({ store, t, send }: Pick<HudProps, "store" | "t" | "send">) {
+  const seat = store.seat!;
+  const hand = store.player(seat)?.hand ?? {};
+  const cost = costOf(store.settings, "settler" as BuildKind);
+  const count = store.player(seat)?.settlers.length ?? 0;
+  const why = buySettlerBlock(store.settings, store.state, seat);
+  const nums = gatherNumbers(store.settings, count);
+  const help = [t("hud:settler.help"), t("hud:build.cost", { res: formatRes(t, cost) }),
+                nums.length ? t("hud:settler.gathers", { nums: nums.join(", ") }) : "",
+                why && why !== "settler.max" ? errorText(t, why) : "",
+                why === "settler.max" ? errorText(t, why, { max: settlerMax(store.settings) }) : ""].filter(Boolean).join(" · ");
+  return (
+    <button type="button" class={`build buy-settler${why === null && canAfford(hand, cost) ? "" : " short"}`}
+            onClick={() => (why === null ? send({ a: "buy_settler" }) : undefined)} title={help} aria-label={help}>
+      <span class="build-name">{t("hud:settler.button")}</span>
+      <CostPips cost={cost} />
+      <span class="badge count-badge" title={t("hud:settler.yours")}>{count}/{settlerMax(store.settings)}</span>
+    </button>
+  );
+}
+
+function HandBar({ store, t, send, controls, touch, mode, devOpen, onTrade, onKeys, onDev }:
   HudProps & { mode: ModeInfo | null; devOpen: boolean; onTrade(): void; onKeys(): void; onDev(): void }) {
   const me = store.player(store.seat!);
   const hand = me?.hand ?? {};
@@ -432,6 +462,7 @@ function HandBar({ store, t, controls, touch, mode, devOpen, onTrade, onKeys, on
           <CostPips cost={devCost} />
           {myCards > 0 && <span class="badge count-badge" title={t("hud:dev.yours")}>{myCards}</span>}
         </button>
+        {settlersStay(store.settings) && <SettlerButton store={store} t={t} send={send} />}
         <button type="button" class="trade-open" onClick={onTrade} aria-label={t("hud:trade.open")}>
           <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
             <path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />

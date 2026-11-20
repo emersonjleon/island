@@ -40,7 +40,7 @@ cards), ``army`` (holder seat or None).
 Reject codes: ``dev.setup_not_done``, ``dev.deck_empty``, ``dev.cannot_afford``
 {missing}, ``dev.no_card`` {card}, ``dev.too_new`` {card}, ``dev.cooldown`` {card},
 ``dev.not_playable`` {card}, ``dev.no_robber``, ``dev.need_hex``, ``dev.bad_hex``
-{hex}, ``dev.too_far`` {hex, max}, ``dev.need_victim`` {choices}, ``dev.bad_victim``
+{hex}, ``dev.blocked_by_settler`` {hex}, ``dev.too_far`` {hex, max}, ``dev.need_victim`` {choices}, ``dev.bad_victim``
 {victim}, ``dev.need_resources`` {count}, ``dev.bank_short`` {missing},
 ``dev.need_resource``.
 """
@@ -240,6 +240,9 @@ def _knight_target(state: GameState, seat: int, cmd: PlayDevCard) -> tuple[int, 
     h = cmd.hex
     if h >= len(board.hexes) or h == start or not _robber_hex_ok(state, h):
         raise RuleError("dev.bad_hex", {"hex": h})
+    from engine.rules import settlers
+    if h in settlers.blocked_hexes(state):
+        raise RuleError("dev.blocked_by_settler", {"hex": h})
     limit = state.settings.robber.knight_max_distance
     if coords.hex_distance(board.hexes[start], board.hexes[h]) > limit:
         raise RuleError("dev.too_far", {"hex": h, "max": limit})

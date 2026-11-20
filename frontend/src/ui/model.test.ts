@@ -134,6 +134,8 @@ describe("texts", () => {
     expect(logLine(t, { k: "produced", roll: 6, gains: { "0": { wool: 1 }, "1": { ore: 2 } } }, name, 0)!.text).toBe("You got 1 wool");
     expect(logLine(t, { k: "produced", roll: 6, gains: { "1": { ore: 2 } } }, name, 0)).toBeNull();
     expect(logLine(t, { k: "produced", roll: 2, gains: {} }, name, 0)!.text).toBe("Nobody produced anything");
+    expect(logLine(t, { k: "settlers_gathered", roll: 3, gains: { "0": { fish: 1 } }, settlers: [4] }, name, 0)!.text).toBe("Your settlers gathered 1 fish");
+    expect(logLine(t, { k: "settlers_gathered", roll: 3, gains: { "1": { fish: 1 } }, settlers: [5] }, name, 0)).toBeNull();
     expect(logLine(t, { k: "construction_cancelled", seat: 1, reason: "conflict" }, name, 0)!.text)
       .toBe("ben: building stopped (someone else finished a building there or next to it first)");
     expect(logLine(t, { k: "construction_cancelled", seat: 0, reason: "conflict", refund: { brick: 1, lumber: 1 } }, name, 0)!.text)

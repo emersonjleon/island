@@ -86,16 +86,46 @@ this order. Each one leaves the game playable.
   where it matters.
 
 ### WP23 Settlers variation
-- `buy_settler` command (cost `economy.costs.settler`, `settlers.max`), new settlers
-  appear at an own building (`settlers.spawn_at`).
-- `settlers.builder_required = always`, `leave_after_setup = false`,
-  `build_reach_edges`: a settler must stand on (or near) the site to build.
-- Client: buy button, settler list and selection (Tab / 1–3 exist), build menu
-  limited to sites a settler can reach.
-- Bots: buy and walk settlers to their chosen sites.
-- New preset `settlers`.
-- Questions for Emerson before building: settler price, walking speed on long
-  islands, whether settlers can be lost.
+Emerson's answers (Nov 19, 2026): you see the land around your settlers,
+buildings and roads; settlers are not lost (maybe later); a settler has a price
+that includes fish and can be changed; settlers also do something else (gather
+materials around them on their own numbers, block the robber), and this grows
+with the ages (docs/AGES_DESIGN.md).
+
+Split in two pull requests.
+
+**WP23a engine**
+- Sight: settlers always see around them (`visibility.sight.settler`), with every
+  fog mode, not only before the first settlements.
+- `buy_settler` command, only when settlers stay (`settlers.leave_after_setup =
+  false`): pays `economy.costs.settler` (default 1 lumber, 1 wool, 1 grain,
+  2 fish), up to `settlers.max`; the settler appears at one of the player's
+  buildings (`settlers.spawn_at`). Codes `settler.*`.
+- `settlers.builder_required = always` stays locked for now: building from the
+  network keeps working, settlers gather and guard.
+- Gathering (`settlers.gather`, off by default): each settler has its own numbers,
+  given by its order among the player's settlers from `settlers.gather_rolls`
+  (default `[[3], [11], [2, 12]]`: each 2 in 36, the same chance). On that roll a
+  settler at rest (not walking, not building) takes `settlers.gather_cards` (1) of
+  each producing hex around its corner from the bank (fishing grounds count, the
+  robber's hex and the desert do not). Event `settlers_gathered` (like `produced`,
+  follows `visibility.production_log`).
+- Robber: `settlers.block_robber` (off by default): the robber cannot move onto a
+  hex with a settler on one of its corners (random moves pick another neighbour;
+  a knight gets `dev.blocked_by_settler`).
+- Ages hook (built with WP26): `settlers.build_unconnected` = `none` / `coast` /
+  `any`. Mar: a settler can build a settlement on the beach without a road;
+  Dorada: anywhere.
+
+**WP23b client, bots and preset**
+- Settler button in the hand bar (key B) with the price, "n/max" and the next
+  settler's numbers; each own settler shows its numbers in a pill under it;
+  gathering in the log.
+- Bots buy a settler when they have nothing to build and park each idle settler
+  on the corner near their buildings that touches the most producing hexes.
+- New preset `settlers`: settlers stay, gather and block the robber; max 3.
+- The settler settings are unlocked through `EARLY_FEATURES` (all but
+  `build_reach_edges` and `builder_required = always`).
 
 ### WP24 Explored and Live fog
 - `explored`: settlers also reveal land as they walk (sight per step).

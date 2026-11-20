@@ -138,24 +138,31 @@ class AcceptOffer(_Cmd):
     offer: Id
 
 
+class BuySettler(_Cmd):
+    """Buy a settler (Settlers variation, stage 3). It appears at ``vertex``, one of the
+    player's buildings, or at their first building when left out."""
+    a: Literal["buy_settler"] = "buy_settler"
+    vertex: Id | None = None
+
+
 class Resign(_Cmd):
     """Give up: the player leaves the game for good (see :mod:`engine.rules.resign`)."""
     a: Literal["resign"] = "resign"
 
 
 Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | PostOffer | CancelOffer
-                    | AcceptOffer | Resign,
+                    | AcceptOffer | BuySettler | Resign,
                     Field(discriminator="a")]
 COMMAND_TYPES: dict[str, type[_Cmd]] = {
     "move_settler": MoveSettler, "build": Build, "cancel_build": CancelBuild, "bank_trade": BankTrade,
     "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard, "post_offer": PostOffer, "cancel_offer": CancelOffer,
-    "accept_offer": AcceptOffer, "resign": Resign,
+    "accept_offer": AcceptOffer, "buy_settler": BuySettler, "resign": Resign,
 }
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(Command)
 
 
 def parse_command(raw: Any) -> (MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard
-                                | PostOffer | CancelOffer | AcceptOffer | Resign):
+                                | PostOffer | CancelOffer | AcceptOffer | BuySettler | Resign):
     """Validate a raw intent dict. Raises ``RuleError("command.invalid", {...})``.
 
     params: ``{"action": <a or None>, "errors": [{"loc": "dotted.path", "type": "..."}]}``.

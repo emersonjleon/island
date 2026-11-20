@@ -758,6 +758,33 @@
       "to_v": 66
     },
     {
+      "at": 91000,
+      "gains": {
+        "0": {
+          "grain": 1,
+          "lumber": 1,
+          "wool": 1
+        },
+        "1": {
+          "lumber": 1,
+          "ore": 1,
+          "wool": 1
+        },
+        "2": {
+          "grain": 1,
+          "lumber": 1,
+          "wool": 1
+        }
+      },
+      "k": "settlers_gathered",
+      "roll": 3,
+      "settlers": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
       "at": 30000,
       "k": "setup_complete",
       "seat": 0

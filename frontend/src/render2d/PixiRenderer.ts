@@ -7,6 +7,7 @@ import { BoardGeometry, hexCenter, hexCorners, type Pt } from "../board/geometry
 import type { BoardMsg, Resource } from "../protocol/types";
 import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
+import { ownGatherNumbers } from "../state/settlers";
 import { known, type GameStore } from "../state/store";
 import { drawBuilding } from "./buildings";
 import { drawTerrainDecor, drawWaves } from "./decor";
@@ -80,6 +81,9 @@ export class PixiRenderer implements Renderer {
   private overlayLayer = new Graphics();
   private progressLayer = new Graphics();
   private settlerLayer = new Graphics();
+  /** Gathering numbers under the viewer's own settlers (settlers variation), by settler id. */
+  private settlerLabels = new Container();
+  private settlerLabelText = new Map<number, Text>();
   private robberLayer = new Graphics();
   private focusLayer = new Graphics();
   private geo: BoardGeometry | null = null;
@@ -115,7 +119,7 @@ export class PixiRenderer implements Renderer {
     this.app.canvas.addEventListener("webglcontextrestored", this.onContextRestored);
     document.addEventListener("visibilitychange", this.onVisibility);
     this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer,
-                        this.overlayLayer, this.focusLayer, this.settlerLayer);
+                        this.overlayLayer, this.focusLayer, this.settlerLayer, this.settlerLabels);
     this.app.stage.addChild(this.world);
   }
 
@@ -484,9 +488,12 @@ export class PixiRenderer implements Renderer {
         .roundRect(x, y, Math.max(6, w * constructionProgress(c, now)), 6, 3).fill(P.playerColour(store.colourOf(c.seat)));
     }
     const g = this.settlerLayer.clear();
+    const numbers = ownGatherNumbers(store.settings, s, store.seat);
+    const labelled = new Set<number>();
     for (const settler of s.settlers) {
       const p = settlerPosition(geo, settler, now);
       if (!p) continue;
+
       const colour = P.playerColour(store.colourOf(settler.seat));
       const selected = this.overlays.selectedSettlers?.includes(settler.id) ?? false;
       const x = p.x * UNIT;
@@ -517,7 +524,36 @@ export class PixiRenderer implements Renderer {
         }
         g.stroke({ width: 2, color: colour, alpha: 0.7 });
       }
+      const nums = numbers.get(settler.id);
+      if (nums) {
+        labelled.add(settler.id);
+        this.gatherLabel(g, settler.id, nums, x, y);
+      }
     }
+    for (const [id, text] of this.settlerLabelText) {
+      if (labelled.has(id)) continue;
+      text.destroy();
+      this.settlerLabelText.delete(id);
+    }
+  }
+
+  /** A small pill under a settler with the numbers it gathers on (e.g. "2·12"). */
+  private gatherLabel(g: Graphics, id: number, nums: number[], x: number, y: number): void {
+    const value = nums.join("·");
+    let text = this.settlerLabelText.get(id);
+    if (!text || text.text !== value) {
+      text?.destroy();
+      text = new Text({ text: value, style: { fontFamily: "Georgia, 'Times New Roman', serif", fontSize: UNIT * 0.2,
+                                             fontWeight: "bold", fill: P.OUTLINE } });
+      text.anchor.set(0.5);
+      this.settlerLabels.addChild(text);
+      this.settlerLabelText.set(id, text);
+    }
+    const ly = y + UNIT * 0.4;
+    const w = Math.max(UNIT * 0.24, text.width + UNIT * 0.1);
+    g.roundRect(x - w / 2, ly - UNIT * 0.11, w, UNIT * 0.22, UNIT * 0.11).fill({ color: 0xfff6dc, alpha: 0.92 })
+      .stroke({ width: 1.5, color: P.OUTLINE });
+    text.position.set(x, ly);
   }
 
   // ------------------------------------------------------------------ camera
