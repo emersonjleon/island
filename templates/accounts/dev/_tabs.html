@@ -1,5 +1,6 @@
 {% load i18n %}<nav class="dev-tabs" aria-label="{% translate 'Developer panel' %}">
   <a href="{% url 'accounts:dev_overview' %}"{% if tab == "overview" %} aria-current="page"{% endif %}>{% translate "Overview" %}</a>
+  <a href="{% url 'accounts:dev_games' %}"{% if tab == "games" %} aria-current="page"{% endif %}>{% translate "Games" %}</a>
   <a href="{% url 'accounts:dev_users' %}"{% if tab == "users" %} aria-current="page"{% endif %}>{% translate "Registered users" %}</a>
   <a href="{% url 'admin:index' %}">{% translate "Django admin" %}</a>
 </nav>

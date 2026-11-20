@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% load i18n static %}
+{% block title %}{% translate "Games" %} · {{ block.super }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="{% static 'css/dev.css' %}">{% endblock %}
+{% block main_class %}dev-page{% endblock %}
+{% block content %}
+<h1>{% translate "Developer panel" %}</h1>
+{% include "accounts/dev/_tabs.html" with tab="games" %}
+<section>
+  <h2>{% blocktranslate count n=page.paginator.count %}{{ n }} game, newest first{% plural %}{{ n }} games, newest first{% endblocktranslate %}</h2>
+  {% if page.object_list %}
+  {% include "accounts/dev/_game_table.html" with games=page.object_list %}
+  {% else %}<p class="muted">{% translate "No games yet." %}</p>{% endif %}
+  {% if page.has_other_pages %}
+  <nav class="pager">
+    {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">← {% translate "Newer" %}</a>{% endif %}
+    <span class="muted">{% blocktranslate with n=page.number total=page.paginator.num_pages %}Page {{ n }} of {{ total }}{% endblocktranslate %}</span>
+    {% if page.has_next %}<a href="?page={{ page.next_page_number }}">{% translate "Older" %} →</a>{% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% endblock %}

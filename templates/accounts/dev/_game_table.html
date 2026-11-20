@@ -1,0 +1,20 @@
+{% load i18n %}<div class="table-scroll"><table class="dev">
+    <thead><tr>
+      <th>{% translate "Code" %}</th><th>{% translate "Status" %}</th><th>{% translate "Host" %}</th>
+      <th class="hide-phone">{% translate "Type" %}</th><th>{% translate "Players" %}</th>
+      <th class="hide-phone">{% translate "Created" %}</th><th>{% translate "Winner" %}</th>
+    </tr></thead>
+    <tbody>
+    {% for game in games %}
+      <tr>
+        <td class="code"><a href="{% url 'lobby:detail' game.code %}">{{ game.code }}</a></td>
+        <td>{{ game.get_status_display }}</td>
+        <td>{{ game.host.public_name }}</td>
+        <td class="hide-phone">{{ game.preset_label }}</td>
+        <td>{% for p in game.players.all %}{{ p.display_name }}{% if p.final_points is not None %} ({{ p.final_points }}){% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+        <td class="hide-phone" title="{{ game.created_at|date:'j M Y, H:i' }} UTC">{% blocktranslate with t=game.created_at|timesince %}{{ t }} ago{% endblocktranslate %}</td>
+        <td>{% for p in game.players.all %}{% if p.is_winner %}{{ p.display_name }}{% endif %}{% endfor %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>

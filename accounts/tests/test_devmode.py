@@ -108,6 +108,35 @@ class PanelTests(TestCase):
         response = self.client.get(reverse("accounts:dev_overview"), HTTP_ACCEPT_LANGUAGE="es")
         self.assertEqual(response.status_code, 200)
 
+    def test_latest_games_are_newest_first(self):
+        base = timezone.now() - timedelta(days=10)
+        for i, game in enumerate(Game.objects.order_by("id")):
+            Game.objects.filter(pk=game.pk).update(created_at=base + timedelta(days=i))
+        expected = list(Game.objects.order_by("-created_at").values_list("code", flat=True))
+        self.assertEqual([g.code for g in devmode.recent_games()], expected)
+        response = self.client.get(reverse("accounts:dev_overview"))
+        self.assertEqual([g.code for g in response.context["recent_games"]], expected)
+        self.assertContains(response, reverse("accounts:dev_games"))
+
+    def test_games_page_paginates_older_games(self):
+        for _ in range(devmode.GAMES_PER_PAGE + 5):
+            make_game(self.ben)
+        oldest = Game.objects.order_by("created_at", "id").first()
+        newest = Game.objects.order_by("-created_at", "-id").first()
+        url = reverse("accounts:dev_games")
+        first = self.client.get(url)
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.context["page"].paginator.count, devmode.GAMES_PER_PAGE + 8)
+        self.assertEqual(first.context["page"].object_list[0].code, newest.code)
+        self.assertContains(first, "?page=2")
+        last = self.client.get(url, {"page": 2})
+        self.assertEqual(list(last.context["page"].object_list)[-1].code, oldest.code)
+
+    def test_games_page_is_developer_only(self):
+        self.client.logout()
+        self.client.login(username="ben", password=PASSWORD)
+        self.assertEqual(self.client.get(reverse("accounts:dev_games")).status_code, 404)
+
     def test_users_search_and_sort(self):
         response = self.client.get(reverse("accounts:dev_users"), {"q": "an"})
         self.assertEqual([u.username for u in response.context["page"].object_list], ["ana"])
@@ -124,3 +153,4 @@ class PanelTests(TestCase):
         data = devmode.overview()
         self.assertIsNone(data["games"]["avg_minutes"])
         self.assertEqual(self.client.get(reverse("accounts:dev_overview")).status_code, 200)
+        self.assertEqual(self.client.get(reverse("accounts:dev_games")).status_code, 200)

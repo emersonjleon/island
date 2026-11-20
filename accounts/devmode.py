@@ -25,6 +25,7 @@ CHART_DAYS = 14
 RECENT_GAMES = 20
 RECENT_USERS = 10
 TOP_PLAYERS = 10
+GAMES_PER_PAGE = 50
 USERS_PER_PAGE = 50
 
 # Sort keys the users table accepts, mapped to ORM orderings.
@@ -178,9 +179,18 @@ def top_players(limit: int = TOP_PLAYERS) -> list:
     return list(annotated_users().filter(games__gt=0).order_by("-wins", "-games", "username")[:limit])
 
 
+def game_table() -> QuerySet:
+    """Every game, newest first.
+
+    The ordering is explicit: ``Game.Meta.ordering`` is dropped by Django once the query is
+    annotated (GROUP BY), which made this list come out oldest first.
+    """
+    return (Game.objects.select_related("host").prefetch_related("players__user")
+            .annotate(seat_count=Count("players")).order_by("-created_at", "-id"))
+
+
 def recent_games(limit: int = RECENT_GAMES) -> list[Game]:
-    return list(Game.objects.select_related("host").prefetch_related("players__user")
-                .annotate(seat_count=Count("players"))[:limit])
+    return list(game_table()[:limit])
 
 
 def recent_users(limit: int = RECENT_USERS) -> list:
