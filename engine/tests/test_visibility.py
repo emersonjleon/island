@@ -89,6 +89,22 @@ class SightTest(unittest.TestCase):
         spect = views.project_state(state, None)
         self.assertIn({"vertex": hidden_v, "seat": 1, "kind": "settlement"}, spect["buildings"])
 
+    def test_fog_lifts_when_the_game_ends(self) -> None:
+        from engine.rules.visibility import lift_fog
+        state, _ = new_state(GROWING_HIDDEN)
+        self.assertEqual(lift_fog(state, 1), [])
+        state.phase = "finished"
+        evs = lift_fog(state, 2)
+        self.assertEqual(evs[0].k, "numbers_revealed")
+        self.assertEqual(sorted(e.seat for e in evs if e.k == "revealed"), [0, 1, 2])
+        everything = frozenset(range(len(state.board.board.hexes)))
+        for seat in range(3):
+            self.assertEqual(sight.seen_hexes(state, seat), everything)
+        board = views.board_for(state, 0)
+        self.assertEqual({h["id"] for h in board["hexes"]}, everything)
+        self.assertTrue(all(h["token"] == state.board.token[h["id"]] for h in board["hexes"]))
+        self.assertEqual(lift_fog(state, 3), [])
+
     def test_snapshot_keeps_seen(self) -> None:
         state, _ = new_state()
         restored = codec.load(json.loads(json.dumps(codec.dump(state))))

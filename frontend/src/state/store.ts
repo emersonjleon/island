@@ -59,6 +59,8 @@ export class GameStore {
           if (this.board && (ev.k === "revealed" || ev.k === "numbers_revealed")) this.board = applyBoardEvent(this.board, ev);
           applyEvent(this.state, ev);
         }
+        // The fog lifts when the game ends: the server has just shown the whole island.
+        if (this.board?.partial && this.state.phase === "finished") this.board = { ...this.board, partial: false };
         this.lastEvents = msg.events;
         return this.changed();
       default:

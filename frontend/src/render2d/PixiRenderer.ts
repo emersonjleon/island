@@ -1,7 +1,7 @@
 // PixiJS 2D renderer. World units are hex radii scaled by UNIT pixels; the camera
 // is the transform of the world container, moved by the input package through
 // panBy / zoomAt / centerOn.
-import { Application, Container, Graphics, Text } from "pixi.js";
+import { Application, Container, Graphics, Sprite, Text, Texture } from "pixi.js";
 
 import { BoardGeometry, hexCenter, hexCorners, type Pt } from "../board/geometry";
 import type { BoardMsg, Resource } from "../protocol/types";
@@ -36,11 +36,41 @@ const PULSE_MS = 1100;
 const GHOST_ALPHA = 0.5;
 /** Smallest width and height (hex radii) the camera frames at the start under Growing sight. */
 const MIN_PARTIAL_SPAN = 8;
-/** Rings of cloud drawn round the land a player has seen (Growing sight). */
-const CLOUD_RINGS = 2;
+/** Rings of mist drawn round the land a player has seen (Growing sight), and how thick
+ * each one is, from the edge of the seen land outwards: a soft fade, not a wall. */
+const MIST_ALPHA = [0.55, 0.85, 1, 1];
+const CLOUD_RINGS = MIST_ALPHA.length;
+/** Diameter of one soft puff of mist, in hex radii: puffs overlap so no hex outline shows. */
+const MIST_PUFF = 3.4;
+
+let puffTexture: Texture | null = null;
+/** A white disc that fades out towards its rim (drawn once, tinted per use). Soft
+ * sprites instead of a blur filter: filters get clipped to the screen when the board
+ * is cached, and are slow on phones. */
+function puff(): Texture {
+  if (puffTexture) return puffTexture;
+  const size = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.4, "rgba(255,255,255,0.95)");
+  grad.addColorStop(0.7, "rgba(255,255,255,0.6)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
+  puffTexture = Texture.from(canvas);
+  return puffTexture;
+}
 const HEX_DIRS: [number, number][] = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
-/** Soft puffs on each cloud hex: offset x, y and radius (hex radii). */
-const CLOUD_PUFFS: [number, number, number][] = [[-0.3, -0.15, 0.32], [0.25, -0.2, 0.28], [0.05, 0.25, 0.34]];
+
+/** A small deterministic hash of a hex position (0..1), so the mist looks the same every redraw. */
+function hexNoise(q: number, r: number, salt: number): number {
+  let h = (q * 374761393 + r * 668265263 + salt * 2147483647) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967295;
+}
 
 /** Dashes from ``a`` to ``b`` (pixels), centred so both ends look the same. */
 function dashedLine(g: Graphics, a: Pt, b: Pt, dash: number, gap: number): void {
@@ -254,9 +284,10 @@ export class PixiRenderer implements Renderer {
     return box;
   }
 
-  /** Cloud over the hexes next to the seen land (two rings), so the edge of what a
-   * player knows reads as unexplored rather than as open sea. */
-  private clouds(board: BoardMsg): Graphics {
+  /** Mist over the hexes round the seen land: thin at the coast of what the player
+   * knows and thicker further out, blurred so it reads as weather, not as tiles. A few
+   * brighter wisps drift over it. */
+  private clouds(board: BoardMsg): Container {
     const seen = new Set(known(board.hexes).map((h) => `${h.q},${h.r}`));
     const ring = new Map<string, [number, number, number]>();
     let frontier = known(board.hexes).map((h) => [h.q, h.r] as [number, number]);
@@ -272,15 +303,32 @@ export class PixiRenderer implements Renderer {
       }
       frontier = next;
     }
-    const g = new Graphics();
+    const box = new Container();
+    const wisps: Sprite[] = [];
     for (const [q, r, depth] of ring.values()) {
       const c = hexCenter(q, r);
-      g.poly(this.hexPts(q, r, 1.04)).fill({ color: P.CLOUD, alpha: depth === 1 ? 0.92 : 0.75 });
-      for (const [ox, oy, rad] of CLOUD_PUFFS) {
-        g.circle((c.x + ox) * UNIT, (c.y + oy) * UNIT, rad * UNIT).fill({ color: P.CLOUD_LIGHT, alpha: 0.55 });
+      const s = new Sprite(puff());
+      s.anchor.set(0.5);
+      s.width = s.height = MIST_PUFF * UNIT;
+      // A little jitter so the edge of the mist is not a perfect honeycomb.
+      s.position.set((c.x + (hexNoise(q, r, 5) - 0.5) * 0.3) * UNIT, (c.y + (hexNoise(q, r, 6) - 0.5) * 0.3) * UNIT);
+      s.tint = P.CLOUD;
+      s.alpha = MIST_ALPHA[depth - 1]!;
+      box.addChild(s);
+      if (depth > 1 && hexNoise(q, r, 1) < 0.4) {
+        // A brighter, elongated wisp drifting over the mist.
+        const w = new Sprite(puff());
+        w.anchor.set(0.5);
+        w.width = (1.1 + hexNoise(q, r, 4) * 0.9) * UNIT;
+        w.height = w.width * 0.38;
+        w.position.set((c.x + (hexNoise(q, r, 2) - 0.5) * 0.8) * UNIT, (c.y + (hexNoise(q, r, 3) - 0.5) * 0.6) * UNIT);
+        w.tint = P.CLOUD_LIGHT;
+        w.alpha = 0.6;
+        wisps.push(w);
       }
     }
-    return g;
+    for (const w of wisps) box.addChild(w);
+    return box;
   }
 
   private harbor(vertices: number[], ratio: number, resource: Resource | null): Container {

@@ -178,4 +178,13 @@ describe("Growing sight", () => {
     store.apply({ t: "events", seq: 3, now: 6, events: [{ k: "robber_moved", at: 6, from_hex: 500, to_hex: null }] });
     expect(store.state!.robber).toBeNull();
   });
+
+  it("lifts the fog when the game ends", () => {
+    const store = new GameStore();
+    store.apply(fixture<BoardMsg>("board_seat0_fog.json"));
+    store.apply({ t: "state", seq: 1, now: 0, state: baseState() });
+    expect(store.board!.partial).toBe(true);
+    store.apply({ t: "events", seq: 2, now: 5, events: [{ k: "game_over", at: 5, winner: 0, points: {} }] });
+    expect(store.board!.partial).toBe(false);
+  });
 });
