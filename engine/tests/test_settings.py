@@ -225,7 +225,7 @@ class StageTest(unittest.TestCase):
     def test_later_stage_enum_value_rejected(self) -> None:
         for raw in ({"board": {"layout": "beginner"}}, {"board": {"shape": "hexagon"}},
                     {"clock": {"dice_mode": "deck"}}, {"setup": {"mode": "snake_click"}},
-                    {"visibility": {"map": "explored"}}, {"settlers": {"builder_required": "always"}},
+                    {"settlers": {"builder_required": "always"}},
                     {"robber": {"move_on_seven": "player"}}):
             with self.subTest(raw=raw), self.assertRaises(ValidationError) as ctx:
                 GameSettings.model_validate(raw)
@@ -277,7 +277,7 @@ class StageTest(unittest.TestCase):
 
 class PresetTest(unittest.TestCase):
     def test_available(self) -> None:
-        self.assertEqual(available_presets(), ["blitz", "classic", "custom", "expanded", "huge", "settlers"])
+        self.assertEqual(available_presets(), ["blitz", "classic", "custom", "expanded", "explorer", "huge", "settlers"])
 
     def test_custom_starts_from_defaults(self) -> None:
         self.assertEqual(load_preset("custom").model_dump(exclude={"preset"}),
@@ -323,7 +323,7 @@ class PresetTest(unittest.TestCase):
         self.assertEqual(base, {"clock": {"roll_interval_ms": 8000}})
 
     def test_unknown_preset(self) -> None:
-        for name in ("nope", "../classic", "explorer"):
+        for name in ("nope", "../classic", "missing"):
             with self.subTest(name=name), self.assertRaises(UnknownPresetError):
                 load_preset(name)
 

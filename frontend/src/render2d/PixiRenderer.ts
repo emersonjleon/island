@@ -43,6 +43,10 @@ const CLOUD_RINGS = MIST_ALPHA.length;
 /** Diameter of one soft puff of mist, in hex radii: puffs overlap so no hex outline shows. */
 const MIST_PUFF = 3.4;
 
+/** Live fog veil over land seen but not in sight: puff size (hex radii) and thickness. */
+const VEIL_PUFF = 2.2;
+const VEIL_ALPHA = 0.5;
+
 let puffTexture: Texture | null = null;
 /** A white disc that fades out towards its rim (drawn once, tinted per use). Soft
  * sprites instead of a blur filter: filters get clipped to the screen when the board
@@ -115,6 +119,9 @@ export class PixiRenderer implements Renderer {
   private settlerLabels = new Container();
   private settlerLabelText = new Map<number, Text>();
   private robberLayer = new Graphics();
+  /** Live fog: a light veil over land seen before but not in sight now. */
+  private veilLayer = new Container();
+  private veilKey = "";
   private focusLayer = new Graphics();
   private geo: BoardGeometry | null = null;
   private board: BoardMsg | null = null;
@@ -148,7 +155,7 @@ export class PixiRenderer implements Renderer {
     // pool), so the board is drawn again from scratch.
     this.app.canvas.addEventListener("webglcontextrestored", this.onContextRestored);
     document.addEventListener("visibilitychange", this.onVisibility);
-    this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer,
+    this.world.addChild(this.boardLayer, this.piecesLayer, this.progressLayer, this.robberLayer, this.veilLayer,
                         this.overlayLayer, this.focusLayer, this.settlerLayer, this.settlerLabels);
     this.app.stage.addChild(this.world);
   }
@@ -175,6 +182,7 @@ export class PixiRenderer implements Renderer {
     if (!this.geo || !store.state) return;
     if (store.version !== this.drawnVersion) {
       this.drawPieces(store);
+      this.drawVeil(store);
       this.drawOverlays();
       this.drawnVersion = store.version;
     }
@@ -227,6 +235,30 @@ export class PixiRenderer implements Renderer {
     }
     if (board.partial) this.boardLayer.addChild(this.clouds(board));
     for (const hb of board.harbors) this.boardLayer.addChild(this.harbor(hb.vertices, hb.ratio, hb.resource));
+  }
+
+  /** Live fog: veil the land the player has seen but does not see now, so what stands
+   * there reads as remembered, not live. Redrawn only when the sight changes. */
+  private drawVeil(store: GameStore): void {
+    const vis = store.state?.visibility;
+    const board = store.board;
+    const live = vis?.map === "live_fog" && !!board?.partial && Array.isArray(vis.in_sight);
+    const inSight = new Set(live ? vis!.in_sight : []);
+    const out = live ? known(board!.hexes).filter((h) => !inSight.has(h.id)) : [];
+    const key = out.map((h) => h.id).join(",");
+    if (key === this.veilKey) return;
+    this.veilKey = key;
+    for (const c of this.veilLayer.removeChildren()) c.destroy();
+    for (const h of out) {
+      const c = hexCenter(h.q, h.r);
+      const s = new Sprite(puff());
+      s.anchor.set(0.5);
+      s.width = s.height = VEIL_PUFF * UNIT;
+      s.position.set(c.x * UNIT, c.y * UNIT);
+      s.tint = P.CLOUD;
+      s.alpha = VEIL_ALPHA;
+      this.veilLayer.addChild(s);
+    }
   }
 
   /** Whether both ends of ``edge`` are on the board this player knows. */

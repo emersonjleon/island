@@ -1821,7 +1821,9 @@
     "settlers.max",
     "settlers.start_count",
     "visibility.hidden_numbers",
+    "visibility.map=explored",
     "visibility.map=growing",
+    "visibility.map=live_fog",
     "visibility.sight"
   ],
   "x-implemented-stage": 2,

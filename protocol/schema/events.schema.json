@@ -1287,6 +1287,40 @@
       "title": "SetupComplete",
       "type": "object"
     },
+    "Sight": {
+      "additionalProperties": false,
+      "description": "``seat``'s land in sight now changed (Live fog). ``in_sight``: hex ids, ascending.\nOutside them a client keeps buildings and roads as last seen and drops other\nplayers' settlers, constructions and the robber.",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "in_sight": {
+          "items": {
+            "type": "integer"
+          },
+          "title": "In Sight",
+          "type": "array"
+        },
+        "k": {
+          "const": "sight",
+          "default": "sight",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "in_sight"
+      ],
+      "title": "Sight",
+      "type": "object"
+    },
     "StartingMaterials": {
       "additionalProperties": false,
       "properties": {
@@ -1451,6 +1485,7 @@
       "settler_step": "#/$defs/SettlerStepEvent",
       "settlers_gathered": "#/$defs/SettlersGathered",
       "setup_complete": "#/$defs/SetupComplete",
+      "sight": "#/$defs/Sight",
       "starting_materials": "#/$defs/StartingMaterials",
       "starting_resources": "#/$defs/StartingResources",
       "traded": "#/$defs/Traded"
@@ -1550,6 +1585,9 @@
     },
     {
       "$ref": "#/$defs/SettlersGathered"
+    },
+    {
+      "$ref": "#/$defs/Sight"
     }
   ]
 }

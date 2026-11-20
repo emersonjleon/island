@@ -128,11 +128,17 @@ Split in two pull requests.
   `build_reach_edges` and `builder_required = always`).
 
 ### WP24 Explored and Live fog
-- `explored`: settlers also reveal land as they walk (sight per step).
-- `live_fog`: other players' settlers and new buildings show only while in sight;
-  their old buildings stay as last seen.
-- New preset `explorer` (Explored fog, hidden numbers, settlers, 20 s rolls).
-- Client: last-seen buildings drawn faded.
+- Settlers' sight by map: Growing sight, where a settler stops; Explored and Live
+  fog, also while it walks.
+- `live_fog`: other players' settlers, constructions and the robber show only
+  while in sight now; other players' buildings and roads out of sight stay as last
+  seen (`ext.visibility.memory`). A private `sight` event gives the hexes in sight
+  whenever they change; land coming back into sight is sent again in `revealed`.
+- The fog lifts at the end of every fog game (`lift_fog`, after victory).
+- New preset `explorer`: Explored, hidden numbers, settlers that stay, gather
+  and guard. `visibility.map = explored / live_fog` unlocked early.
+- Client: land seen but out of sight is veiled under Live fog, so what stands
+  there reads as remembered; the fog is a soft mist (no hex tiles).
 
 ### WP25 Remaining stage-3 rule options (to confirm with Emerson)
 - Small rules marked stage 3 in the settings: dice deck, beginner layout, game

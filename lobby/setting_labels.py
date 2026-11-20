@@ -124,7 +124,7 @@ LABELS = {
     "settlers.block_robber": (_("Settlers guard against the robber"),
                               _("The robber cannot move onto a hex with a settler on one of its corners.")),
     # visibility
-    "visibility.map": (_("Map"), _("Growing sight: each player sees only the land around their own pieces.")),
+    "visibility.map": (_("Map"), _("Growing sight: each player sees only the land around their own pieces, and settlers where they stop. Explored: settlers also see as they walk. Live fog: like Explored, but other players' settlers and new buildings show only while in sight.")),
     "visibility.hidden_numbers": (_("Numbers hidden until a building is next to them"), ""),
     "visibility.sight.road": (_("Road"), ""),
     "visibility.sight.settlement": (_("Settlement"), ""),
