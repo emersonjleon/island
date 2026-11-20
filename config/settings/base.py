@@ -110,6 +110,7 @@ LANGUAGE_CODE = "en"
 LANGUAGES = [
     ("en", _("English")),
     ("es", _("Español")),
+    ("zh-hans", _("简体中文")),
 ]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 USE_I18N = True

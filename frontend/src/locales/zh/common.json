@@ -1,0 +1,13 @@
+{
+  "loading": "加载中…",
+  "connecting": "正在连接…",
+  "reconnecting": "正在重新连接…",
+  "status": {
+    "setup": "准备阶段：带着你的拓荒者走动，建造你的第一批村庄",
+    "nextRoll": "{{seconds}} 秒后掷骰",
+    "lastRoll": "上次掷骰：{{sum}}",
+    "spectator": "观战中",
+    "finished": "游戏结束",
+    "winner": "{{name}} 获胜"
+  }
+}

@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-TRANSLATED_LANGUAGES = ("es",)          # English is the source language: msgstr stays empty
+TRANSLATED_LANGUAGES = ("es", "zh_Hans")          # English is the source language: msgstr stays empty
 LOBBY_CODE_RE = re.compile(r"""["'](lobby\.[a-z_]+)["']""")
 # Codes raised as LobbyError(...) or collected by start_problems(); channel message types
 # such as {"type": "lobby.changed"} are not user-facing and are left out.

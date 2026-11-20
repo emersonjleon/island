@@ -1,0 +1,95 @@
+{
+  "generic": "现在无法这样做（{{code}}）",
+  "build": {
+    "already_building": "那里已经有东西在建造中",
+    "cannot_afford": "你没有足够的资源",
+    "distance_rule": "离另一座村庄太近：两者之间至少要空出一个路口",
+    "need_settler": "必须有拓荒者站在那里才能建造",
+    "no_piece": "你已经没有这种棋子了",
+    "not_connected": "必须连接到你的道路或建筑",
+    "not_land": "只能在陆地上建造",
+    "not_own_city": "那不是你的城市",
+    "not_own_settlement": "那不是你的村庄",
+    "not_your_construction": "那不是你的建筑工地",
+    "not_your_settler": "那不是你的拓荒者",
+    "occupied": "那个位置已被占用",
+    "road_needs_settlement": "准备阶段中，道路必须连接你最新的村庄",
+    "settler_busy": "那个拓荒者正在忙着建造",
+    "setup_limit": "你已经放完了这种准备阶段的棋子",
+    "setup_unfinished": "请先完成准备阶段的建筑",
+    "unknown_construction": "那个建筑工地已经不存在了"
+  },
+  "command": {
+    "invalid": "服务器无法理解该指令",
+    "unknown_seat": "你在这局游戏中没有座位",
+    "unsupported": "这局游戏暂不支持该功能"
+  },
+  "game": {
+    "finished": "游戏已经结束",
+    "player_count": "这局游戏的玩家人数不正确",
+    "time_backwards": "时钟错误，请刷新页面",
+    "not_running": "游戏未在进行",
+    "busy": "服务器繁忙，请再试一次",
+    "resigned": "你已认输：不能再参与这局游戏"
+  },
+  "movement": {
+    "not_land": "拓荒者只能在陆地上行走",
+    "not_your_settler": "那不是你的拓荒者",
+    "unknown_settler": "那个拓荒者已经不存在了",
+    "unknown_vertex": "那个位置不存在",
+    "unreachable": "你的拓荒者无法到达那里"
+  },
+  "offer": {
+    "disabled": "这局游戏关闭了玩家之间的交易",
+    "setup_not_done": "请先完成准备阶段",
+    "too_many": "你已经有 {{max}} 个报价了，请先撤回一个",
+    "cannot_afford": "你没有这些资源",
+    "not_found": "该报价已不存在",
+    "not_yours": "那不是你的报价",
+    "own": "你不能接受自己的报价",
+    "poster_short": "对方已经没有报价中的资源了",
+    "empty": "请选择要给出和要换取的资源",
+    "same_resource": "不要给出和换取同一种资源"
+  },
+  "net": {
+    "offline": "没有连接：该指令未发送",
+    "reconnected": "已重新连接，游戏已同步到最新"
+  },
+  "trade": {
+    "bad_ratio": "该交易的数量不正确",
+    "bank_empty": "银行的这种资源已经用完了",
+    "cannot_afford": "你没有足够的资源进行交易",
+    "same_resource": "请选择两种不同的资源",
+    "setup_forbidden": "准备阶段不能与银行交易"
+  },
+  "intent": {
+    "bad_cid": "服务器无法理解该指令",
+    "rate_limited": "指令太频繁，请稍微慢一点",
+    "spectator": "观战者不能下达指令"
+  },
+  "message": {
+    "invalid": "服务器无法理解该消息",
+    "too_large": "该消息太大了"
+  },
+  "proto": {
+    "unsupported": "请刷新页面以获取最新版本"
+  },
+  "dev": {
+    "setup_not_done": "请先完成准备阶段",
+    "deck_empty": "发展卡已经没有了",
+    "cannot_afford": "你买不起发展卡",
+    "no_card": "你没有这张发展卡",
+    "too_new": "新买的发展卡要在下次掷骰之后才能使用",
+    "cooldown": "每次掷骰只能使用一张发展卡：请等待下次掷骰",
+    "not_playable": "这张发展卡自动计分，无需使用",
+    "no_robber": "这局游戏没有强盗",
+    "need_hex": "请选择强盗要去的位置",
+    "bad_hex": "强盗不能去那里",
+    "too_far": "太远了：强盗最多移动 {{max}} 格",
+    "need_victim": "请选择要抢夺的对象",
+    "bad_victim": "该玩家在那个六边形旁边没有建筑",
+    "need_resources": "请选择 {{count}} 份资源",
+    "bank_short": "银行没有这些资源",
+    "need_resource": "请选择一种资源"
+  }
+}

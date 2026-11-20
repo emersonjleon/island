@@ -45,6 +45,8 @@ class SignUpTests(TestCase):
     def test_signup_defaults_language_to_current(self):
         response = self.client.get(reverse("accounts:signup"), HTTP_ACCEPT_LANGUAGE="es")
         self.assertEqual(response.context["form"].fields["preferred_language"].initial, "es")
+        response = self.client.get(reverse("accounts:signup"), HTTP_ACCEPT_LANGUAGE="zh-CN")
+        self.assertEqual(response.context["form"].fields["preferred_language"].initial, "zh-hans")
 
     def test_signed_in_user_is_redirected_away_from_signup(self):
         self.client.force_login(make_user())
@@ -131,6 +133,18 @@ class LanguageTests(TestCase):
         user.refresh_from_db()
         self.assertEqual(user.preferred_language, "es")
         self.assertContains(self.client.get("/"), '<html lang="es">')
+
+    def test_simplified_chinese_is_offered_and_used(self):
+        response = self.client.get(reverse("home"), HTTP_ACCEPT_LANGUAGE="zh-CN")
+        self.assertContains(response, '<html lang="zh-hans">')
+        self.assertContains(response, "岛屿时代")
+        self.assertContains(response, '<option value="zh-hans"')
+        user = make_user()
+        self.client.force_login(user)
+        self.client.post(reverse("accounts:set_language"), {"language": "zh-hans", "next": "/"})
+        user.refresh_from_db()
+        self.assertEqual(user.preferred_language, "zh-hans")
+        self.assertContains(self.client.get("/"), '<html lang="zh-hans">')
 
     def test_switcher_for_anonymous_sets_cookie(self):
         response = self.client.post(reverse("accounts:set_language"), {"language": "es", "next": "/"})

@@ -46,6 +46,9 @@ class SiteTests(TestCase):
         self.assertContains(response, "never steals")
         response = self.client.get(reverse("how_to_play"), HTTP_ACCEPT_LANGUAGE="es")
         self.assertContains(response, "Cómo jugar")
+        response = self.client.get(reverse("how_to_play"), HTTP_ACCEPT_LANGUAGE="zh-hans")
+        self.assertContains(response, "玩法说明")
+        self.assertContains(response, "10 分")
 
     def test_home_renders(self):
         response = self.client.get(reverse("home"))
