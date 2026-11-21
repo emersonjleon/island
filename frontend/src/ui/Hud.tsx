@@ -19,6 +19,7 @@ import { Dialog, useEscape } from "./Dialog";
 import { GuidePanel, HelpDialog } from "./Guide";
 import { CostPips, Die, ResChips, ResIcon, TradeArrow } from "./icons";
 import { KeySettings } from "./KeySettings";
+import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
 import { buySettlerBlock, gatherNumbers, settlerMax, settlersStay } from "../state/settlers";
@@ -103,7 +104,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const [feed, setFeed] = useState<HudFeed>({ link: "connecting", mode: null });
   const [log, setLog] = useState<LogLine[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | "stats" | "resign" | "fullscreen" | "help" | null>(null);
+  const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | "stats" | "resign" | "fullscreen" | "help" | "prices" | null>(null);
   const [overHidden, setOverHidden] = useState(false);
   const [victim, setVictim] = useState<{ hex: number; victims: number[] } | null>(null);
   const [bindings, setBindings] = useState(props.bindings);
@@ -179,7 +180,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
         {s && <GuidePanel store={store} t={t} touch={!!props.touch} onHelp={() => setDialog("help")} />}
       </div>
       {s && (
-        <Scores {...props} onStats={() => setDialog("stats")} onResign={playing ? () => setDialog("resign") : undefined} />
+        <Scores {...props} onStats={() => setDialog("stats")} onPrices={() => setDialog("prices")} onResign={playing ? () => setDialog("resign") : undefined} />
       )}
       <div class="hud-bottom">
         <div class="hud-slot-log">{s && <Log t={t} lines={log} />}</div>
@@ -208,6 +209,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       {dialog === "help" && s && (
         <HelpDialog store={store} t={t} touch={!!props.touch} helpUrl={props.helpUrl ?? "/how-to-play/"} onClose={() => setDialog(null)} />
       )}
+      {dialog === "prices" && s && <PricesDialog store={store} t={t} onClose={() => setDialog(null)} />}
       {dialog === "stats" && s && <StatsDialog store={store} t={t} now={props.now} onClose={() => setDialog(null)} />}
       {dialog === "resign" && s && playing && (
         <ResignDialog t={t} onClose={() => setDialog(null)} onConfirm={() => { props.send({ a: "resign" }); setDialog(null); }} />
@@ -319,7 +321,7 @@ function smallScreen(): boolean {
     && window.matchMedia("(max-width: 720px), (max-height: 500px)").matches;
 }
 
-function Scores({ store, t, onStats, onResign }: HudProps & { onStats(): void; onResign?: () => void }) {
+function Scores({ store, t, onStats, onPrices, onResign }: HudProps & { onStats(): void; onPrices(): void; onResign?: () => void }) {
   const s = store.state!;
   const target = victoryTarget(store.settings);
   const many = s.players.length > MANY_PLAYERS;
@@ -371,6 +373,10 @@ function Scores({ store, t, onStats, onResign }: HudProps & { onStats(): void; o
         <button type="button" class="stats-open" onClick={onStats} aria-label={t("hud:stats.open")} title={t("hud:stats.open")}>
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
           <span>{t("hud:stats.open")}</span>
+        </button>
+        <button type="button" class="prices-open" onClick={onPrices} aria-label={t("hud:prices.open")} title={t("hud:prices.open")}>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 4h16v16H4zM4 10h16M4 15h16M10 4v16" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" /></svg>
+          <span>{t("hud:prices.open")}</span>
         </button>
         {onResign && (
           <button type="button" class="resign-open" onClick={onResign} aria-label={t("hud:resign.open")} title={t("hud:resign.open")}>
@@ -471,7 +477,8 @@ function HandBar({ store, t, send, controls, touch, mode, devOpen, onTrade, onKe
         </button>
         {!touch && <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>}
       </div>
-      {/* Variants add their buttons in rows below, so the classic row never moves. */}
+      {/* Variants add their buttons in ONE row below, so the classic row never moves.
+          At most one extra row: more options go into a dialog (like the development cards). */}
       {settlersStay(store.settings) && (
         <div class="actions extras">
           <SettlerButton store={store} t={t} send={send} />

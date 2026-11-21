@@ -57,6 +57,12 @@ async function signUp(page, name) {
       .map((sel) => Math.round(document.querySelector(`.hud-hand ${sel}`).getBoundingClientRect().top)));
     await page.screenshot({ path: `${OUT}/e2e-settlers-phone.png` });
     if (rows[0] !== rows[2] || rows[1] <= rows[0]) throw new Error(`the classic row changed or the settler is not below it: ${rows}`);
+    log("the price list shows the settler too");
+    await page.click(".prices-open");
+    const prices = await page.$$eval(".price-table th", (ths) => ths.length);
+    await page.screenshot({ path: `${OUT}/e2e-settlers-prices.png` });
+    if (prices !== 5) throw new Error(`price list has ${prices} rows, expected 5`);
+    await page.keyboard.press("Escape");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.click("canvas", { position: { x: 1200, y: 600 } }).catch(() => {});
     for (const key of ["Space", "Equal", "Equal", "Equal"]) { await page.keyboard.press(key); await page.waitForTimeout(250); }

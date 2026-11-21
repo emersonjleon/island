@@ -265,5 +265,11 @@
     "gathers": "next one gathers on {{nums}}",
     "yours": "Your settlers",
     "numbers": "Gathers on {{nums}}"
+  },
+  "prices": {
+    "open": "Prices",
+    "title": "Prices",
+    "close": "Close",
+    "help": "Highlighted rows are what you can buy now."
   }
 }
