@@ -22,7 +22,7 @@ import { KeySettings } from "./KeySettings";
 import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
-import { buySettlerBlock, gatherNumbers, settlerMax, settlersStay } from "../state/settlers";
+import { buySettlerBlock, gatherNumbers, settlerLimit, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
   MANY_PLAYERS, RESOURCES, canAfford, checkTrade, costOf, countdownShare, errorText, formatRes, handTotal, logLine,
@@ -153,7 +153,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
     handle.buyCard = () => props.send({ a: "buy_dev_card" });
     handle.buySettler = () => {
       const why = buySettlerBlock(store.settings, store.state, store.seat);
-      if (why && why !== "settler.not_available") handle.notify(why, why === "settler.max" ? { max: settlerMax(store.settings) } : {});
+      if (why && why !== "settler.not_available") handle.notify(why, why === "settler.max" ? { max: settlerLimit(store.settings, store.state, store.seat) } : {});
       else if (!why) props.send({ a: "buy_settler" });
     };
     handle.robberPicked = (hex) => {
@@ -418,13 +418,13 @@ function SettlerButton({ store, t, send }: Pick<HudProps, "store" | "t" | "send"
   const help = [t("hud:settler.help"), t("hud:build.cost", { res: formatRes(t, cost) }),
                 nums.length ? t("hud:settler.gathers", { nums: nums.join(", ") }) : "",
                 why && why !== "settler.max" ? errorText(t, why) : "",
-                why === "settler.max" ? errorText(t, why, { max: settlerMax(store.settings) }) : ""].filter(Boolean).join(" · ");
+                why === "settler.max" ? errorText(t, why, { max: settlerLimit(store.settings, store.state, seat) }) : ""].filter(Boolean).join(" · ");
   return (
     <button type="button" class={`build buy-settler${why === null && canAfford(hand, cost) ? "" : " short"}`}
             onClick={() => (why === null ? send({ a: "buy_settler" }) : undefined)} title={help} aria-label={help}>
       <span class="build-name">{t("hud:settler.button")}</span>
       <CostPips cost={cost} />
-      <span class="badge count-badge" title={t("hud:settler.yours")}>{count}/{settlerMax(store.settings)}</span>
+      <span class="badge count-badge" title={t("hud:settler.yours")}>{count}/{settlerLimit(store.settings, store.state, seat)}</span>
     </button>
   );
 }

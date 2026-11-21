@@ -2046,3 +2046,15 @@ msgstr "Los colonos se quedan después de los primeros poblados: cada construcci
 
 msgid "Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them."
 msgstr "Colonos, y la isla está oculta: solo ves la tierra que has explorado, y los números aparecen cuando construyes al lado."
+
+msgid "A hard cap, on top of the settlers each building allows."
+msgstr "Un tope fijo, además de los colonos que permite cada edificio."
+
+msgid "Settlers allowed per settlement"
+msgstr "Colonos permitidos por poblado"
+
+msgid "Settlers allowed per city"
+msgstr "Colonos permitidos por ciudad"
+
+msgid "With both at 0, only the cap above counts."
+msgstr "Con ambos en 0, solo cuenta el tope de arriba."

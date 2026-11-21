@@ -528,7 +528,6 @@
           "default": {
             "fish": 2,
             "grain": 1,
-            "lumber": 1,
             "wool": 1
           },
           "label": "settings.economy.costs.settler",
@@ -1327,7 +1326,8 @@
           "type": "boolean"
         },
         "max": {
-          "default": 4,
+          "default": 20,
+          "description": "Hard cap of settlers per player (on top of the per-building allowance).",
           "label": "settings.settlers.max",
           "maximum": 20,
           "minimum": 1,
@@ -1342,6 +1342,25 @@
           "minimum": 100,
           "stage": 1,
           "title": "Ms Per Edge",
+          "type": "integer"
+        },
+        "per_city": {
+          "default": 2,
+          "description": "Settlers a player may have: per_settlement per settlement plus per_city per city\n(megacities count as cities), at least 1, at most ``max``. Both 0: just ``max``.",
+          "label": "settings.settlers.per_city",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Per City",
+          "type": "integer"
+        },
+        "per_settlement": {
+          "default": 1,
+          "label": "settings.settlers.per_settlement",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Per Settlement",
           "type": "integer"
         },
         "road_speed_pct": {
@@ -1831,6 +1850,8 @@
     "settlers.gather_rolls",
     "settlers.leave_after_setup",
     "settlers.max",
+    "settlers.per_city",
+    "settlers.per_settlement",
     "settlers.start_count",
     "visibility.hidden_numbers",
     "visibility.map=explored",

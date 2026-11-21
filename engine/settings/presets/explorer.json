@@ -1,4 +1,4 @@
 {
-  "settlers": {"max": 3, "leave_after_setup": false, "builder_required": "always", "gather": true, "block_robber": true},
+  "settlers": {"leave_after_setup": false, "builder_required": "always", "gather": true, "block_robber": true},
   "visibility": {"map": "explored", "hidden_numbers": true}
 }

@@ -1,5 +1,5 @@
 // The Settlers game type: a person picks it in the lobby and plays now against two
-// bots. The hand bar has a settler button with its price and "1/3"; the person's
+// bots. The hand bar has a settler button with its price and "1/N" (N grows with your buildings); the person's
 // settler shows its gathering number; the bots buy settlers, gather and finish the
 // game. Run through e2e/run.py.
 // Usage: node e2e/settlers.cjs BASE_URL OUT_DIR
@@ -45,7 +45,7 @@ async function signUp(page, name) {
     await button.waitFor({ timeout: 10_000 });
     const label = (await button.textContent()) || "";
     log("button:", label.trim());
-    if (!label.includes("1/3")) throw new Error(`settler button does not show 1/3: ${label}`);
+    if (!/1\/\d+/.test(label)) throw new Error(`settler button does not show 1/N: ${label}`);
     const title = (await button.getAttribute("title")) || "";
     if (!title.includes("11")) throw new Error(`the button does not say the next settler gathers on 11: ${title}`);
     await page.waitForTimeout(1500);

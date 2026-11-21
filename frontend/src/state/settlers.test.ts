@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { GameStateView } from "../protocol/types";
-import { buySettlerBlock, gatherNumbers, ownGatherNumbers, settlersStay } from "./settlers";
+import { buySettlerBlock, gatherNumbers, ownGatherNumbers, settlerLimit, settlersStay } from "./settlers";
 
 const SETTINGS = { settlers: { leave_after_setup: false, max: 3, gather: true, gather_rolls: [[3], [11], [2, 12]] } };
 
@@ -33,5 +33,16 @@ describe("settlers", () => {
     expect(buySettlerBlock(SETTINGS, state([1, 2, 3]), 0)).toBe("settler.max");
     expect(buySettlerBlock(SETTINGS, state([1], false), 0)).toBe("settler.setup_not_done");
     expect(buySettlerBlock({ settlers: { leave_after_setup: true } }, state([1]), 0)).toBe("settler.not_available");
+  });
+
+  it("allows one settler per settlement and two per city", () => {
+    const dyn = { settlers: { leave_after_setup: false, max: 20, per_settlement: 1, per_city: 2 } };
+    const st = (kinds: string[]) => ({ buildings: kinds.map((kind, i) => ({ kind, seat: 0, vertex: i })) }) as unknown as GameStateView;
+    expect(settlerLimit(dyn, st([]), 0)).toBe(1);
+    expect(settlerLimit(dyn, st(["settlement", "settlement"]), 0)).toBe(2);
+    expect(settlerLimit(dyn, st(["settlement", "city"]), 0)).toBe(3);
+    expect(settlerLimit({ settlers: { ...dyn.settlers, max: 2 } }, st(["city", "city"]), 0)).toBe(2);
+    expect(settlerLimit(SETTINGS, st([]), 0)).toBe(3);
+    expect(buySettlerBlock(dyn, state([1]), 0)).toBe("settler.max");
   });
 });

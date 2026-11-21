@@ -2,7 +2,8 @@
 
 * ``buy_settler`` command, only when settlers stay after setup
   (``settlers.leave_after_setup`` off): a player whose setup is done, with fewer than
-  ``settlers.max`` settlers, pays ``economy.costs.settler`` to the bank; the new
+  :func:`settler_limit` settlers (``per_settlement`` per settlement + ``per_city`` per
+  city or megacity, at least 1, capped by ``settlers.max``), pays ``economy.costs.settler`` to the bank; the new
   settler appears at ``vertex`` (one of the player's buildings) or, without one,
   at the player's building with the lowest vertex id (``settlers.spawn_at =
   own_building``). Emits ``Hand`` then ``SettlerLanded``.
@@ -29,10 +30,10 @@ from engine.events import Event, Hand, SettlerLanded, SettlersGathered
 from engine.game import SIG_PRODUCED, command_handler, emit
 from engine.rules import movement
 from engine.rules.placement import missing_resources
-from engine.settings.enums import Resource
+from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState, Settler
 
-__all__ = ["buy_settler", "can_buy", "gather", "gather_numbers", "blocked_hexes", "settler_at_work"]
+__all__ = ["buy_settler", "can_buy", "settler_limit", "gather", "gather_numbers", "blocked_hexes", "settler_at_work"]
 
 
 # ------------------------------------------------------------------ buying
@@ -47,12 +48,22 @@ def _spawn_vertex(state: GameState, seat: int, wanted: int | None) -> int:
     return own[0]
 
 
+def settler_limit(state: GameState, seat: int) -> int:
+    """How many settlers ``seat`` may have now."""
+    ss = state.settings.settlers
+    if ss.per_settlement == 0 and ss.per_city == 0:
+        return ss.max
+    allowed = sum(ss.per_settlement if b.kind == BuildKind.SETTLEMENT else ss.per_city
+                  for b in state.buildings.values() if b.seat == seat)
+    return min(ss.max, max(1, allowed))
+
+
 def can_buy(state: GameState, seat: int) -> bool:
     """Whether ``seat`` may buy a settler now (ignoring where it would land)."""
     p = state.player(seat)
     ss = state.settings.settlers
     cost = {r: n for r, n in state.settings.economy.costs.settler.items() if n}
-    return (not ss.leave_after_setup and p.setup_done and len(p.settler_ids) < ss.max
+    return (not ss.leave_after_setup and p.setup_done and len(p.settler_ids) < settler_limit(state, seat)
             and not missing_resources(p.hand, cost))
 
 
@@ -64,8 +75,9 @@ def buy_settler(state: GameState, seat: int, cmd: BuySettler, now_ms: int) -> li
         raise RuleError("settler.not_available", {})
     if not p.setup_done:
         raise RuleError("settler.setup_not_done", {})
-    if len(p.settler_ids) >= ss.max:
-        raise RuleError("settler.max", {"max": ss.max})
+    limit = settler_limit(state, seat)
+    if len(p.settler_ids) >= limit:
+        raise RuleError("settler.max", {"max": limit})
     cost = {r: n for r, n in state.settings.economy.costs.settler.items() if n}
     missing = missing_resources(p.hand, cost)
     if missing:
