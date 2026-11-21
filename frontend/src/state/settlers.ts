@@ -14,9 +14,23 @@ export function settlersStay(settings: Settings): boolean {
   return group(settings)["leave_after_setup"] === false;
 }
 
-export function settlerMax(settings: Settings): number {
-  const m = group(settings)["max"];
-  return typeof m === "number" ? m : 0;
+function num(settings: Settings, key: string): number {
+  const v = group(settings)[key];
+  return typeof v === "number" ? v : 0;
+}
+
+/** How many settlers ``seat`` may have now: per_settlement per settlement plus per_city
+ * per city (megacities too), at least 1, capped by max; both 0 means just max.
+ * Mirrors engine/rules/settlers.settler_limit. */
+export function settlerLimit(settings: Settings, state: GameStateView | null, seat: number | null): number {
+  const cap = num(settings, "max");
+  const perSettlement = num(settings, "per_settlement");
+  const perCity = num(settings, "per_city");
+  if (perSettlement === 0 && perCity === 0) return cap;
+  const allowed = (state?.buildings ?? [])
+    .filter((b) => b.seat === seat)
+    .reduce((n, b) => n + (b.kind === "settlement" ? perSettlement : perCity), 0);
+  return Math.min(cap, Math.max(1, allowed));
 }
 
 export function gatherOn(settings: Settings): boolean {
@@ -48,7 +62,7 @@ export function buySettlerBlock(settings: Settings, state: GameStateView | null,
   const p = seat === null ? undefined : state?.players.find((x) => x.seat === seat);
   if (!p || !settlersStay(settings)) return "settler.not_available";
   if (!p.setup.done) return "settler.setup_not_done";
-  if (p.settlers.length >= settlerMax(settings)) return "settler.max";
+  if (p.settlers.length >= settlerLimit(settings, state, seat)) return "settler.max";
   if (!state!.buildings.some((b) => b.seat === seat)) return "settler.no_building";
   return null;
 }

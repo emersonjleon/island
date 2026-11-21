@@ -7,20 +7,19 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 from engine.settings import load_preset
-from engine.settings.share import MAX_CODE_LENGTH
 
 from . import services
 from .forms import KNOB_PATHS, CreateGameForm
 from .messages import error_message
 from .models import BOT_LEVELS, COLOURS, Game, GameStatus
 from .presets import (
-    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, default_players, preset_description, preset_label, preset_values,
+    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, default_players, experimental_names, preset_description,
+    preset_label, preset_values,
     presets_data, settings_values, stats_rows,
 )
 from .setting_labels import CHOICES, LABELS
-from .settings_editor import changed_settings, editor_data, editor_view
+from .settings_editor import EXPERIMENTAL, changed_settings, editor_data, editor_view, is_experimental
 from .prefill import settings_form_data
-from .sharing import CONFIG_PARAM, code_context, read_code
 
 
 def _game(code: str) -> Game:
@@ -28,20 +27,20 @@ def _game(code: str) -> Game:
 
 
 SAVED_PARAM = "saved"
+FOLLOW_PARAM = "follow"   # the game page goes to the game by itself once it runs
 
 
 @login_required
 def game_list(request: HttpRequest) -> HttpResponse:
     """The lobby: open games, the player's saved settings and the create form. ``?saved=<id>``
-    fills the form with saved settings; ``?config=<code>`` with a settings code."""
+    fills the form with saved settings."""
     active = _saved_from(request)
     if request.method == "POST":
         form = CreateGameForm(request.POST)
     elif active is not None:
         form = CreateGameForm(settings_form_data(active.preset, active.overrides))
     else:
-        code = request.GET.get(CONFIG_PARAM, "")[:MAX_CODE_LENGTH]
-        form = CreateGameForm(initial={"config": code, "preset": CUSTOM} if code else {})
+        form = CreateGameForm()
     if request.method == "POST" and request.POST.get("save_as"):
         saved = _save_from_form(request, form)
         if saved is not None:
@@ -54,6 +53,8 @@ def game_list(request: HttpRequest) -> HttpResponse:
         else:
             if request.POST.get("play_bots"):
                 _play_against_bots(request, game, form.cleaned_data["bot_level"])
+                # The game may be running before the page loads: tell the page to follow it.
+                return redirect(f"{reverse('lobby:detail', args=[game.code])}?{FOLLOW_PARAM}=1")
             return redirect("lobby:detail", code=game.code)
     open_games = Game.objects.filter(status=GameStatus.LOBBY).select_related("host").prefetch_related("players")
     mine = (
@@ -130,6 +131,8 @@ def create_form_context(form: CreateGameForm) -> dict:
          "values": card_values(radio.data["value"])}
         for radio in form["preset"]
     ]
+    editor = editor_view(form.data if form.is_bound else {}, base, KNOB_PATHS, form.editor_errors)
+    posted = [k[2:].split(":")[0] for k, v in (form.data.items() if form.is_bound else []) if k.startswith("s:") and v]
     groups = [
         {"label": label, "fields": [form[k.name] for k in KNOBS if k.group == key]}
         for key, label in GROUPS
@@ -145,30 +148,18 @@ def create_form_context(form: CreateGameForm) -> dict:
         "custom_preset": CUSTOM,
         "base_label": preset_label(base),
         "presets_data": presets_data(),
-        "code_preview": code_preview(form),
-        "editor": editor_view(form.data if form.is_bound else {}, base, KNOB_PATHS, form.editor_errors),
-        "editor_open": bool(form.editor_errors) or any(
-            k.startswith("s:") and v for k, v in (form.data.items() if form.is_bound else [])),
+        "editor": [g for g in editor if g["key"] != EXPERIMENTAL],
+        "experimental_editor": next((g for g in editor if g["key"] == EXPERIMENTAL), None),
+        "experimental_presets": [
+            {"name": name, "label": preset_label(name), "description": preset_description(name),
+             "selected": name == base}
+            for name in experimental_names()
+        ],
+        "editor_open": any(not is_experimental(p) for p in form.editor_errors) or any(
+            not is_experimental(path) for path in posted),
+        "experimental_open": any(is_experimental(p) for p in form.editor_errors) or any(
+            is_experimental(path) for path in posted),
         "editor_data": editor_data(),
-    }
-
-
-def code_preview(form: CreateGameForm) -> dict | None:
-    """The game type and summary of the settings code the form holds, if it can be read."""
-    code = form.data.get("config") if form.is_bound else form.initial.get("config")
-    code = "".join((code or "").split())
-    if not code:
-        return None
-    try:
-        shared = read_code(code)
-        settings = services.build_settings(shared.preset, shared.overrides)
-    except services.LobbyError:
-        return None
-    return {
-        "label": preset_label(shared.preset),
-        "players": settings.players.max,
-        "stats": stats_rows(settings_values(settings)) + visibility_rows(settings),
-        "changes": rule_changes(shared.preset, settings),
     }
 
 
@@ -193,7 +184,7 @@ def seats_context(request: HttpRequest, game: Game) -> dict:
         "roll_seconds": settings.clock.roll_interval_ms // 1000,
         "stats": stats_rows(settings_values(settings)) + visibility_rows(settings),
         "rule_changes": rule_changes(game.preset, settings),
-    } | code_context(request, game) | again_context(game, me)
+    } | again_context(game, me)
 
 
 def again_context(game: Game, me) -> dict:

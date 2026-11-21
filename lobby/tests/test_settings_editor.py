@@ -15,8 +15,8 @@ class EditorTests(TestCase):
         self.assertGreater(len(paths), 70)
         self.assertTrue({"visibility.map", "visibility.hidden_numbers", "visibility.sight.city"} <= paths)
         self.assertTrue({"settlers.gather", "settlers.block_robber", "settlers.leave_after_setup", "settlers.max",
-                         "economy.costs.settler"} <= paths)
-        later = {"visibility.scores", "visibility.trade_offers", "settlers.builder_required",
+                         "economy.costs.settler", "settlers.builder_required", "robber.fish_ransom"} <= paths)
+        later = {"visibility.scores", "visibility.trade_offers",
                  "clock.dice_mode", "robber.steal_rounding", "robber.move_on_seven", "robber.adjacency_timing"}
         self.assertEqual(set(LABELS) - paths, later)  # labelled, but only one choice exists yet
 

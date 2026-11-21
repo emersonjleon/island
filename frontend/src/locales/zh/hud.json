@@ -265,5 +265,11 @@
     "gathers": "下一个在 {{nums}} 时采集",
     "yours": "你的拓荒者",
     "numbers": "在 {{nums}} 时采集"
+  },
+  "prices": {
+    "open": "价格",
+    "title": "价格",
+    "close": "关闭",
+    "help": "高亮的行是你现在买得起的。"
   }
 }

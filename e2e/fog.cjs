@@ -1,4 +1,5 @@
-// Live fog with hidden numbers: a person opens a settings-code link, plays now
+// Live fog with hidden numbers: a person picks Custom, turns on the experimental live
+// fog and hidden numbers, plays now
 // against two bots, and must see only the land around their own settler while the
 // bots build out of sight; other players' settlers show only while in sight, and
 // land seen before but out of sight is veiled. The bots finish the game and the fog
@@ -10,8 +11,6 @@ const BASE = process.argv[2] || "http://127.0.0.1:8765";
 const OUT = process.argv[3] || ".";
 const PASSWORD = "Zx9-long-pass!";
 const GAME_TIMEOUT_MS = 240_000;
-// classic with visibility.map = live_fog and hidden_numbers (engine.settings.encode_share_code)
-const CODE = "classic.1.eNqrVirLLM5MyszJLKlUsqpWyshMSUnNi88rzU1KLSpWsiopKk3VUcpNLFCyUsrJLEuNT8tPV6qtBQA94hQz";
 
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), "[fog]", ...a);
 
@@ -32,10 +31,13 @@ async function signUp(page, name) {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
   page.on("pageerror", (e) => { console.error("page error:", e.message); process.exitCode = 1; });
   try {
-    log("sign up, open the code link and play now against bots");
+    log("sign up, pick Custom with the experimental live fog and play now against bots");
     await signUp(page, "scout");
-    await page.goto(`${BASE}/lobby/?config=${encodeURIComponent(CODE)}#create-game`);
-    if (!(await page.isVisible("#code-box"))) throw new Error("the settings code box is not shown for a code link");
+    await page.goto(`${BASE}/lobby/#create-game`);
+    await page.click('.preset-card[data-card="custom"]');
+    await page.click(".experimental-settings > summary");
+    await page.selectOption('select[name="s:visibility.map"]', "live_fog");
+    await page.selectOption('select[name="s:visibility.hidden_numbers"]', "1");
     await Promise.all([page.waitForURL(/\/play\/[A-Z0-9]+\/$/, { timeout: 60_000 }), page.click('button[name="play_bots"]')]);
     await page.waitForFunction(() => window.island?.store?.state && window.island?.store?.board);
 

@@ -38,9 +38,11 @@ IMPLEMENTED_STAGE = 2
 EARLY_FEATURES: frozenset[str] = frozenset({
     "visibility.sight", "visibility.hidden_numbers", "visibility.map=growing",   # WP21/WP22
     "visibility.map=explored", "visibility.map=live_fog",                        # WP24
-    "settlers.start_count", "settlers.max", "settlers.leave_after_setup",        # WP23
+    "settlers.start_count", "settlers.max", "settlers.per_settlement", "settlers.per_city",
+    "settlers.leave_after_setup",        # WP23
     "settlers.gather", "settlers.gather_rolls", "settlers.gather_cards", "settlers.block_robber",
-    "economy.costs.settler",
+    "economy.costs.settler", "settlers.builder_required=always",
+    "robber.fish_ransom",                                                        # WP25
 })
 """Later-stage settings (``path``) and enum values (``path=value``) already available,
 as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""
@@ -230,7 +232,7 @@ class CostSettings(_Group):
     dev_card: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1},
                                     label="settings.economy.costs.dev_card", stage=2)
     settler: ResourceMap = setting(
-        {Resource.LUMBER: 1, Resource.WOOL: 1, Resource.GRAIN: 1, Resource.FISH: 2},
+        {Resource.WOOL: 1, Resource.GRAIN: 1, Resource.FISH: 2},
         label="settings.economy.costs.settler", stage=3)
 
 
@@ -339,6 +341,9 @@ class RobberSettings(_Group):
     knight_max_distance: int = setting(3, label="settings.robber.knight_max_distance", stage=2, ge=1, le=20)
     knight_steal: int = setting(1, label="settings.robber.knight_steal", stage=2, ge=0, le=20)
     friendly_min_points: int = setting(0, label="settings.robber.friendly_min_points", stage=3, ge=0, le=20)
+    fish_ransom: int = setting(0, label="settings.robber.fish_ransom", stage=3, ge=0, le=20)
+    """On a seven, a target holding at least this many fish loses exactly that many fish
+    instead of the usual steal (0 = off). Meant for the Age of the Sea."""
     spare_setup: bool = setting(True, label="settings.robber.spare_setup")
     """Players still building their setup settlements and roads are never robbed (sevens, knights or monopoly)."""
 
@@ -346,7 +351,12 @@ class RobberSettings(_Group):
 # --------------------------------------------------------------------- settlers
 class SettlerSettings(_Group):
     start_count: int = setting(1, label="settings.settlers.start_count", stage=3, ge=1, le=10)
-    max: int = setting(4, label="settings.settlers.max", stage=3, ge=1, le=20)
+    max: int = setting(20, label="settings.settlers.max", stage=3, ge=1, le=20)
+    """Hard cap of settlers per player (on top of the per-building allowance)."""
+    per_settlement: int = setting(1, label="settings.settlers.per_settlement", stage=3, ge=0, le=10)
+    per_city: int = setting(2, label="settings.settlers.per_city", stage=3, ge=0, le=10)
+    """Settlers a player may have: per_settlement per settlement plus per_city per city
+    (megacities count as cities), at least 1, at most ``max``. Both 0: just ``max``."""
     landing: Landing = setting(Landing.EVEN_COAST, label="settings.settlers.landing")
     ms_per_edge: int = setting(1500, label="settings.settlers.ms_per_edge", ge=100, le=60000)
     road_speed_pct: int = setting(200, label="settings.settlers.road_speed_pct", ge=100, le=1000)

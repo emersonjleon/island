@@ -148,6 +148,7 @@ class QuickBotTests(TestCase):
         response = self.client.post(reverse("lobby:list"), {"preset": "blitz", "max_players": "4",
                                                             "bot_level": "easy", "play_bots": "1"})
         game = Game.objects.get()
-        self.assertRedirects(response, reverse("lobby:detail", args=[game.code]), fetch_redirect_response=False)
+        self.assertRedirects(response, reverse("lobby:detail", args=[game.code]) + "?follow=1",
+                             fetch_redirect_response=False)
         self.assertEqual(game.status, GameStatus.STARTING)
         self.assertEqual(list(game.players.filter(user=None).values_list("bot_level", flat=True)), ["easy"] * 3)

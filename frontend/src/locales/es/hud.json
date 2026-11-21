@@ -265,5 +265,11 @@
     "gathers": "el siguiente recoge con {{nums}}",
     "yours": "Tus colonos",
     "numbers": "Recoge con {{nums}}"
+  },
+  "prices": {
+    "open": "Precios",
+    "title": "Precios",
+    "close": "Cerrar",
+    "help": "Las filas resaltadas son lo que puedes comprar ahora."
   }
 }

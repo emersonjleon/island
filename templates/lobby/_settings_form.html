@@ -24,37 +24,17 @@
       {{ form.max_players.errors }}
     </div>
 
-    <div class="preset-stats">
-      <h3>{% translate "This game" %}</h3>
+    <details class="preset-stats" id="stats-box"{% if chosen_preset == custom_preset %} open{% endif %}>
+      <summary>{% translate "This game" %}</summary>
       <dl class="stats-list" id="preset-stats" data-yes="{% translate 'Yes' %}" data-no="{% translate 'No' %}">
         {% for label, value, knobs in chosen_stats %}
         <dt>{{ label }}</dt><dd data-knobs="{{ knobs }}">{{ value }}</dd>
         {% endfor %}
       </dl>
-    </div>
+    </details>
 
     <div class="custom-settings" id="custom-settings">
       <h3>{% translate "Custom rules" %}</h3>
-      <details class="code-box config-field" id="code-box"{% if form.config.value or form.config.errors %} open{% endif %}>
-        <summary>{% translate "Use a settings code" %}</summary>
-        <p class="helptext">{{ form.config.help_text }}</p>
-        <div class="code-input">
-          <label for="{{ form.config.id_for_label }}" class="visually-hidden">{{ form.config.label }}</label>
-          {{ form.config }}
-        </div>
-        {{ form.config.errors }}
-        {% if code_preview %}
-        <div class="preset-stats code-preview">
-          <h4>{% blocktranslate with type=code_preview.label players=code_preview.players trimmed %}
-            This code: {{ type }} for {{ players }} players{% endblocktranslate %}</h4>
-          <dl class="stats-list">
-            {% for label, value in code_preview.stats %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
-            {% endfor %}{% for label, value in code_preview.changes %}<dt>{{ label }}</dt><dd>{{ value }}</dd>
-            {% endfor %}
-          </dl>
-        </div>
-        {% endif %}
-      </details>
       <p class="helptext">{% blocktranslate trimmed %}
         Starting from <b data-base-label>{{ base_label }}</b>. Blank fields keep its value, shown in grey.
       {% endblocktranslate %}</p>
@@ -75,51 +55,31 @@
         {% endfor %}
       </fieldset>
       {% endfor %}
+      {% if experimental_presets or experimental_editor %}
+      <fieldset class="experimental" id="experimental">
+        <legend>{% translate "Experimental (beta)" %}</legend>
+        <p class="helptext">{% translate "New rules still being tested. Start from one of these, or turn rules on one by one below." %}</p>
+        {% if experimental_presets %}
+        <div class="experimental-presets">
+          {% for p in experimental_presets %}
+          <button type="button" class="experimental-preset{% if p.selected %} selected{% endif %}" data-experimental="{{ p.name }}" aria-pressed="{% if p.selected %}true{% else %}false{% endif %}">
+            <span class="preset-name">{{ p.label }}</span>
+            <span class="preset-desc">{{ p.description }}</span>
+          </button>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if experimental_editor %}
+        <details class="experimental-settings"{% if experimental_open %} open{% endif %}>
+          <summary>{% translate "Experimental rules" %}</summary>
+          {% include "lobby/_editor_group.html" with group=experimental_editor %}
+        </details>
+        {% endif %}
+      </fieldset>
+      {% endif %}
       <details class="all-settings" id="all-settings"{% if editor_open %} open{% endif %}>
         <summary>{% translate "All settings" %}</summary>
         <p class="helptext">{% translate "Leave a box blank to keep the game type's value, shown in grey." %}</p>
-        {% for group in editor %}
-        <fieldset class="editor-group">
-          <legend>{{ group.label }}</legend>
-          {% for section in group.sections %}
-          {% if section.heading %}<h4>{{ section.heading }}</h4>{% endif %}
-          <div class="editor-rows">
-          {% for row in section.rows %}
-          {% with s=row.setting %}
-          <div class="editor-row{% if s.kind == 'map' %} editor-map{% endif %}{% if row.error %} has-error{% endif %}">
-            {% if s.kind == "map" %}
-              <span class="editor-label">{{ s.label }}</span>
-              <span class="editor-keys">
-              {% for input in row.inputs %}
-                <label>{{ input.label }}
-                  <input type="text" inputmode="numeric" name="{{ input.name }}" value="{{ input.value }}" placeholder="{{ input.placeholder }}" data-setting></label>
-              {% endfor %}
-              </span>
-            {% else %}{% with input=row.inputs.0 %}
-              <label for="ed-{{ s.path }}" class="editor-label">{{ s.label }}</label>
-              {% if s.kind == "bool" %}
-                <select id="ed-{{ s.path }}" name="{{ input.name }}" data-setting data-placeholder="{{ input.placeholder }}">
-                  <option value="">–</option>
-                  <option value="1"{% if input.value == "1" %} selected{% endif %}>{% translate "Yes" %}</option>
-                  <option value="0"{% if input.value == "0" %} selected{% endif %}>{% translate "No" %}</option>
-                </select>
-              {% elif s.kind == "choice" %}
-                <select id="ed-{{ s.path }}" name="{{ input.name }}" data-setting data-placeholder="{{ input.placeholder }}">
-                  <option value="">–</option>
-                  {% for value, label in s.choices %}<option value="{{ value }}"{% if input.value == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
-                </select>
-              {% else %}
-                <input id="ed-{{ s.path }}" type="text" inputmode="decimal" name="{{ input.name }}" value="{{ input.value }}" placeholder="{{ input.placeholder|default:_('auto') }}" data-setting>
-              {% endif %}
-            {% endwith %}{% endif %}
-            {% if s.help %}<span class="helptext">{{ s.help }}</span>{% endif %}
-            {% if row.error %}<span class="errorlist">{{ row.error }}</span>{% endif %}
-          </div>
-          {% endwith %}
-          {% endfor %}
-          </div>
-          {% endfor %}
-        </fieldset>
-        {% endfor %}
+        {% for group in editor %}{% include "lobby/_editor_group.html" %}{% endfor %}
       </details>
     </div>

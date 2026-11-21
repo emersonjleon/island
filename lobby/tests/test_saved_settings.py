@@ -81,11 +81,33 @@ class SavedSettingsTests(TestCase):
         self.assertIsNone(page.context["active_saved"])
         self.assertEqual(page.context["chosen_preset"], "classic")
 
-    def test_settings_code_link_opens_custom(self):
+    def test_experimental_types_live_inside_custom(self):
         self.client.force_login(self.bo)
-        page = self.client.get(reverse("lobby:list") + "?config=blitz.1.")
-        self.assertEqual(page.context["chosen_preset"], "custom")
-        self.assertContains(page, 'id="code-box" open')
+        page = self.client.get(reverse("lobby:list"))
+        cards = [c["name"] for c in page.context["preset_cards"]]
+        self.assertNotIn("settlers", cards)
+        self.assertNotIn("explorer", cards)
+        self.assertEqual([p["name"] for p in page.context["experimental_presets"]], ["settlers", "explorer"])
+        self.assertContains(page, 'data-experimental="explorer"')
+        self.assertContains(page, "Experimental (beta)")
+        self.assertNotContains(page, "code-box")
+        paths = {row["setting"].path for sec in page.context["experimental_editor"]["sections"] for row in sec["rows"]}
+        self.assertTrue({"visibility.map", "settlers.builder_required", "robber.fish_ransom"} <= paths)
+        others = {row["setting"].path for g in page.context["editor"] for sec in g["sections"] for row in sec["rows"]}
+        self.assertFalse(paths & others)
+
+    def test_custom_game_from_an_experimental_type(self):
+        self.client.force_login(self.bo)
+        data = settings_form_data("classic", {"players": {"max": 4}})
+        data.update({"base": "explorer", "s:robber.fish_ransom": "3"})
+        self.client.post(reverse("lobby:list"), data)
+        game = Game.objects.order_by("-pk").first()
+        settings = load_preset(game.preset, game.overrides)
+        self.assertEqual(game.preset, "explorer")
+        self.assertEqual((settings.visibility.map.value, settings.settlers.builder_required.value), ("explored", "always"))
+        self.assertEqual(settings.robber.fish_ransom, 3)
+        self.assertFalse(self.client.post(reverse("lobby:list"), {"preset": "explorer", "max_players": "4"})
+                         .context["form"].is_valid())
 
     def test_same_name_replaces_and_delete(self):
         services.save_settings(self.bo, "x", "classic", {})
@@ -140,15 +162,16 @@ class ChangeSettingsTests(TestCase):
 
 
 class GrowingSightTests(TestCase):
-    def test_huge_uses_growing_sight_and_the_game_page_says_so(self):
+    def test_explorer_uses_explored_sight_and_the_game_page_says_so(self):
         host = user("ana")
-        game = services.create_game(host, "huge", {"players": {"max": 8}})
-        self.assertEqual(load_preset(game.preset, game.overrides).visibility.map.value, "growing")
+        game = services.create_game(host, "explorer", {"players": {"max": 4}})
+        self.assertEqual(load_preset(game.preset, game.overrides).visibility.map.value, "explored")
         self.client.force_login(host)
         page = self.client.get(reverse("lobby:detail", args=[game.code]))
-        self.assertContains(page, "Growing sight")
-        classic = services.create_game(host, "classic", {"players": {"max": 4}})
-        self.assertNotContains(self.client.get(reverse("lobby:detail", args=[classic.code])), "Growing sight")
+        self.assertContains(page, "Explored")
+        huge = services.create_game(host, "huge", {"players": {"max": 8}})
+        self.assertEqual(load_preset(huge.preset, huge.overrides).visibility.map.value, "open")
+        self.assertNotContains(self.client.get(reverse("lobby:detail", args=[huge.code])), "Explored")
 
     def test_custom_game_can_turn_on_growing_sight_and_hidden_numbers(self):
         host = user("bo")

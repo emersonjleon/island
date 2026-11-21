@@ -4,6 +4,5 @@
   "board": {"land_hexes": 48},
   "economy": {"bank": {"per_resource": {"brick": 44, "lumber": 44, "wool": 44, "grain": 44, "ore": 44, "fish": 44}}},
   "pieces": {"roads": 25, "settlements": 7, "cities": 6},
-  "victory": {"target": 14},
-  "visibility": {"map": "growing"}
+  "victory": {"target": 14}
 }

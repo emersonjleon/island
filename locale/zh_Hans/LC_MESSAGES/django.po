@@ -273,12 +273,6 @@ msgstr "为 5 或 6 名玩家准备的更大岛屿、银行和棋子，获胜所
 msgid "Huge"
 msgstr "超大"
 
-#: lobby/presets.py:25
-msgid ""
-"A very big island for 7 or more players, and a long game. You see the land "
-"around your own pieces."
-msgstr "为 7 名或更多玩家准备的超大岛屿，游戏时间较长。你只能看到自己棋子周围的陆地。"
-
 #: lobby/presets.py:26
 msgid "Custom"
 msgstr "自定义"
@@ -1076,54 +1070,6 @@ msgstr "公共聊天室"
 msgid "Private conversation"
 msgstr "私人对话"
 
-#: lobby/forms.py
-msgid "Settings code"
-msgstr "设置代码"
-
-#: lobby/forms.py
-msgid ""
-"Paste a code copied from another game to play with its rules. It replaces "
-"the choices below."
-msgstr "粘贴从其他游戏复制的代码，以使用其规则进行游戏。它会替换下方的选项。"
-
-#: lobby/messages.py
-msgid "That settings code is not complete or not valid. Copy it again."
-msgstr "该设置代码不完整或无效。请重新复制。"
-
-#: lobby/messages.py
-msgid "That settings code is too long."
-msgstr "该设置代码太长。"
-
-#: lobby/messages.py
-msgid "That settings code was made by a newer version of the game."
-msgstr "该设置代码由更新版本的游戏生成。"
-
-#: lobby/messages.py
-msgid "That settings code uses a game type this server does not have."
-msgstr "该设置代码使用了本服务器没有的游戏类型。"
-
-#: templates/lobby/detail.html
-msgid ""
-"Copy this code, or the link, to create another game with these same rules."
-msgstr "复制此代码或链接，用相同的规则创建另一局游戏。"
-
-#: templates/lobby/detail.html
-msgid "Copied"
-msgstr "已复制"
-
-#: templates/lobby/detail.html
-msgid "Copy code"
-msgstr "复制代码"
-
-#: templates/lobby/detail.html
-msgid "Copy link"
-msgstr "复制链接"
-
-#: templates/lobby/list.html
-#, python-format
-msgid "This code: %(type)s for %(players)s players"
-msgstr "此代码：%(type)s，%(players)s 名玩家"
-
 #: lobby/models.py
 #, python-brace-format
 msgid "{type} (custom)"
@@ -1677,9 +1623,6 @@ msgid ""
 "are invited back."
 msgstr "使用相同的设置、座位数和机器人开始新游戏。其他玩家会被邀请回来。"
 
-msgid "Use a settings code"
-msgstr "使用设置代码"
-
 msgid "Save these settings as"
 msgstr "将这些设置保存为"
 
@@ -1960,6 +1903,3 @@ msgstr "拓荒者抵御强盗"
 
 msgid "The robber cannot move onto a hex with a settler on one of its corners."
 msgstr "强盗不能移动到某个路口上有拓荒者的六边形。"
-
-msgid "Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
-msgstr "拓荒者在首批村庄建成后留下：购买更多拓荒者，让它们在 3、11 以及 2 或 12 时采集资源，并用它们赶走强盗。"

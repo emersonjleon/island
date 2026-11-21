@@ -102,7 +102,7 @@ button.link { background: none; border: 0; padding: 0; color: var(--accent); tex
 /* ------------------------------------------------------------------ forms + buttons */
 .stacked > div { margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
 .stacked label { font-weight: 600; font-size: 0.95rem; }
-.stacked input, .share-row input, .stacked select, .lobby-actions select { padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+.stacked input, .stacked select, .lobby-actions select { padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
   background: var(--bg); color: var(--fg); font: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
 .stacked input:focus, .stacked select:focus, .lobby-actions select:focus { outline: none; border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(23, 96, 127, 0.18); }
@@ -212,27 +212,11 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 .knob-check label { display: flex; align-items: flex-start; gap: 8px; font-weight: normal; cursor: pointer; }
 .knob-check input { width: 1.15rem; height: 1.15rem; margin: 1px 0 0; accent-color: var(--accent); flex: none; }
 .create-form.js:not([data-preset="custom"]) .custom-settings { display: none; }
-.code-box { margin: 0 0 14px; border: 1px dashed var(--border); border-radius: 12px; background: var(--bg); padding: 0 14px; }
-.code-box[open] { padding-bottom: 12px; border-style: solid; }
-.code-box > summary { cursor: pointer; padding: 10px 0; font-weight: 600; color: var(--accent); list-style: none; }
-.code-box > summary::-webkit-details-marker { display: none; }
-.code-box > summary::before { content: "⧉"; display: inline-block; margin-right: 8px; opacity: 0.8; }
-.code-box > .helptext { margin: 0 0 8px; }
-.code-box .code-input input { width: 100%; box-sizing: border-box; letter-spacing: 0.02em; }
-.code-box .code-preview { margin: 10px 0 0; }
-.code-box .code-preview h4 { margin: 0 0 6px; }
-.config-field input, .share-row input { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.85rem; }
-.code-preview { margin-top: 8px; }
-.create-form.from-code > .preset-picker, .create-form.from-code > .players-field,
-.create-form.from-code > .preset-stats,
-.create-form.from-code .custom-settings > :not(.code-box):not(h3) { opacity: 0.4; pointer-events: none; }
-.create-form:not([data-preset="custom"]) > .preset-stats { display: none; }
+.preset-stats > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 4px 0; }
 .create-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
 .create-actions .play-bots { display: inline-flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .create-actions select { padding: 8px 10px; }
 #lobby-seats > p.error { color: var(--error); font-weight: 600; margin: 0 0 8px; }
-.share-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.share-row input { flex: 1 1 16rem; min-width: 0; }
 .settings-summary .settings-note { grid-column: 1 / -1; font-weight: normal; font-size: 0.85rem; }
 @media (max-width: 480px) {
   .settings-summary { grid-template-columns: 1fr auto; }
@@ -287,6 +271,16 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 @media (max-width: 520px) { .rules-table th, .rules-table td { padding: 5px 4px; font-size: 0.9rem; } }
 
 /* All settings (custom games) */
+.experimental { margin-top: 14px; border: 1px dashed var(--accent); border-radius: 10px; padding: 10px 14px; }
+.experimental > legend { color: var(--accent-strong); font-weight: 700; padding: 0 6px; }
+.experimental-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 8px 0; }
+.experimental-preset { display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 10px 12px; cursor: pointer;
+  font: inherit; color: inherit; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
+.experimental-preset:hover { border-color: var(--accent); }
+.experimental-preset.selected { border-color: var(--accent); background: var(--panel); box-shadow: 0 0 0 2px var(--accent); }
+.experimental-preset .preset-desc { font-size: 0.85em; color: var(--muted); }
+.experimental-settings .editor-group > legend { display: none; }
+.experimental-settings > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 4px 0; }
 .all-settings { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
 .all-settings > summary { cursor: pointer; font-weight: 700; color: var(--accent-strong); padding: 4px 0; }
 .editor-group { border: 0; padding: 0; margin: 12px 0 0; min-width: 0; }
@@ -303,7 +297,7 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 .editor-row.has-error input, .editor-row.has-error select { border-color: var(--error); }
 
 /* Saved settings */
-.share-actions { margin-top: 10px; justify-content: space-between; }
+.game-settings-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin: 14px 0; }
 .save-settings { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 1 1 18rem; }
 .save-settings input { flex: 1 1 10rem; min-width: 0; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
   background: var(--bg); color: var(--fg); font: inherit; }

@@ -528,7 +528,6 @@
           "default": {
             "fish": 2,
             "grain": 1,
-            "lumber": 1,
             "wool": 1
           },
           "label": "settings.economy.costs.settler",
@@ -1102,6 +1101,16 @@
           "title": "Enabled",
           "type": "boolean"
         },
+        "fish_ransom": {
+          "default": 0,
+          "description": "On a seven, a target holding at least this many fish loses exactly that many fish\ninstead of the usual steal (0 = off). Meant for the Age of the Sea.",
+          "label": "settings.robber.fish_ransom",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Fish Ransom",
+          "type": "integer"
+        },
         "friendly_min_points": {
           "default": 0,
           "label": "settings.robber.friendly_min_points",
@@ -1317,7 +1326,8 @@
           "type": "boolean"
         },
         "max": {
-          "default": 4,
+          "default": 20,
+          "description": "Hard cap of settlers per player (on top of the per-building allowance).",
           "label": "settings.settlers.max",
           "maximum": 20,
           "minimum": 1,
@@ -1332,6 +1342,25 @@
           "minimum": 100,
           "stage": 1,
           "title": "Ms Per Edge",
+          "type": "integer"
+        },
+        "per_city": {
+          "default": 2,
+          "description": "Settlers a player may have: per_settlement per settlement plus per_city per city\n(megacities count as cities), at least 1, at most ``max``. Both 0: just ``max``.",
+          "label": "settings.settlers.per_city",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Per City",
+          "type": "integer"
+        },
+        "per_settlement": {
+          "default": 1,
+          "label": "settings.settlers.per_settlement",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Per Settlement",
           "type": "integer"
         },
         "road_speed_pct": {
@@ -1813,12 +1842,16 @@
   "type": "object",
   "x-early-features": [
     "economy.costs.settler",
+    "robber.fish_ransom",
     "settlers.block_robber",
+    "settlers.builder_required=always",
     "settlers.gather",
     "settlers.gather_cards",
     "settlers.gather_rolls",
     "settlers.leave_after_setup",
     "settlers.max",
+    "settlers.per_city",
+    "settlers.per_settlement",
     "settlers.start_count",
     "visibility.hidden_numbers",
     "visibility.map=explored",

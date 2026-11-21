@@ -17,9 +17,11 @@ GROUP_LABELS = {
     "robber": _("Robber"),
     "settlers": _("Settlers"),
     "visibility": _("What players see"),
+    "robber": _("Robber"),
     "victory": _("Victory"),
     "trading": _("Trade"),
     "dev_cards": _("Developments"),
+    "experimental": _("Experimental (beta)"),
 }
 
 # Sub-groups that get their own heading inside a group.
@@ -33,6 +35,9 @@ SUBGROUP_LABELS = {
     "economy.trade": _("Bank trade"),
     "build.time_ms": _("Seconds to build"),
     "visibility.sight": _("Sight range (hexes)"),
+    "settlers": _("Settlers"),
+    "visibility": _("What players see"),
+    "robber": _("Robber"),
     "victory.building_points": _("Points per building"),
     "victory.longest_road": _("Longest road"),
     "victory.largest_army": _("Largest army"),
@@ -68,7 +73,7 @@ LABELS = {
     "economy.costs.city": (_("City"), ""),
     "economy.costs.megacity": (_("Megacity"), ""),
     "economy.costs.dev_card": (_("Development"), ""),
-    "economy.costs.settler": (_("Settler"), ""),
+    "economy.costs.settler": (_("Price of a settler"), ""),
     "economy.production_per.settlement": (_("Settlement"), ""),
     "economy.production_per.city": (_("City"), ""),
     "economy.production_per.megacity": (_("Megacity"), ""),
@@ -99,6 +104,9 @@ LABELS = {
     "setup.bank_trade_during_setup": (_("Trade with the bank before finishing the first settlements"), ""),
     # robber
     "robber.enabled": (_("Robber on a 7"), ""),
+    "robber.fish_ransom": (_("Fish that buy off the robber"),
+                           _("A player holding this many fish loses only that fish on a 7 (0 = off). "
+                             "Meant for the Age of the Sea.")),
     "robber.card_limit": (_("Safe hand size on a 7"), ""),
     "robber.steal_pct": (_("Share of the hand lost on a 7 (%)"), ""),
     "robber.steal_rounding": (_("Rounding of the cards lost"), ""),
@@ -115,7 +123,10 @@ LABELS = {
     "settlers.road_speed_pct": (_("Settler speed on own roads (%)"), ""),
     "settlers.builder_required": (_("When a settler must stand on the site"), ""),
     "settlers.start_count": (_("Settlers at the start"), ""),
-    "settlers.max": (_("Most settlers per player"), ""),
+    "settlers.max": (_("Most settlers per player"), _("A hard cap, on top of the settlers each building allows.")),
+    "settlers.per_settlement": (_("Settlers allowed per settlement"), ""),
+    "settlers.per_city": (_("Settlers allowed per city"),
+                          _("With both at 0, only the cap above counts.")),
     "settlers.leave_after_setup": (_("Settlers leave after the first settlements"),
                                    _("Turn off to keep settlers in the game: players can buy more, and they gather and guard.")),
     "settlers.gather": (_("Settlers gather"),

@@ -16,14 +16,16 @@ from engine.tests.test_devcards import ALL_KNIGHTS
 
 GATHER = {"settlers": {"gather": True}}
 BLOCK = {"settlers": {"block_robber": True}}
-FULL_COST = dict(lumber=1, wool=1, grain=1, fish=2)
+FULL_COST = dict(wool=1, grain=1, fish=2)
+# Most tests use a flat cap of 4 settlers; LimitTest covers the per-building allowance.
+FLAT = {"max": 4, "per_settlement": 0, "per_city": 0}
 NOW = 100
 
 
 def staying(overrides: dict[str, Any] | None) -> dict[str, Any]:
     """``overrides`` with settlers staying after setup (unless they say otherwise)."""
     out = dict(overrides or {})
-    out["settlers"] = {"leave_after_setup": False, **out.get("settlers", {})}
+    out["settlers"] = {"leave_after_setup": False, **FLAT, **out.get("settlers", {})}
     return out
 
 
@@ -127,6 +129,41 @@ class BuySettlerTest(unittest.TestCase):
         set_hand(s, 0, **FULL_COST)
         self.assertEqual(code(buy, s, 0), ("settler.max", {"max": maxed}))
         self.assertEqual(s.players[0].hand_count, sum(FULL_COST.values()))
+
+
+class LimitTest(unittest.TestCase):
+    def test_default_allowance_is_one_per_settlement_and_two_per_city(self) -> None:
+        s = new_state({"settlers": {"max": 20, "per_settlement": 1, "per_city": 2}})
+        verts = sorted(s.board.board.land_vertices)
+        self.assertEqual(settlers.settler_limit(s, 0), 1)          # no building yet: at least 1
+        place(s, 0, verts[0])
+        place(s, 0, verts[20])
+        self.assertEqual(settlers.settler_limit(s, 0), 2)
+        place(s, 0, verts[40], BuildKind.CITY)
+        self.assertEqual(settlers.settler_limit(s, 0), 4)
+        capped = new_state({"settlers": {"max": 3, "per_settlement": 1, "per_city": 2}})
+        place(capped, 0, verts[0])
+        place(capped, 0, verts[20], BuildKind.CITY)
+        place(capped, 0, verts[40], BuildKind.CITY)
+        self.assertEqual(settlers.settler_limit(capped, 0), 3)
+
+    def test_buying_stops_at_the_allowance(self) -> None:
+        s = new_state({"settlers": {"max": 20, "per_settlement": 1, "per_city": 2}})
+        verts = sorted(s.board.board.land_vertices)
+        place(s, 0, verts[0])
+        place(s, 0, verts[20])
+        while len(s.players[0].settler_ids) < 2:
+            set_hand(s, 0, **FULL_COST)
+            buy(s, 0)
+        set_hand(s, 0, **FULL_COST)
+        self.assertFalse(settlers.can_buy(s, 0))
+        self.assertEqual(code(buy, s, 0), ("settler.max", {"max": 2}))
+        place(s, 0, verts[20], BuildKind.CITY)                     # upgrade: room for one more
+        self.assertTrue(settlers.can_buy(s, 0))
+
+    def test_defaults(self) -> None:
+        ss = make_state(stage=3).settings.settlers
+        self.assertEqual((ss.per_settlement, ss.per_city, ss.max), (1, 2, 20))
 
 
 class BotTest(unittest.TestCase):
