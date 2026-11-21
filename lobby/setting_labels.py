@@ -118,6 +118,7 @@ LABELS = {
     "robber.knight_max_distance": (_("Hexes a knight moves the robber"), ""),
     "robber.knight_steal": (_("Cards a knight steals"), ""),
     "robber.spare_setup": (_("Spare players still placing their first settlements"), ""),
+    "robber.spare_setup_ms": (_("Seconds players still placing their first settlements are spared"), ""),
     # settlers
     "settlers.ms_per_edge": (_("Seconds a settler takes per road length"), ""),
     "settlers.road_speed_pct": (_("Settler speed on own roads (%)"), ""),

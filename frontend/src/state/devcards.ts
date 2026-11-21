@@ -11,7 +11,10 @@ interface DevSettings {
   vp_cards_must_be_played?: boolean;
   year_of_plenty_cards?: number;
 }
-interface RobberSettings { enabled?: boolean; knight_max_distance?: number; may_enter_desert?: boolean; spare_setup?: boolean }
+interface RobberSettings {
+  enabled?: boolean; knight_max_distance?: number; may_enter_desert?: boolean; spare_setup?: boolean;
+  spare_setup_ms?: number | null;
+}
 
 function devSettings(settings: Record<string, unknown>): DevSettings {
   return (settings["dev_cards"] as DevSettings | undefined) ?? {};
@@ -62,11 +65,13 @@ export function knightHexes(board: BoardMsg, state: GameStateView, settings: Rec
 }
 
 /** Other players with a building on ``hex`` (whom a knight there could rob), seat order.
- * Players still in setup are left out while ``robber.spare_setup`` is on (the default). */
+ * Players still in setup are left out while ``robber.spare_setup`` is on (the default), during the
+ * first ``robber.spare_setup_ms`` of the game. */
 export function knightVictims(board: BoardMsg, state: GameStateView, hex: number, seat: number,
   settings: Record<string, unknown> = {}): number[] {
   const rs = (settings["robber"] as RobberSettings | undefined) ?? {};
-  const spare = rs.spare_setup !== false;
+  const limit = rs.spare_setup_ms === undefined ? 300000 : rs.spare_setup_ms;
+  const spare = rs.spare_setup !== false && (limit === null || (state.now ?? 0) < limit);
   const inSetup = new Set((state.players ?? []).filter((p) => !p.setup?.done).map((p) => p.seat));
   const corners = new Set(board.vertices.filter((v) => v.hexes.includes(hex)).map((v) => v.id));
   const seats = new Set(state.buildings.filter((b) => corners.has(b.vertex) && b.seat !== seat

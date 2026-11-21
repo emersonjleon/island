@@ -393,6 +393,9 @@ msgstr "掷出 7 时损失的手牌比例（%）"
 msgid "Spare players still placing their first settlements"
 msgstr "放过仍在放置首批村庄的玩家"
 
+msgid "Seconds players still placing their first settlements are spared"
+msgstr "仍在放置首批村庄的玩家受保护的秒数"
+
 #: lobby/presets.py:123 lobby/presets.py:130
 msgid "Points to win"
 msgstr "获胜分数"

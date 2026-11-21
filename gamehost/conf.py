@@ -10,6 +10,8 @@ DEFAULTS = {
     "SNAPSHOTS_KEPT": 5,              # older snapshots of a game are deleted
     "LEASE_TTL_MS": 10000,
     "LEASE_REFRESH_MS": 3000,
+    "IDLE_RESIGN_MS": 30 * 60_000,    # resign a person who sends nothing for this long (None = never)
+    "MAX_GAME_MS": 6 * 3_600_000,     # end a game still running after this much game time (None = never)
 }
 
 
