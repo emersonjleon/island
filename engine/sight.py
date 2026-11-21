@@ -7,12 +7,17 @@ Record, in ``state.ext["visibility"]`` (JSON-safe):
 
 * ``seen``: ``{"<seat>": [hex ids, ascending]}``, hexes the seat has seen. It
   never shrinks. Kept only while fog is on (``visibility.map`` is not ``open``).
+* ``sight`` (Live fog): ``{"<seat>": [hex ids]}``, the seat's land in sight after the
+  last step, to tell when land comes into or goes out of sight.
+* ``memory`` (Live fog): ``{"<seat>": {"b": {"<vertex>": [seat, kind]}, "r": {"<edge>": seat}}}``,
+  other players' buildings and roads as the seat last saw them.
 * ``numbers``: hex ids whose number token is shown, when ``visibility.hidden_numbers``
   is on: a token is shown once a building stands next to its hex.
 
 Sight of ``r`` hexes around a piece: ``r = 1`` is the hexes the piece touches,
 each step more adds their neighbours (``r = 0``: nothing). Sea hexes are seen too.
-Spectators (``viewer=None``) see everything. A vertex or edge is seen when one of
+Settlers see while they stand still (Growing sight) or also while they walk
+(Explored, Live fog). Spectators (``viewer=None``) see everything. A vertex or edge is seen when one of
 its hexes is.
 """
 from __future__ import annotations
@@ -25,7 +30,7 @@ from engine.settings.enums import BuildKind, MapVisibility
 from engine.state import Construction, GameState, Settler
 
 __all__ = [
-    "EXT_KEY", "fog_on", "numbers_hidden", "seen_hexes", "shown_numbers", "hexes_around",
+    "EXT_KEY", "fog_on", "live_fog", "live_hexes", "memory", "numbers_hidden", "seen_hexes", "shown_numbers", "hexes_around",
     "vertex_sight", "edge_sight", "piece_sight", "settlers_reveal", "seat_sight",
     "seen_vertices", "seen_edges", "vertex_seen", "edge_seen", "construction_place_seen",
     "hex_view", "vertex_view", "edge_view", "board_for", "board_parts",
@@ -37,6 +42,10 @@ EXT_KEY = "visibility"
 # ------------------------------------------------------------------ settings
 def fog_on(state: GameState) -> bool:
     return state.settings.visibility.map is not MapVisibility.OPEN
+
+
+def live_fog(state: GameState) -> bool:
+    return state.settings.visibility.map is MapVisibility.LIVE_FOG
 
 
 def numbers_hidden(state: GameState) -> bool:
@@ -100,6 +109,10 @@ def settlers_reveal(state: GameState, seat: int) -> bool:
 
 
 def settler_sight(state: GameState, s: Settler) -> set[int]:
+    """What a settler sees now: nothing while it walks under Growing sight (it reveals
+    where it stops), else the hexes around its corner."""
+    if state.settings.visibility.map is MapVisibility.GROWING and (s.step is not None or s.path):
+        return set()
     return vertex_sight(state.board, s.vertex, state.settings.visibility.sight.settler)
 
 
@@ -118,6 +131,22 @@ def seat_sight(state: GameState, seat: int) -> set[int]:
             if st.seat == seat:
                 out |= settler_sight(state, st)
     return out
+
+
+def live_hexes(state: GameState, seat: int) -> frozenset[int]:
+    """Hexes where ``seat`` sees what happens now: in sight under Live fog, else
+    everything it has seen."""
+    if live_fog(state) and state.phase != "finished":
+        return frozenset(seat_sight(state, seat))
+    return seen_hexes(state, seat)
+
+
+def memory(state: GameState, seat: int) -> tuple[dict[int, tuple[int, str]], dict[int, int]]:
+    """Other players' buildings (vertex -> (seat, kind)) and roads (edge -> seat) as
+    ``seat`` last saw them (Live fog)."""
+    m = _record(state).get("memory", {}).get(str(seat), {})
+    return ({int(v): (int(s), str(k)) for v, (s, k) in m.get("b", {}).items()},
+            {int(e): int(s) for e, s in m.get("r", {}).items()})
 
 
 # ------------------------------------------------------------------- places

@@ -58,6 +58,7 @@ export class GameStore {
         for (const ev of msg.events) {
           if (this.board && (ev.k === "revealed" || ev.k === "numbers_revealed")) this.board = applyBoardEvent(this.board, ev);
           applyEvent(this.state, ev);
+          if (ev.k === "sight" && this.board && this.state.viewer === num(ev.seat)) applySight(this.state, this.board, ev.in_sight as number[]);
         }
         // The fog lifts when the game ends: the server has just shown the whole island.
         if (this.board?.partial && this.state.phase === "finished") this.board = { ...this.board, partial: false };
@@ -148,6 +149,20 @@ function applyRevealedPieces(state: GameStateView, pieces: Partial<GameStateView
   const cids = new Set(cons.map((c) => c.id));
   state.constructions = [...state.constructions.filter((c) => !cids.has(c.id)), ...cons];
   if (pieces.robber !== undefined && pieces.robber !== null) state.robber = pieces.robber;
+}
+
+/** Live fog: the land in sight changed. Other players' settlers, constructions and the
+ * robber out of sight go (buildings and roads stay as last seen). */
+export function applySight(state: GameStateView, board: BoardMsg, inSight: number[]): void {
+  const sight = new Set(inSight);
+  if (state.visibility) state.visibility.in_sight = [...inSight];
+  const vertexIn = (v: number) => (board.vertices[v]?.hexes ?? []).some((h) => sight.has(h));
+  const edgeIn = (e: number) => (board.edges[e]?.hexes ?? []).some((h) => sight.has(h));
+  const me = state.viewer;
+  state.settlers = state.settlers.filter((s) => s.seat === me || vertexIn(s.vertex));
+  state.constructions = state.constructions.filter((c) => c.seat === me
+    || (c.kind === "road" ? edgeIn(c.target) : vertexIn(c.target)));
+  if (state.robber !== null && !sight.has(state.robber)) state.robber = null;
 }
 
 function settler(state: GameStateView, id: number): SettlerView | undefined {

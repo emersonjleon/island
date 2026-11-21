@@ -320,3 +320,15 @@ class ConsumerTests(TransactionTestCase):
             await comm.disconnect()
 
         async_to_sync(run)()
+
+    def test_page_connecting_after_the_start_is_sent_to_the_game(self):
+        Game.objects.filter(pk=self.game.pk).update(status=GameStatus.RUNNING)
+
+        async def run():
+            comm = self.communicator(self.host)
+            connected, _ = await comm.connect()
+            self.assertTrue(connected)
+            self.assertEqual(await comm.receive_json_from(), {"t": "started", "url": f"/play/{self.game.code}/"})
+            await comm.disconnect()
+
+        async_to_sync(run)()

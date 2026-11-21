@@ -1,6 +1,8 @@
-// Growing sight with hidden numbers: a person opens a settings-code link, plays now
+// Live fog with hidden numbers: a person opens a settings-code link, plays now
 // against two bots, and must see only the land around their own settler while the
-// bots build out of sight; the bots finish the game. Run through e2e/run.py.
+// bots build out of sight; other players' settlers show only while in sight, and
+// land seen before but out of sight is veiled. The bots finish the game and the fog
+// lifts. Run through e2e/run.py.
 // Usage: node e2e/fog.cjs BASE_URL OUT_DIR
 const { chromium } = require("playwright");
 
@@ -8,8 +10,8 @@ const BASE = process.argv[2] || "http://127.0.0.1:8765";
 const OUT = process.argv[3] || ".";
 const PASSWORD = "Zx9-long-pass!";
 const GAME_TIMEOUT_MS = 240_000;
-// classic for 3 players with visibility.map = growing and hidden_numbers (engine.settings.encode_share_code)
-const CODE = "classic.1.eNqrVirISaxMLSpWsqpWyk2sULIyrtVRKssszkzKzMksqQQJZ2SmpKTmxeeV5iaBFZYUlabqABUXKFkppRfll2fmpSvV1gIA2oAafg";
+// classic with visibility.map = live_fog and hidden_numbers (engine.settings.encode_share_code)
+const CODE = "classic.1.eNqrVirLLM5MyszJLKlUsqpWyshMSUnNi88rzU1KLSpWsiopKk3VUcpNLFCyUsrJLEuNT8tPV6qtBQA94hQz";
 
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), "[fog]", ...a);
 
@@ -47,6 +49,8 @@ async function signUp(page, name) {
         tokens: hexes.filter((h) => h.land && h.token !== null).length,
         hiddenTokens: hexes.filter((h) => h.land && h.token === null && h.terrain && h.terrain !== "desert").length,
         othersUnseen: state.buildings.filter((b) => b.seat !== state.viewer && !vseen.has(b.vertex)).length,
+        settlersOutOfSight: state.phase === "finished" ? 0 : state.settlers.filter((s) => s.seat !== state.viewer
+          && !(board.vertices[s.vertex]?.hexes ?? []).some((h) => (state.visibility?.in_sight ?? []).includes(h))).length,
         robberUnseen: state.robber !== null && !seen.has(state.robber),
         phase: state.phase, others: state.buildings.filter((b) => b.seat !== state.viewer).length,
         seen: (state.visibility?.seen ?? []).length,
@@ -75,8 +79,12 @@ async function signUp(page, name) {
     const t0 = Date.now();
     for (;;) {
       const v = await view();
-      if (v.othersUnseen || v.robberUnseen) throw new Error(`told about pieces out of sight: ${JSON.stringify(v)}`);
-      if (v.phase === "finished") { log("finished:", JSON.stringify(v)); break; }
+      if (v.othersUnseen || v.robberUnseen || v.settlersOutOfSight) throw new Error(`told about pieces out of sight: ${JSON.stringify(v)}`);
+      if (v.phase === "finished") {
+        log("finished:", JSON.stringify(v));
+        if (v.partial) throw new Error("the fog did not lift at the end");
+        break;
+      }
       if (Date.now() - t0 > GAME_TIMEOUT_MS) throw new Error(`bots did not finish in time: ${JSON.stringify(v)}`);
       await page.waitForTimeout(500);
     }

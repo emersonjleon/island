@@ -95,6 +95,7 @@
     "settler_step",
     "settlers_gathered",
     "setup_complete",
+    "sight",
     "starting_materials",
     "starting_resources",
     "traded"

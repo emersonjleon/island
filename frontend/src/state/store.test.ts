@@ -179,6 +179,25 @@ describe("Growing sight", () => {
     expect(store.state!.robber).toBeNull();
   });
 
+  it("drops others' settlers, constructions and the robber out of sight (Live fog)", () => {
+    const store = new GameStore();
+    store.apply(fixture<BoardMsg>("board_seat0_fog.json"));
+    const state = baseState();
+    store.apply({ t: "state", seq: 1, now: 0, state });
+    const board = store.board!;
+    const [a, b] = known(board.vertices).slice(0, 2) as [NonNullable<(typeof board.vertices)[number]>, NonNullable<(typeof board.vertices)[number]>];
+    const s = store.state!;
+    s.visibility = { map: "live_fog", hidden_numbers: false, in_sight: [] };
+    s.settlers = [{ id: 1, seat: 1, vertex: a.id, path: [], step: null }, { id: 2, seat: s.viewer!, vertex: b.id, path: [], step: null }];
+    s.buildings = [{ kind: "settlement", seat: 1, vertex: a.id }];
+    s.robber = a.hexes[0]!;
+    store.apply({ t: "events", seq: 2, now: 5, events: [{ k: "sight", at: 5, seat: s.viewer!, in_sight: [] }] });
+    expect(store.state!.settlers.map((x) => x.id)).toEqual([2]);
+    expect(store.state!.buildings).toHaveLength(1);          // remembered
+    expect(store.state!.robber).toBeNull();
+    expect(store.state!.visibility!.in_sight).toEqual([]);
+  });
+
   it("lifts the fog when the game ends", () => {
     const store = new GameStore();
     store.apply(fixture<BoardMsg>("board_seat0_fog.json"));
