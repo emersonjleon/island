@@ -273,14 +273,6 @@ msgstr "Isla, banco y piezas más grandes para 5 o 6 jugadores, y más puntos pa
 msgid "Huge"
 msgstr "Enorme"
 
-#: lobby/presets.py:25
-msgid ""
-"A very big island for 7 or more players, and a long game. You see the land "
-"around your own pieces."
-msgstr ""
-"Una isla muy grande para 7 o más jugadores, y una partida larga. Ves la "
-"tierra alrededor de tus propias piezas."
-
 #: lobby/presets.py:26
 msgid "Custom"
 msgstr "Personalizada"
@@ -1164,58 +1156,6 @@ msgstr "Conversación privada"
 #~ msgid "Blank keeps the preset (10 in Classic)."
 #~ msgstr "En blanco mantiene el preajuste (10 en Clásico)."
 
-#: lobby/forms.py
-msgid "Settings code"
-msgstr "Código de configuración"
-
-#: lobby/forms.py
-msgid ""
-"Paste a code copied from another game to play with its rules. It replaces "
-"the choices below."
-msgstr ""
-"Pega un código copiado de otra partida para jugar con sus reglas. Reemplaza "
-"las opciones de abajo."
-
-#: lobby/messages.py
-msgid "That settings code is not complete or not valid. Copy it again."
-msgstr "Ese código de configuración está incompleto o no es válido. Cópialo de nuevo."
-
-#: lobby/messages.py
-msgid "That settings code is too long."
-msgstr "Ese código de configuración es demasiado largo."
-
-#: lobby/messages.py
-msgid "That settings code was made by a newer version of the game."
-msgstr "Ese código de configuración se hizo con una versión más nueva del juego."
-
-#: lobby/messages.py
-msgid "That settings code uses a game type this server does not have."
-msgstr "Ese código de configuración usa un tipo de partida que este servidor no tiene."
-
-#: templates/lobby/detail.html
-msgid ""
-"Copy this code, or the link, to create another game with these same rules."
-msgstr ""
-"Copia este código, o el enlace, para crear otra partida con estas mismas "
-"reglas."
-
-#: templates/lobby/detail.html
-msgid "Copied"
-msgstr "Copiado"
-
-#: templates/lobby/detail.html
-msgid "Copy code"
-msgstr "Copiar código"
-
-#: templates/lobby/detail.html
-msgid "Copy link"
-msgstr "Copiar enlace"
-
-#: templates/lobby/list.html
-#, python-format
-msgid "This code: %(type)s for %(players)s players"
-msgstr "Este código: %(type)s para %(players)s jugadores"
-
 #: lobby/models.py
 #, python-brace-format
 msgid "{type} (custom)"
@@ -1773,9 +1713,6 @@ msgstr ""
 "Una partida nueva con los mismos ajustes, el mismo tamaño de mesa y los "
 "mismos bots. Se invita a volver a los demás jugadores."
 
-msgid "Use a settings code"
-msgstr "Usar un código de ajustes"
-
 msgid "Save these settings as"
 msgstr "Guardar estos ajustes como"
 
@@ -2080,14 +2017,8 @@ msgstr "Los colonos protegen del ladrón"
 msgid "The robber cannot move onto a hex with a settler on one of its corners."
 msgstr "El ladrón no puede ir a un hexágono con un colono en una de sus esquinas."
 
-msgid "Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
-msgstr "Los colonos se quedan después de los primeros poblados: compra más, déjalos recoger con el 3, el 11 y el 2 o 12, y úsalos para alejar al ladrón."
-
 msgid "Explorer"
 msgstr "Explorador"
-
-msgid "Discover the island with your settlers: you see only the land around your pieces, numbers show once you build next to them, and settlers stay to gather and guard."
-msgstr "Descubre la isla con tus colonos: solo ves la tierra alrededor de tus piezas, los números aparecen cuando construyes al lado, y los colonos se quedan para recoger y proteger."
 
 msgid "Experimental (beta)"
 msgstr "Experimental (beta)"
