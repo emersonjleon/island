@@ -1102,6 +1102,16 @@
           "title": "Enabled",
           "type": "boolean"
         },
+        "fish_ransom": {
+          "default": 0,
+          "description": "On a seven, a target holding at least this many fish loses exactly that many fish\ninstead of the usual steal (0 = off). Meant for the Age of the Sea.",
+          "label": "settings.robber.fish_ransom",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 3,
+          "title": "Fish Ransom",
+          "type": "integer"
+        },
         "friendly_min_points": {
           "default": 0,
           "label": "settings.robber.friendly_min_points",
@@ -1813,7 +1823,9 @@
   "type": "object",
   "x-early-features": [
     "economy.costs.settler",
+    "robber.fish_ransom",
     "settlers.block_robber",
+    "settlers.builder_required=always",
     "settlers.gather",
     "settlers.gather_cards",
     "settlers.gather_rolls",

@@ -40,7 +40,8 @@ EARLY_FEATURES: frozenset[str] = frozenset({
     "visibility.map=explored", "visibility.map=live_fog",                        # WP24
     "settlers.start_count", "settlers.max", "settlers.leave_after_setup",        # WP23
     "settlers.gather", "settlers.gather_rolls", "settlers.gather_cards", "settlers.block_robber",
-    "economy.costs.settler",
+    "economy.costs.settler", "settlers.builder_required=always",
+    "robber.fish_ransom",                                                        # WP25
 })
 """Later-stage settings (``path``) and enum values (``path=value``) already available,
 as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""
@@ -339,6 +340,9 @@ class RobberSettings(_Group):
     knight_max_distance: int = setting(3, label="settings.robber.knight_max_distance", stage=2, ge=1, le=20)
     knight_steal: int = setting(1, label="settings.robber.knight_steal", stage=2, ge=0, le=20)
     friendly_min_points: int = setting(0, label="settings.robber.friendly_min_points", stage=3, ge=0, le=20)
+    fish_ransom: int = setting(0, label="settings.robber.fish_ransom", stage=3, ge=0, le=20)
+    """On a seven, a target holding at least this many fish loses exactly that many fish
+    instead of the usual steal (0 = off). Meant for the Age of the Sea."""
     spare_setup: bool = setting(True, label="settings.robber.spare_setup")
     """Players still building their setup settlements and roads are never robbed (sevens, knights or monopoly)."""
 

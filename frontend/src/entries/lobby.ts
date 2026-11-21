@@ -6,7 +6,6 @@ import { mountLobbyChat } from "../chat/LobbyChat";
 import { ChatLog, type ChatFrame } from "../chat/model";
 import { initI18n, pageLanguage } from "../i18n";
 import { connectLobby } from "../lobby/live";
-import { initCopyButtons } from "../lobby/share";
 
 const ready = initI18n(pageLanguage()).then((i18n) => {
   addChatCatalogue(i18n);
@@ -40,8 +39,6 @@ function justSubmitted(): boolean {
   }
 }
 
-const shareBox = document.querySelector<HTMLElement>("[data-share-code]");
-if (shareBox) initCopyButtons(shareBox);
 
 /** The refusal of the last background action, shown above the seats after they refresh. */
 let quickError = "";
@@ -64,7 +61,9 @@ if (root) {
   const wsPath = root.dataset.wsPath ?? "";
   // Only a page that saw the game starting follows it on its own; someone who
   // opens the lobby of a running game gets the "Go to the game" button instead.
-  let waiting = root.querySelector("[data-starting]") !== null || justSubmitted();
+  // "?follow=1": the player pressed "Play now"; the game may already be running.
+  let waiting = root.querySelector("[data-starting]") !== null || justSubmitted()
+    || new URLSearchParams(location.search).has("follow");
   let leaving = false;
   const go = (url: string) => {
     if (leaving) return;

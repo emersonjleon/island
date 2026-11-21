@@ -2088,3 +2088,30 @@ msgstr "Explorador"
 
 msgid "Discover the island with your settlers: you see only the land around your pieces, numbers show once you build next to them, and settlers stay to gather and guard."
 msgstr "Descubre la isla con tus colonos: solo ves la tierra alrededor de tus piezas, los números aparecen cuando construyes al lado, y los colonos se quedan para recoger y proteger."
+
+msgid "Experimental (beta)"
+msgstr "Experimental (beta)"
+
+msgid "Price of a settler"
+msgstr "Precio de un colono"
+
+msgid "New rules still being tested. Start from one of these, or turn rules on one by one below."
+msgstr "Reglas nuevas que aún estamos probando. Empieza desde uno de estos tipos o activa las reglas una por una abajo."
+
+msgid "Experimental rules"
+msgstr "Reglas experimentales"
+
+msgid "Fish that buy off the robber"
+msgstr "Peces que calman al ladrón"
+
+msgid "A player holding this many fish loses only that fish on a 7 (0 = off). Meant for the Age of the Sea."
+msgstr "Quien tenga esta cantidad de peces pierde solo esos peces con un 7 (0 = desactivado). Pensado para la edad del Mar."
+
+msgid "A very big island for 7 or more players, and a long game."
+msgstr "Una isla muy grande para 7 o más jugadores, y una partida larga."
+
+msgid "Settlers stay after the first settlements: every building needs one on the spot. Buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
+msgstr "Los colonos se quedan después de los primeros poblados: cada construcción necesita uno en el lugar. Compra más, déjalos recolectar con 3, 11 y 2 o 12, y úsalos para alejar al ladrón."
+
+msgid "Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them."
+msgstr "Colonos, y la isla está oculta: solo ves la tierra que has explorado, y los números aparecen cuando construyes al lado."

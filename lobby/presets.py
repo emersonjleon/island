@@ -22,24 +22,41 @@ PRESET_INFO = {
     "blitz": (_("Blitz"), _("Fast dice, quicker builds and fewer points to win.")),
     "classic": (_("Classic"), _("The standard island for 3 or 4 players.")),
     "expanded": (_("Big"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
-    "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game. You see the land around your own pieces.")),
-    "settlers": (_("Settlers"), _("Settlers stay after the first settlements: buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away.")),
-    "explorer": (_("Explorer"), _("Discover the island with your settlers: you see only the land around your pieces, numbers show once you build next to them, and settlers stay to gather and guard.")),
+    "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game.")),
     CUSTOM: (_("Custom"), _("Start from the game type you chose and change the rules yourself.")),
 }
 
+# Beta game types: not shown as cards, only as starting points inside Custom.
+EXPERIMENTAL_INFO = {
+    "settlers": (_("Settlers"), _("Settlers stay after the first settlements: every building needs one on the spot. Buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away.")),
+    "explorer": (_("Explorer"), _("Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them.")),
+}
+
+
+def experimental_names() -> list[str]:
+    bundled = available_presets()
+    return [p for p in EXPERIMENTAL_INFO if p in bundled]
+
 
 def preset_names() -> list[str]:
+    """The game types shown as cards (experimental ones are left out)."""
     bundled = available_presets()
-    return [p for p in PRESET_INFO if p in bundled] + [p for p in bundled if p not in PRESET_INFO]
+    return [p for p in PRESET_INFO if p in bundled] + [
+        p for p in bundled if p not in PRESET_INFO and p not in EXPERIMENTAL_INFO]
+
+
+def _info(name: str):
+    return PRESET_INFO.get(name) or EXPERIMENTAL_INFO.get(name)
 
 
 def preset_label(name: str):
-    return PRESET_INFO[name][0] if name in PRESET_INFO else name.replace("_", " ").title()
+    info = _info(name)
+    return info[0] if info else name.replace("_", " ").title()
 
 
 def preset_description(name: str):
-    return PRESET_INFO[name][1] if name in PRESET_INFO else ""
+    info = _info(name)
+    return info[1] if info else ""
 
 
 # ------------------------------------------------------------------ knobs
@@ -147,8 +164,9 @@ def preset_values(name: str, players: int) -> dict[str, int | bool]:
 
 
 def base_presets() -> list[str]:
-    """The game types a custom game can start from (every type but Custom itself)."""
-    return [p for p in preset_names() if p != CUSTOM]
+    """The game types a custom game can start from (every type but Custom itself,
+    experimental ones included)."""
+    return [p for p in preset_names() if p != CUSTOM] + experimental_names()
 
 
 def default_players(name: str) -> int:
@@ -164,7 +182,7 @@ def presets_data() -> dict[str, Any]:
                 "label": str(preset_label(name)),
                 "values": {n: preset_values(name, n) for n in range(MIN_TABLE, MAX_TABLE + 1)},
             }
-            for name in preset_names()
+            for name in preset_names() + experimental_names()
         },
         "stats": [{"label": str(label), "knobs": list(knobs)} for label, knobs in STATS],
         "custom": CUSTOM,

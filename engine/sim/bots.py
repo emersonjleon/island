@@ -21,7 +21,7 @@ from typing import Any
 from engine.rng import Rng
 from engine.board import coords
 from engine import sight
-from engine.rules import devcards, movement, placement, robber, settlers, trade, trade_board
+from engine.rules import construction, devcards, movement, placement, robber, settlers, trade, trade_board
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
@@ -305,7 +305,46 @@ class GreedyBot(Bot):
             buy = self._buy_settler(state) or self._buy_card(state)
             if buy is not None:
                 builds = [buy]
-        return plays + swaps + builds + self.settler_moves(state)
+        builds, builders = self._assign_builders(state, builds)
+        return plays + swaps + builds + self.settler_moves(state, builders)
+
+    def _assign_builders(self, state: GameState, intents: list[Intent]) -> tuple[list[Intent], set[int]]:
+        """When every build needs a settler on the site (``settlers.builder_required =
+        always``): build with a settler already there, or walk the nearest free one there
+        first. Returns the intents and the settlers given a job."""
+        if not construction.builder_required(state, False):
+            return intents, set()
+        busy = {c.builder for c in state.constructions.values() if c.builder is not None}
+        free = [sid for sid in sorted(state.player(self.seat).settler_ids) if sid not in busy]
+        out: list[Intent] = []
+        used: set[int] = set()
+        for it in intents:
+            if it["a"] != "build":
+                out.append(it)
+                continue
+            kind = BuildKind(it["kind"])
+            spots = construction.builder_spots(state, kind, it["edge"] if kind is ROAD else it["vertex"])
+            idle = [sid for sid in free if sid not in used]
+            at = [sid for sid in idle if movement.settler_at_rest(state, sid) in spots]
+            if at:
+                out.append({**it, "settler": at[0]})
+                used.add(at[0])
+                continue
+            on_way = [sid for sid in idle if _destination(state.settlers[sid]) in spots]
+            if on_way:
+                used.add(on_way[0])
+                continue
+            if idle:
+                sid = min(idle, key=lambda i: self._walk_guess(state, state.settlers[i].vertex, spots[0]))
+                used.add(sid)
+                out.append({"a": "move_settler", "settler": sid, "to_vertex": spots[0], "mode": "replace"})
+        return out, used
+
+    @staticmethod
+    def _walk_guess(state: GameState, a: int, b: int) -> int:
+        board = state.board.board
+        ha, hb = board.vertex_hexes[a][0], board.vertex_hexes[b][0]
+        return coords.hex_distance(board.hexes[ha], board.hexes[hb])
 
     # -------------------------------------------------------------- settlers
     def _buy_settler(self, state: GameState) -> Intent | None:
@@ -318,9 +357,9 @@ class GreedyBot(Bot):
         return sum(1 for h in gb.board.vertex_hexes[v]
                    if gb.hex_resource(h) is not None and h != state.robber_hex)
 
-    def settler_moves(self, state: GameState) -> list[Intent]:
-        """Send each idle settler to the best gathering corner near the bot's buildings
-        (one settler per corner)."""
+    def settler_moves(self, state: GameState, skip: set[int] | frozenset[int] = frozenset()) -> list[Intent]:
+        """Send each idle settler (but those in ``skip``) to the best gathering corner
+        near the bot's buildings (one settler per corner)."""
         ss = state.settings.settlers
         if ss.leave_after_setup or not ss.gather:
             return []
@@ -336,7 +375,7 @@ class GreedyBot(Bot):
         out: list[Intent] = []
         for sid in mine:
             here = settlers.settler_at_work(state, sid)
-            if here is None:
+            if here is None or sid in skip:
                 continue
             free = [v for v in spots if v not in taken or v == here]
             if not free:

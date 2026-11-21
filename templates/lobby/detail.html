@@ -13,24 +13,15 @@
   <dd class="settings-note muted">{% blocktranslate with players=settings.players.max %}Island and bank are sized for {{ players }} players; smaller if fewer join.{% endblocktranslate %}</dd>{% endif %}
 </dl>
 
-<section class="share-code" data-share-code>
-  <h2>{% translate "Settings code" %}</h2>
-  <p class="muted">{% translate "Copy this code, or the link, to create another game with these same rules." %}</p>
-  <div class="share-row">
-    <input type="text" readonly value="{{ settings_code }}" aria-label="{% translate 'Settings code' %}" data-share-value spellcheck="false">
-    <button type="button" class="secondary" data-copy="{{ settings_code }}" data-copied="{% translate 'Copied' %}">{% translate "Copy code" %}</button>
-    <button type="button" class="secondary" data-copy="{{ settings_code_url }}" data-copied="{% translate 'Copied' %}">{% translate "Copy link" %}</button>
-  </div>
-  <div class="share-row share-actions">
-    <form method="post" action="{% url 'lobby:save_settings' game.code %}" class="inline save-settings">{% csrf_token %}
-      <label for="save-name" class="visually-hidden">{% translate "Name" %}</label>
-      <input id="save-name" type="text" name="name" maxlength="40" required placeholder="{% translate 'Name for these settings' %}">
-      <button type="submit" class="secondary">{% translate "Save to My settings" %}</button>
-    </form>
-    {% if is_host and game.is_open %}
-    <a class="button" href="{% url 'lobby:edit_settings' game.code %}">{% translate "Change settings" %}</a>
-    {% endif %}
-  </div>
+<section class="game-settings-actions">
+  <form method="post" action="{% url 'lobby:save_settings' game.code %}" class="inline save-settings">{% csrf_token %}
+    <label for="save-name" class="visually-hidden">{% translate "Name" %}</label>
+    <input id="save-name" type="text" name="name" maxlength="40" required placeholder="{% translate 'Name for these settings' %}">
+    <button type="submit" class="secondary">{% translate "Save to My settings" %}</button>
+  </form>
+  {% if is_host and game.is_open %}
+  <a class="button" href="{% url 'lobby:edit_settings' game.code %}">{% translate "Change settings" %}</a>
+  {% endif %}
 </section>
 
 <div id="lobby-seats" data-seats-url="{% url 'lobby:seats' game.code %}" data-ws-path="/ws/lobby/{{ game.code }}/">

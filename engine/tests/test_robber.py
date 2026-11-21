@@ -73,6 +73,27 @@ class RobberTest(unittest.TestCase):
         s.players[1].setup_done = False
         self.assertEqual(robber.targets(s, s.robber_hex), [0, 1, 2])
 
+    def test_fish_ransom_pays_fish_instead_of_half_the_hand(self) -> None:
+        s = make_state(n=3, overrides={"robber": {"fish_ransom": 3}})
+        set_hand(s, 0, lumber=6, fish=4)               # 10 cards, pays 3 fish
+        set_hand(s, 1, lumber=8, fish=2)               # too few fish: usual steal (5)
+        set_hand(s, 2, fish=3)                         # under the limit: not a target
+        bank_fish = s.bank[Resource.FISH]
+        events = robber.on_seven(s, 0)
+        stole = of_kind(events, RobberStole)
+        self.assertEqual([e.seat for e in stole], [0, 1])
+        self.assertEqual(stole[0].lost, {Resource.FISH: 3})
+        self.assertEqual(s.players[0].hand, {**s.players[0].hand, Resource.LUMBER: 6, Resource.FISH: 1})
+        self.assertEqual(sum(stole[1].lost.values()), 5)
+        self.assertEqual(s.players[2].hand_count, 3)
+        self.assertEqual(s.bank[Resource.FISH], bank_fish + 3 + stole[1].lost.get(Resource.FISH, 0))
+
+    def test_fish_ransom_is_off_by_default(self) -> None:
+        s = make_state(n=3)
+        set_hand(s, 0, lumber=6, fish=4)
+        events = robber.on_seven(s, 0)
+        self.assertEqual(sum(of_kind(events, RobberStole)[0].lost.values()), 5)
+
     def test_steal_count_rounding(self) -> None:
         s = make_state()
         self.assertEqual([robber.steal_count(s, n) for n in (0, 1, 7, 8, 9, 15)], [0, 0, 3, 4, 4, 7])

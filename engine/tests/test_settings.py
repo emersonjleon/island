@@ -225,7 +225,6 @@ class StageTest(unittest.TestCase):
     def test_later_stage_enum_value_rejected(self) -> None:
         for raw in ({"board": {"layout": "beginner"}}, {"board": {"shape": "hexagon"}},
                     {"clock": {"dice_mode": "deck"}}, {"setup": {"mode": "snake_click"}},
-                    {"settlers": {"builder_required": "always"}},
                     {"robber": {"move_on_seven": "player"}}):
             with self.subTest(raw=raw), self.assertRaises(ValidationError) as ctx:
                 GameSettings.model_validate(raw)
@@ -235,6 +234,8 @@ class StageTest(unittest.TestCase):
         s = GameSettings.model_validate({"visibility": {"map": "growing", "hidden_numbers": True,
                                                         "sight": {"city": 3}}})
         self.assertTrue(s.visibility.hidden_numbers)
+        s = GameSettings.model_validate({"settlers": {"builder_required": "always"}, "robber": {"fish_ransom": 3}})
+        self.assertEqual((s.settlers.builder_required.value, s.robber.fish_ransom), ("always", 3))
         with self.assertRaises(ValidationError):  # not before their own stage when asked for one below
             GameSettings.model_validate({"visibility": {"map": "growing"}}, context={"implemented_stage": 1})
 

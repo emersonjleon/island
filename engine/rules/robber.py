@@ -14,6 +14,8 @@ and ``settings.robber.enabled``. Nothing is produced on that roll.
    hand with ``state.rng``. Stolen cards go to the bank when ``stolen_to_bank``
    (else they leave the game). Per target with a non-zero loss: ``RobberStole``
    (private) then ``Hand`` (private).
+   With ``fish_ransom`` > 0 (stage 3, meant for the Age of the Sea), a target holding at
+   least that many fish pays exactly that many fish instead of the random steal.
 3. ``move_on_seven == "random_neighbour"``: the robber moves to a random
    neighbouring hex chosen from :func:`legal_neighbours` (land hexes; deserts only
    with ``may_enter_desert``; fishing grounds only with ``may_enter_fishing``; other
@@ -100,14 +102,26 @@ def steal_random(state: GameState, seat: int, count: int) -> dict[Resource, int]
     return {r: lost[r] for r in Resource if r in lost}
 
 
+def _fish_ransom(state: GameState, seat: int) -> dict[Resource, int] | None:
+    """The fish ``seat`` pays instead of being robbed, or None when no ransom applies."""
+    ransom = state.settings.robber.fish_ransom
+    hand = state.players[seat].hand
+    if ransom <= 0 or hand[Resource.FISH] < ransom:
+        return None
+    hand[Resource.FISH] -= ransom
+    return {Resource.FISH: ransom}
+
+
 def _steal_from_targets(state: GameState, hex_id: int | None, now_ms: int) -> list[Event]:
     events: list[Event] = []
     to_bank = state.settings.robber.stolen_to_bank
     for seat in targets(state, hex_id):
-        count = steal_count(state, state.players[seat].hand_count)
-        if count <= 0:
-            continue
-        lost = steal_random(state, seat, count)
+        lost = _fish_ransom(state, seat)
+        if lost is None:
+            count = steal_count(state, state.players[seat].hand_count)
+            if count <= 0:
+                continue
+            lost = steal_random(state, seat, count)
         if to_bank:
             for res, n in lost.items():
                 state.bank[res] += n

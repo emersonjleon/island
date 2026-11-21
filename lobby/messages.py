@@ -19,10 +19,6 @@ ERROR_MESSAGES = {
     "lobby.saved_needs_name": _("Give the settings a name."),
     "lobby.saved_too_many": _("You have too many saved settings. Delete one first."),
     "lobby.no_such_saved": _("Those saved settings no longer exist."),
-    "lobby.code_malformed": _("That settings code is not complete or not valid. Copy it again."),
-    "lobby.code_too_long": _("That settings code is too long."),
-    "lobby.code_too_new": _("That settings code was made by a newer version of the game."),
-    "lobby.code_unknown_preset": _("That settings code uses a game type this server does not have."),
 }
 
 

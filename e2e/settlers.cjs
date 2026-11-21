@@ -29,10 +29,12 @@ async function signUp(page, name) {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
   page.on("pageerror", (e) => { console.error("page error:", e.message); process.exitCode = 1; });
   try {
-    log("sign up, pick Settlers and play now against bots");
+    log("sign up, pick Custom > Settlers (experimental) and play now against bots");
     await signUp(page, "pioneer");
     await page.goto(`${BASE}/lobby/#create-game`);
-    await page.click('.preset-card[data-card="settlers"]');
+    await page.click('.preset-card[data-card="custom"]');
+    await page.click('[data-experimental="settlers"]');
+    if (await page.inputValue('input[name="base"]') !== "settlers") throw new Error("Settlers was not picked as the base");
     await Promise.all([page.waitForURL(/\/play\/[A-Z0-9]+\/$/, { timeout: 60_000 }), page.click('button[name="play_bots"]')]);
     await page.waitForFunction(() => window.island?.store?.state && window.island?.store?.board);
 

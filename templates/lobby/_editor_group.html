@@ -1,0 +1,41 @@
+{% load i18n %}<fieldset class="editor-group">
+  <legend>{{ group.label }}</legend>
+  {% for section in group.sections %}
+  {% if section.heading %}<h4>{{ section.heading }}</h4>{% endif %}
+  <div class="editor-rows">
+  {% for row in section.rows %}
+  {% with s=row.setting %}
+  <div class="editor-row{% if s.kind == 'map' %} editor-map{% endif %}{% if row.error %} has-error{% endif %}">
+    {% if s.kind == "map" %}
+      <span class="editor-label">{{ s.label }}</span>
+      <span class="editor-keys">
+      {% for input in row.inputs %}
+        <label>{{ input.label }}
+          <input type="text" inputmode="numeric" name="{{ input.name }}" value="{{ input.value }}" placeholder="{{ input.placeholder }}" data-setting></label>
+      {% endfor %}
+      </span>
+    {% else %}{% with input=row.inputs.0 %}
+      <label for="ed-{{ s.path }}" class="editor-label">{{ s.label }}</label>
+      {% if s.kind == "bool" %}
+        <select id="ed-{{ s.path }}" name="{{ input.name }}" data-setting data-placeholder="{{ input.placeholder }}">
+          <option value="">–</option>
+          <option value="1"{% if input.value == "1" %} selected{% endif %}>{% translate "Yes" %}</option>
+          <option value="0"{% if input.value == "0" %} selected{% endif %}>{% translate "No" %}</option>
+        </select>
+      {% elif s.kind == "choice" %}
+        <select id="ed-{{ s.path }}" name="{{ input.name }}" data-setting data-placeholder="{{ input.placeholder }}">
+          <option value="">–</option>
+          {% for value, label in s.choices %}<option value="{{ value }}"{% if input.value == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+        </select>
+      {% else %}
+        <input id="ed-{{ s.path }}" type="text" inputmode="decimal" name="{{ input.name }}" value="{{ input.value }}" placeholder="{{ input.placeholder|default:_('auto') }}" data-setting>
+      {% endif %}
+    {% endwith %}{% endif %}
+    {% if s.help %}<span class="helptext">{{ s.help }}</span>{% endif %}
+    {% if row.error %}<span class="errorlist">{{ row.error }}</span>{% endif %}
+  </div>
+  {% endwith %}
+  {% endfor %}
+  </div>
+  {% endfor %}
+</fieldset>
