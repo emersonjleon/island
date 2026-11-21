@@ -42,7 +42,8 @@ EARLY_FEATURES: frozenset[str] = frozenset({
     "settlers.leave_after_setup",        # WP23
     "settlers.gather", "settlers.gather_rolls", "settlers.gather_cards", "settlers.block_robber",
     "economy.costs.settler", "settlers.builder_required=always",
-    "robber.fish_ransom",                                                        # WP25
+    "robber.fish_ransom", "robber.friendly_min_points", "robber.stolen_to_bank",
+    "robber.may_enter_fishing",                                                        # WP25
 })
 """Later-stage settings (``path``) and enum values (``path=value``) already available,
 as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""

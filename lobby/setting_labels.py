@@ -104,6 +104,10 @@ LABELS = {
     "setup.bank_trade_during_setup": (_("Trade with the bank before finishing the first settlements"), ""),
     # robber
     "robber.enabled": (_("Robber on a 7"), ""),
+    "robber.friendly_min_points": (_("Friendly robber: points needed to be robbed"),
+                                   _("Players with fewer points are never robbed (0 = off).")),
+    "robber.stolen_to_bank": (_("Stolen cards go back to the bank"), _("Off: they leave the game.")),
+    "robber.may_enter_fishing": (_("The robber may enter fishing grounds"), ""),
     "robber.fish_ransom": (_("Fish that buy off the robber"),
                            _("A player holding this many fish loses only that fish on a 7 (0 = off). "
                              "Meant for the Age of the Sea.")),

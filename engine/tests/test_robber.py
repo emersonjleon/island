@@ -88,6 +88,30 @@ class RobberTest(unittest.TestCase):
         self.assertEqual(s.players[2].hand_count, 3)
         self.assertEqual(s.bank[Resource.FISH], bank_fish + 3 + stole[1].lost.get(Resource.FISH, 0))
 
+    def test_friendly_robber_spares_players_with_few_points(self) -> None:
+        s = make_state(n=3, overrides={"robber": {"friendly_min_points": 3}})
+        for seat in range(3):
+            set_hand(s, seat, lumber=10)
+        s.players[0].points, s.players[1].points, s.players[2].points = 2, 3, 5
+        self.assertTrue(robber.is_spared(s, 0))
+        self.assertEqual(robber.targets(s, s.robber_hex), [1, 2])
+        events = robber.on_seven(s, 0)
+        self.assertEqual([e.seat for e in of_kind(events, RobberStole)], [1, 2])
+        self.assertEqual(s.players[0].hand_count, 10)
+
+    def test_friendly_robber_off_by_default(self) -> None:
+        s = make_state(n=3)
+        s.players[0].points = 0
+        self.assertFalse(robber.is_spared(s, 0))
+
+    def test_stolen_cards_can_leave_the_game(self) -> None:
+        s = make_state(n=3, overrides={"robber": {"stolen_to_bank": False}})
+        set_hand(s, 0, lumber=10)
+        bank = dict(s.bank)
+        robber.on_seven(s, 0)
+        self.assertEqual(s.players[0].hand_count, 5)
+        self.assertEqual(s.bank, bank)
+
     def test_fish_ransom_is_off_by_default(self) -> None:
         s = make_state(n=3)
         set_hand(s, 0, lumber=6, fish=4)

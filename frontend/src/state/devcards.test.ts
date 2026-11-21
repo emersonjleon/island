@@ -50,4 +50,13 @@ describe("development card rules on the client", () => {
     expect(knightVictims(board, s, 1, 0)).toEqual([2]);
     expect(knightVictims(board, s, 1, 0, { robber: { spare_setup: false } })).toEqual([1, 2]);
   });
+
+  it("the friendly robber spares players with few points", () => {
+    const buildings = [{ vertex: 0, seat: 1, kind: "settlement" }, { vertex: 1, seat: 2, kind: "settlement" }];
+    const players = [{ seat: 0, setup: { done: true }, points: 5 }, { seat: 1, setup: { done: true }, points: 2 },
+                     { seat: 2, setup: { done: true }, points: 4 }];
+    const s = state({ buildings, players } as unknown as Partial<GameStateView>);
+    expect(knightVictims(board, s, 1, 0, { robber: { friendly_min_points: 3 } })).toEqual([2]);
+    expect(knightVictims(board, s, 1, 0)).toEqual([1, 2]);
+  });
 });

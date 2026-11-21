@@ -1843,6 +1843,9 @@
   "x-early-features": [
     "economy.costs.settler",
     "robber.fish_ransom",
+    "robber.friendly_min_points",
+    "robber.may_enter_fishing",
+    "robber.stolen_to_bank",
     "settlers.block_robber",
     "settlers.builder_required=always",
     "settlers.gather",
