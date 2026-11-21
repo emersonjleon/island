@@ -99,6 +99,7 @@
 .res-fish { --res-bg: linear-gradient(180deg, #86c3e3, #5aa3cc); }
 .card, .game-hud .hud-dialog button.card { background: var(--res-bg, #e9e0c9); }
 .hud-hand .actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.game-hud .hud-hand .actions.extras button.build { flex-direction: row; gap: 8px; position: relative; overflow: visible; }
 .game-hud button { pointer-events: auto; cursor: pointer; touch-action: manipulation; border: 0; border-radius: 8px; padding: 6px 14px; font: inherit;
   font-weight: 600; background: linear-gradient(180deg, #fdf8ec, #e9e0c9); color: #1d2a30;
   box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.25); transition: transform 0.08s, filter 0.15s; }
@@ -447,6 +448,7 @@ table.keys td { padding: 4px 0; }
   .game-hud .hud-hand .actions button.trade-open { margin-left: 0; }
   /* Five buttons share a phone's width: the four purchases get the room, trade shows its icon. */
   .hud-hand .actions { grid-template-columns: repeat(4, minmax(0, 1fr)) 48px; }
+  .hud-hand .actions.extras { grid-template-columns: minmax(0, 1fr); }
   .hud-hand .actions .btn-text { display: none; }
   .game-hud .hud-hand .actions button.trade-open { position: relative; overflow: visible; }
   .hud-hand .actions .badge { position: absolute; top: -6px; right: -4px; margin: 0; }

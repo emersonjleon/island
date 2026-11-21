@@ -50,6 +50,14 @@ async function signUp(page, name) {
     if (!title.includes("11")) throw new Error(`the button does not say the next settler gathers on 11: ${title}`);
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `${OUT}/e2e-settlers-start.png` });
+    log("on a phone-sized screen the classic row stays, the settler goes in a row below");
+    await page.setViewportSize({ width: 412, height: 860 });
+    await page.waitForTimeout(400);
+    const rows = await page.evaluate(() => [".build-road", ".buy-settler", ".trade-open"]
+      .map((sel) => Math.round(document.querySelector(`.hud-hand ${sel}`).getBoundingClientRect().top)));
+    await page.screenshot({ path: `${OUT}/e2e-settlers-phone.png` });
+    if (rows[0] !== rows[2] || rows[1] <= rows[0]) throw new Error(`the classic row changed or the settler is not below it: ${rows}`);
+    await page.setViewportSize({ width: 1280, height: 800 });
     await page.click("canvas", { position: { x: 1200, y: 600 } }).catch(() => {});
     for (const key of ["Space", "Equal", "Equal", "Equal"]) { await page.keyboard.press(key); await page.waitForTimeout(250); }
     await page.waitForTimeout(800);

@@ -462,7 +462,6 @@ function HandBar({ store, t, send, controls, touch, mode, devOpen, onTrade, onKe
           <CostPips cost={devCost} />
           {myCards > 0 && <span class="badge count-badge" title={t("hud:dev.yours")}>{myCards}</span>}
         </button>
-        {settlersStay(store.settings) && <SettlerButton store={store} t={t} send={send} />}
         <button type="button" class="trade-open" onClick={onTrade} aria-label={t("hud:trade.open")}>
           <svg class="btn-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
             <path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
@@ -472,6 +471,12 @@ function HandBar({ store, t, send, controls, touch, mode, devOpen, onTrade, onKe
         </button>
         {!touch && <button type="button" class="quiet" onClick={onKeys}>{t("hud:keys.open")}</button>}
       </div>
+      {/* Variants add their buttons in rows below, so the classic row never moves. */}
+      {settlersStay(store.settings) && (
+        <div class="actions extras">
+          <SettlerButton store={store} t={t} send={send} />
+        </div>
+      )}
     </div>
   );
 }
