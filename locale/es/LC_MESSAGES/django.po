@@ -393,6 +393,9 @@ msgstr "Parte de la mano que se pierde con el 7 (%)"
 msgid "Spare players still placing their first settlements"
 msgstr "Proteger a quien aún coloca sus primeros poblados"
 
+msgid "Seconds players still placing their first settlements are spared"
+msgstr "Segundos que se protege a quien aún coloca sus primeros poblados"
+
 #: lobby/presets.py:123 lobby/presets.py:130
 msgid "Points to win"
 msgstr "Puntos para ganar"

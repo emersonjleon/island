@@ -52,6 +52,7 @@ class GameRunner:
             elif kind == "game.sync":
                 out += self.core.sync(item)
         out += self.core.bots_act(now)
+        out += self.core.housekeeping(now)
         await self.send(out)
         await self.persist()
 

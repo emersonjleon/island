@@ -31,11 +31,16 @@ def bots_for(game: Game, start_ms: int) -> BotDriver:
     return BotDriver(bots, start_ms)
 
 
+def host_limits() -> dict[str, int | None]:
+    """The game host's housekeeping limits (see ``GameCore``)."""
+    return {"idle_resign_ms": conf.get("IDLE_RESIGN_MS"), "max_game_ms": conf.get("MAX_GAME_MS")}
+
+
 def create_core(game: Game) -> GameCore:
     """Build the initial state of a STARTING game, store the start snapshot and set RUNNING."""
     settings = GameSettings.model_validate(game.settings)
     state, _events = engine.new_game(settings, seats_for(game), game.seed)
-    core = GameCore(game.pk, state, bots=bots_for(game, state.now_ms))
+    core = GameCore(game.pk, state, bots=bots_for(game, state.now_ms), **host_limits())
     with transaction.atomic():
         save_snapshot(core, GameSnapshot.Kind.START)
         Game.objects.filter(pk=game.pk).update(status=GameStatus.RUNNING, started_at=timezone.now())
@@ -50,7 +55,8 @@ def restore_core(game: Game) -> GameCore:
     rows = list(GameCommand.objects.filter(game=game, cmd_seq__gt=snap.cmd_seq).order_by("cmd_seq"))
     state = resume(snap.state, [CommandRecord(r.game_ms, r.seat, r.payload) for r in rows])
     cmd_seq = rows[-1].cmd_seq if rows else snap.cmd_seq
-    return GameCore(game.pk, state, cmd_seq=cmd_seq, seqs=dict(snap.seqs), bots=bots_for(game, state.now_ms))
+    return GameCore(game.pk, state, cmd_seq=cmd_seq, seqs=dict(snap.seqs), bots=bots_for(game, state.now_ms),
+                    **host_limits())
 
 
 def load_finished_core(game_id: int) -> GameCore | None:

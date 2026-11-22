@@ -7,7 +7,8 @@ and ``settings.robber.enabled``. Nothing is produced on that roll.
    (``require_over_limit`` is off or the hand total > ``card_limit``) and
    (``require_adjacent`` is off or the player has a finished building on a vertex
    of the robber's hex) and (``spare_setup`` is off or the player has finished
-   setup: players still building their setup pieces are never robbed). Adjacency is judged on the hex before the move
+   setup: players still building their setup pieces are not robbed during the first
+   ``spare_setup_ms`` of the game). Adjacency is judged on the hex before the move
    (``adjacency_timing == "before_move"``) or after it (``"after_move"``, stage 3).
 2. Each target loses ``steal_pct`` % of its hand total, rounded per
    ``steal_rounding`` (integer maths), drawn one card at a time uniformly from the
@@ -54,8 +55,12 @@ def _adjacent_seats(state: GameState, hex_id: int | None) -> set[int]:
 
 
 def is_spared(state: GameState, seat: int) -> bool:
-    """True when ``seat`` may not be robbed: ``spare_setup`` is on and its setup is unfinished."""
-    return state.settings.robber.spare_setup and not state.player(seat).setup_done
+    """True when ``seat`` may not be robbed: ``spare_setup`` is on, its setup is unfinished and
+    the game is younger than ``spare_setup_ms``."""
+    rs = state.settings.robber
+    if not rs.spare_setup or state.player(seat).setup_done:
+        return False
+    return rs.spare_setup_ms is None or state.now_ms < rs.spare_setup_ms
 
 
 def targets(state: GameState, hex_id: int | None) -> list[int]:
