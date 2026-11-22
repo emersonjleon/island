@@ -1,5 +1,14 @@
 {
   "errors": [
+    "age.cannot_afford",
+    "age.disabled",
+    "age.in_progress",
+    "age.locked",
+    "age.max",
+    "age.need_cities",
+    "age.need_points",
+    "age.not_advancing",
+    "age.setup_not_done",
     "build.already_building",
     "build.cannot_afford",
     "build.distance_rule",
@@ -67,6 +76,9 @@
     "trade.setup_forbidden"
   ],
   "events": [
+    "age_advance_cancelled",
+    "age_advance_started",
+    "age_reached",
     "buildable",
     "built",
     "clock_started",

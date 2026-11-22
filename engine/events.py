@@ -33,6 +33,7 @@ __all__ = [
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
     "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver", "Revealed", "NumbersRevealed", "SettlersGathered", "Sight",
+    "AgeAdvanceStarted", "AgeAdvanceCancelled", "AgeReached",
 ]
 
 ResMap = dict[Resource, int]
@@ -404,11 +405,36 @@ class NumbersRevealed(Event):
     tokens: dict[int, int]
 
 
+class AgeAdvanceStarted(Event):
+    """A player started researching ``age`` (public: everyone sees who is advancing)."""
+    k: Literal["age_advance_started"] = "age_advance_started"
+    seat: int
+    age: int
+    t0: int
+    t1: int
+    paid: ResMap
+
+
+class AgeAdvanceCancelled(Event):
+    """``reason``: ``"cancelled"`` or ``"resigned"``."""
+    k: Literal["age_advance_cancelled"] = "age_advance_cancelled"
+    seat: int
+    age: int
+    reason: str
+    refund: ResMap
+
+
+class AgeReached(Event):
+    k: Literal["age_reached"] = "age_reached"
+    seat: int
+    age: int
+
+
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
     SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, OfferPosted, OfferClosed, Buildable, Resigned, GameOver,
-    Revealed, NumbersRevealed, SettlersGathered, Sight,
+    Revealed, NumbersRevealed, SettlersGathered, Sight, AgeAdvanceStarted, AgeAdvanceCancelled, AgeReached,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
@@ -417,7 +443,7 @@ AnyEvent = Annotated[
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
     | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
     | OfferPosted | OfferClosed | Buildable | Resigned | GameOver | Revealed | NumbersRevealed
-    | SettlersGathered | Sight,
+    | SettlersGathered | Sight | AgeAdvanceStarted | AgeAdvanceCancelled | AgeReached,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

@@ -35,6 +35,7 @@ from typing import Literal
 from engine.errors import RuleError
 from engine.events import Buildable, Event
 from engine.game import after_step
+from engine.rules import age_state
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState, PlayerState
 from engine.views import register_buildable_provider
@@ -95,8 +96,12 @@ def pending_setup(state: GameState, seat: int, kind: BuildKind) -> int:
 
 
 def mode_error(state: GameState, seat: int, kind: BuildKind) -> tuple[Mode | None, RuleError | None]:
-    """``(mode, None)`` if ``seat`` may build ``kind`` now, else ``(None, error)``."""
+    """``(mode, None)`` if ``seat`` may build ``kind`` now, else ``(None, error)``.
+    A construction locked behind a later age (``ages.unlock``) gives ``age.locked``."""
     p = state.player(seat)
+    locked = age_state.locked_error(state, seat, kind)
+    if locked is not None:
+        return None, locked
     if p.setup_done:
         return NETWORK, None
     during = state.settings.setup.network_build_during_setup

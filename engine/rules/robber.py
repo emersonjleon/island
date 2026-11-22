@@ -31,6 +31,7 @@ Later: knight moves (``move(by=seat, max_dist)``).
 from __future__ import annotations
 
 from engine.events import Event, Hand, RobberMoved, RobberStole
+from engine.rules import age_state
 from engine.settings.enums import (
     AdjacencyTiming,
     MoveOnSeven,
@@ -71,7 +72,7 @@ def targets(state: GameState, hex_id: int | None) -> list[int]:
     adjacent = _adjacent_seats(state, hex_id) if rs.require_adjacent else set()
     out: list[int] = []
     for p in state.players:
-        if rs.require_over_limit and p.hand_count <= rs.card_limit:
+        if rs.require_over_limit and p.hand_count <= rs.card_limit + age_state.card_limit_bonus(state, p.seat):
             continue
         if rs.require_adjacent and p.seat not in adjacent:
             continue

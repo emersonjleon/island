@@ -8,6 +8,280 @@
       "title": "AdjacencyTiming",
       "type": "string"
     },
+    "Age2Bonus": {
+      "additionalProperties": false,
+      "properties": {
+        "build_time_pct": {
+          "default": 85,
+          "label": "settings.ages.age2.bonus.build_time_pct",
+          "maximum": 100,
+          "minimum": 10,
+          "stage": 1,
+          "title": "Build Time Pct",
+          "type": "integer"
+        },
+        "card_limit": {
+          "default": 1,
+          "label": "settings.ages.age2.bonus.card_limit",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Card Limit",
+          "type": "integer"
+        },
+        "fish_per_fishing_building": {
+          "default": 1,
+          "label": "settings.ages.age2.bonus.fish_per_fishing_building",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Fish Per Fishing Building",
+          "type": "integer"
+        },
+        "points": {
+          "default": 1,
+          "label": "settings.ages.age2.bonus.points",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "Age2Bonus",
+      "type": "object"
+    },
+    "Age2Requires": {
+      "additionalProperties": false,
+      "properties": {
+        "cities": {
+          "default": 1,
+          "label": "settings.ages.age2.requires.cities",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Cities",
+          "type": "integer"
+        },
+        "points": {
+          "default": 0,
+          "label": "settings.ages.age2.requires.points",
+          "maximum": 30,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "Age2Requires",
+      "type": "object"
+    },
+    "Age2Step": {
+      "additionalProperties": false,
+      "properties": {
+        "bonus": {
+          "$ref": "#/$defs/Age2Bonus",
+          "label": "settings.ages.age2.bonus",
+          "stage": 1
+        },
+        "cost": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "brick": 1,
+            "fish": 2,
+            "grain": 2,
+            "wool": 1
+          },
+          "label": "settings.ages.age2.cost",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Cost",
+          "type": "object"
+        },
+        "requires": {
+          "$ref": "#/$defs/Age2Requires",
+          "label": "settings.ages.age2.requires",
+          "stage": 1
+        },
+        "time_ms": {
+          "default": 30000,
+          "label": "settings.ages.age2.time_ms",
+          "maximum": 3600000,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Time Ms",
+          "type": "integer"
+        }
+      },
+      "title": "Age2Step",
+      "type": "object"
+    },
+    "Age3Bonus": {
+      "additionalProperties": false,
+      "properties": {
+        "build_time_pct": {
+          "default": 70,
+          "label": "settings.ages.age3.bonus.build_time_pct",
+          "maximum": 100,
+          "minimum": 10,
+          "stage": 1,
+          "title": "Build Time Pct",
+          "type": "integer"
+        },
+        "card_limit": {
+          "default": 1,
+          "label": "settings.ages.age3.bonus.card_limit",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Card Limit",
+          "type": "integer"
+        },
+        "fish_per_fishing_building": {
+          "default": 1,
+          "label": "settings.ages.age3.bonus.fish_per_fishing_building",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Fish Per Fishing Building",
+          "type": "integer"
+        },
+        "points": {
+          "default": 2,
+          "label": "settings.ages.age3.bonus.points",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "Age3Bonus",
+      "type": "object"
+    },
+    "Age3Requires": {
+      "additionalProperties": false,
+      "properties": {
+        "cities": {
+          "default": 2,
+          "label": "settings.ages.age3.requires.cities",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Cities",
+          "type": "integer"
+        },
+        "points": {
+          "default": 0,
+          "label": "settings.ages.age3.requires.points",
+          "maximum": 30,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "Age3Requires",
+      "type": "object"
+    },
+    "Age3Step": {
+      "additionalProperties": false,
+      "properties": {
+        "bonus": {
+          "$ref": "#/$defs/Age3Bonus",
+          "label": "settings.ages.age3.bonus",
+          "stage": 1
+        },
+        "cost": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "fish": 3,
+            "grain": 2,
+            "ore": 2,
+            "wool": 1
+          },
+          "label": "settings.ages.age3.cost",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Cost",
+          "type": "object"
+        },
+        "requires": {
+          "$ref": "#/$defs/Age3Requires",
+          "label": "settings.ages.age3.requires",
+          "stage": 1
+        },
+        "time_ms": {
+          "default": 45000,
+          "label": "settings.ages.age3.time_ms",
+          "maximum": 3600000,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Time Ms",
+          "type": "integer"
+        }
+      },
+      "title": "Age3Step",
+      "type": "object"
+    },
+    "AgesSettings": {
+      "additionalProperties": false,
+      "description": "Ages (docs/AGES_DESIGN.md): each player advances on their own, paying (always\nwith fish) and waiting a research time, for points and bonuses.",
+      "properties": {
+        "age2": {
+          "$ref": "#/$defs/Age2Step",
+          "label": "settings.ages.age2",
+          "stage": 1
+        },
+        "age3": {
+          "$ref": "#/$defs/Age3Step",
+          "label": "settings.ages.age3",
+          "stage": 1
+        },
+        "enabled": {
+          "default": false,
+          "label": "settings.ages.enabled",
+          "stage": 1,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "unlock": {
+          "additionalProperties": {
+            "maximum": 3,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "default": {
+            "city": 1,
+            "megacity": 3,
+            "road": 1,
+            "settlement": 1
+          },
+          "description": "The age each construction needs (missing kinds: age I).",
+          "label": "settings.ages.unlock",
+          "propertyNames": {
+            "$ref": "#/$defs/BuildKind"
+          },
+          "stage": 1,
+          "title": "Unlock",
+          "type": "object"
+        }
+      },
+      "title": "AgesSettings",
+      "type": "object"
+    },
     "BankSettings": {
       "additionalProperties": false,
       "properties": {
@@ -205,6 +479,16 @@
         "custom"
       ],
       "title": "BoardShape",
+      "type": "string"
+    },
+    "BuildKind": {
+      "enum": [
+        "road",
+        "settlement",
+        "city",
+        "megacity"
+      ],
+      "title": "BuildKind",
       "type": "string"
     },
     "BuildSettings": {
@@ -1755,6 +2039,11 @@
   "additionalProperties": false,
   "description": "All per-game settings. Validate raw input with ``parse_settings`` (runs migrations).",
   "properties": {
+    "ages": {
+      "$ref": "#/$defs/AgesSettings",
+      "label": "settings.ages",
+      "stage": 3
+    },
     "board": {
       "$ref": "#/$defs/BoardSettings",
       "label": "settings.board",
@@ -1841,6 +2130,7 @@
   "title": "GameSettings",
   "type": "object",
   "x-early-features": [
+    "ages",
     "economy.costs.settler",
     "robber.fish_ransom",
     "robber.friendly_min_points",

@@ -2,6 +2,7 @@
   "now": 111000,
   "seq": 1,
   "state": {
+    "ages": {},
     "bank": {
       "brick": 18,
       "fish": 19,

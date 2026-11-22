@@ -44,6 +44,7 @@ from engine.events import Built, ConstructionCancelled, ConstructionStarted, Eve
 from engine.game import (
     SIG_BUILT, SIG_SETTLER_DEPARTING, TIMER_CONSTRUCTION_DONE, command_handler, connect, emit, timer_handler,
 )
+from engine.rules import age_state
 from engine.scheduler import Timer
 from engine.settings.enums import BuilderRequired, BuildKind, Resource
 from engine.state import Building, Construction, GameState
@@ -110,10 +111,12 @@ def choose_builder(state: GameState, seat: int, kind: BuildKind, target: int, se
 
 
 # -------------------------------------------------------------------- start
-def build_time(state: GameState, kind: BuildKind, setup: bool) -> int:
+def build_time(state: GameState, kind: BuildKind, setup: bool, seat: int | None = None) -> int:
+    """``build.time_ms.<kind>``, times the player's age bonus (``build_time_pct``)."""
     if not setup and not state.settings.build.network_builds_timed:
         return 0
-    return int(getattr(state.settings.build.time_ms, kind.value))
+    base = int(getattr(state.settings.build.time_ms, kind.value))
+    return base if seat is None else base * age_state.build_time_pct(state, seat) // 100
 
 
 def _hand(state: GameState, seat: int, now_ms: int) -> Hand:
@@ -133,7 +136,7 @@ def start_construction(state: GameState, seat: int, kind: BuildKind, target: int
     for r in Resource:
         p.hand[r] -= cost[r]
     p.pieces_left[kind] -= 1
-    done = now_ms + build_time(state, kind, setup)
+    done = now_ms + build_time(state, kind, setup, seat)
     c = Construction(id=state.next_id("construction"), seat=seat, kind=kind, target=target, builder=builder,
                      paid=cost, started_ms=now_ms, done_ms=done, setup=setup)
     state.constructions[c.id] = c

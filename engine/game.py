@@ -49,7 +49,7 @@ __all__ = [
     "command_handler", "timer_handler", "on_new_game", "after_step", "connect", "emit",
     "new_game", "apply", "advance", "next_wakeup", "temporary_registry", "set_check_rejects",
     "derive_seeds", "RULE_MODULES",
-    "TIMER_DICE_ROLL", "TIMER_SETTLER_ARRIVE", "TIMER_CONSTRUCTION_DONE",
+    "TIMER_DICE_ROLL", "TIMER_SETTLER_ARRIVE", "TIMER_CONSTRUCTION_DONE", "TIMER_AGE_DONE",
     "SIG_SETTLER_DEPARTING", "SIG_BUILT", "SIG_PRODUCED",
 ]
 
@@ -62,6 +62,7 @@ Listener = Callable[..., list[Event]]
 TIMER_DICE_ROLL = "dice_roll"                   # payload {}            handler: rules.dice
 TIMER_SETTLER_ARRIVE = "settler_arrive"         # payload {"settler"}   handler: rules.movement
 TIMER_CONSTRUCTION_DONE = "construction_done"   # payload {"construction"} handler: rules.construction
+TIMER_AGE_DONE = "age_done"                     # payload {"seat"}      handler: rules.ages
 
 SIG_SETTLER_DEPARTING = "settler_departing"
 """Emitted by movement when a settler starts walking off a vertex.
@@ -80,7 +81,7 @@ SIG_PRODUCED = "produced"
 
 RULE_MODULES: tuple[str, ...] = (
     "setup", "movement", "placement", "construction", "dice", "production", "robber", "trade", "victory",
-    "longest_road", "devcards", "trade_board", "resign", "stats", "visibility", "settlers",
+    "longest_road", "devcards", "trade_board", "resign", "stats", "visibility", "settlers", "ages",
 )
 
 

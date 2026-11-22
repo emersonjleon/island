@@ -100,5 +100,16 @@
     "no_building": "你需要一座建筑作为拓荒者的出发点",
     "not_your_building": "拓荒者必须从你的一座建筑出发",
     "not_available": "这局游戏中，拓荒者在首批村庄建成后离开"
+  },
+  "age": {
+    "disabled": "本局没有时代",
+    "setup_not_done": "请先完成开局布置",
+    "in_progress": "你已经在升级到下一个时代",
+    "max": "你已经处于最后一个时代",
+    "need_cities": "升级时代需要 {{need}} 座城市（你有 {{have}} 座）",
+    "need_points": "升级时代需要 {{need}} 分（你有 {{have}} 分）",
+    "cannot_afford": "你的资源不够升级到下一个时代",
+    "not_advancing": "你没有在升级时代",
+    "locked": "这需要第 {{age}} 时代"
   }
 }

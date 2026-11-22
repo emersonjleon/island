@@ -1,6 +1,39 @@
 {
   "events": [
     {
+      "age": 3,
+      "at": 52000,
+      "k": "age_advance_cancelled",
+      "reason": "cancelled",
+      "refund": {
+        "fish": 3,
+        "grain": 2,
+        "ore": 2,
+        "wool": 1
+      },
+      "seat": 0
+    },
+    {
+      "age": 2,
+      "at": 51000,
+      "k": "age_advance_started",
+      "paid": {
+        "brick": 1,
+        "fish": 2,
+        "grain": 2,
+        "wool": 1
+      },
+      "seat": 0,
+      "t0": 51000,
+      "t1": 52000
+    },
+    {
+      "age": 2,
+      "at": 52000,
+      "k": "age_reached",
+      "seat": 0
+    },
+    {
       "at": 11000,
       "k": "built",
       "kind": "settlement",

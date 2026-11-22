@@ -100,5 +100,16 @@
     "no_building": "Necesitas un edificio donde aparezca el colono",
     "not_your_building": "El colono debe aparecer en uno de tus edificios",
     "not_available": "En esta partida los colonos se van después de los primeros poblados"
+  },
+  "age": {
+    "disabled": "Esta partida no tiene edades",
+    "setup_not_done": "Primero termina tu preparación",
+    "in_progress": "Ya estás subiendo a la siguiente edad",
+    "max": "Ya estás en la última edad",
+    "need_cities": "Necesitas {{need}} ciudades para subir de edad (tienes {{have}})",
+    "need_points": "Necesitas {{need}} puntos para subir de edad (tienes {{have}})",
+    "cannot_afford": "No te alcanzan los recursos para la siguiente edad",
+    "not_advancing": "No estás subiendo de edad",
+    "locked": "Eso requiere la edad {{age}}"
   }
 }
