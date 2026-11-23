@@ -15,7 +15,7 @@ from .models import BOT_LEVELS, COLOURS, Game, GameStatus
 from .presets import (
     CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, default_players, experimental_names, preset_description,
     preset_label, preset_values,
-    presets_data, settings_values, stats_rows,
+    base_presets, presets_data, settings_values, stats_rows,
 )
 from .setting_labels import CHOICES, LABELS
 from .settings_editor import EXPERIMENTAL, changed_settings, editor_data, editor_view, is_experimental
@@ -40,7 +40,8 @@ def game_list(request: HttpRequest) -> HttpResponse:
     elif active is not None:
         form = CreateGameForm(settings_form_data(active.preset, active.overrides))
     else:
-        form = CreateGameForm()
+        # ``?custom=1`` opens Custom (where the saved settings live), e.g. after deleting one.
+        form = CreateGameForm(initial={"preset": CUSTOM} if request.GET.get("custom") else None)
     if request.method == "POST" and request.POST.get("save_as"):
         saved = _save_from_form(request, form)
         if saved is not None:
@@ -133,10 +134,12 @@ def create_form_context(form: CreateGameForm) -> dict:
     ]
     editor = editor_view(form.data if form.is_bound else {}, base, KNOB_PATHS, form.editor_errors)
     posted = [k[2:].split(":")[0] for k, v in (form.data.items() if form.is_bound else []) if k.startswith("s:") and v]
-    groups = [
-        {"label": label, "fields": [form[k.name] for k in KNOBS if k.group == key]}
-        for key, label in GROUPS
-    ]
+    groups = []
+    for key, label in GROUPS:
+        fields = [form[k.name] for k in KNOBS if k.group == key]
+        typed = form.is_bound and any(form.data.get(k.name) for k in KNOBS if k.group == key and not k.boolean)
+        groups.append({"key": key, "label": label, "fields": fields,
+                       "open": typed or any(f.errors for f in fields)})
     return {
         "preset_cards": cards,
         "chosen_preset": preset,
@@ -150,10 +153,11 @@ def create_form_context(form: CreateGameForm) -> dict:
         "presets_data": presets_data(),
         "editor": [g for g in editor if g["key"] != EXPERIMENTAL],
         "experimental_editor": next((g for g in editor if g["key"] == EXPERIMENTAL), None),
-        "experimental_presets": [
+        # "Start from" in Custom: every game type a custom game can start from (beta ones marked).
+        "base_choices": [
             {"name": name, "label": preset_label(name), "description": preset_description(name),
-             "selected": name == base}
-            for name in experimental_names()
+             "selected": name == base, "experimental": name in experimental_names()}
+            for name in base_presets()
         ],
         "editor_open": any(not is_experimental(p) for p in form.editor_errors) or any(
             not is_experimental(path) for path in posted),
@@ -261,7 +265,7 @@ def delete_saved(request: HttpRequest, saved_id: int) -> HttpResponse:
         services.delete_saved(request.user, saved_id)
     except services.LobbyError as exc:
         messages.error(request, error_message(exc.code))
-    return redirect(reverse("lobby:list") + "#my-settings")
+    return redirect(reverse("lobby:list") + "?custom=1#my-settings")
 
 
 def saved_rows(user, active=None) -> list[dict]:

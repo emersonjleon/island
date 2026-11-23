@@ -74,6 +74,8 @@ export interface GameStateView {
   buildable?: BuildableSets;
   /** Stage 3: the map rule, and for players under fog the hexes seen and in sight now. */
   visibility?: { map: string; hidden_numbers: boolean; seen?: number[]; in_sight?: number[] };
+  /** Stage 3: each player's age and research in progress (when ages are on). */
+  ages?: import("../state/ages").AgesView;
 }
 
 /** ``timeline``: [game ms, points] whenever the score changed; ``produced``: cards from dice. */
@@ -104,6 +106,8 @@ export type Intent =
   | { a: "bank_trade"; give: ResMap; get: ResMap }
   | { a: "buy_dev_card" }
   | { a: "buy_settler"; vertex?: number }
+  | { a: "advance_age" }
+  | { a: "cancel_age" }
   | { a: "play_dev_card"; card: DevCardKind; hex?: number; victim?: number; resources?: Resource[]; resource?: Resource }
   | { a: "post_offer"; give: ResMap; get: ResMap }
   | { a: "cancel_offer"; offer: number }

@@ -1636,11 +1636,6 @@ msgstr "使用这些设置"
 msgid "Delete %(name)s"
 msgstr "删除 %(name)s"
 
-msgid ""
-"Choose Custom, set the rules you like and save them here to use them again "
-"with one click."
-msgstr "选择“自定义”，设置你喜欢的规则并保存在这里，以后一键即可再次使用。"
-
 #, python-format
 msgid "Saved as “%(name)s”. It is ready under My settings."
 msgstr "已保存为“%(name)s”。它已在“我的设置”中准备好。"
@@ -1906,3 +1901,28 @@ msgstr "拓荒者抵御强盗"
 
 msgid "The robber cannot move onto a hex with a settler on one of its corners."
 msgstr "强盗不能移动到某个路口上有拓荒者的六边形。"
+
+
+msgid "Ages"
+msgstr "时代"
+
+msgid "Big with ages"
+msgstr "大岛与时代"
+
+msgid "The classic island with ages: pay fish to reach new ages for points and bonuses."
+msgstr "经典岛屿加上时代：用鱼进入新时代，获得分数和加成。"
+
+msgid "The big island for 5 or 6 players, with ages."
+msgstr "适合 5 或 6 名玩家的大岛，带时代。"
+
+msgid "Start from"
+msgstr "起始类型"
+
+msgid "New rules still being tested."
+msgstr "仍在测试中的新规则。"
+
+msgid "Save the rules you like with the box at the bottom to use them again with one click."
+msgstr "用底部的输入框保存你喜欢的规则，下次一键使用。"
+
+msgid "Experimental rules"
+msgstr "实验规则"

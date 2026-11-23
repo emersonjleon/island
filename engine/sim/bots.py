@@ -12,7 +12,7 @@ a game can be replayed from its command log alone.
   1:1 swaps on the trade board and takes other players' offers that help it.
   When settlers stay after setup, it buys settlers it can afford (when it has
   nothing to build) and parks each idle one where it gathers most, near its own
-  buildings.
+  buildings. With ages on, it advances to the next age as soon as it can.
 """
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ from typing import Any
 from engine.rng import Rng
 from engine.board import coords
 from engine import sight
-from engine.rules import construction, devcards, movement, placement, robber, settlers, trade, trade_board
+from engine.rules import age_state, ages, construction, devcards, movement, placement, robber, settlers, trade, trade_board
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
@@ -85,8 +85,11 @@ class Bot:
 
     def _trade_for(self, state: GameState, kind: BuildKind, max_missing: int = 99) -> Intent | None:
         """A bank trade that brings ``kind`` one card closer, paid from surplus."""
+        return self._trade_toward(state, placement.cost_of(state, kind), max_missing)
+
+    def _trade_toward(self, state: GameState, cost: dict[Resource, int], max_missing: int = 99) -> Intent | None:
+        """A bank trade that brings ``cost`` one card closer, paid from surplus."""
         p = state.player(self.seat)
-        cost = placement.cost_of(state, kind)
         missing = [r for r in Resource if cost[r] > p.hand[r]]
         if not missing or sum(cost[r] - p.hand[r] for r in missing) > max_missing:
             return None
@@ -300,13 +303,28 @@ class GreedyBot(Bot):
         swaps = self.board_trades(state)
         if swaps and swaps[0]["a"] == "accept_offer":
             return plays + swaps
+        age = self._age_step(state)
+        if age is not None and age["a"] == "advance_age":
+            return plays + [age]
         builds = self.network_builds(state)
+        if age is not None and (not builds or builds[0]["a"] == "bank_trade"):
+            builds = [age]
         if not builds or builds[0]["a"] == "bank_trade":
             buy = self._buy_settler(state) or self._buy_card(state)
             if buy is not None:
                 builds = [buy]
         builds, builders = self._assign_builders(state, builds)
         return plays + swaps + builds + self.settler_moves(state, builders)
+
+    def _age_step(self, state: GameState) -> Intent | None:
+        """Advance to the next age when possible, else a bank trade toward its cost."""
+        err = ages.advance_error(state, self.seat)
+        if err is None:
+            return {"a": "advance_age"}
+        if err.code != "age.cannot_afford":
+            return None
+        nxt = age_state.step(state, age_state.age_of(state, self.seat) + 1)
+        return self._trade_toward(state, {r: nxt.cost.get(r, 0) for r in Resource}, 2)
 
     def _assign_builders(self, state: GameState, intents: list[Intent]) -> tuple[list[Intent], set[int]]:
         """When every build needs a settler on the site (``settlers.builder_required =

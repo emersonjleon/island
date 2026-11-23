@@ -1726,13 +1726,6 @@ msgstr "Usar estos ajustes"
 msgid "Delete %(name)s"
 msgstr "Borrar %(name)s"
 
-msgid ""
-"Choose Custom, set the rules you like and save them here to use them again "
-"with one click."
-msgstr ""
-"Elige Personalizada, ajusta las reglas a tu gusto y guárdalas aquí para "
-"usarlas de nuevo con un clic."
-
 #, python-format
 msgid "Saved as “%(name)s”. It is ready under My settings."
 msgstr "Guardado como “%(name)s”. Ya está en Mis ajustes."
@@ -2029,9 +2022,6 @@ msgstr "Experimental (beta)"
 msgid "Price of a settler"
 msgstr "Precio de un colono"
 
-msgid "New rules still being tested. Start from one of these, or turn rules on one by one below."
-msgstr "Reglas nuevas que aún estamos probando. Empieza desde uno de estos tipos o activa las reglas una por una abajo."
-
 msgid "Experimental rules"
 msgstr "Reglas experimentales"
 
@@ -2076,3 +2066,25 @@ msgstr "Si está apagado, salen del juego."
 
 msgid "The robber may enter fishing grounds"
 msgstr "El ladrón puede entrar en las zonas de pesca"
+
+
+msgid "Ages"
+msgstr "Edades"
+
+msgid "Big with ages"
+msgstr "Grande con edades"
+
+msgid "The classic island with ages: pay fish to reach new ages for points and bonuses."
+msgstr "La isla clásica con edades: paga con peces para llegar a nuevas edades y ganar puntos y ventajas."
+
+msgid "The big island for 5 or 6 players, with ages."
+msgstr "La isla grande para 5 o 6 jugadores, con edades."
+
+msgid "Start from"
+msgstr "Empezar desde"
+
+msgid "New rules still being tested."
+msgstr "Reglas nuevas que aún estamos probando."
+
+msgid "Save the rules you like with the box at the bottom to use them again with one click."
+msgstr "Guarda las reglas que te gusten con la casilla de abajo para usarlas de nuevo con un clic."

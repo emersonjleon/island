@@ -5,6 +5,7 @@ import type {
   BoardMsg, BoardParts, BuildKind, ConstructionView, DevCardKind, DevCardsPlayer, DevCardsView, GameEvent, GameStateView, PlayerView,
   ResMap, Resource, ServerMsg, SettlerView, StatsView,
 } from "../protocol/types";
+import { applyAgeEvent } from "./ages";
 
 export type Listener = (store: GameStore) => void;
 
@@ -257,6 +258,11 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
     case "dev_card_played":
     case "largest_army":
       applyDevCardEvent(state, ev);
+      break;
+    case "age_advance_started":
+    case "age_advance_cancelled":
+    case "age_reached":
+      applyAgeEvent(state, ev);
       break;
     case "offer_posted":
     case "offer_closed":

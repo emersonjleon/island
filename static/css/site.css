@@ -206,7 +206,6 @@ table.seats td .button, table.seats td button { padding: 4px 12px; font-size: 0.
 .stats-list dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
 .custom-settings .knob-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px 14px;
   border-top: 1px solid var(--border); padding-top: 10px; }
-.custom-settings .knob-group > legend { float: left; width: 100%; grid-column: 1 / -1; margin-bottom: 0; color: var(--accent-strong); }
 .knob { display: flex; flex-direction: column; gap: 4px; }
 .knob label { font-size: 0.9rem; font-weight: 600; }
 .knob-check label { display: flex; align-items: flex-start; gap: 8px; font-weight: normal; cursor: pointer; }
@@ -271,18 +270,7 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 @media (max-width: 520px) { .rules-table th, .rules-table td { padding: 5px 4px; font-size: 0.9rem; } }
 
 /* All settings (custom games) */
-.experimental { margin-top: 14px; border: 1px dashed var(--accent); border-radius: 10px; padding: 10px 14px; }
-.experimental > legend { color: var(--accent-strong); font-weight: 700; padding: 0 6px; }
-.experimental-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin: 8px 0; }
-.experimental-preset { display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 10px 12px; cursor: pointer;
-  font: inherit; color: inherit; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
-.experimental-preset:hover { border-color: var(--accent); }
-.experimental-preset.selected { border-color: var(--accent); background: var(--panel); box-shadow: 0 0 0 2px var(--accent); }
-.experimental-preset .preset-desc { font-size: 0.85em; color: var(--muted); }
 .experimental-settings .editor-group > legend { display: none; }
-.experimental-settings > summary { cursor: pointer; font-weight: 600; color: var(--accent); padding: 4px 0; }
-.all-settings { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
-.all-settings > summary { cursor: pointer; font-weight: 700; color: var(--accent-strong); padding: 4px 0; }
 .editor-group { border: 0; padding: 0; margin: 12px 0 0; min-width: 0; }
 .editor-group > legend { font-family: var(--font-display); font-weight: 700; color: var(--accent-strong); margin-bottom: 4px; }
 .editor-group h4 { margin: 10px 0 4px; font-size: 0.9rem; color: var(--muted); }
@@ -301,9 +289,6 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 .save-settings { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex: 1 1 18rem; }
 .save-settings input { flex: 1 1 10rem; min-width: 0; padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
   background: var(--bg); color: var(--fg); font: inherit; }
-.my-settings { margin: 0 0 16px; }
-.my-settings h3 { margin: 0 0 8px; font-size: 1rem; }
-.my-settings h3 .muted { font-weight: normal; font-size: 0.85rem; }
 .saved-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .saved-chip { display: inline-flex; align-items: stretch; border: 1px solid var(--border); border-radius: 999px;
   background: var(--bg); overflow: hidden; max-width: 100%; }
@@ -313,7 +298,6 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 .saved-chip > a:hover .saved-name { color: var(--accent); }
 .saved-chip.active { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
 .saved-chip.active .saved-name { color: var(--accent-strong); }
-.saved-chip form { display: flex; margin: 0; }
 .saved-chip .chip-delete { background: none; border: 0; box-shadow: none; color: var(--muted); padding: 0 12px 0 8px;
   border-radius: 0; font-size: 1.1rem; line-height: 1; }
 .saved-chip .chip-delete:hover { color: var(--error); filter: none; }
@@ -321,3 +305,30 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 .save-settings label { font-weight: 600; font-size: 0.95rem; }
 .save-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .save-row input { flex: 1 1 12rem; min-width: 0; }
+
+/* Custom rules: "Start from" at the top, then one collapsible section per topic. */
+.start-from { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; }
+.start-from h4 { margin: 4px 0 8px; font-size: 0.95rem; }
+.start-from h4 .muted { font-weight: normal; font-size: 0.85rem; }
+.start-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.start-chip { font: inherit; font-size: 0.9rem; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--panel); color: var(--fg); box-shadow: none; }
+.start-chip:hover { border-color: var(--accent); filter: none; }
+.start-chip.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
+.beta-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; background: var(--gold, #e9b949); color: #2c1f02; vertical-align: middle; }
+.saved-chips { margin-bottom: 10px; }
+.saved-chip .chip-delete { align-self: stretch; }
+.rule-section { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); margin: 8px 0; }
+.rule-section > summary { cursor: pointer; list-style: none; padding: 10px 14px; font-weight: 700; color: var(--accent-strong);
+  display: flex; align-items: center; gap: 8px; }
+.rule-section > summary::-webkit-details-marker { display: none; }
+.rule-section > summary::after { content: "▸"; margin-left: auto; color: var(--muted); transition: transform 0.15s; }
+.rule-section[open] > summary::after { transform: rotate(90deg); }
+.rule-section[open] > summary { border-bottom: 1px solid var(--border); }
+.rule-section > :not(summary) { margin-left: 14px; margin-right: 14px; }
+.rule-section > .knob-group { padding: 12px 0; }
+.rule-section > .helptext { margin-top: 10px; }
+.rule-section > .editor-group:last-child, .rule-section > .knob-group:last-child { margin-bottom: 12px; }
+.custom-settings .rule-section > .knob-group { border: 0; margin: 0 14px 12px; padding: 12px 0 0; }
+@media (prefers-reduced-motion: reduce) { .rule-section > summary::after { transition: none; } }

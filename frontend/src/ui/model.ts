@@ -74,6 +74,8 @@ export function formatRes(t: TFunction, m: ResMap | undefined): string {
 }
 
 /** Translate a reject code; unknown codes fall back to a generic line. */
+const AGE_ROMAN = ["I", "II", "III"];
+
 export function errorText(t: TFunction, code: string, params: Record<string, unknown> = {}): string {
   const key = `errors:${code}`;
   const text = t(key, { ...params, defaultValue: "" });
@@ -168,6 +170,8 @@ export function logLine(
       const knights = (ev.knights as Record<string, number> | undefined)?.[String(seat)] ?? 0;
       return { text: t(seat === viewer ? "events:largest_army_you" : "events:largest_army", { who, count: knights }), seat };
     }
+    case "age_advance_started": return { text: tw("age_started", { who, age: AGE_ROMAN[Number(ev.age) - 1] ?? ev.age }), seat };
+    case "age_reached": return { text: tw("age_reached", { who, age: AGE_ROMAN[Number(ev.age) - 1] ?? ev.age }), seat };
     case "resigned": return { text: t(seat === viewer ? "events:resigned_you" : "events:resigned", { who }), seat };
     case "game_over": return {
       text: ev.winner === null ? t("events:game_over_none")
