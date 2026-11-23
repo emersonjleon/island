@@ -133,7 +133,6 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
     }
   };
 
-  const statsBox = form.querySelector<HTMLDetailsElement>("#stats-box");
   // "Start from" chips in Custom: every game type a custom game can start from.
   const buttons = [...form.querySelectorAll<HTMLButtonElement>("[data-base-choice]")];
 
@@ -161,7 +160,6 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
   form.addEventListener("change", (event) => {
     const target = event.target as HTMLInputElement;
     if (target.name === "preset") {
-      if (statsBox) statsBox.open = target.value === data.custom;
       if (target.value !== data.custom) setBase(target.value, true);
     }
     render();

@@ -280,7 +280,8 @@ class StageTest(unittest.TestCase):
 
 class PresetTest(unittest.TestCase):
     def test_available(self) -> None:
-        self.assertEqual(available_presets(), ["ages", "ages_big", "blitz", "classic", "custom", "expanded", "explorer", "huge", "settlers"])
+        self.assertEqual(available_presets(), ["ages", "ages_big", "ages_blitz", "ages_explorer", "ages_settlers", "blitz", "classic", "custom",
+                          "expanded", "explorer", "friendly", "huge", "settlers"])
 
     def test_custom_starts_from_defaults(self) -> None:
         self.assertEqual(load_preset("custom").model_dump(exclude={"preset"}),

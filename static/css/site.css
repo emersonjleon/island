@@ -270,7 +270,7 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 @media (max-width: 520px) { .rules-table th, .rules-table td { padding: 5px 4px; font-size: 0.9rem; } }
 
 /* All settings (custom games) */
-.experimental-settings .editor-group > legend { display: none; }
+.feature-settings .editor-group > legend { display: none; }
 .editor-group { border: 0; padding: 0; margin: 12px 0 0; min-width: 0; }
 .editor-group > legend { font-family: var(--font-display); font-weight: 700; color: var(--accent-strong); margin-bottom: 4px; }
 .editor-group h4 { margin: 10px 0 4px; font-size: 0.9rem; color: var(--muted); }
@@ -315,8 +315,7 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
   border: 1px solid var(--border); background: var(--panel); color: var(--fg); box-shadow: none; }
 .start-chip:hover { border-color: var(--accent); filter: none; }
 .start-chip.selected { border-color: var(--accent); background: var(--accent); color: #fff; }
-.beta-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; font-size: 0.7rem; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 0.04em; background: var(--gold, #e9b949); color: #2c1f02; vertical-align: middle; }
+.start-chip.new:not(.selected) { border-color: #d9b45a; background: #fbf1d6; }
 .saved-chips { margin-bottom: 10px; }
 .saved-chip .chip-delete { align-self: stretch; }
 .rule-section { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); margin: 8px 0; }

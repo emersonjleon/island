@@ -2016,14 +2016,8 @@ msgstr "El ladrón no puede ir a un hexágono con un colono en una de sus esquin
 msgid "Explorer"
 msgstr "Explorador"
 
-msgid "Experimental (beta)"
-msgstr "Experimental (beta)"
-
 msgid "Price of a settler"
 msgstr "Precio de un colono"
-
-msgid "Experimental rules"
-msgstr "Reglas experimentales"
 
 msgid "Fish that buy off the robber"
 msgstr "Peces que calman al ladrón"
@@ -2074,17 +2068,8 @@ msgstr "Edades"
 msgid "Big with ages"
 msgstr "Grande con edades"
 
-msgid "The classic island with ages: pay fish to reach new ages for points and bonuses."
-msgstr "La isla clásica con edades: paga con peces para llegar a nuevas edades y ganar puntos y ventajas."
-
-msgid "The big island for 5 or 6 players, with ages."
-msgstr "La isla grande para 5 o 6 jugadores, con edades."
-
 msgid "Start from"
 msgstr "Empezar desde"
-
-msgid "New rules still being tested."
-msgstr "Reglas nuevas que aún estamos probando."
 
 msgid "Save the rules you like with the box at the bottom to use them again with one click."
 msgstr "Guarda las reglas que te gusten con la casilla de abajo para usarlas de nuevo con un clic."
@@ -2190,3 +2175,51 @@ msgstr "Edad desde la que los colonos recogen"
 
 msgid "Age from which settlers keep the robber away"
 msgstr "Edad desde la que los colonos alejan al ladrón"
+
+msgid "The big island for 5 or 6 players, with ages. 17 points."
+msgstr "La isla grande para 5 o 6 jugadores, con edades. 17 puntos."
+
+msgid "Settlers with ages"
+msgstr "Colonos con edades"
+
+msgid "Settlers stay on the island; they gather from the Age of the Sea and keep the robber away from the Golden Age. 14 points."
+msgstr "Los colonos se quedan en la isla; recogen desde la Edad del Mar y alejan al ladrón desde la Edad Dorada. 14 puntos."
+
+msgid "Quick ages"
+msgstr "Edades rápidas"
+
+msgid "Fish that buy off the robber (0 = off)"
+msgstr "Pescado que compra al ladrón (0 = no)"
+
+msgid "Friendly robber"
+msgstr "Ladrón amistoso"
+
+msgid "Hidden island to explore"
+msgstr "Isla oculta para explorar"
+
+msgid "Settlers and ages on a hidden island: explore to find land and fishing grounds. 14 points."
+msgstr "Colonos y edades en una isla oculta: explora para encontrar tierra y zonas de pesca. 14 puntos."
+
+msgid "Points for Longest Road / Largest Army / Largest Population"
+msgstr "Puntos por Camino más largo / Gran ejército / Mayor población"
+
+msgid "The classic island with ages: pay fish to reach the Age of the Sea and the Golden Age for points, a bigger safe hand, faster builds and the megacity. 14 points."
+msgstr "La isla clásica con edades: paga con pescado para llegar a la Edad del Mar y la Edad Dorada y gana puntos, una mano segura más grande, construcciones más rápidas y la megaciudad. 14 puntos."
+
+msgid "Ages (Age of the Sea, Golden Age)"
+msgstr "Edades (Edad del Mar, Edad Dorada)"
+
+msgid "The classic island, but the robber leaves alone anyone with fewer than 3 points, and what it takes goes back to the bank."
+msgstr "La isla clásica, pero el ladrón no molesta a quien tiene menos de 3 puntos, y lo que roba vuelve al banco."
+
+msgid "Fast dice and builds with ages: the Age of the Sea needs no city and research is shorter. 10 points."
+msgstr "Dados y construcciones rápidos con edades: la Edad del Mar no pide ciudad y la investigación es más corta. 10 puntos."
+
+msgid "Explorers of the ages"
+msgstr "Exploradores de las edades"
+
+msgid "Points before the robber can rob you (0 = always)"
+msgstr "Puntos para que el ladrón te pueda robar (0 = siempre)"
+
+msgid "Settlers stay after the first settlements"
+msgstr "Los colonos se quedan después de los primeros poblados"

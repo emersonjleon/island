@@ -24,7 +24,7 @@
       {{ form.max_players.errors }}
     </div>
 
-    <details class="preset-stats" id="stats-box"{% if chosen_preset == custom_preset %} open{% endif %}>
+    <details class="preset-stats" id="stats-box">
       <summary>{% translate "This game" %}</summary>
       <dl class="stats-list" id="preset-stats" data-yes="{% translate 'Yes' %}" data-no="{% translate 'No' %}">
         {% for label, value, knobs in chosen_stats %}
@@ -39,8 +39,8 @@
         <h4>{% translate "Start from" %}</h4>
         <div class="start-chips" role="group" aria-label="{% translate 'Start from' %}">
           {% for p in base_choices %}
-          <button type="button" class="start-chip{% if p.selected %} selected{% endif %}{% if p.experimental %} beta{% endif %}" data-base-choice="{{ p.name }}" aria-pressed="{% if p.selected %}true{% else %}false{% endif %}" title="{{ p.description }}">
-            {{ p.label }}{% if p.experimental %} <span class="beta-tag">beta</span>{% endif %}
+          <button type="button" class="start-chip{% if p.selected %} selected{% endif %}{% if p.new %} new{% endif %}" data-base-choice="{{ p.name }}" aria-pressed="{% if p.selected %}true{% else %}false{% endif %}" title="{{ p.description }}">
+            {{ p.label }}
           </button>
           {% endfor %}
         </div>
@@ -85,13 +85,12 @@
         </div>
       </details>
       {% endfor %}
-      {% if experimental_editor %}
-      <details class="rule-section experimental-settings" id="experimental"{% if experimental_open %} open{% endif %}>
-        <summary>{% translate "Experimental rules" %} <span class="beta-tag">beta</span></summary>
-        <p class="helptext">{% translate "New rules still being tested." %}</p>
-        {% include "lobby/_editor_group.html" with group=experimental_editor %}
+      {% for group in feature_editors %}
+      <details class="rule-section feature-settings" data-section="{{ group.key }}"{% if group.open %} open{% endif %}>
+        <summary>{{ group.label }}</summary>
+        {% include "lobby/_editor_group.html" %}
       </details>
-      {% endif %}
+      {% endfor %}
       <details class="rule-section all-settings" id="all-settings"{% if editor_open %} open{% endif %}>
         <summary>{% translate "All settings" %}</summary>
         <p class="helptext">{% translate "Leave a box blank to keep the game type's value, shown in grey." %}</p>

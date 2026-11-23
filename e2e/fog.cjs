@@ -35,7 +35,7 @@ async function signUp(page, name) {
     await signUp(page, "scout");
     await page.goto(`${BASE}/lobby/#create-game`);
     await page.click('.preset-card[data-card="custom"]');
-    await page.click(".experimental-settings > summary");
+    await page.click('.rule-section[data-section="visibility"] > summary');
     await page.selectOption('select[name="s:visibility.map"]', "live_fog");
     await page.selectOption('select[name="s:visibility.hidden_numbers"]', "1");
     await Promise.all([page.waitForURL(/\/play\/[A-Z0-9]+\/$/, { timeout: 60_000 }), page.click('button[name="play_bots"]')]);

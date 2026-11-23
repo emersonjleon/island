@@ -21,17 +21,21 @@ MAX_TABLE = 12
 PRESET_INFO = {
     "blitz": (_("Blitz"), _("Fast dice, quicker builds and fewer points to win.")),
     "classic": (_("Classic"), _("The standard island for 3 or 4 players.")),
-    "ages": (_("Ages"), _("The classic island with ages: pay fish to reach new ages for points and bonuses.")),
     "expanded": (_("Big"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
-    "ages_big": (_("Big with ages"), _("The big island for 5 or 6 players, with ages.")),
     "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game.")),
     CUSTOM: (_("Custom"), _("Start from the game type you chose and change the rules yourself.")),
 }
 
-# Beta game types: not shown as cards, only as starting points inside Custom.
+# New game types: not shown as cards, only as starting points at the top of Custom.
 EXPERIMENTAL_INFO = {
+    "ages": (_("Ages"), _("The classic island with ages: pay fish to reach the Age of the Sea and the Golden Age for points, a bigger safe hand, faster builds and the megacity. 14 points.")),
+    "ages_big": (_("Big with ages"), _("The big island for 5 or 6 players, with ages. 17 points.")),
+    "ages_blitz": (_("Quick ages"), _("Fast dice and builds with ages: the Age of the Sea needs no city and research is shorter. 10 points.")),
+    "ages_settlers": (_("Settlers with ages"), _("Settlers stay on the island; they gather from the Age of the Sea and keep the robber away from the Golden Age. 14 points.")),
+    "ages_explorer": (_("Explorers of the ages"), _("Settlers and ages on a hidden island: explore to find land and fishing grounds. 14 points.")),
     "settlers": (_("Settlers"), _("Settlers stay after the first settlements: every building needs one on the spot. Buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away.")),
     "explorer": (_("Explorer"), _("Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them.")),
+    "friendly": (_("Friendly robber"), _("The classic island, but the robber leaves alone anyone with fewer than 3 points, and what it takes goes back to the bank.")),
 }
 
 
@@ -145,7 +149,28 @@ KNOBS = [
 ]
 KNOBS_BY_NAME = {k.name: k for k in KNOBS}
 
-# The summary shown for every game type: (label, knob names joined with " / ").
+# Values shown in the summary that the host does not set with a quick rule.
+INFO: dict[str, Any] = {
+    "ages": lambda s: s.ages.enabled,
+    "settlers_stay": lambda s: not s.settlers.leave_after_setup,
+    "hidden_island": lambda s: s.visibility.map.value != "open",
+    "longest_road_points": lambda s: s.victory.longest_road.points,
+    "largest_army_points": lambda s: s.victory.largest_army.points,
+    "largest_population_points": lambda s: s.ages.largest_population.points if s.ages.enabled else 0,
+    "fish_ransom": lambda s: s.robber.fish_ransom,
+    "friendly_robber": lambda s: s.robber.friendly_min_points,
+    "robber_fishing": lambda s: s.robber.may_enter_fishing,
+}
+
+# The setting each ``INFO`` value shows (so a lobby's "changed rules" list leaves it out).
+INFO_PATHS = {
+    "ages": "ages.enabled", "settlers_stay": "settlers.leave_after_setup", "hidden_island": "visibility.map",
+    "longest_road_points": "victory.longest_road.points", "largest_army_points": "victory.largest_army.points",
+    "largest_population_points": "ages.largest_population.points", "fish_ransom": "robber.fish_ransom",
+    "friendly_robber": "robber.friendly_min_points", "robber_fishing": "robber.may_enter_fishing",
+}
+
+# The summary shown for every game type: (label, knob or info names joined with " / ").
 STATS = [
     (_("Island size (land hexes)"), ("land_hexes",)),
     (_("Points to win"), ("target",)),
@@ -155,6 +180,14 @@ STATS = [
     (_("Seconds to build a road / settlement / city"), ("road_time", "settlement_time", "city_time")),
     (_("Bank trade (cards for 1)"), ("bank_ratio",)),
     (_("Robber on a 7"), ("robber",)),
+    (_("Ages (Age of the Sea, Golden Age)"), ("ages",)),
+    (_("Points for Longest Road / Largest Army / Largest Population"),
+     ("longest_road_points", "largest_army_points", "largest_population_points")),
+    (_("Settlers stay after the first settlements"), ("settlers_stay",)),
+    (_("Hidden island to explore"), ("hidden_island",)),
+    (_("Fish that buy off the robber (0 = off)"), ("fish_ransom",)),
+    (_("Points before the robber can rob you (0 = always)"), ("friendly_robber",)),
+    (_("The robber may enter fishing grounds"), ("robber_fishing",)),
 ]
 
 
@@ -162,13 +195,13 @@ STATS = [
 def preset_values(name: str, players: int) -> dict[str, int | bool]:
     """Every knob's value in preset ``name`` for a full table of ``players``."""
     settings = load_preset(name, {"players": {"max": players}}, players=players)
-    return {k.name: k.read(settings) for k in KNOBS}
+    return settings_values(settings)
 
 
 def base_presets() -> list[str]:
-    """The game types a custom game can start from (every type but Custom itself,
-    experimental ones included)."""
-    return [p for p in preset_names() if p != CUSTOM] + experimental_names()
+    """The game types a custom game can start from: the new ones first, then every
+    type shown as a card but Custom itself."""
+    return experimental_names() + [p for p in preset_names() if p != CUSTOM]
 
 
 def default_players(name: str) -> int:
@@ -203,4 +236,9 @@ def stats_rows(values: dict[str, int | bool]) -> list[tuple[Any, str]]:
 
 
 def settings_values(settings: GameSettings) -> dict[str, int | bool]:
-    return {k.name: k.read(settings) for k in KNOBS}
+    """Every knob's value, and the summary's other values (``INFO``)."""
+    out = {k.name: k.read(settings) for k in KNOBS}
+    for name, read in INFO.items():
+        value = read(settings)
+        out[name] = value if isinstance(value, bool) else int(value)
+    return out

@@ -26,8 +26,10 @@ from .setting_labels import CHOICES, GROUP_LABELS, KEY_LABELS, LABELS, SUBGROUP_
 PREFIX = "s:"
 MS_PER_SECOND = 1000
 _MS_SUFFIX = "_ms"
-EXPERIMENTAL = "experimental"
-# Settings of features from a later stage that are already playable: shown apart, as beta.
+# Groups of the newer rules (ages, settlers, what players see): the create form shows
+# each as its own section in Custom instead of inside "All settings".
+FEATURE_GROUPS = ("ages", "settlers", "visibility")
+# Settings of features from a later stage that are already playable.
 EXPERIMENTAL_PATHS = frozenset(f.split("=", 1)[0] for f in EARLY_FEATURES)
 
 
@@ -161,10 +163,6 @@ def _setting(path: str, info, group: str, subgroup: str, implemented: int) -> Se
         args = [a for a in get_args(annotation) if a is not type(None)]
         optional = len(args) < len(get_args(annotation))
         annotation = args[0] if len(args) == 1 else annotation
-    if is_experimental(path):
-        # Beta settings get their own group, headed by the group they belong to.
-        subgroup = subgroup if subgroup == "visibility.sight" else ("settlers" if path.startswith("economy.") else group)
-        group = EXPERIMENTAL
     common = {"label": label, "help": help_text, "group": group, "subgroup": subgroup, "optional": optional}
     if isinstance(annotation, type) and issubclass(annotation, Enum):
         allowed = _allowed(annotation, implemented, path)
@@ -230,10 +228,6 @@ def editor_groups(exclude: set[str] | frozenset[str] = frozenset()) -> list[Grou
             continue
         group = groups.setdefault(setting.group, Group(setting.group, GROUP_LABELS.get(setting.group, setting.group)))
         heading = SUBGROUP_LABELS.get(setting.subgroup, "") if setting.subgroup else ""
-        same = [s for s in group.sections if s[0] == heading] if group.key == EXPERIMENTAL else []
-        if same:
-            same[0][1].append(setting)
-            continue
         if not group.sections or group.sections[-1][0] != heading:
             group.sections.append((heading, []))
         group.sections[-1][1].append(setting)
