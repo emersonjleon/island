@@ -161,6 +161,9 @@ class RandomBot(Bot):
 class GreedyBot(Bot):
     """Best-yield spots; city > settlement > road; trades for the missing resource."""
 
+    #: With ages on, advance as soon as possible (False: ignore the ages, for balance runs).
+    uses_ages = True
+
     def pick_vertex(self, state: GameState, options: list[int]) -> int:
         board = state.board.board
         contested = set()
@@ -318,6 +321,8 @@ class GreedyBot(Bot):
 
     def _age_step(self, state: GameState) -> Intent | None:
         """Advance to the next age when possible, else a bank trade toward its cost."""
+        if not self.uses_ages:
+            return None
         err = ages.advance_error(state, self.seat)
         if err is None:
             return {"a": "advance_age"}

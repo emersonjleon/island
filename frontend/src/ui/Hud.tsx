@@ -22,7 +22,7 @@ import { KeySettings } from "./KeySettings";
 import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
-import { advanceBlock, ageStep, agePlayer, agesOn } from "../state/ages";
+import { advanceBlock, ageStep, agePlayer, agesOn, populationHolder } from "../state/ages";
 import { buySettlerBlock, gatherNumbers, settlerLimit, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
@@ -359,6 +359,7 @@ function Scores({ store, t, onStats, onPrices, onResign }: HudProps & { onStats(
                   {p.seat !== store.seat && cardCount(dev) > 0 && <> · {t("hud:scores.dev", { count: cardCount(dev) })}</>}
                   {(dev?.knights ?? 0) > 0 && <> · {t("hud:scores.knights", { count: dev!.knights })}</>}
                   {army && <> · <strong class="award">{t("hud:scores.largest_army")}</strong></>}
+                  {populationHolder(s) === p.seat && <> · <strong class="award">{t("hud:scores.largest_population")}</strong></>}
                   {agesOn(store.settings) && <> · <span class="age-tag">{t("hud:age.short", { n: ageName(agePlayer(s, p.seat).age) })}</span></>}
                 </span>
               )}
@@ -436,6 +437,11 @@ function ageName(age: number): string {
   return AGE_NAMES[age - 1] ?? String(age);
 }
 
+/** How far the research is, in whole percent. */
+function ageShare(a: { t0: number; t1: number }, now: number): number {
+  return a.t1 <= a.t0 ? 100 : Math.round(Math.min(1, Math.max(0, (now - a.t0) / (a.t1 - a.t0))) * 100);
+}
+
 /** Advancing to the next age (ages variation): cost and needs, then the research countdown. */
 function AgeButton({ store, t, send, now }: Pick<HudProps, "store" | "t" | "send" | "now">) {
   const seat = store.seat!;
@@ -445,6 +451,7 @@ function AgeButton({ store, t, send, now }: Pick<HudProps, "store" | "t" | "send
     const help = `${t("hud:age.advancing", { n: ageName(me.advancing.age), secs })} · ${t("hud:age.cancel")}`;
     return (
       <button type="button" class="build age-advance advancing" onClick={() => send({ a: "cancel_age" })} title={help} aria-label={help}>
+        <span class="age-bar" aria-hidden="true" style={{ width: `${ageShare(me.advancing, now())}%` }} />
         <span class="build-name">{t("hud:age.advancing", { n: ageName(me.advancing.age), secs })}</span>
         <span class="age-x" aria-hidden="true">×</span>
       </button>

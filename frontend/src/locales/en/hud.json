@@ -78,6 +78,7 @@
     "dev": "{{count}} developments",
     "knights": "{{count}} knights",
     "largest_army": "Largest Army",
+    "largest_population": "Largest Population",
     "resigned": "Resigned",
     "show_all": "Show all {{count}}",
     "show_less": "Show fewer"
@@ -192,6 +193,8 @@
       "megacity": "Megacities",
       "longest_road": "Longest Road",
       "largest_army": "Largest Army",
+      "largest_population": "Largest Population",
+      "ages": "Ages",
       "victory_point": "Victory points"
     },
     "part": {
@@ -205,6 +208,10 @@
       "longest_road_other": "Longest Road ({{points}})",
       "largest_army_one": "Largest Army ({{points}})",
       "largest_army_other": "Largest Army ({{points}})",
+      "largest_population_one": "Largest Population ({{points}})",
+      "largest_population_other": "Largest Population ({{points}})",
+      "ages_one": "{{count}} age ({{points}})",
+      "ages_other": "{{count}} ages ({{points}})",
       "victory_point_one": "{{count}} victory point development ({{points}})",
       "victory_point_other": "{{count}} victory point developments ({{points}})"
     }

@@ -82,6 +82,7 @@ SIG_PRODUCED = "produced"
 RULE_MODULES: tuple[str, ...] = (
     "setup", "movement", "placement", "construction", "dice", "production", "robber", "trade", "victory",
     "longest_road", "devcards", "trade_board", "resign", "stats", "visibility", "settlers", "ages",
+    "largest_population",
 )
 
 

@@ -1,11 +1,11 @@
 // Game statistics for the HUD: where each player's points come from, the score
 // history and what the dice paid. The split mirrors the engine's scoring
-// (engine/rules/victory.py, longest_road.py, devcards.py); whatever it cannot
+// (engine/rules/victory.py, longest_road.py, devcards.py, ages.py); whatever it cannot
 // place (victory point cards) is the rest of the player's score.
 import type { GameStateView, ResMap } from "../protocol/types";
 
-export type PointSource = "settlement" | "city" | "megacity" | "longest_road" | "largest_army" | "victory_point";
-export const POINT_SOURCES: PointSource[] = ["settlement", "city", "megacity", "longest_road", "largest_army", "victory_point"];
+export type PointSource = "settlement" | "city" | "megacity" | "longest_road" | "largest_army" | "largest_population" | "ages" | "victory_point";
+export const POINT_SOURCES: PointSource[] = ["settlement", "city", "megacity", "longest_road", "largest_army", "largest_population", "ages", "victory_point"];
 
 /** One part of a score: ``count`` pieces/awards/cards worth ``points`` together. */
 export interface PointPart { source: PointSource; count: number; points: number }
@@ -35,6 +35,14 @@ export function pointsBreakdown(settings: Settings, state: GameStateView, seat: 
   }
   if (state.dev_cards?.army === seat) {
     parts.push({ source: "largest_army", count: 1, points: num(settings, ["victory", "largest_army", "points"], 2) });
+  }
+  if (state.ages?.largest_population?.holder === seat) {
+    parts.push({ source: "largest_population", count: 1, points: num(settings, ["ages", "largest_population", "points"], 2) });
+  }
+  const reached = Object.keys(state.ages?.players?.[String(seat)]?.reached ?? {});
+  if (reached.length) {
+    const pts = reached.reduce((a, age) => a + num(settings, ["ages", `age${age}`, "bonus", "points"], 0), 0);
+    parts.push({ source: "ages", count: reached.length, points: pts });
   }
   const total = state.players.find((p) => p.seat === seat)?.points;
   if (total !== undefined) {

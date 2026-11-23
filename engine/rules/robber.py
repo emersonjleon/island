@@ -117,6 +117,8 @@ def _fish_ransom(state: GameState, seat: int) -> dict[Resource, int] | None:
     hand = state.players[seat].hand
     if ransom <= 0 or hand[Resource.FISH] < ransom:
         return None
+    if not age_state.has_age(state, seat, state.settings.ages.fish_ransom_age):
+        return None
     hand[Resource.FISH] -= ransom
     return {Resource.FISH: ransom}
 

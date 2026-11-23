@@ -19,7 +19,7 @@ from engine.state import GameState
 
 __all__ = [
     "EXT_KEY", "FIRST_AGE", "LAST_AGE", "enabled", "ext", "age_of", "advancing", "step", "reached_steps",
-    "locked_error", "card_limit_bonus", "fish_bonus", "build_time_pct", "city_count",
+    "locked_error", "card_limit_bonus", "fish_bonus", "has_age", "production_bonus", "build_time_pct", "city_count",
 ]
 
 EXT_KEY = "ages"
@@ -78,6 +78,21 @@ def card_limit_bonus(state: GameState, seat: int) -> int:
 def fish_bonus(state: GameState, seat: int) -> int:
     """Extra fish per own building on a producing fishing ground (adds up over the ages)."""
     return sum(s.bonus.fish_per_fishing_building for s in reached_steps(state, seat))
+
+
+def has_age(state: GameState, seat: int, age: int) -> bool:
+    """True when ages are off, or ``seat`` has reached ``age``."""
+    return not enabled(state) or age_of(state, seat) >= age
+
+
+def production_bonus(state: GameState, seat: int, kind: BuildKind) -> int:
+    """Extra cards a ``kind`` building of ``seat`` gets from a producing hex (adds up over the ages)."""
+    steps = reached_steps(state, seat)
+    if kind is BuildKind.SETTLEMENT:
+        return sum(s.bonus.extra_per_settlement for s in steps)
+    if kind in (BuildKind.CITY, BuildKind.MEGACITY):
+        return sum(s.bonus.extra_per_city for s in steps)
+    return 0
 
 
 def build_time_pct(state: GameState, seat: int) -> int:

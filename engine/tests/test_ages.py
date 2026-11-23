@@ -6,16 +6,16 @@ from typing import Any
 
 from engine import game
 from engine.errors import RuleError
-from engine.events import AgeAdvanceCancelled, AgeAdvanceStarted, AgeReached, Buildable, Hand, Points
-from engine.rules import age_state, ages, construction, placement, production, robber
+from engine.events import AgeAdvanceCancelled, AgeAdvanceStarted, AgeReached, Buildable, Hand, LargestPopulation, Points
+from engine.rules import age_state, ages, construction, largest_population, placement, production, robber, settlers
 from engine.settings.enums import BuildKind, Resource
 from engine.sim.invariants import resource_totals
 from engine.state import GameState
 from engine.tests.test_dice import make_state, place, set_hand
 
 ON = {"ages": {"enabled": True}}
-AGE2 = dict(fish=2, grain=2, wool=1, brick=1)
-AGE3 = dict(fish=3, grain=2, ore=2, wool=1)
+AGE2 = dict(fish=2, grain=1, wool=1, brick=1)
+AGE3 = dict(fish=2, grain=2, ore=2)
 FISHING_HEX = 19            # fixture board: a fishing ground with token 4
 FISHING_VERTEX = 16         # a corner of it
 
@@ -91,7 +91,7 @@ class AdvanceTest(unittest.TestCase):
         game.apply(s, 0, {"a": "advance_age"}, 0)
         game.advance(s, 45000)
         self.assertEqual(age_state.age_of(s, 0), 3)
-        self.assertEqual(s.players[0].points, 2)
+        self.assertEqual(s.players[0].points, 3)
         self.assertEqual(code(s, 0, {"a": "advance_age"}, 45000), ("age.max", {"age": 3}))
 
     def test_zero_time_reaches_at_once(self) -> None:
@@ -118,7 +118,7 @@ class CancelTest(unittest.TestCase):
         game.apply(s, 0, {"a": "advance_age"}, 0)
         events = game.apply(s, 0, {"a": "cancel_age"}, 10)
         self.assertEqual(kinds(events), [AgeAdvanceCancelled, Hand])
-        self.assertEqual(events[0].refund, {Resource.FISH: 1, Resource.GRAIN: 1})
+        self.assertEqual(events[0].refund, {Resource.FISH: 1})
         self.assertEqual(s.players[0].hand[Resource.FISH], 1)
         self.assertEqual(s.bank[Resource.FISH], bank_fish + 1)
         self.assertEqual(resource_totals(s), before)
@@ -135,6 +135,62 @@ class CancelTest(unittest.TestCase):
         self.assertIn(AgeAdvanceCancelled, kinds(events))
         self.assertIsNone(age_state.advancing(s, 0))
         self.assertEqual(resource_totals(s), before)
+
+
+def place_built(state: GameState, seat: int, vertex: int, kind: BuildKind) -> list[Any]:
+    """Put a building down and run the "built" listeners (points, awards)."""
+    place(state, seat, vertex, kind)
+    return game.emit(state, game.SIG_BUILT, 0, seat=seat, kind=kind, target=vertex, setup=False, construction=0)
+
+
+class LargestPopulationTest(unittest.TestCase):
+    def test_award_moves_to_a_strictly_larger_population(self) -> None:
+        s = new_state({"ages": {"largest_population": {"min": 3}}})
+        place_built(s, 0, 5, BuildKind.CITY)                  # population 2
+        self.assertIsNone(largest_population.holder(s))
+        before = s.players[0].points
+        events = place_built(s, 0, 30, BuildKind.SETTLEMENT)  # 3
+        self.assertEqual(largest_population.holder(s), 0)
+        self.assertEqual(s.players[0].points, before + 1 + 2)
+        self.assertIn(LargestPopulation, kinds(events))
+        place_built(s, 1, 40, BuildKind.CITY)
+        place_built(s, 1, 45, BuildKind.SETTLEMENT)           # 3: a tie keeps the holder
+        self.assertEqual(largest_population.holder(s), 0)
+        p0, p1 = s.players[0].points, s.players[1].points
+        place_built(s, 1, 49, BuildKind.SETTLEMENT)           # 4
+        self.assertEqual(largest_population.holder(s), 1)
+        self.assertEqual((s.players[0].points, s.players[1].points), (p0 - 2, p1 + 1 + 2))
+        self.assertEqual(ages.state_view(s, 2)["largest_population"]["holder"], 1)
+
+    def test_only_with_ages(self) -> None:
+        s = make_state(stage=3, clock=False)
+        for v in (5, 30, 45):
+            place_built(s, 0, v, BuildKind.CITY)
+        self.assertIsNone(largest_population.holder(s))
+
+
+class AgeGatesTest(unittest.TestCase):
+    def test_fish_ransom_from_age_two(self) -> None:
+        s = new_state({"robber": {"fish_ransom": 2}})
+        set_hand(s, 0, lumber=6, fish=4)
+        lost = robber._fish_ransom(s, 0)
+        self.assertIsNone(lost)                         # age I: robbed as usual
+        set_age(s, 0, 2)
+        self.assertEqual(robber._fish_ransom(s, 0), {Resource.FISH: 2})
+
+    def test_settlers_gather_from_age_two_and_guard_from_age_three(self) -> None:
+        from engine.tests.test_settlers import land_vertex_with_resources, only_settler, staying
+        s = make_state(n=3, overrides=staying({"ages": {"enabled": True},
+                                               "settlers": {"gather": True, "block_robber": True}}), stage=3)
+        v = land_vertex_with_resources(s)
+        only_settler(s, 0, v)
+        self.assertEqual(settlers.gather(s, 3, 0), [])
+        self.assertEqual(settlers.blocked_hexes(s), frozenset())
+        set_age(s, 0, 2)
+        self.assertTrue(settlers.gather(s, 3, 0))
+        self.assertEqual(settlers.blocked_hexes(s), frozenset())
+        set_age(s, 0, 3)
+        self.assertTrue(settlers.blocked_hexes(s))
 
 
 class EffectsTest(unittest.TestCase):
@@ -177,6 +233,24 @@ class EffectsTest(unittest.TestCase):
         self.assertEqual(production.owed_by_resource(s, roll)[0][Resource.FISH][0], 2)
         set_age(s, 0, 3)
         self.assertEqual(production.owed_by_resource(s, roll)[0][Resource.FISH][0], 3)
+
+    def test_more_production_in_later_ages(self) -> None:
+        s = new_state({"ages": {"age2": {"bonus": {"extra_per_city": 1}}}})
+        h = next(h for h in range(len(s.board.token)) if s.board.hex_resource(h) is not None
+                 and h not in s.board.fishing and h != s.robber_hex and s.board.token[h] is not None)
+        v = s.board.board.hex_vertices[h][0]
+        place(s, 0, v, BuildKind.CITY)
+        roll, res = s.board.token[h], s.board.hex_resource(h)
+        base = production.owed_by_resource(s, roll)[0][res][0]
+        set_age(s, 0, 2)                                # cities + 1
+        self.assertEqual(production.owed_by_resource(s, roll)[0][res][0], base + 1)
+        plain = new_state()                             # off by default
+        place(plain, 0, v, BuildKind.CITY)
+        set_age(plain, 0, 3)
+        self.assertEqual(production.owed_by_resource(plain, roll)[0][res][0], base)
+        off = make_state(stage=3, clock=False)
+        place(off, 0, v, BuildKind.CITY)
+        self.assertEqual(production.owed_by_resource(off, roll)[0][res][0], base)
 
     def test_ages_are_public_in_the_view(self) -> None:
         s = new_state({"ages": {"age2": {"requires": {"cities": 0}}}})

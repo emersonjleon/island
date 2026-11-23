@@ -1926,3 +1926,105 @@ msgstr "用底部的输入框保存你喜欢的规则，下次一键使用。"
 
 msgid "Experimental rules"
 msgstr "实验规则"
+
+msgid "Megacities count as cities."
+msgstr "超级城市也算城市。"
+
+msgid "Age that unlocks each building"
+msgstr "解锁每种建筑的时代"
+
+msgid "Ages: players advance to the Age of the Sea and the Golden Age"
+msgstr "时代：玩家进入海洋时代和黄金时代"
+
+msgid "Age of the Sea (II): cost"
+msgstr "海洋时代（II）：费用"
+
+msgid "Age of the Sea (II): seconds of research"
+msgstr "海洋时代（II）：研究秒数"
+
+msgid "Age of the Sea (II): cities needed"
+msgstr "海洋时代（II）：所需城市"
+
+msgid "Age of the Sea (II): points needed"
+msgstr "海洋时代（II）：所需分数"
+
+msgid "Age of the Sea (II): points it gives"
+msgstr "海洋时代（II）：获得分数"
+
+msgid "Age of the Sea (II): extra fish per building on a fishing ground"
+msgstr "海洋时代（II）：渔场每座建筑额外的鱼"
+
+msgid "Age of the Sea (II): extra cards kept safe on a 7"
+msgstr "海洋时代（II）：掷出 7 时额外安全手牌"
+
+msgid "Age of the Sea (II): build time (%)"
+msgstr "海洋时代（II）：建造时间（%）"
+
+msgid "Golden Age (III): cost"
+msgstr "黄金时代（III）：费用"
+
+msgid "Golden Age (III): seconds of research"
+msgstr "黄金时代（III）：研究秒数"
+
+msgid "Golden Age (III): cities needed"
+msgstr "黄金时代（III）：所需城市"
+
+msgid "Golden Age (III): points needed"
+msgstr "黄金时代（III）：所需分数"
+
+msgid "Golden Age (III): points it gives"
+msgstr "黄金时代（III）：获得分数"
+
+msgid "Golden Age (III): extra fish per building on a fishing ground"
+msgstr "黄金时代（III）：渔场每座建筑额外的鱼"
+
+msgid "Golden Age (III): extra cards kept safe on a 7"
+msgstr "黄金时代（III）：掷出 7 时额外安全手牌"
+
+msgid "Golden Age (III): build time (%)"
+msgstr "黄金时代（III）：建造时间（%）"
+
+msgid "Megacities too."
+msgstr "超级城市也算。"
+
+msgid "Largest Population: points"
+msgstr "最多人口：分数"
+
+msgid "An award, like the Longest Road, for the largest population."
+msgstr "像最长道路一样，奖励人口最多的玩家。"
+
+msgid "Largest Population: population needed"
+msgstr "最多人口：所需人口"
+
+msgid "Largest Population: population of a settlement"
+msgstr "最多人口：村庄的人口"
+
+msgid "Largest Population: population of a city"
+msgstr "最多人口：城市的人口"
+
+msgid "Largest Population: population of a megacity"
+msgstr "最多人口：超级城市的人口"
+
+msgid "Age of the Sea (II): extra cards per settlement on each roll"
+msgstr "海洋时代（II）：每次掷骰每个村庄额外的牌"
+
+msgid "Age of the Sea (II): extra cards per city on each roll"
+msgstr "海洋时代（II）：每次掷骰每座城市额外的牌"
+
+msgid "Golden Age (III): extra cards per settlement on each roll"
+msgstr "黄金时代（III）：每次掷骰每个村庄额外的牌"
+
+msgid "Golden Age (III): extra cards per city on each roll"
+msgstr "黄金时代（III）：每次掷骰每座城市额外的牌"
+
+msgid "Age from which fish buy off the robber"
+msgstr "从哪个时代起可以用鱼打发强盗"
+
+msgid "Uses the robber's fish ransom setting."
+msgstr "使用强盗的以鱼赎买设置。"
+
+msgid "Age from which settlers gather"
+msgstr "从哪个时代起拓荒者开始采集"
+
+msgid "Age from which settlers keep the robber away"
+msgstr "从哪个时代起拓荒者能挡住强盗"

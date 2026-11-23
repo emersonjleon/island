@@ -238,6 +238,8 @@ table.keys td { padding: 4px 0; }
 .stats-key.src-road, .stats-bar .src-road { background: #f2a97c; }
 .stats-key.src-army, .stats-bar .src-army { background: #98a7b0; }
 .stats-key.src-vp, .stats-bar .src-vp { background: #f5d36b; }
+.stats-key.src-ages, .stats-bar .src-ages { background: #3f8fb5; }
+.stats-key.src-population, .stats-bar .src-population { background: #b8743f; }
 .stats-chart { display: block; width: 100%; height: auto; max-height: 220px; }
 .stats-chart text { font-size: 9px; fill: #6b6253; }
 .stats-chart .grid { stroke: #e6dcc3; stroke-width: 1; }
@@ -490,6 +492,10 @@ table.keys td { padding: 4px 0; }
 
 /* Ages: the research button counts down and cancels; the age tag in scores. */
 .game-hud .hud-hand .actions.extras button.age-advance.advancing { background: #e9f1f6; border-color: var(--hud-accent, #1d5b79); }
-.age-advance .age-x { font-weight: 700; opacity: 0.7; }
+.age-advance .age-x { font-weight: 700; opacity: 0.7; position: relative; }
+.age-advance .build-name { position: relative; }
+.age-advance .age-bar { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(63, 143, 181, 0.28);
+  border-radius: inherit; transition: width 0.5s linear; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .age-advance .age-bar { transition: none; } }
 .age-tag { font-weight: 600; }
 .hud-hand .age-tag.age-max { align-self: center; padding: 0 8px; }

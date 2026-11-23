@@ -78,6 +78,7 @@
     "dev": "{{count}} desarrollos",
     "knights": "{{count}} caballeros",
     "largest_army": "Gran Ejército",
+    "largest_population": "Mayor población",
     "resigned": "Se rindió",
     "show_all": "Ver los {{count}}",
     "show_less": "Ver menos"
@@ -192,6 +193,8 @@
       "megacity": "Metrópolis",
       "longest_road": "Gran Ruta",
       "largest_army": "Gran Ejército",
+      "largest_population": "Mayor población",
+      "ages": "Edades",
       "victory_point": "Puntos de victoria"
     },
     "part": {
@@ -205,6 +208,10 @@
       "longest_road_other": "Gran Ruta ({{points}})",
       "largest_army_one": "Gran Ejército ({{points}})",
       "largest_army_other": "Gran Ejército ({{points}})",
+      "largest_population_one": "Mayor población ({{points}})",
+      "largest_population_other": "Mayor población ({{points}})",
+      "ages_one": "{{count}} edad ({{points}})",
+      "ages_other": "{{count}} edades ({{points}})",
       "victory_point_one": "{{count}} desarrollo de punto ({{points}})",
       "victory_point_other": "{{count}} desarrollos de punto ({{points}})"
     }

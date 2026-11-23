@@ -90,6 +90,7 @@
     "game_over",
     "hand",
     "largest_army",
+    "largest_population",
     "longest_road",
     "numbers_revealed",
     "offer_closed",

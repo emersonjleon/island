@@ -171,6 +171,12 @@ export function logLine(
       return { text: t(seat === viewer ? "events:largest_army_you" : "events:largest_army", { who, count: knights }), seat };
     }
     case "age_advance_started": return { text: tw("age_started", { who, age: AGE_ROMAN[Number(ev.age) - 1] ?? ev.age }), seat };
+    case "largest_population": {
+      if (ev.seat === ev.previous) return null;          // only the populations changed
+      if (seat === null) return { text: t("events:largest_population_none"), seat: null };
+      const pop = (ev.population as Record<string, number> | undefined)?.[String(seat)] ?? 0;
+      return { text: t(seat === viewer ? "events:largest_population_you" : "events:largest_population", { who, count: pop }), seat };
+    }
     case "age_reached": return { text: tw("age_reached", { who, age: AGE_ROMAN[Number(ev.age) - 1] ?? ev.age }), seat };
     case "resigned": return { text: t(seat === viewer ? "events:resigned_you" : "events:resigned", { who }), seat };
     case "game_over": return {

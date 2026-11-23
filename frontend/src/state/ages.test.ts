@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { GameStateView } from "../protocol/types";
-import { advanceBlock, ageStep, agePlayer, applyAgeEvent } from "./ages";
+import { advanceBlock, ageStep, agePlayer, applyAgeEvent, populationHolder } from "./ages";
 
 const settings = {
   ages: { enabled: true, age2: { cost: { fish: 2, grain: 2, wool: 1, brick: 1, ore: 0 }, time_ms: 30000, requires: { cities: 1, points: 0 } } },
@@ -31,5 +31,8 @@ describe("ages", () => {
     applyAgeEvent(s, { k: "age_reached", seat: 0, age: 2, at: 30000 });
     expect(agePlayer(s, 0)).toEqual({ age: 2, advancing: null, reached: { "2": 30000 } });
     expect(agePlayer(s, 1).age).toBe(1);
+    applyAgeEvent(s, { k: "largest_population", seat: 0, previous: null, population: { "0": 6, "1": 2 } });
+    expect(populationHolder(s)).toBe(0);
+    expect(agePlayer(s, 0).age).toBe(2);
   });
 });

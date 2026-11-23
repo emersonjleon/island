@@ -167,7 +167,8 @@ def state_view(state: GameState, viewer: int | None) -> dict[str, Any]:
             "advancing": None if research is None else {k: research[k] for k in ("age", "t0", "t1")},
             "reached": dict(e.get("reached", {}).get(str(p.seat), {})),
         }
-    return {"players": players}
+    lp = state.ext.get("largest_population", {})
+    return {"players": players, "largest_population": {"holder": lp.get("holder"), "population": dict(lp.get("population", {}))}}
 
 
 register_state_extension("ages", state_view)

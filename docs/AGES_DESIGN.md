@@ -58,7 +58,7 @@ y guardable en códigos y configuraciones.
 ## Cómo se sube de edad
 
 1. **Requisitos.** Para pedir la edad siguiente el jugador necesita la edad
-   anterior y un mínimo de edificios. Por defecto: Edad II pide 1 ciudad; Edad III
+   anterior y un mínimo de edificios. Por defecto: Edad II no pide ciudades (antes 1, cambiado por la simulación de WP28); Edad III
    pide 2 ciudades (las megaciudades cuentan como ciudades). También hay un mínimo
    de puntos, apagado por defecto (0).
 2. **Pago.** Se paga todo al empezar, como una construcción.
@@ -80,8 +80,8 @@ No hace falta un colono para subir de edad, tampoco en la variación Colonos
 
 | Qué | Costo | Cartas | Tiempo |
 | --- | --- | --- | --- |
-| Subir a Edad II | 2 pescado, 2 grano, 1 lana, 1 ladrillo | 6 | 30 s |
-| Subir a Edad III | 3 pescado, 2 grano, 2 mineral, 1 lana | 8 | 45 s |
+| Subir a Edad II | 2 pescado, 1 grano, 1 lana, 1 ladrillo | 5 | 30 s |
+| Subir a Edad III | 2 pescado, 2 grano, 2 mineral | 6 | 45 s |
 | Desarrollo nivel I (actual) | 1 lana, 1 grano, 1 mineral | 3 | — |
 | Desarrollo nivel II | 1 lana, 1 grano, 1 mineral, 1 pescado | 4 | — |
 | Desarrollo nivel III | 1 lana, 1 grano, 1 mineral, 2 pescado | 5 | — |
@@ -244,6 +244,52 @@ que ya existe (`engine/sim`): partidas con bots que siguen distintas estrategias
 edad, la duración de la partida y quién gana. Un criterio razonable es que la
 estrategia de edades gane entre el 50 % y el 65 % contra la que las ignora, con
 bots de igual nivel.
+
+### Resultado de la simulación (WP28, 23 nov 2026)
+
+Bots "codiciosos" (los de `engine/sim`), que suben de edad apenas pueden y
+comercian con el banco por lo que les falta. "Mitad" significa que los asientos
+pares usan las edades y los impares las ignoran; "gana" es el porcentaje de
+partidas que gana el lado de las edades. Las tiradas son la mediana; los bots
+juegan más lento que una persona (unas 85–105 tiradas por partida en vez de 60–75).
+
+| Costos (II / III) | Ciudades pedidas (II / III) | Preset | Primera Edad II (todos) | Gana (mitad) |
+| --- | --- | --- | --- | --- |
+| 6 cartas / 8 cartas (diseño original) | 1 / 2 | Edades | tirada 68 (14 de 20 partidas) | 50 % |
+| 6 / 8 (original) | 1 / 2 | Grande con edades | tirada 84 | 60 % |
+| 4 / 6 | 0 / 2 | Edades | tirada 14 | 68 % |
+| 4 / 6 | 1 / 2 | Edades | tirada 42 | 58 % |
+| **5 / 6 (elegido)** | **0 / 2** | Edades | **tirada 14** | **62 %** |
+| **5 / 6 (elegido)** | **0 / 2** | Grande con edades | **tirada 23** | **63 %** |
+
+Con los costos originales casi nadie llegaba a la Edad del Mar antes del final:
+la ciudad que pedía llegaba tarde y el pescado se gastaba en otras cosas. Sin
+la ciudad y con 5 cartas, la Edad II llega en el primer sexto de la partida,
+como pedía la tabla de arriba, y el lado de las edades gana el 62–63 % (dentro
+del 50–65 % buscado). La Edad III sigue llegando tarde (en la mitad de las
+partidas), sobre todo porque los bots priorizan construir; vale la pena mirarla
+de nuevo cuando los bots tengan niveles (WP28 completo con `engine/ai`). El
+puerto 2:1 de pescado no hizo falta para estos números.
+
+### Cambios de Emerson (23 nov 2026)
+
+- La Edad II vuelve a pedir una ciudad; la Edad III da 3 puntos (antes 2).
+- Producción extra por edad: queda como ajuste (`ages.ageN.bonus.extra_per_settlement`
+  / `extra_per_city`), en 0 por defecto; los edificios producen como en Clásica.
+- El rescate con pescado (`robber.fish_ransom`, 2 en los presets con edades) solo
+  protege desde la Edad II (`ages.fish_ransom_age`).
+- Colonos (variación Colonos con edades): recogen desde la Edad II
+  (`ages.settler_gather_age`) y alejan al ladrón desde la Edad III
+  (`ages.settler_guard_age`).
+- Premio **Mayor población** (solo con edades): 2 puntos para quien tenga la mayor
+  población (poblado 1, ciudad 2, megaciudad 4), con un mínimo de 6; funciona como
+  el Camino más largo (`ages.largest_population`).
+- Metas: Edades 14 puntos, Grande con edades 17.
+
+Con esos valores, partidas de bots: Edades dura unas 87 tiradas (78 en Clásica)
+y el lado de las edades gana el 53 %; Grande con edades dura unas 100 tiradas (92
+en Isla grande) y el lado de las edades gana el 56 %. La primera Edad II llega más tarde (tirada 50–80) porque vuelve a pedir una
+ciudad.
 
 Riesgo de "bola de nieve": quien llega primero a la Dorada produce más y suma 2
 puntos. Contrapesos ya incluidos: la subida se anuncia y tarda, el monopolio y el
@@ -416,6 +462,8 @@ el juego jugable.
 3. **WP28 Bots y balance.** Reglas de los bots y una tanda de simulaciones para
    fijar costos, tiempos y el puerto de pescado; los valores finales vuelven a
    este documento.
+   *Primera parte hecha (23 nov 2026):* el bot codicioso sube de edad y comercia
+   por el costo; costos nuevos en "Resultado de la simulación".
 4. **WP29 Desarrollos mejorados.** Mazos por nivel, cartas nuevas y efectos por
    tiradas, en motor, interfaz y bots.
 5. **WP31 Modo premium.** Campo y ajuste del sitio, la regla en todas las formas

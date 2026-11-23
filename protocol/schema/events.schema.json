@@ -702,6 +702,59 @@
       "title": "LargestArmy",
       "type": "object"
     },
+    "LargestPopulation": {
+      "additionalProperties": false,
+      "description": "Populations or the Largest Population holder changed (ages; ``seat`` None: nobody).",
+      "properties": {
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "largest_population",
+          "default": "largest_population",
+          "title": "K",
+          "type": "string"
+        },
+        "population": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Population",
+          "type": "object"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Previous"
+        },
+        "seat": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seat"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "previous",
+        "population"
+      ],
+      "title": "LargestPopulation",
+      "type": "object"
+    },
     "LongestRoad": {
       "additionalProperties": false,
       "description": "Road lengths or the Longest Road holder changed (``seat`` None: nobody holds it).",
@@ -1600,6 +1653,7 @@
       "game_over": "#/$defs/GameOver",
       "hand": "#/$defs/Hand",
       "largest_army": "#/$defs/LargestArmy",
+      "largest_population": "#/$defs/LargestPopulation",
       "longest_road": "#/$defs/LongestRoad",
       "numbers_revealed": "#/$defs/NumbersRevealed",
       "offer_closed": "#/$defs/OfferClosed",
@@ -1729,6 +1783,9 @@
     },
     {
       "$ref": "#/$defs/AgeReached"
+    },
+    {
+      "$ref": "#/$defs/LargestPopulation"
     }
   ]
 }

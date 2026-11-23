@@ -262,6 +262,7 @@ export function applyEvent(state: GameStateView, ev: GameEvent): void {
     case "age_advance_started":
     case "age_advance_cancelled":
     case "age_reached":
+    case "largest_population":
       applyAgeEvent(state, ev);
       break;
     case "offer_posted":
