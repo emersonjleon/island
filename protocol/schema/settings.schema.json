@@ -1464,6 +1464,23 @@
           "title": "Spare Setup",
           "type": "boolean"
         },
+        "spare_setup_ms": {
+          "anyOf": [
+            {
+              "maximum": 3600000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": 300000,
+          "description": "How long ``spare_setup`` lasts, from the start of the game (None = until the player finishes\ntheir setup). Afterwards a player who never finished their setup is robbed like anyone else,\nso an absent player cannot hoard the bank's cards forever.",
+          "label": "settings.robber.spare_setup_ms",
+          "stage": 1,
+          "title": "Spare Setup Ms"
+        },
         "steal_pct": {
           "default": 50,
           "label": "settings.robber.steal_pct",

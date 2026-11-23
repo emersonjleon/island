@@ -73,6 +73,26 @@ class RobberTest(unittest.TestCase):
         s.players[1].setup_done = False
         self.assertEqual(robber.targets(s, s.robber_hex), [0, 1, 2])
 
+    def test_setup_protection_runs_out(self) -> None:
+        # An absent player who never finishes setup must not hoard the bank forever.
+        limit = 300000
+        s = make_state(n=3, overrides={"robber": {"spare_setup_ms": limit}})
+        for seat in range(3):
+            set_hand(s, seat, lumber=10)
+        s.players[1].setup_done = False
+        s.now_ms = limit - 1
+        self.assertEqual(robber.targets(s, s.robber_hex), [0, 2])
+        s.now_ms = limit
+        self.assertEqual(robber.targets(s, s.robber_hex), [0, 1, 2])
+
+    def test_setup_protection_without_time_limit(self) -> None:
+        s = make_state(n=3, overrides={"robber": {"spare_setup_ms": None}})
+        for seat in range(3):
+            set_hand(s, seat, lumber=10)
+        s.players[1].setup_done = False
+        s.now_ms = 10 * 3_600_000
+        self.assertEqual(robber.targets(s, s.robber_hex), [0, 2])
+
     def test_fish_ransom_pays_fish_instead_of_half_the_hand(self) -> None:
         s = make_state(n=3, overrides={"robber": {"fish_ransom": 3}})
         set_hand(s, 0, lumber=6, fish=4)               # 10 cards, pays 3 fish

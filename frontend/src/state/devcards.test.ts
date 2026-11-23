@@ -49,6 +49,9 @@ describe("development card rules on the client", () => {
     const s = state({ buildings, players } as unknown as Partial<GameStateView>);
     expect(knightVictims(board, s, 1, 0)).toEqual([2]);
     expect(knightVictims(board, s, 1, 0, { robber: { spare_setup: false } })).toEqual([1, 2]);
+    const late = { ...s, now: 300000 };
+    expect(knightVictims(board, late, 1, 0)).toEqual([1, 2]);
+    expect(knightVictims(board, late, 1, 0, { robber: { spare_setup_ms: null } })).toEqual([2]);
   });
 
   it("the friendly robber spares players with few points", () => {

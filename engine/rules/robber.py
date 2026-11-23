@@ -7,8 +7,9 @@ and ``settings.robber.enabled``. Nothing is produced on that roll.
    (``require_over_limit`` is off or the hand total > ``card_limit``) and
    (``require_adjacent`` is off or the player has a finished building on a vertex
    of the robber's hex) and (``spare_setup`` is off or the player has finished
-   setup: players still building their setup pieces are never robbed) and (the friendly
-   robber, ``friendly_min_points`` > 0, spares players with fewer points than that). Adjacency is judged on the hex before the move
+   setup: players still building their setup pieces are not robbed during the first
+   ``spare_setup_ms`` of the game) and (the friendly robber, ``friendly_min_points`` > 0,
+   spares players with fewer points than that). Adjacency is judged on the hex before the move
    (``adjacency_timing == "before_move"``) or after it (``"after_move"``, stage 3).
 2. Each target loses ``steal_pct`` % of its hand total, rounded per
    ``steal_rounding`` (integer maths), drawn one card at a time uniformly from the
@@ -56,12 +57,12 @@ def _adjacent_seats(state: GameState, hex_id: int | None) -> set[int]:
 
 
 def is_spared(state: GameState, seat: int) -> bool:
-    """True when ``seat`` may not be robbed (sevens, knights, monopoly): ``spare_setup`` is
-    on and its setup is unfinished, or the friendly robber is on
-    (``friendly_min_points`` > 0) and the player has fewer points than that."""
+    """True when ``seat`` may not be robbed (sevens, knights, monopoly): ``spare_setup`` is on,
+    its setup is unfinished and the game is younger than ``spare_setup_ms``; or the friendly
+    robber is on (``friendly_min_points`` > 0) and the player has fewer points than that."""
     rs = state.settings.robber
     p = state.player(seat)
-    if rs.spare_setup and not p.setup_done:
+    if rs.spare_setup and not p.setup_done and (rs.spare_setup_ms is None or state.now_ms < rs.spare_setup_ms):
         return True
     return 0 < rs.friendly_min_points and p.points < rs.friendly_min_points
 

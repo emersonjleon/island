@@ -349,6 +349,10 @@ class RobberSettings(_Group):
     instead of the usual steal (0 = off). Meant for the Age of the Sea."""
     spare_setup: bool = setting(True, label="settings.robber.spare_setup")
     """Players still building their setup settlements and roads are never robbed (sevens, knights or monopoly)."""
+    spare_setup_ms: int | None = setting(300000, label="settings.robber.spare_setup_ms", ge=0, le=_MAX_MS)
+    """How long ``spare_setup`` lasts, from the start of the game (None = until the player finishes
+    their setup). Afterwards a player who never finished their setup is robbed like anyone else,
+    so an absent player cannot hoard the bank's cards forever."""
 
 
 # --------------------------------------------------------------------- settlers

@@ -13,7 +13,7 @@ interface DevSettings {
 }
 interface RobberSettings {
   enabled?: boolean; knight_max_distance?: number; may_enter_desert?: boolean; may_enter_fishing?: boolean;
-  spare_setup?: boolean; friendly_min_points?: number;
+  spare_setup?: boolean; spare_setup_ms?: number | null; friendly_min_points?: number;
 }
 
 function devSettings(settings: Record<string, unknown>): DevSettings {
@@ -66,12 +66,14 @@ export function knightHexes(board: BoardMsg, state: GameStateView, settings: Rec
 }
 
 /** Other players with a building on ``hex`` (whom a knight there could rob), seat order.
- * Players still in setup are left out while ``robber.spare_setup`` is on (the default),
- * and players with fewer than ``robber.friendly_min_points`` points (friendly robber). */
+ * Players still in setup are left out while ``robber.spare_setup`` is on (the default), during the
+ * first ``robber.spare_setup_ms`` of the game, and players with fewer than
+ * ``robber.friendly_min_points`` points (friendly robber). */
 export function knightVictims(board: BoardMsg, state: GameStateView, hex: number, seat: number,
   settings: Record<string, unknown> = {}): number[] {
   const rs = (settings["robber"] as RobberSettings | undefined) ?? {};
-  const spare = rs.spare_setup !== false;
+  const limit = rs.spare_setup_ms === undefined ? 300000 : rs.spare_setup_ms;
+  const spare = rs.spare_setup !== false && (limit === null || (state.now ?? 0) < limit);
   const friendly = rs.friendly_min_points ?? 0;
   const inSetup = new Set((state.players ?? []).filter((p) => (spare && !p.setup?.done)
     || (friendly > 0 && (p.points ?? 0) < friendly)).map((p) => p.seat));
