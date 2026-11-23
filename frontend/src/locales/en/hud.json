@@ -78,6 +78,7 @@
     "dev": "{{count}} developments",
     "knights": "{{count}} knights",
     "largest_army": "Largest Army",
+    "largest_population": "Largest Population",
     "resigned": "Resigned",
     "show_all": "Show all {{count}}",
     "show_less": "Show fewer"
@@ -192,6 +193,7 @@
       "megacity": "Megacities",
       "longest_road": "Longest Road",
       "largest_army": "Largest Army",
+      "largest_population": "Largest Population",
       "ages": "Ages",
       "victory_point": "Victory points"
     },
@@ -206,6 +208,8 @@
       "longest_road_other": "Longest Road ({{points}})",
       "largest_army_one": "Largest Army ({{points}})",
       "largest_army_other": "Largest Army ({{points}})",
+      "largest_population_one": "Largest Population ({{points}})",
+      "largest_population_other": "Largest Population ({{points}})",
       "ages_one": "{{count}} age ({{points}})",
       "ages_other": "{{count}} ages ({{points}})",
       "victory_point_one": "{{count}} victory point development ({{points}})",
@@ -280,7 +284,7 @@
     "short": "Age {{n}}",
     "advancing": "Age {{n}} in {{secs}} s",
     "cancel": "click to cancel (part of the cost comes back)",
-    "help": "Advance to age {{n}}: more fish on fishing grounds, a bigger safe hand, faster builds and points",
+    "help": "Advance to age {{n}}: more production, more fish on fishing grounds, a bigger safe hand, faster builds and points",
     "needs": "needs {{needs}}",
     "cities_one": "{{count}} city",
     "cities_other": "{{count}} cities",

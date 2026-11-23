@@ -13,7 +13,7 @@ import { RESOURCES, victoryTarget } from "./model";
 
 const SOURCE_CLASS: Record<PointSource, string> = {
   settlement: "src-settlement", city: "src-city", megacity: "src-megacity",
-  longest_road: "src-road", largest_army: "src-army", ages: "src-ages", victory_point: "src-vp",
+  longest_road: "src-road", largest_army: "src-army", largest_population: "src-population", ages: "src-ages", victory_point: "src-vp",
 };
 
 export function colourHex(colour: string): string {

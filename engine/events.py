@@ -33,7 +33,7 @@ __all__ = [
     "SettlerPath", "SettlerStepEvent", "SettlerArrived", "SettlerLeft", "ConstructionStarted",
     "ConstructionCancelled", "Built", "SetupComplete", "StartingResources", "StartingMaterials", "Traded",
     "Points", "LongestRoad", "DevCardBought", "DevCardPlayed", "LargestArmy", "OfferPosted", "OfferClosed", "Buildable", "Resigned", "GameOver", "Revealed", "NumbersRevealed", "SettlersGathered", "Sight",
-    "AgeAdvanceStarted", "AgeAdvanceCancelled", "AgeReached",
+    "AgeAdvanceStarted", "AgeAdvanceCancelled", "AgeReached", "LargestPopulation",
 ]
 
 ResMap = dict[Resource, int]
@@ -430,11 +430,20 @@ class AgeReached(Event):
     age: int
 
 
+class LargestPopulation(Event):
+    """Populations or the Largest Population holder changed (ages; ``seat`` None: nobody)."""
+    k: Literal["largest_population"] = "largest_population"
+    seat: int | None
+    previous: int | None
+    population: dict[int, int]
+
+
 _EVENT_CLASSES: tuple[type[Event], ...] = (
     ClockStarted, DiceRolled, Produced, RobberStole, RobberMoved, Hand, SettlerLanded, SettlerPath,
     SettlerStepEvent, SettlerArrived, SettlerLeft, ConstructionStarted, ConstructionCancelled, Built,
     SetupComplete, StartingResources, StartingMaterials, Traded, Points, LongestRoad, DevCardBought, DevCardPlayed, LargestArmy, OfferPosted, OfferClosed, Buildable, Resigned, GameOver,
     Revealed, NumbersRevealed, SettlersGathered, Sight, AgeAdvanceStarted, AgeAdvanceCancelled, AgeReached,
+    LargestPopulation,
 )
 EVENT_TYPES: dict[str, type[Event]] = {c.model_fields["k"].default: c for c in _EVENT_CLASSES}
 
@@ -443,7 +452,7 @@ AnyEvent = Annotated[
     | SettlerStepEvent | SettlerArrived | SettlerLeft | ConstructionStarted | ConstructionCancelled | Built
     | SetupComplete | StartingResources | StartingMaterials | Traded | Points | LongestRoad | DevCardBought | DevCardPlayed | LargestArmy
     | OfferPosted | OfferClosed | Buildable | Resigned | GameOver | Revealed | NumbersRevealed
-    | SettlersGathered | Sight | AgeAdvanceStarted | AgeAdvanceCancelled | AgeReached,
+    | SettlersGathered | Sight | AgeAdvanceStarted | AgeAdvanceCancelled | AgeReached | LargestPopulation,
     Field(discriminator="k"),
 ]
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(AnyEvent)

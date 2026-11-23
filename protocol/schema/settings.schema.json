@@ -29,6 +29,24 @@
           "title": "Card Limit",
           "type": "integer"
         },
+        "extra_per_city": {
+          "default": 1,
+          "label": "settings.ages.age2.bonus.extra_per_city",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Extra Per City",
+          "type": "integer"
+        },
+        "extra_per_settlement": {
+          "default": 0,
+          "label": "settings.ages.age2.bonus.extra_per_settlement",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Extra Per Settlement",
+          "type": "integer"
+        },
         "fish_per_fishing_building": {
           "default": 1,
           "label": "settings.ages.age2.bonus.fish_per_fishing_building",
@@ -55,7 +73,7 @@
       "additionalProperties": false,
       "properties": {
         "cities": {
-          "default": 0,
+          "default": 1,
           "label": "settings.ages.age2.requires.cities",
           "maximum": 20,
           "minimum": 0,
@@ -143,6 +161,24 @@
           "title": "Card Limit",
           "type": "integer"
         },
+        "extra_per_city": {
+          "default": 0,
+          "label": "settings.ages.age3.bonus.extra_per_city",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Extra Per City",
+          "type": "integer"
+        },
+        "extra_per_settlement": {
+          "default": 1,
+          "label": "settings.ages.age3.bonus.extra_per_settlement",
+          "maximum": 5,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Extra Per Settlement",
+          "type": "integer"
+        },
         "fish_per_fishing_building": {
           "default": 1,
           "label": "settings.ages.age3.bonus.fish_per_fishing_building",
@@ -153,7 +189,7 @@
           "type": "integer"
         },
         "points": {
-          "default": 2,
+          "default": 3,
           "label": "settings.ages.age3.bonus.points",
           "maximum": 10,
           "minimum": 0,
@@ -255,6 +291,11 @@
           "stage": 1,
           "title": "Enabled",
           "type": "boolean"
+        },
+        "largest_population": {
+          "$ref": "#/$defs/LargestPopulationSettings",
+          "label": "settings.ages.largest_population",
+          "stage": 1
         },
         "unlock": {
           "additionalProperties": {
@@ -1156,6 +1197,60 @@
         }
       },
       "title": "LargestArmySettings",
+      "type": "object"
+    },
+    "LargestPopulationSettings": {
+      "additionalProperties": false,
+      "description": "With ages on: an award, like the Longest Road, for the largest population.",
+      "properties": {
+        "min": {
+          "default": 6,
+          "description": "Population needed to claim the award.",
+          "label": "settings.ages.largest_population.min",
+          "maximum": 100,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Min",
+          "type": "integer"
+        },
+        "per_city": {
+          "default": 2,
+          "label": "settings.ages.largest_population.per_city",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Per City",
+          "type": "integer"
+        },
+        "per_megacity": {
+          "default": 4,
+          "label": "settings.ages.largest_population.per_megacity",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Per Megacity",
+          "type": "integer"
+        },
+        "per_settlement": {
+          "default": 1,
+          "label": "settings.ages.largest_population.per_settlement",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Per Settlement",
+          "type": "integer"
+        },
+        "points": {
+          "default": 2,
+          "label": "settings.ages.largest_population.points",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Points",
+          "type": "integer"
+        }
+      },
+      "title": "LargestPopulationSettings",
       "type": "object"
     },
     "LongestRoadSettings": {

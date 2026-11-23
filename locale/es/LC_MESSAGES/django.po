@@ -2145,3 +2145,36 @@ msgstr "Edad Dorada (III): cartas extra a salvo con el 7"
 
 msgid "Golden Age (III): build time (%)"
 msgstr "Edad Dorada (III): tiempo de construcción (%)"
+
+msgid "Megacities too."
+msgstr "También las megaciudades."
+
+msgid "Largest Population: points"
+msgstr "Mayor población: puntos"
+
+msgid "An award, like the Longest Road, for the largest population."
+msgstr "Un premio, como el Camino más largo, para la mayor población."
+
+msgid "Largest Population: population needed"
+msgstr "Mayor población: población necesaria"
+
+msgid "Largest Population: population of a settlement"
+msgstr "Mayor población: población de un poblado"
+
+msgid "Largest Population: population of a city"
+msgstr "Mayor población: población de una ciudad"
+
+msgid "Largest Population: population of a megacity"
+msgstr "Mayor población: población de una megaciudad"
+
+msgid "Age of the Sea (II): extra cards per settlement on each roll"
+msgstr "Edad del Mar (II): cartas extra por poblado en cada tirada"
+
+msgid "Age of the Sea (II): extra cards per city on each roll"
+msgstr "Edad del Mar (II): cartas extra por ciudad en cada tirada"
+
+msgid "Golden Age (III): extra cards per settlement on each roll"
+msgstr "Edad Dorada (III): cartas extra por poblado en cada tirada"
+
+msgid "Golden Age (III): extra cards per city on each roll"
+msgstr "Edad Dorada (III): cartas extra por ciudad en cada tirada"

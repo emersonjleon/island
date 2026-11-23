@@ -239,6 +239,7 @@ table.keys td { padding: 4px 0; }
 .stats-key.src-army, .stats-bar .src-army { background: #98a7b0; }
 .stats-key.src-vp, .stats-bar .src-vp { background: #f5d36b; }
 .stats-key.src-ages, .stats-bar .src-ages { background: #3f8fb5; }
+.stats-key.src-population, .stats-bar .src-population { background: #b8743f; }
 .stats-chart { display: block; width: 100%; height: auto; max-height: 220px; }
 .stats-chart text { font-size: 9px; fill: #6b6253; }
 .stats-chart .grid { stroke: #e6dcc3; stroke-width: 1; }

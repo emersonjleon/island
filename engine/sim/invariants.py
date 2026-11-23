@@ -7,7 +7,7 @@ Conservation needs the per-resource total of the game, taken once with
 """
 from __future__ import annotations
 
-from engine.rules import age_state, devcards, longest_road, trade_board
+from engine.rules import age_state, devcards, largest_population, longest_road, trade_board
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -146,6 +146,8 @@ def _points(state: GameState) -> list[str]:
             pts += state.settings.victory.largest_army.points
         pts += devcards.vp_points(state, p.seat)
         pts += sum(s.bonus.points for s in age_state.reached_steps(state, p.seat))
+        if largest_population.holder(state) == p.seat:
+            pts += state.settings.ages.largest_population.points
         if pts != p.points:
             out.append(f"points.{p.seat}: cached {p.points} != {pts}")
     if state.phase == "finished":

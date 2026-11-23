@@ -22,7 +22,7 @@ import { KeySettings } from "./KeySettings";
 import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
-import { advanceBlock, ageStep, agePlayer, agesOn } from "../state/ages";
+import { advanceBlock, ageStep, agePlayer, agesOn, populationHolder } from "../state/ages";
 import { buySettlerBlock, gatherNumbers, settlerLimit, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
@@ -359,6 +359,7 @@ function Scores({ store, t, onStats, onPrices, onResign }: HudProps & { onStats(
                   {p.seat !== store.seat && cardCount(dev) > 0 && <> · {t("hud:scores.dev", { count: cardCount(dev) })}</>}
                   {(dev?.knights ?? 0) > 0 && <> · {t("hud:scores.knights", { count: dev!.knights })}</>}
                   {army && <> · <strong class="award">{t("hud:scores.largest_army")}</strong></>}
+                  {populationHolder(s) === p.seat && <> · <strong class="award">{t("hud:scores.largest_population")}</strong></>}
                   {agesOn(store.settings) && <> · <span class="age-tag">{t("hud:age.short", { n: ageName(agePlayer(s, p.seat).age) })}</span></>}
                 </span>
               )}

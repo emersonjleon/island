@@ -1983,3 +1983,36 @@ msgstr "黄金时代（III）：掷出 7 时额外安全手牌"
 
 msgid "Golden Age (III): build time (%)"
 msgstr "黄金时代（III）：建造时间（%）"
+
+msgid "Megacities too."
+msgstr "超级城市也算。"
+
+msgid "Largest Population: points"
+msgstr "最多人口：分数"
+
+msgid "An award, like the Longest Road, for the largest population."
+msgstr "像最长道路一样，奖励人口最多的玩家。"
+
+msgid "Largest Population: population needed"
+msgstr "最多人口：所需人口"
+
+msgid "Largest Population: population of a settlement"
+msgstr "最多人口：村庄的人口"
+
+msgid "Largest Population: population of a city"
+msgstr "最多人口：城市的人口"
+
+msgid "Largest Population: population of a megacity"
+msgstr "最多人口：超级城市的人口"
+
+msgid "Age of the Sea (II): extra cards per settlement on each roll"
+msgstr "海洋时代（II）：每次掷骰每个村庄额外的牌"
+
+msgid "Age of the Sea (II): extra cards per city on each roll"
+msgstr "海洋时代（II）：每次掷骰每座城市额外的牌"
+
+msgid "Golden Age (III): extra cards per settlement on each roll"
+msgstr "黄金时代（III）：每次掷骰每个村庄额外的牌"
+
+msgid "Golden Age (III): extra cards per city on each roll"
+msgstr "黄金时代（III）：每次掷骰每座城市额外的牌"

@@ -78,6 +78,7 @@
     "dev": "{{count}} 张发展卡",
     "knights": "{{count}} 名骑士",
     "largest_army": "最大军队",
+    "largest_population": "最多人口",
     "resigned": "已认输",
     "show_all": "显示全部 {{count}} 人",
     "show_less": "收起"
@@ -192,6 +193,7 @@
       "megacity": "大都市",
       "longest_road": "最长道路",
       "largest_army": "最大军队",
+      "largest_population": "最多人口",
       "ages": "时代",
       "victory_point": "胜利分"
     },
@@ -206,6 +208,8 @@
       "longest_road_other": "最长道路（{{points}}）",
       "largest_army_one": "最大军队（{{points}}）",
       "largest_army_other": "最大军队（{{points}}）",
+      "largest_population_one": "最多人口（{{points}}）",
+      "largest_population_other": "最多人口（{{points}}）",
       "ages_one": "{{count}} 个时代（{{points}}）",
       "ages_other": "{{count}} 个时代（{{points}}）",
       "victory_point_one": "{{count}} 张胜利分发展卡（{{points}}）",
@@ -280,7 +284,7 @@
     "short": "时代 {{n}}",
     "advancing": "时代 {{n}}，还有 {{secs}} 秒",
     "cancel": "点击取消（退回部分费用）",
-    "help": "进入时代 {{n}}：渔场产更多鱼、安全手牌上限更高、建造更快并获得分数",
+    "help": "进入时代 {{n}}：产量更高、渔场产更多鱼、安全手牌上限更高、建造更快并获得分数",
     "needs": "需要 {{needs}}",
     "cities_one": "{{count}} 座城市",
     "cities_other": "{{count}} 座城市",

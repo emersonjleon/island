@@ -6,7 +6,11 @@ type Settings = Record<string, unknown>;
 
 export interface AgeAdvancing { age: number; t0: number; t1: number }
 export interface AgePlayer { age: number; advancing: AgeAdvancing | null; reached: Record<string, number> }
-export interface AgesView { players: Record<string, AgePlayer> }
+export interface AgesView {
+  players: Record<string, AgePlayer>;
+  /** Award for the largest population: its holder and each seat's population. */
+  largest_population?: { holder: number | null; population: Record<string, number> };
+}
 
 export const LAST_AGE = 3;
 
@@ -53,10 +57,20 @@ export function advanceBlock(settings: Settings, state: GameStateView | null, se
   return null;
 }
 
+/** Who holds the Largest Population award (null: nobody, or ages off). */
+export function populationHolder(state: GameStateView | null): number | null {
+  return state?.ages?.largest_population?.holder ?? null;
+}
+
 /** Folds an age event into the state (the server sends these to everyone). */
 export function applyAgeEvent(state: GameStateView, ev: GameEvent): void {
   const seat = ev["seat"] as number;
   state.ages ??= { players: {} };
+  if (ev.k === "largest_population") {
+    const pop = (ev["population"] ?? {}) as Record<string, number>;
+    state.ages.largest_population = { holder: (ev["seat"] as number | null) ?? null, population: { ...pop } };
+    return;
+  }
   const p = (state.ages.players[String(seat)] ??= { age: 1, advancing: null, reached: {} });
   if (ev.k === "age_advance_started") {
     p.advancing = { age: ev["age"] as number, t0: ev["t0"] as number, t1: ev["t1"] as number };

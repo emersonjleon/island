@@ -30,7 +30,7 @@ __all__ = [
     "BankSettings", "TradeRatioSettings", "PieceSettings", "BuildSettings", "BuildTimeSettings",
     "SetupSettings", "RobberSettings", "SettlerSettings", "VisibilitySettings", "SightSettings",
     "VictorySettings", "LongestRoadSettings", "LargestArmySettings", "TradingSettings", "DevCardSettings",
-    "AgesSettings", "AgeStep", "Age2Step", "Age3Step",
+    "AgesSettings", "AgeStep", "Age2Step", "Age3Step", "LargestPopulationSettings",
 ]
 
 IMPLEMENTED_STAGE = 2
@@ -454,7 +454,7 @@ class TradingSettings(_Group):
 
 # ------------------------------------------------------------------------ ages
 def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, points: int,
-              build_time_pct: int) -> type[_Group]:
+              build_time_pct: int, extra_per_settlement: int, extra_per_city: int) -> type[_Group]:
     """The settings of advancing to one age (``ages.age2`` / ``ages.age3``): cost, research
     time, requirements and bonuses. One model per slot so every label is its own path."""
     pre = f"settings.ages.{slot}"
@@ -474,6 +474,11 @@ def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, p
         "points": (int, setting(points, label=f"{pre}.bonus.points", ge=0, le=10)),
         # extra fish per own building on a producing fishing ground (adds up over the ages)
         "fish_per_fishing_building": (int, setting(1, label=f"{pre}.bonus.fish_per_fishing_building", ge=0, le=5)),
+        # extra cards per own settlement / city (megacities too) on every producing hex
+        # (add up over the ages)
+        "extra_per_settlement": (int, setting(extra_per_settlement, label=f"{pre}.bonus.extra_per_settlement",
+                                              ge=0, le=5)),
+        "extra_per_city": (int, setting(extra_per_city, label=f"{pre}.bonus.extra_per_city", ge=0, le=5)),
         # raises the safe hand size on a 7 (adds up over the ages)
         "card_limit": (int, setting(1, label=f"{pre}.bonus.card_limit", ge=0, le=10)),
         # build times in percent from this age on (the highest age reached counts)
@@ -487,12 +492,22 @@ def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, p
     })
 
 
-# Costs and needs from the WP28 bot batches (docs/AGES_DESIGN.md, "Balance"): the age
-# side wins about 62 % against bots that ignore the ages, Age II comes early.
+# Costs from the WP28 bot batches (docs/AGES_DESIGN.md, "Balance"); Emerson (23 nov
+# 2026): Age II needs a city, Age III gives 3 points, and each age produces more.
 Age2Step = _age_step("age2", {Resource.FISH: 2, Resource.GRAIN: 1, Resource.WOOL: 1, Resource.BRICK: 1},
-                     30000, cities=0, points=1, build_time_pct=85)
+                     30000, cities=1, points=1, build_time_pct=85, extra_per_settlement=0, extra_per_city=1)
 Age3Step = _age_step("age3", {Resource.FISH: 2, Resource.GRAIN: 2, Resource.ORE: 2},
-                     45000, cities=2, points=2, build_time_pct=70)
+                     45000, cities=2, points=3, build_time_pct=70, extra_per_settlement=1, extra_per_city=0)
+
+
+class LargestPopulationSettings(_Group):
+    """With ages on: an award, like the Longest Road, for the largest population."""
+    points: int = setting(2, label="settings.ages.largest_population.points", ge=0, le=10)
+    min: int = setting(6, label="settings.ages.largest_population.min", ge=1, le=100)
+    """Population needed to claim the award."""
+    per_settlement: int = setting(1, label="settings.ages.largest_population.per_settlement", ge=0, le=10)
+    per_city: int = setting(2, label="settings.ages.largest_population.per_city", ge=0, le=10)
+    per_megacity: int = setting(4, label="settings.ages.largest_population.per_megacity", ge=0, le=20)
 AgeStep = Age2Step | Age3Step
 
 
@@ -506,6 +521,8 @@ class AgesSettings(_Group):
     """The age each construction needs (missing kinds: age I)."""
     age2: Age2Step = setting(label="settings.ages.age2", factory=Age2Step)  # type: ignore[valid-type]
     age3: Age3Step = setting(label="settings.ages.age3", factory=Age3Step)  # type: ignore[valid-type]
+    largest_population: LargestPopulationSettings = setting(
+        label="settings.ages.largest_population", factory=LargestPopulationSettings)
 
 
 # -------------------------------------------------------------------- dev cards
