@@ -16,7 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validat
 from pydantic_core import PydanticCustomError, PydanticUndefined
 
 from .enums import (
-    AdjacencyTiming, BoardLayout, BoardShape, BuilderRequired, ConflictRule, Cooldown, DevCardKind,
+    AdjacencyTiming, BoardLayout, BoardShape, BuilderRequired, BuildKind, ConflictRule, Cooldown, DevCardKind,
     DiceMode, InfoVisibility, Landing, MapVisibility, MoveOnSeven, ProductionLog, Resource, Rounding,
     RobberStart, ScoreVisibility, SeatOrder, SetupMode, ShortageRule, SpawnAt, StartTrigger, Terrain,
     TradeOffers, value_stage,
@@ -30,6 +30,7 @@ __all__ = [
     "BankSettings", "TradeRatioSettings", "PieceSettings", "BuildSettings", "BuildTimeSettings",
     "SetupSettings", "RobberSettings", "SettlerSettings", "VisibilitySettings", "SightSettings",
     "VictorySettings", "LongestRoadSettings", "LargestArmySettings", "TradingSettings", "DevCardSettings",
+    "AgesSettings", "AgeStep", "Age2Step", "Age3Step",
 ]
 
 IMPLEMENTED_STAGE = 2
@@ -42,7 +43,9 @@ EARLY_FEATURES: frozenset[str] = frozenset({
     "settlers.leave_after_setup",        # WP23
     "settlers.gather", "settlers.gather_rolls", "settlers.gather_cards", "settlers.block_robber",
     "economy.costs.settler", "settlers.builder_required=always",
-    "robber.fish_ransom",                                                        # WP25
+    "robber.fish_ransom", "robber.friendly_min_points", "robber.stolen_to_bank",
+    "robber.may_enter_fishing",                                                  # WP25
+    "ages",                                                                      # WP26
 })
 """Later-stage settings (``path``) and enum values (``path=value``) already available,
 as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""
@@ -449,6 +452,60 @@ class TradingSettings(_Group):
     private_offers: bool = setting(False, label="settings.trading.private_offers", stage=3)
 
 
+# ------------------------------------------------------------------------ ages
+def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, points: int,
+              build_time_pct: int) -> type[_Group]:
+    """The settings of advancing to one age (``ages.age2`` / ``ages.age3``): cost, research
+    time, requirements and bonuses. One model per slot so every label is its own path."""
+    pre = f"settings.ages.{slot}"
+    title = slot.capitalize()
+
+    def model(name: str, fields: dict[str, tuple[Any, Any]]) -> type[_Group]:
+        ns: dict[str, Any] = {"__annotations__": {k: t for k, (t, _f) in fields.items()}, "__module__": __name__}
+        ns.update({k: f for k, (_t, f) in fields.items()})
+        return type(f"{title}{name}", (_Group,), ns)
+
+    requires = model("Requires", {
+        # cities (megacities count) and points needed to start the advance
+        "cities": (int, setting(cities, label=f"{pre}.requires.cities", ge=0, le=20)),
+        "points": (int, setting(0, label=f"{pre}.requires.points", ge=0, le=30)),
+    })
+    bonus = model("Bonus", {
+        "points": (int, setting(points, label=f"{pre}.bonus.points", ge=0, le=10)),
+        # extra fish per own building on a producing fishing ground (adds up over the ages)
+        "fish_per_fishing_building": (int, setting(1, label=f"{pre}.bonus.fish_per_fishing_building", ge=0, le=5)),
+        # raises the safe hand size on a 7 (adds up over the ages)
+        "card_limit": (int, setting(1, label=f"{pre}.bonus.card_limit", ge=0, le=10)),
+        # build times in percent from this age on (the highest age reached counts)
+        "build_time_pct": (int, setting(build_time_pct, label=f"{pre}.bonus.build_time_pct", ge=10, le=100)),
+    })
+    return model("Step", {
+        "cost": (ResourceMap, setting(cost, label=f"{pre}.cost")),
+        "time_ms": (int, setting(time_ms, label=f"{pre}.time_ms", ge=0, le=_MAX_MS)),
+        "requires": (requires, setting(label=f"{pre}.requires", factory=requires)),
+        "bonus": (bonus, setting(label=f"{pre}.bonus", factory=bonus)),
+    })
+
+
+Age2Step = _age_step("age2", {Resource.FISH: 2, Resource.GRAIN: 2, Resource.WOOL: 1, Resource.BRICK: 1},
+                     30000, cities=1, points=1, build_time_pct=85)
+Age3Step = _age_step("age3", {Resource.FISH: 3, Resource.GRAIN: 2, Resource.ORE: 2, Resource.WOOL: 1},
+                     45000, cities=2, points=2, build_time_pct=70)
+AgeStep = Age2Step | Age3Step
+
+
+class AgesSettings(_Group):
+    """Ages (docs/AGES_DESIGN.md): each player advances on their own, paying (always
+    with fish) and waiting a research time, for points and bonuses."""
+    enabled: bool = setting(False, label="settings.ages.enabled")
+    unlock: dict[BuildKind, Annotated[int, Field(ge=1, le=3)]] = setting(
+        {BuildKind.ROAD: 1, BuildKind.SETTLEMENT: 1, BuildKind.CITY: 1, BuildKind.MEGACITY: 3},
+        label="settings.ages.unlock")
+    """The age each construction needs (missing kinds: age I)."""
+    age2: Age2Step = setting(label="settings.ages.age2", factory=Age2Step)  # type: ignore[valid-type]
+    age3: Age3Step = setting(label="settings.ages.age3", factory=Age3Step)  # type: ignore[valid-type]
+
+
 # -------------------------------------------------------------------- dev cards
 class DevCardSettings(_Group):
     deck: dict[DevCardKind, Annotated[int, Field(ge=0, le=100)]] = setting(
@@ -492,6 +549,7 @@ class GameSettings(_Group):
     victory: VictorySettings = setting(label="settings.victory", factory=VictorySettings)
     trading: TradingSettings = setting(label="settings.trading", factory=TradingSettings)
     dev_cards: DevCardSettings = setting(label="settings.dev_cards", stage=2, factory=DevCardSettings)
+    ages: AgesSettings = setting(label="settings.ages", stage=3, factory=AgesSettings)
 
     @model_validator(mode="after")
     def _check_stage(self, info: ValidationInfo) -> Self:

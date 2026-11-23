@@ -406,6 +406,11 @@ el juego jugable.
    `AgeAdvanceStarted`, `AgeAdvanceCancelled`, `AgeReached`, errores `age.*`,
    puertas en construcción, ventajas pasivas, puntos y la migración a la versión
    2 del esquema. Pruebas deterministas con semillas.
+   *Hecho (22 nov 2026):* `engine/rules/ages.py` y `age_state.py`. Las ventajas que
+   se suman (puntos, pescado, límite del 7) se acumulan entre edades; el tiempo de
+   construcción usa el de la edad más alta. Ningún preset activa las edades todavía
+   (eso llega con la interfaz, WP27), así que no hace falta migrar el esquema: los
+   códigos ya no existen y las configuraciones guardadas no cambian.
 2. **WP27 Interfaz de edades.** Insignia, botón, barra, candados, avisos,
    estadísticas, etiquetas del editor y la regla rápida "Edades".
 3. **WP28 Bots y balance.** Reglas de los bots y una tanda de simulaciones para

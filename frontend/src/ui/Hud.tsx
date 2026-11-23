@@ -22,6 +22,7 @@ import { KeySettings } from "./KeySettings";
 import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
+import { advanceBlock, ageStep, agePlayer, agesOn } from "../state/ages";
 import { buySettlerBlock, gatherNumbers, settlerLimit, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
@@ -358,6 +359,7 @@ function Scores({ store, t, onStats, onPrices, onResign }: HudProps & { onStats(
                   {p.seat !== store.seat && cardCount(dev) > 0 && <> · {t("hud:scores.dev", { count: cardCount(dev) })}</>}
                   {(dev?.knights ?? 0) > 0 && <> · {t("hud:scores.knights", { count: dev!.knights })}</>}
                   {army && <> · <strong class="award">{t("hud:scores.largest_army")}</strong></>}
+                  {agesOn(store.settings) && <> · <span class="age-tag">{t("hud:age.short", { n: ageName(agePlayer(s, p.seat).age) })}</span></>}
                 </span>
               )}
             </li>
@@ -429,7 +431,44 @@ function SettlerButton({ store, t, send }: Pick<HudProps, "store" | "t" | "send"
   );
 }
 
-function HandBar({ store, t, send, controls, touch, mode, devOpen, onTrade, onKeys, onDev }:
+const AGE_NAMES = ["I", "II", "III"];
+function ageName(age: number): string {
+  return AGE_NAMES[age - 1] ?? String(age);
+}
+
+/** Advancing to the next age (ages variation): cost and needs, then the research countdown. */
+function AgeButton({ store, t, send, now }: Pick<HudProps, "store" | "t" | "send" | "now">) {
+  const seat = store.seat!;
+  const me = agePlayer(store.state, seat);
+  if (me.advancing) {
+    const secs = Math.max(0, Math.ceil((me.advancing.t1 - now()) / 1000));
+    const help = `${t("hud:age.advancing", { n: ageName(me.advancing.age), secs })} · ${t("hud:age.cancel")}`;
+    return (
+      <button type="button" class="build age-advance advancing" onClick={() => send({ a: "cancel_age" })} title={help} aria-label={help}>
+        <span class="build-name">{t("hud:age.advancing", { n: ageName(me.advancing.age), secs })}</span>
+        <span class="age-x" aria-hidden="true">×</span>
+      </button>
+    );
+  }
+  const step = ageStep(store.settings, me.age + 1);
+  if (!step) return <span class="age-tag age-max">{t("hud:age.short", { n: ageName(me.age) })}</span>;
+  const why = advanceBlock(store.settings, store.state, seat);
+  const hand = store.player(seat)?.hand ?? {};
+  const needs = [step.cities ? t("hud:age.cities", { count: step.cities }) : "", step.points ? t("hud:age.points", { count: step.points }) : ""]
+    .filter(Boolean).join(", ");
+  const help = [t("hud:age.help", { n: ageName(me.age + 1) }), t("hud:build.cost", { res: formatRes(t, step.cost) }),
+                needs ? t("hud:age.needs", { needs }) : ""].filter(Boolean).join(" · ");
+  const ok = why === null && canAfford(hand, step.cost);
+  return (
+    <button type="button" class={`build age-advance${ok ? "" : " short"}`}
+            onClick={() => (why === null ? send({ a: "advance_age" }) : undefined)} title={help} aria-label={help}>
+      <span class="build-name">{t("hud:age.button", { n: ageName(me.age + 1) })}</span>
+      <CostPips cost={step.cost} />
+    </button>
+  );
+}
+
+function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade, onKeys, onDev }:
   HudProps & { mode: ModeInfo | null; devOpen: boolean; onTrade(): void; onKeys(): void; onDev(): void }) {
   const me = store.player(store.seat!);
   const hand = me?.hand ?? {};
@@ -479,9 +518,10 @@ function HandBar({ store, t, send, controls, touch, mode, devOpen, onTrade, onKe
       </div>
       {/* Variants add their buttons in ONE row below, so the classic row never moves.
           At most one extra row: more options go into a dialog (like the development cards). */}
-      {settlersStay(store.settings) && (
+      {(settlersStay(store.settings) || agesOn(store.settings)) && (
         <div class="actions extras">
-          <SettlerButton store={store} t={t} send={send} />
+          {agesOn(store.settings) && <AgeButton store={store} t={t} send={send} now={now} />}
+          {settlersStay(store.settings) && <SettlerButton store={store} t={t} send={send} />}
         </div>
       )}
     </div>

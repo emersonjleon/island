@@ -1,5 +1,134 @@
 {
   "$defs": {
+    "AgeAdvanceCancelled": {
+      "additionalProperties": false,
+      "description": "``reason``: ``\"cancelled\"`` or ``\"resigned\"``.",
+      "properties": {
+        "age": {
+          "title": "Age",
+          "type": "integer"
+        },
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "age_advance_cancelled",
+          "default": "age_advance_cancelled",
+          "title": "K",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "refund": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Refund",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "age",
+        "reason",
+        "refund"
+      ],
+      "title": "AgeAdvanceCancelled",
+      "type": "object"
+    },
+    "AgeAdvanceStarted": {
+      "additionalProperties": false,
+      "description": "A player started researching ``age`` (public: everyone sees who is advancing).",
+      "properties": {
+        "age": {
+          "title": "Age",
+          "type": "integer"
+        },
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "age_advance_started",
+          "default": "age_advance_started",
+          "title": "K",
+          "type": "string"
+        },
+        "paid": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Paid",
+          "type": "object"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
+        "t0": {
+          "title": "T0",
+          "type": "integer"
+        },
+        "t1": {
+          "title": "T1",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "age",
+        "t0",
+        "t1",
+        "paid"
+      ],
+      "title": "AgeAdvanceStarted",
+      "type": "object"
+    },
+    "AgeReached": {
+      "additionalProperties": false,
+      "properties": {
+        "age": {
+          "title": "Age",
+          "type": "integer"
+        },
+        "at": {
+          "title": "At",
+          "type": "integer"
+        },
+        "k": {
+          "const": "age_reached",
+          "default": "age_reached",
+          "title": "K",
+          "type": "string"
+        },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "seat",
+        "age"
+      ],
+      "title": "AgeReached",
+      "type": "object"
+    },
     "BuildKind": {
       "enum": [
         "road",
@@ -1457,6 +1586,9 @@
   },
   "discriminator": {
     "mapping": {
+      "age_advance_cancelled": "#/$defs/AgeAdvanceCancelled",
+      "age_advance_started": "#/$defs/AgeAdvanceStarted",
+      "age_reached": "#/$defs/AgeReached",
       "buildable": "#/$defs/Buildable",
       "built": "#/$defs/Built",
       "clock_started": "#/$defs/ClockStarted",
@@ -1588,6 +1720,15 @@
     },
     {
       "$ref": "#/$defs/Sight"
+    },
+    {
+      "$ref": "#/$defs/AgeAdvanceStarted"
+    },
+    {
+      "$ref": "#/$defs/AgeAdvanceCancelled"
+    },
+    {
+      "$ref": "#/$defs/AgeReached"
     }
   ]
 }

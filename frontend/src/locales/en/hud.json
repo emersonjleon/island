@@ -271,5 +271,17 @@
     "title": "Prices",
     "close": "Close",
     "help": "Highlighted rows are what you can buy now."
+  },
+  "age": {
+    "button": "Age {{n}}",
+    "short": "Age {{n}}",
+    "advancing": "Age {{n}} in {{secs}} s",
+    "cancel": "click to cancel (part of the cost comes back)",
+    "help": "Advance to age {{n}}: more fish on fishing grounds, a bigger safe hand, faster builds and points",
+    "needs": "needs {{needs}}",
+    "cities_one": "{{count}} city",
+    "cities_other": "{{count}} cities",
+    "points_one": "{{count}} point",
+    "points_other": "{{count}} points"
   }
 }

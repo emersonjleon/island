@@ -8,7 +8,8 @@ and ``settings.robber.enabled``. Nothing is produced on that roll.
    (``require_adjacent`` is off or the player has a finished building on a vertex
    of the robber's hex) and (``spare_setup`` is off or the player has finished
    setup: players still building their setup pieces are not robbed during the first
-   ``spare_setup_ms`` of the game). Adjacency is judged on the hex before the move
+   ``spare_setup_ms`` of the game) and (the friendly robber, ``friendly_min_points`` > 0,
+   spares players with fewer points than that). Adjacency is judged on the hex before the move
    (``adjacency_timing == "before_move"``) or after it (``"after_move"``, stage 3).
 2. Each target loses ``steal_pct`` % of its hand total, rounded per
    ``steal_rounding`` (integer maths), drawn one card at a time uniformly from the
@@ -31,6 +32,7 @@ Later: knight moves (``move(by=seat, max_dist)``).
 from __future__ import annotations
 
 from engine.events import Event, Hand, RobberMoved, RobberStole
+from engine.rules import age_state
 from engine.settings.enums import (
     AdjacencyTiming,
     MoveOnSeven,
@@ -55,12 +57,14 @@ def _adjacent_seats(state: GameState, hex_id: int | None) -> set[int]:
 
 
 def is_spared(state: GameState, seat: int) -> bool:
-    """True when ``seat`` may not be robbed: ``spare_setup`` is on, its setup is unfinished and
-    the game is younger than ``spare_setup_ms``."""
+    """True when ``seat`` may not be robbed (sevens, knights, monopoly): ``spare_setup`` is on,
+    its setup is unfinished and the game is younger than ``spare_setup_ms``; or the friendly
+    robber is on (``friendly_min_points`` > 0) and the player has fewer points than that."""
     rs = state.settings.robber
-    if not rs.spare_setup or state.player(seat).setup_done:
-        return False
-    return rs.spare_setup_ms is None or state.now_ms < rs.spare_setup_ms
+    p = state.player(seat)
+    if rs.spare_setup and not p.setup_done and (rs.spare_setup_ms is None or state.now_ms < rs.spare_setup_ms):
+        return True
+    return 0 < rs.friendly_min_points and p.points < rs.friendly_min_points
 
 
 def targets(state: GameState, hex_id: int | None) -> list[int]:
@@ -69,7 +73,7 @@ def targets(state: GameState, hex_id: int | None) -> list[int]:
     adjacent = _adjacent_seats(state, hex_id) if rs.require_adjacent else set()
     out: list[int] = []
     for p in state.players:
-        if rs.require_over_limit and p.hand_count <= rs.card_limit:
+        if rs.require_over_limit and p.hand_count <= rs.card_limit + age_state.card_limit_bonus(state, p.seat):
             continue
         if rs.require_adjacent and p.seat not in adjacent:
             continue

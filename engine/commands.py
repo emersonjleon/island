@@ -15,7 +15,7 @@ from engine.errors import RuleError
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 
 __all__ = [
-    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "PostOffer", "CancelOffer", "AcceptOffer", "Resign", "Command", "COMMAND_TYPES",
+    "MoveSettler", "Build", "CancelBuild", "BankTrade", "BuyDevCard", "PlayDevCard", "PostOffer", "CancelOffer", "AcceptOffer", "BuySettler", "AdvanceAge", "CancelAge", "Resign", "Command", "COMMAND_TYPES",
     "parse_command", "command_json_schema", "ENVELOPE_KEYS",
 ]
 
@@ -145,18 +145,29 @@ class BuySettler(_Cmd):
     vertex: Id | None = None
 
 
+class AdvanceAge(_Cmd):
+    """Start researching the next age (ages, WP26): pay its cost and wait its time."""
+    a: Literal["advance_age"] = "advance_age"
+
+
+class CancelAge(_Cmd):
+    """Stop the age research in progress (refunded like a construction)."""
+    a: Literal["cancel_age"] = "cancel_age"
+
+
 class Resign(_Cmd):
     """Give up: the player leaves the game for good (see :mod:`engine.rules.resign`)."""
     a: Literal["resign"] = "resign"
 
 
 Command = Annotated[MoveSettler | Build | CancelBuild | BankTrade | BuyDevCard | PlayDevCard | PostOffer | CancelOffer
-                    | AcceptOffer | BuySettler | Resign,
+                    | AcceptOffer | BuySettler | AdvanceAge | CancelAge | Resign,
                     Field(discriminator="a")]
 COMMAND_TYPES: dict[str, type[_Cmd]] = {
     "move_settler": MoveSettler, "build": Build, "cancel_build": CancelBuild, "bank_trade": BankTrade,
     "buy_dev_card": BuyDevCard, "play_dev_card": PlayDevCard, "post_offer": PostOffer, "cancel_offer": CancelOffer,
-    "accept_offer": AcceptOffer, "buy_settler": BuySettler, "resign": Resign,
+    "accept_offer": AcceptOffer, "buy_settler": BuySettler, "advance_age": AdvanceAge, "cancel_age": CancelAge,
+    "resign": Resign,
 }
 _ADAPTER: TypeAdapter[Any] = TypeAdapter(Command)
 

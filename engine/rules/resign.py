@@ -21,7 +21,7 @@ from __future__ import annotations
 from engine.commands import Resign
 from engine.events import Event, Hand, Resigned
 from engine.game import command_handler
-from engine.rules import construction, setup, victory
+from engine.rules import ages, construction, setup, victory
 from engine.settings.enums import Resource
 from engine.state import GameState
 
@@ -50,6 +50,7 @@ def handle_resign(state: GameState, seat: int, cmd: Resign, now_ms: int) -> list
         c = state.constructions.get(cid)
         if c is not None and c.seat == seat:
             events += construction.cancel_construction(state, c, "resigned", now_ms)
+    events += ages.cancel_advance(state, seat, "resigned", now_ms)
     events += setup.remove_settlers(state, seat, now_ms)
     returned = {r: p.hand[r] for r in Resource if p.hand[r] > 0}
     for r, n in returned.items():

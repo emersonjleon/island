@@ -134,10 +134,8 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
   };
 
   const statsBox = form.querySelector<HTMLDetailsElement>("#stats-box");
-  const buttons = [...form.querySelectorAll<HTMLButtonElement>("[data-experimental]")];
-  const experimental = new Set(buttons.map((b) => b.dataset.experimental ?? ""));
-  // The regular type a custom game goes back to when an experimental one is unpicked.
-  let regular = experimental.has(base()) ? "classic" : base();
+  // "Start from" chips in Custom: every game type a custom game can start from.
+  const buttons = [...form.querySelectorAll<HTMLButtonElement>("[data-base-choice]")];
 
   const setBase = (name: string, followSize: boolean) => {
     if (baseField instanceof HTMLInputElement) baseField.value = name;
@@ -147,7 +145,7 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
       players.value = String(seats);
     }
     for (const b of buttons) {
-      const on = b.dataset.experimental === name;
+      const on = b.dataset.baseChoice === name;
       b.classList.toggle("selected", on);
       b.setAttribute("aria-pressed", String(on));
     }
@@ -155,8 +153,7 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
 
   for (const button of buttons) {
     button.addEventListener("click", () => {
-      const name = button.dataset.experimental ?? "";
-      setBase(nextBase(base(), name, regular), false);
+      setBase(button.dataset.baseChoice ?? "classic", true);
       render();
     });
   }
@@ -165,22 +162,13 @@ export function initCreateForm(form: HTMLFormElement, data: PresetsData, editor?
     const target = event.target as HTMLInputElement;
     if (target.name === "preset") {
       if (statsBox) statsBox.open = target.value === data.custom;
-      if (target.value !== data.custom) {
-        regular = target.value;
-        setBase(target.value, true);
-      }
+      if (target.value !== data.custom) setBase(target.value, true);
     }
     render();
   });
   form.addEventListener("input", render);
   form.addEventListener("keydown", (event) => onEnter(form, event));
   render();
-}
-
-/** The base type after a click on experimental type ``clicked``: it, or back to the
- * ``regular`` type when it was already the base. */
-export function nextBase(current: string, clicked: string, regular: string): string {
-  return current === clicked ? regular : clicked;
 }
 
 /** Enter in the "save as" box saves the settings instead of creating the game. */

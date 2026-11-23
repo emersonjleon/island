@@ -487,3 +487,9 @@ table.keys td { padding: 4px 0; }
   .hud:has(.chat-panel) .hud-overlay { padding-right: 420px; }
   .hud:has(.chat-panel) .hud-dialog { max-width: min(640px, calc(100% - 32px)); }
 }
+
+/* Ages: the research button counts down and cancels; the age tag in scores. */
+.game-hud .hud-hand .actions.extras button.age-advance.advancing { background: #e9f1f6; border-color: var(--hud-accent, #1d5b79); }
+.age-advance .age-x { font-weight: 700; opacity: 0.7; }
+.age-tag { font-weight: 600; }
+.hud-hand .age-tag.age-max { align-self: center; padding: 0 8px; }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { customValues, formatStat, keepText, nextBase, presetValues, savesOnEnter, type PresetsData } from "./create";
+import { customValues, formatStat, keepText, presetValues, savesOnEnter, type PresetsData } from "./create";
 
 const data: PresetsData = {
   presets: {
@@ -54,13 +54,5 @@ describe("savesOnEnter", () => {
     expect(savesOnEnter("Enter", "save_name")).toBe(true);
     expect(savesOnEnter("Enter", "target")).toBe(false);
     expect(savesOnEnter("a", "save_name")).toBe(false);
-  });
-});
-
-describe("nextBase", () => {
-  it("picks an experimental type, and unpicks it back to the regular one", () => {
-    expect(nextBase("classic", "settlers", "classic")).toBe("settlers");
-    expect(nextBase("settlers", "explorer", "blitz")).toBe("explorer");
-    expect(nextBase("explorer", "explorer", "blitz")).toBe("blitz");
   });
 });

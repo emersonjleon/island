@@ -33,7 +33,7 @@ async function signUp(page, name) {
     await signUp(page, "pioneer");
     await page.goto(`${BASE}/lobby/#create-game`);
     await page.click('.preset-card[data-card="custom"]');
-    await page.click('[data-experimental="settlers"]');
+    await page.click('[data-base-choice="settlers"]');
     if (await page.inputValue('input[name="base"]') !== "settlers") throw new Error("Settlers was not picked as the base");
     await Promise.all([page.waitForURL(/\/play\/[A-Z0-9]+\/$/, { timeout: 60_000 }), page.click('button[name="play_bots"]')]);
     await page.waitForFunction(() => window.island?.store?.state && window.island?.store?.board);

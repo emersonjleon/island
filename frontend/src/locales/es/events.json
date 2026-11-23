@@ -56,5 +56,9 @@
   },
   "resigned": "{{who}} se rindió",
   "resigned_you": "Te rendiste",
-  "settlers_gathered_you": "Tus colonos recogieron {{res}}"
+  "settlers_gathered_you": "Tus colonos recogieron {{res}}",
+  "age_started": "{{who}} está avanzando a la edad {{age}}",
+  "age_started_you": "Estás avanzando a la edad {{age}}",
+  "age_reached": "{{who}} llegó a la edad {{age}}",
+  "age_reached_you": "Llegaste a la edad {{age}}"
 }

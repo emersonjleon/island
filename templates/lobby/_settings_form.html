@@ -35,12 +35,41 @@
 
     <div class="custom-settings" id="custom-settings">
       <h3>{% translate "Custom rules" %}</h3>
-      <p class="helptext">{% blocktranslate trimmed %}
-        Starting from <b data-base-label>{{ base_label }}</b>. Blank fields keep its value, shown in grey.
-      {% endblocktranslate %}</p>
+      <section class="start-from">
+        <h4>{% translate "Start from" %}</h4>
+        <div class="start-chips" role="group" aria-label="{% translate 'Start from' %}">
+          {% for p in base_choices %}
+          <button type="button" class="start-chip{% if p.selected %} selected{% endif %}{% if p.experimental %} beta{% endif %}" data-base-choice="{{ p.name }}" aria-pressed="{% if p.selected %}true{% else %}false{% endif %}" title="{{ p.description }}">
+            {{ p.label }}{% if p.experimental %} <span class="beta-tag">beta</span>{% endif %}
+          </button>
+          {% endfor %}
+        </div>
+        {% if max_saved %}
+        <h4>{% translate "My settings" %} <span class="muted">{{ saved_settings|length }}/{{ max_saved }}</span></h4>
+        {% if saved_settings %}
+        <ul class="saved-chips" id="my-settings">
+          {% for row in saved_settings %}
+          <li class="saved-chip{% if row.active %} active{% endif %}">
+            <a href="{{ row.use_url }}"{% if row.active %} aria-current="true"{% endif %} title="{% translate 'Use these settings' %}">
+              <span class="saved-name">{{ row.saved.name }}</span>
+              <span class="saved-type">{{ row.saved.preset_label }}</span>
+            </a>
+            <button type="submit" formaction="{% url 'lobby:delete_saved' row.saved.pk %}" formnovalidate class="chip-delete" aria-label="{% blocktranslate with name=row.saved.name %}Delete {{ name }}{% endblocktranslate %}" title="{% translate 'Delete' %}">×</button>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="helptext">{% translate "Save the rules you like with the box at the bottom to use them again with one click." %}</p>
+        {% endif %}
+        {% endif %}
+        <p class="helptext">{% blocktranslate trimmed %}
+          Starting from <b data-base-label>{{ base_label }}</b>. Blank fields keep its value, shown in grey.
+        {% endblocktranslate %}</p>
+      </section>
       {% for group in knob_groups %}
-      <fieldset class="knob-group">
-        <legend>{{ group.label }}</legend>
+      <details class="rule-section" data-section="{{ group.key }}"{% if group.open %} open{% endif %}>
+        <summary>{{ group.label }}</summary>
+        <div class="knob-group">
         {% for field in group.fields %}
         <div class="knob{% if field.field.knob.boolean %} knob-check{% endif %}">
           {% if field.field.knob.boolean %}
@@ -53,31 +82,17 @@
           {{ field.errors }}
         </div>
         {% endfor %}
-      </fieldset>
-      {% endfor %}
-      {% if experimental_presets or experimental_editor %}
-      <fieldset class="experimental" id="experimental">
-        <legend>{% translate "Experimental (beta)" %}</legend>
-        <p class="helptext">{% translate "New rules still being tested. Start from one of these, or turn rules on one by one below." %}</p>
-        {% if experimental_presets %}
-        <div class="experimental-presets">
-          {% for p in experimental_presets %}
-          <button type="button" class="experimental-preset{% if p.selected %} selected{% endif %}" data-experimental="{{ p.name }}" aria-pressed="{% if p.selected %}true{% else %}false{% endif %}">
-            <span class="preset-name">{{ p.label }}</span>
-            <span class="preset-desc">{{ p.description }}</span>
-          </button>
-          {% endfor %}
         </div>
-        {% endif %}
-        {% if experimental_editor %}
-        <details class="experimental-settings"{% if experimental_open %} open{% endif %}>
-          <summary>{% translate "Experimental rules" %}</summary>
-          {% include "lobby/_editor_group.html" with group=experimental_editor %}
-        </details>
-        {% endif %}
-      </fieldset>
+      </details>
+      {% endfor %}
+      {% if experimental_editor %}
+      <details class="rule-section experimental-settings" id="experimental"{% if experimental_open %} open{% endif %}>
+        <summary>{% translate "Experimental rules" %} <span class="beta-tag">beta</span></summary>
+        <p class="helptext">{% translate "New rules still being tested." %}</p>
+        {% include "lobby/_editor_group.html" with group=experimental_editor %}
+      </details>
       {% endif %}
-      <details class="all-settings" id="all-settings"{% if editor_open %} open{% endif %}>
+      <details class="rule-section all-settings" id="all-settings"{% if editor_open %} open{% endif %}>
         <summary>{% translate "All settings" %}</summary>
         <p class="helptext">{% translate "Leave a box blank to keep the game type's value, shown in grey." %}</p>
         {% for group in editor %}{% include "lobby/_editor_group.html" %}{% endfor %}

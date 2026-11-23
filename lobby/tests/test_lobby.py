@@ -224,7 +224,7 @@ class ViewTests(TestCase):
     def test_create_page_shows_every_game_type_with_stats(self):
         self.client.force_login(self.host)
         page = self.client.get(reverse("lobby:list"))
-        for name in ("blitz", "classic", "expanded", "huge", "custom"):
+        for name in ("blitz", "classic", "ages", "expanded", "ages_big", "huge", "custom"):
             self.assertContains(page, f'value="{name}"')
         self.assertContains(page, 'id="presets-data"')
         self.assertContains(page, 'name="card_limit"')

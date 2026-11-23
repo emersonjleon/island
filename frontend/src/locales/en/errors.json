@@ -100,5 +100,16 @@
     "no_building": "You need a building for the settler to start from",
     "not_your_building": "The settler must start at one of your buildings",
     "not_available": "Settlers leave after the first settlements in this game"
+  },
+  "age": {
+    "disabled": "This game has no ages",
+    "setup_not_done": "Finish your setup first",
+    "in_progress": "You are already advancing to the next age",
+    "max": "You are already in the last age",
+    "need_cities": "You need {{need}} cities to advance (you have {{have}})",
+    "need_points": "You need {{need}} points to advance (you have {{have}})",
+    "cannot_afford": "You cannot afford the next age",
+    "not_advancing": "You are not advancing to an age",
+    "locked": "That needs age {{age}}"
   }
 }

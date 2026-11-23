@@ -214,7 +214,7 @@ class StageTest(unittest.TestCase):
         for raw, field in (({"victory": {"time_limit_ms": 600000}}, "victory.time_limit_ms"),
                            ({"settlers": {"build_reach_edges": 1}}, "settlers.build_reach_edges"),
                            ({"visibility": {"hidden_numbers": False, "dev_cards": "counts"},
-                             "robber": {"stolen_to_bank": False}}, "robber.stolen_to_bank")):
+                             "trading": {"private_offers": True}}, "trading.private_offers")):
             with self.subTest(field=field), self.assertRaises(ValidationError) as ctx:
                 GameSettings.model_validate(raw)
             err = ctx.exception.errors()[0]
@@ -234,7 +234,9 @@ class StageTest(unittest.TestCase):
         s = GameSettings.model_validate({"visibility": {"map": "growing", "hidden_numbers": True,
                                                         "sight": {"city": 3}}})
         self.assertTrue(s.visibility.hidden_numbers)
-        s = GameSettings.model_validate({"settlers": {"builder_required": "always"}, "robber": {"fish_ransom": 3}})
+        s = GameSettings.model_validate({"settlers": {"builder_required": "always"},
+                                         "robber": {"fish_ransom": 3, "friendly_min_points": 4,
+                                                    "may_enter_fishing": True}})
         self.assertEqual((s.settlers.builder_required.value, s.robber.fish_ransom), ("always", 3))
         with self.assertRaises(ValidationError):  # not before their own stage when asked for one below
             GameSettings.model_validate({"visibility": {"map": "growing"}}, context={"implemented_stage": 1})
@@ -278,7 +280,7 @@ class StageTest(unittest.TestCase):
 
 class PresetTest(unittest.TestCase):
     def test_available(self) -> None:
-        self.assertEqual(available_presets(), ["blitz", "classic", "custom", "expanded", "explorer", "huge", "settlers"])
+        self.assertEqual(available_presets(), ["ages", "ages_big", "blitz", "classic", "custom", "expanded", "explorer", "huge", "settlers"])
 
     def test_custom_starts_from_defaults(self) -> None:
         self.assertEqual(load_preset("custom").model_dump(exclude={"preset"}),

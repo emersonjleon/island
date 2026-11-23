@@ -47,6 +47,8 @@ RESIGN_AT_ROLL = 50
 FOG_SETTINGS = {"visibility": {"map": "live_fog", "hidden_numbers": True},
                 "settlers": {"leave_after_setup": False, "gather": True, "block_robber": True}}   # a second, short game
 FOG_ROLLS = 10
+AGES_SETTINGS = {"ages": {"enabled": True, "age2": {"requires": {"cities": 0}, "time_ms": 1000},
+                          "age3": {"requires": {"cities": 0}}}}   # a third, short game for the age events
 
 
 # ------------------------------------------------------------------- codes
@@ -115,6 +117,7 @@ def fixtures() -> dict[str, Any]:
                      board=standard_board(), on_events=fog_batches.append)
     while not fog.state.finished and len(fog.state.dice_history) < FOG_ROLLS:
         fog.step()
+    ages_batches = _ages_batches()
     out: dict[str, Any] = {
         "board.json": {"t": "board", **sim.state.board.to_dict()},
         "state_seat0.json": {"t": "state", "seq": 1, "now": mid["0"]["now"], "state": mid["0"]},
@@ -125,7 +128,8 @@ def fixtures() -> dict[str, Any]:
     }
     for viewer, name in ((0, "seat0"), (1, "seat1"), (None, "spectator")):
         first: dict[str, dict[str, Any]] = {}
-        runs = [(b, sim.state) for b in batches] + [(b, fog.state) for b in fog_batches]
+        runs = ([(b, sim.state) for b in batches] + [(b, fog.state) for b in fog_batches]
+                + [(b, st) for b, st in ages_batches])
         for batch, state in runs:
             for d in views.filter_events(batch, viewer, state):
                 key = d["k"] if d["k"] != "robber_stole" else f"robber_stole.{'own' if d['seat'] == viewer else 'other'}"
@@ -133,6 +137,39 @@ def fixtures() -> dict[str, Any]:
         evs = [first[k] for k in sorted(first)]
         out[f"events_{name}.json"] = {"t": "events", "seq": 2, "now": sim.state.now_ms, "events": evs}
     return out
+
+
+def _ages_batches() -> list[tuple[list[Any], Any]]:
+    """Seat 0 reaches age II, then starts and cancels age III (cards given for it)."""
+    batches: list[list[Any]] = []
+    sim = Simulation(make_settings(AGES_SETTINGS, implemented_stage=3), make_seats(FIXTURE_SEATS), FIXTURE_SEED,
+                     [make_bot("greedy", i, FIXTURE_SEED * 1000 + i) for i in range(FIXTURE_SEATS)],
+                     board=standard_board(), on_events=batches.append)
+    st = sim.state
+    while not st.finished and len(st.dice_history) < 2:
+        sim.step()
+
+    def give_and_advance() -> None:
+        for r, n in ages_cost(st).items():
+            st.bank[r] -= n
+            st.players[0].hand[r] += n
+        batches.append(game.apply(st, 0, {"a": "advance_age"}, st.now_ms))
+
+    def ages_cost(state: Any) -> dict[Any, int]:
+        from engine.rules import age_state
+        return dict(age_state.step(state, age_state.age_of(state, 0) + 1).cost)
+
+    give_and_advance()
+    while not st.finished and age_state_of(st) < 2:
+        sim.step()
+    give_and_advance()
+    batches.append(game.apply(st, 0, {"a": "cancel_age"}, st.now_ms))
+    return [(b, st) for b in batches]
+
+
+def age_state_of(state: Any) -> int:
+    from engine.rules import age_state
+    return age_state.age_of(state, 0)
 
 
 # ------------------------------------------------------------------ output

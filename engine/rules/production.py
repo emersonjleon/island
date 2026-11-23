@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from engine.events import Event, Hand, Produced
 from engine.game import SIG_PRODUCED, emit
+from engine.rules import age_state
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -58,6 +59,16 @@ def _hex_owed(state: GameState, hex_id: int) -> dict[int, int]:
     return out
 
 
+def _with_fish_bonus(state: GameState, hex_id: int, per_seat: dict[int, int]) -> dict[int, int]:
+    """Ages: each building on a producing fishing ground adds ``age_state.fish_bonus``."""
+    out = dict(per_seat)
+    for v in state.board.board.hex_vertices[hex_id]:
+        b = state.buildings.get(v)
+        if b is not None and b.seat in out:
+            out[b.seat] += age_state.fish_bonus(state, b.seat)
+    return out
+
+
 def owed_by_resource(state: GameState, roll: int) -> tuple[Owed, set[Resource]]:
     """``(owed, robbed)``: resource -> seat -> cards owed for ``roll``, and the resources
     the robber's hex blocked for at least one building."""
@@ -74,6 +85,8 @@ def owed_by_resource(state: GameState, roll: int) -> tuple[Owed, set[Resource]]:
         if h == state.robber_hex:
             robbed.add(res)
             continue
+        if h in board.fishing:
+            per_seat = _with_fish_bonus(state, h, per_seat)
         dest = owed.setdefault(res, {})
         for seat, n in per_seat.items():
             dest[seat] = dest.get(seat, 0) + n

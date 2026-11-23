@@ -40,26 +40,6 @@
 
 <section class="create-game">
   <h2>{% translate "Create a game" %}</h2>
-  <div class="my-settings" id="my-settings">
-    <h3>{% translate "My settings" %} <span class="muted">{{ saved_settings|length }}/{{ max_saved }}</span></h3>
-    {% if saved_settings %}
-    <ul class="saved-chips">
-      {% for row in saved_settings %}
-      <li class="saved-chip{% if row.active %} active{% endif %}">
-        <a href="{{ row.use_url }}"{% if row.active %} aria-current="true"{% endif %} title="{% translate 'Use these settings' %}">
-          <span class="saved-name">{{ row.saved.name }}</span>
-          <span class="saved-type">{{ row.saved.preset_label }}</span>
-        </a>
-        <form method="post" action="{% url 'lobby:delete_saved' row.saved.pk %}">{% csrf_token %}
-          <button type="submit" class="chip-delete" aria-label="{% blocktranslate with name=row.saved.name %}Delete {{ name }}{% endblocktranslate %}" title="{% translate 'Delete' %}">×</button>
-        </form>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p class="helptext">{% translate "Choose Custom, set the rules you like and save them here to use them again with one click." %}</p>
-    {% endif %}
-  </div>
   <form method="post" class="stacked create-form" id="create-game" data-preset="{{ chosen_preset }}" data-custom="{{ custom_preset }}">
     {% csrf_token %}
     {% include "lobby/_settings_form.html" %}

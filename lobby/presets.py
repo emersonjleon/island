@@ -21,7 +21,9 @@ MAX_TABLE = 12
 PRESET_INFO = {
     "blitz": (_("Blitz"), _("Fast dice, quicker builds and fewer points to win.")),
     "classic": (_("Classic"), _("The standard island for 3 or 4 players.")),
+    "ages": (_("Ages"), _("The classic island with ages: pay fish to reach new ages for points and bonuses.")),
     "expanded": (_("Big"), _("A bigger island, bank and set of pieces for 5 or 6 players, and more points to win.")),
+    "ages_big": (_("Big with ages"), _("The big island for 5 or 6 players, with ages.")),
     "huge": (_("Huge"), _("A very big island for 7 or more players, and a long game.")),
     CUSTOM: (_("Custom"), _("Start from the game type you chose and change the rules yourself.")),
 }

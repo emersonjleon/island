@@ -22,6 +22,20 @@
       "title": "AcceptOffer",
       "type": "object"
     },
+    "AdvanceAge": {
+      "additionalProperties": false,
+      "description": "Start researching the next age (ages, WP26): pay its cost and wait its time.",
+      "properties": {
+        "a": {
+          "const": "advance_age",
+          "default": "advance_age",
+          "title": "A",
+          "type": "string"
+        }
+      },
+      "title": "AdvanceAge",
+      "type": "object"
+    },
     "BankTrade": {
       "additionalProperties": false,
       "description": "Trade with the bank (or a harbor the player owns; the rule picks the best ratio).\n\nStage 1: exactly one ``give`` resource and one different ``get`` resource,\npositive amounts. Whether ``give`` amount == ratio * ``get`` amount is a rule check\n(``trade.*`` codes), not a schema check.",
@@ -172,6 +186,20 @@
         }
       },
       "title": "BuySettler",
+      "type": "object"
+    },
+    "CancelAge": {
+      "additionalProperties": false,
+      "description": "Stop the age research in progress (refunded like a construction).",
+      "properties": {
+        "a": {
+          "const": "cancel_age",
+          "default": "cancel_age",
+          "title": "A",
+          "type": "string"
+        }
+      },
+      "title": "CancelAge",
       "type": "object"
     },
     "CancelBuild": {
@@ -410,10 +438,12 @@
   "discriminator": {
     "mapping": {
       "accept_offer": "#/$defs/AcceptOffer",
+      "advance_age": "#/$defs/AdvanceAge",
       "bank_trade": "#/$defs/BankTrade",
       "build": "#/$defs/Build",
       "buy_dev_card": "#/$defs/BuyDevCard",
       "buy_settler": "#/$defs/BuySettler",
+      "cancel_age": "#/$defs/CancelAge",
       "cancel_build": "#/$defs/CancelBuild",
       "cancel_offer": "#/$defs/CancelOffer",
       "move_settler": "#/$defs/MoveSettler",
@@ -453,6 +483,12 @@
     },
     {
       "$ref": "#/$defs/BuySettler"
+    },
+    {
+      "$ref": "#/$defs/AdvanceAge"
+    },
+    {
+      "$ref": "#/$defs/CancelAge"
     },
     {
       "$ref": "#/$defs/Resign"

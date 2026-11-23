@@ -1,0 +1,79 @@
+// The Ages game type: a person picks it in the lobby and plays now against bots.
+// The row below the classic hand bar has an "Age II" button with its price; the
+// scores show each player's age; the bots play (and may advance) until the end.
+// Run through e2e/run.py.
+// Usage: node e2e/ages.cjs BASE_URL OUT_DIR
+const { chromium } = require("playwright");
+
+const BASE = process.argv[2] || "http://127.0.0.1:8765";
+const OUT = process.argv[3] || ".";
+const PASSWORD = "Zx9-long-pass!";
+const GAME_TIMEOUT_MS = 300_000;
+
+const log = (...a) => console.log(new Date().toISOString().slice(11, 19), "[ages]", ...a);
+
+async function signUp(page, name) {
+  await page.goto(`${BASE}/accounts/signup/`);
+  const names = await page.$$eval("main form input", (is) => is.map((i) => i.name));
+  for (const n of names) {
+    if (n === "csrfmiddlewaretoken" || n.startsWith("initial-")) continue;
+    const value = /pass/.test(n) ? PASSWORD : /mail/.test(n) ? `${name}@example.com` : name;
+    await page.fill(`main form input[name="${n}"]`, value);
+  }
+  await Promise.all([page.waitForNavigation(), page.click("main form button[type=submit]")]);
+  if (page.url().includes("/signup/")) throw new Error(`sign-up failed for ${name}: ${await page.textContent("main")}`);
+}
+
+(async () => {
+  const browser = await chromium.launch(process.env.E2E_CHROMIUM ? { executablePath: process.env.E2E_CHROMIUM } : {});
+  const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+  page.on("pageerror", (e) => { console.error("page error:", e.message); process.exitCode = 1; });
+  try {
+    log("sign up, pick the Ages game type and play now against bots");
+    await signUp(page, "historian");
+    await page.goto(`${BASE}/lobby/#create-game`);
+    await page.click('.preset-card[data-card="ages"]');
+    await Promise.all([page.waitForURL(/\/play\/[A-Z0-9]+\/$/, { timeout: 60_000 }), page.click('button[name="play_bots"]')]);
+    await page.waitForFunction(() => window.island?.store?.state && window.island?.store?.board);
+    const ages = await page.evaluate(() => window.island.store.settings.ages);
+    if (!ages?.enabled) throw new Error("ages are not on");
+    const button = page.locator(".age-advance");
+    await button.waitFor({ timeout: 10_000 });
+    const label = ((await button.textContent()) || "").trim();
+    log("button:", label);
+    if (!/II/.test(label)) throw new Error(`age button does not name age II: ${label}`);
+    const rows = await page.evaluate(() => [".build-road", ".age-advance", ".trade-open"]
+      .map((sel) => Math.round(document.querySelector(`.hud-hand ${sel}`).getBoundingClientRect().top)));
+    if (rows[0] !== rows[2] || rows[1] <= rows[0]) throw new Error(`the classic row changed or the age button is not below it: ${rows}`);
+    if (!(await page.locator(".hud-scores .age-tag").count())) throw new Error("scores do not show ages");
+    await page.waitForTimeout(1500);
+    await page.screenshot({ path: `${OUT}/e2e-ages-start.png` });
+    await page.setViewportSize({ width: 412, height: 860 });
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: `${OUT}/e2e-ages-phone.png` });
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    log("the bots play until the end");
+    const t0 = Date.now();
+    let best = 1;
+    for (;;) {
+      const v = await page.evaluate(() => {
+        const { state } = window.island.store;
+        const ages = Object.values(state.ages?.players ?? {}).map((p) => p.age);
+        return { phase: state.phase, ages, points: state.players.map((p) => p.points) };
+      });
+      best = Math.max(best, ...v.ages);
+      if (v.phase === "finished") { log("finished:", JSON.stringify(v), "highest age:", best); break; }
+      if (Date.now() - t0 > GAME_TIMEOUT_MS) throw new Error(`bots did not finish in time: ${JSON.stringify(v)}`);
+      await page.waitForTimeout(500);
+    }
+    await page.screenshot({ path: `${OUT}/e2e-ages-end.png` });
+    log("PASS");
+  } catch (err) {
+    console.error("FAIL:", err.message);
+    await page.screenshot({ path: `${OUT}/e2e-ages-failure.png` }).catch(() => {});
+    process.exitCode = 1;
+  } finally {
+    await browser.close();
+  }
+})();

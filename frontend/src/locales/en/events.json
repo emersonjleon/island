@@ -56,5 +56,9 @@
   },
   "resigned": "{{who}} resigned",
   "resigned_you": "You resigned",
-  "settlers_gathered_you": "Your settlers gathered {{res}}"
+  "settlers_gathered_you": "Your settlers gathered {{res}}",
+  "age_started": "{{who}} is advancing to age {{age}}",
+  "age_started_you": "You are advancing to age {{age}}",
+  "age_reached": "{{who}} reached age {{age}}",
+  "age_reached_you": "You reached age {{age}}"
 }

@@ -7,7 +7,7 @@ Conservation needs the per-resource total of the game, taken once with
 """
 from __future__ import annotations
 
-from engine.rules import devcards, longest_road, trade_board
+from engine.rules import age_state, devcards, longest_road, trade_board
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -27,6 +27,9 @@ def resource_totals(state: GameState) -> dict[Resource, int]:
     for c in state.constructions.values():
         for r in Resource:
             tot[r] += c.paid.get(r, 0)
+    for research in state.ext.get("ages", {}).get("advancing", {}).values():   # age research escrow
+        for key, n in research["paid"].items():
+            tot[Resource(key)] += n
     return tot
 
 
@@ -142,6 +145,7 @@ def _points(state: GameState) -> list[str]:
         if devcards.army_holder(state) == p.seat:
             pts += state.settings.victory.largest_army.points
         pts += devcards.vp_points(state, p.seat)
+        pts += sum(s.bonus.points for s in age_state.reached_steps(state, p.seat))
         if pts != p.points:
             out.append(f"points.{p.seat}: cached {p.points} != {pts}")
     if state.phase == "finished":

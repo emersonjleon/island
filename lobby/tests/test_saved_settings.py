@@ -87,9 +87,11 @@ class SavedSettingsTests(TestCase):
         cards = [c["name"] for c in page.context["preset_cards"]]
         self.assertNotIn("settlers", cards)
         self.assertNotIn("explorer", cards)
-        self.assertEqual([p["name"] for p in page.context["experimental_presets"]], ["settlers", "explorer"])
-        self.assertContains(page, 'data-experimental="explorer"')
-        self.assertContains(page, "Experimental (beta)")
+        choices = page.context["base_choices"]
+        self.assertEqual([p["name"] for p in choices if p["experimental"]], ["settlers", "explorer"])
+        self.assertIn("ages", [p["name"] for p in choices])
+        self.assertContains(page, 'data-base-choice="explorer"')
+        self.assertContains(page, "Experimental rules")
         self.assertNotContains(page, "code-box")
         paths = {row["setting"].path for sec in page.context["experimental_editor"]["sections"] for row in sec["rows"]}
         self.assertTrue({"visibility.map", "settlers.builder_required", "robber.fish_ransom"} <= paths)

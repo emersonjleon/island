@@ -56,5 +56,9 @@
   },
   "resigned": "{{who}} 认输了",
   "resigned_you": "你认输了",
-  "settlers_gathered_you": "你的拓荒者采集了 {{res}}"
+  "settlers_gathered_you": "你的拓荒者采集了 {{res}}",
+  "age_started": "{{who}} 正在进入第 {{age}} 时代",
+  "age_started_you": "你正在进入第 {{age}} 时代",
+  "age_reached": "{{who}} 进入了第 {{age}} 时代",
+  "age_reached_you": "你进入了第 {{age}} 时代"
 }

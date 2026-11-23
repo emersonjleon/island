@@ -271,5 +271,17 @@
     "title": "价格",
     "close": "关闭",
     "help": "高亮的行是你现在买得起的。"
+  },
+  "age": {
+    "button": "时代 {{n}}",
+    "short": "时代 {{n}}",
+    "advancing": "时代 {{n}}，还有 {{secs}} 秒",
+    "cancel": "点击取消（退回部分费用）",
+    "help": "进入时代 {{n}}：渔场产更多鱼、安全手牌上限更高、建造更快并获得分数",
+    "needs": "需要 {{needs}}",
+    "cities_one": "{{count}} 座城市",
+    "cities_other": "{{count}} 座城市",
+    "points_one": "{{count}} 分",
+    "points_other": "{{count}} 分"
   }
 }
