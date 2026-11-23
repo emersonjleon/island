@@ -7,7 +7,8 @@ type Settings = Record<string, unknown>;
 export interface AgeAdvancing { age: number; t0: number; t1: number }
 export interface AgePlayer { age: number; advancing: AgeAdvancing | null; reached: Record<string, number> }
 export interface AgesView {
-  players: Record<string, AgePlayer>;
+  /** Missing when ages are off (the server sends an empty object). */
+  players?: Record<string, AgePlayer>;
   /** Award for the largest population: its holder and each seat's population. */
   largest_population?: { holder: number | null; population: Record<string, number> };
 }
@@ -38,7 +39,7 @@ export function ageStep(settings: Settings, age: number): { cost: ResMap; cities
 }
 
 export function agePlayer(state: GameStateView | null, seat: number | null): AgePlayer {
-  const p = seat === null ? undefined : state?.ages?.players[String(seat)];
+  const p = seat === null ? undefined : state?.ages?.players?.[String(seat)];
   return p ?? { age: 1, advancing: null, reached: {} };
 }
 
@@ -66,6 +67,7 @@ export function populationHolder(state: GameStateView | null): number | null {
 export function applyAgeEvent(state: GameStateView, ev: GameEvent): void {
   const seat = ev["seat"] as number;
   state.ages ??= { players: {} };
+  state.ages.players ??= {};
   if (ev.k === "largest_population") {
     const pop = (ev["population"] ?? {}) as Record<string, number>;
     state.ages.largest_population = { holder: (ev["seat"] as number | null) ?? null, population: { ...pop } };

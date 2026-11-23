@@ -39,7 +39,7 @@ export function pointsBreakdown(settings: Settings, state: GameStateView, seat: 
   if (state.ages?.largest_population?.holder === seat) {
     parts.push({ source: "largest_population", count: 1, points: num(settings, ["ages", "largest_population", "points"], 2) });
   }
-  const reached = Object.keys(state.ages?.players[String(seat)]?.reached ?? {});
+  const reached = Object.keys(state.ages?.players?.[String(seat)]?.reached ?? {});
   if (reached.length) {
     const pts = reached.reduce((a, age) => a + num(settings, ["ages", `age${age}`, "bonus", "points"], 0), 0);
     parts.push({ source: "ages", count: reached.length, points: pts });

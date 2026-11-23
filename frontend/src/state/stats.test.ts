@@ -36,6 +36,12 @@ describe("stats", () => {
     expect(pointsBreakdown(settings, state(), 1)).toEqual([{ source: "settlement", count: 1, points: 1 }]);
   });
 
+  it("copes with ages off (an empty ages object)", () => {
+    const s = state();
+    s.ages = {};
+    expect(pointsBreakdown(settings, s, 1)).toEqual([{ source: "settlement", count: 1, points: 1 }]);
+  });
+
   it("counts the points of the ages reached", () => {
     const s = state();
     s.players[1]!.points = 4;
