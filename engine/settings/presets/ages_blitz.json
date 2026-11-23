@@ -1,0 +1,6 @@
+{
+  "clock": {"roll_interval_ms": 10000},
+  "build": {"time_ms": {"road": 2000, "settlement": 5000, "city": 6000, "megacity": 10000}},
+  "ages": {"enabled": true, "age2": {"time_ms": 20000, "requires": {"cities": 0}}, "age3": {"time_ms": 30000}},
+  "robber": {"fish_ransom": 2}
+}

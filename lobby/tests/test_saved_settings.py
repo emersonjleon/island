@@ -81,22 +81,28 @@ class SavedSettingsTests(TestCase):
         self.assertIsNone(page.context["active_saved"])
         self.assertEqual(page.context["chosen_preset"], "classic")
 
-    def test_experimental_types_live_inside_custom(self):
+    def test_new_types_live_inside_custom_first(self):
         self.client.force_login(self.bo)
         page = self.client.get(reverse("lobby:list"))
         cards = [c["name"] for c in page.context["preset_cards"]]
-        self.assertNotIn("settlers", cards)
-        self.assertNotIn("explorer", cards)
-        choices = page.context["base_choices"]
-        self.assertEqual([p["name"] for p in choices if p["experimental"]], ["settlers", "explorer"])
-        self.assertIn("ages", [p["name"] for p in choices])
+        for name in ("settlers", "explorer", "ages", "ages_big", "friendly"):
+            self.assertNotIn(name, cards)
+        choices = [p["name"] for p in page.context["base_choices"]]
+        self.assertEqual(choices[:2], ["ages", "ages_big"])
+        self.assertTrue({"ages_blitz", "ages_settlers", "ages_explorer", "settlers", "explorer", "friendly",
+                         "classic"} <= set(choices))
         self.assertContains(page, 'data-base-choice="explorer"')
-        self.assertContains(page, "Experimental rules")
+        self.assertNotContains(page, "Experimental rules")
         self.assertNotContains(page, "code-box")
-        paths = {row["setting"].path for sec in page.context["experimental_editor"]["sections"] for row in sec["rows"]}
-        self.assertTrue({"visibility.map", "settlers.builder_required", "robber.fish_ransom"} <= paths)
+        features = {g["key"]: {row["setting"].path for sec in g["sections"] for row in sec["rows"]}
+                    for g in page.context["feature_editors"]}
+        self.assertEqual(list(features), ["ages", "settlers", "visibility"])
+        self.assertIn("ages.age2.cost", features["ages"])
+        self.assertIn("settlers.builder_required", features["settlers"])
+        self.assertIn("visibility.map", features["visibility"])
         others = {row["setting"].path for g in page.context["editor"] for sec in g["sections"] for row in sec["rows"]}
-        self.assertFalse(paths & others)
+        self.assertIn("robber.fish_ransom", others)
+        self.assertFalse(set().union(*features.values()) & others)
 
     def test_custom_game_from_an_experimental_type(self):
         self.client.force_login(self.bo)

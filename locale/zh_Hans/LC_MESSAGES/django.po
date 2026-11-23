@@ -1909,23 +1909,11 @@ msgstr "时代"
 msgid "Big with ages"
 msgstr "大岛与时代"
 
-msgid "The classic island with ages: pay fish to reach new ages for points and bonuses."
-msgstr "经典岛屿加上时代：用鱼进入新时代，获得分数和加成。"
-
-msgid "The big island for 5 or 6 players, with ages."
-msgstr "适合 5 或 6 名玩家的大岛，带时代。"
-
 msgid "Start from"
 msgstr "起始类型"
 
-msgid "New rules still being tested."
-msgstr "仍在测试中的新规则。"
-
 msgid "Save the rules you like with the box at the bottom to use them again with one click."
 msgstr "用底部的输入框保存你喜欢的规则，下次一键使用。"
-
-msgid "Experimental rules"
-msgstr "实验规则"
 
 msgid "Megacities count as cities."
 msgstr "超级城市也算城市。"
@@ -2028,3 +2016,51 @@ msgstr "从哪个时代起拓荒者开始采集"
 
 msgid "Age from which settlers keep the robber away"
 msgstr "从哪个时代起拓荒者能挡住强盗"
+
+msgid "The big island for 5 or 6 players, with ages. 17 points."
+msgstr "适合 5 或 6 名玩家的大岛，带时代。17 分。"
+
+msgid "Settlers with ages"
+msgstr "拓荒者与时代"
+
+msgid "Settlers stay on the island; they gather from the Age of the Sea and keep the robber away from the Golden Age. 14 points."
+msgstr "拓荒者留在岛上；从海洋时代起采集，从黄金时代起挡住强盗。14 分。"
+
+msgid "Quick ages"
+msgstr "快速时代"
+
+msgid "Fish that buy off the robber (0 = off)"
+msgstr "打发强盗所需的鱼（0 = 关闭）"
+
+msgid "Friendly robber"
+msgstr "友好的强盗"
+
+msgid "Hidden island to explore"
+msgstr "需要探索的隐藏岛屿"
+
+msgid "Settlers and ages on a hidden island: explore to find land and fishing grounds. 14 points."
+msgstr "隐藏岛屿上的拓荒者与时代：探索以找到土地和渔场。14 分。"
+
+msgid "Points for Longest Road / Largest Army / Largest Population"
+msgstr "最长道路 / 最大军队 / 最多人口的分数"
+
+msgid "The classic island with ages: pay fish to reach the Age of the Sea and the Golden Age for points, a bigger safe hand, faster builds and the megacity. 14 points."
+msgstr "带时代的经典岛屿：用鱼进入海洋时代和黄金时代，获得分数、更高的安全手牌上限、更快的建造和超级城市。14 分。"
+
+msgid "Ages (Age of the Sea, Golden Age)"
+msgstr "时代（海洋时代、黄金时代）"
+
+msgid "The classic island, but the robber leaves alone anyone with fewer than 3 points, and what it takes goes back to the bank."
+msgstr "经典岛屿，但强盗不会打扰少于 3 分的玩家，抢走的牌回到银行。"
+
+msgid "Fast dice and builds with ages: the Age of the Sea needs no city and research is shorter. 10 points."
+msgstr "带时代的快速骰子和建造：海洋时代不需要城市，研究更短。10 分。"
+
+msgid "Explorers of the ages"
+msgstr "时代探险家"
+
+msgid "Points before the robber can rob you (0 = always)"
+msgstr "强盗可以抢你之前需要的分数（0 = 总是）"
+
+msgid "Settlers stay after the first settlements"
+msgstr "拓荒者在首批村庄之后留下"

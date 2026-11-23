@@ -1,0 +1,6 @@
+{
+  "settlers": {"leave_after_setup": false, "builder_required": "always", "gather": true, "block_robber": true},
+  "ages": {"enabled": true},
+  "robber": {"fish_ransom": 2},
+  "victory": {"target": 14}
+}

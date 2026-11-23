@@ -21,7 +21,6 @@ GROUP_LABELS = {
     "victory": _("Victory"),
     "trading": _("Trade"),
     "dev_cards": _("Developments"),
-    "experimental": _("Experimental (beta)"),
     "ages": _("Ages"),
 }
 

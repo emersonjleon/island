@@ -13,12 +13,12 @@ from .forms import KNOB_PATHS, CreateGameForm
 from .messages import error_message
 from .models import BOT_LEVELS, COLOURS, Game, GameStatus
 from .presets import (
-    CUSTOM, GROUPS, KNOBS, KNOBS_BY_NAME, STATS, default_players, experimental_names, preset_description,
+    CUSTOM, GROUPS, INFO_PATHS, KNOBS, KNOBS_BY_NAME, STATS, default_players, experimental_names, preset_description,
     preset_label, preset_values,
     base_presets, presets_data, settings_values, stats_rows,
 )
 from .setting_labels import CHOICES, LABELS
-from .settings_editor import EXPERIMENTAL, changed_settings, editor_data, editor_view, is_experimental
+from .settings_editor import FEATURE_GROUPS, changed_settings, editor_data, editor_view
 from .prefill import settings_form_data
 
 
@@ -151,20 +151,29 @@ def create_form_context(form: CreateGameForm) -> dict:
         "custom_preset": CUSTOM,
         "base_label": preset_label(base),
         "presets_data": presets_data(),
-        "editor": [g for g in editor if g["key"] != EXPERIMENTAL],
-        "experimental_editor": next((g for g in editor if g["key"] == EXPERIMENTAL), None),
+        "editor": [g for g in editor if g["key"] not in FEATURE_GROUPS],
+        # Ages, settlers and what players see: one section each, opened when used.
+        "feature_editors": [
+            g | {"open": any(_in_group(p, g["key"]) for p in [*form.editor_errors, *posted])}
+            for key in FEATURE_GROUPS for g in editor if g["key"] == key
+        ],
         # "Start from" in Custom: every game type a custom game can start from (beta ones marked).
         "base_choices": [
             {"name": name, "label": preset_label(name), "description": preset_description(name),
-             "selected": name == base, "experimental": name in experimental_names()}
+             "selected": name == base, "new": name in experimental_names()}
             for name in base_presets()
         ],
-        "editor_open": any(not is_experimental(p) for p in form.editor_errors) or any(
-            not is_experimental(path) for path in posted),
-        "experimental_open": any(is_experimental(p) for p in form.editor_errors) or any(
-            is_experimental(path) for path in posted),
+        "editor_open": any(not _in_feature(p) for p in [*form.editor_errors, *posted]),
         "editor_data": editor_data(),
     }
+
+
+def _in_group(path: str, key: str) -> bool:
+    return path == key or path.startswith(key + ".")
+
+
+def _in_feature(path: str) -> bool:
+    return any(_in_group(path, key) for key in FEATURE_GROUPS)
 
 
 def seats_context(request: HttpRequest, game: Game) -> dict:
@@ -218,7 +227,8 @@ def rule_changes(preset: str, settings) -> list[tuple]:
     """The settings changed from the game type that the summary does not already show."""
     players = settings.players.max
     base = load_preset(preset, {"players": {"max": players}}, players=players)
-    shown = {".".join(KNOBS_BY_NAME[k].path) for _label, knobs in STATS for k in knobs} | {"visibility.map"}
+    shown = {".".join(KNOBS_BY_NAME[k].path) if k in KNOBS_BY_NAME else INFO_PATHS[k]
+             for _label, knobs in STATS for k in knobs} | {"visibility.map"}
     return changed_settings(base, settings, exclude=shown)
 
 
