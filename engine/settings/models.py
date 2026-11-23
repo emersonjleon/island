@@ -493,11 +493,12 @@ def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, p
 
 
 # Costs from the WP28 bot batches (docs/AGES_DESIGN.md, "Balance"); Emerson (23 nov
-# 2026): Age II needs a city, Age III gives 3 points, and each age produces more.
+# 2026): Age II needs a city and Age III gives 3 points. Extra production per age is a
+# setting, off by default (buildings produce as in the classic game).
 Age2Step = _age_step("age2", {Resource.FISH: 2, Resource.GRAIN: 1, Resource.WOOL: 1, Resource.BRICK: 1},
-                     30000, cities=1, points=1, build_time_pct=85, extra_per_settlement=0, extra_per_city=1)
+                     30000, cities=1, points=1, build_time_pct=85, extra_per_settlement=0, extra_per_city=0)
 Age3Step = _age_step("age3", {Resource.FISH: 2, Resource.GRAIN: 2, Resource.ORE: 2},
-                     45000, cities=2, points=3, build_time_pct=70, extra_per_settlement=1, extra_per_city=0)
+                     45000, cities=2, points=3, build_time_pct=70, extra_per_settlement=0, extra_per_city=0)
 
 
 class LargestPopulationSettings(_Group):
@@ -521,6 +522,13 @@ class AgesSettings(_Group):
     """The age each construction needs (missing kinds: age I)."""
     age2: Age2Step = setting(label="settings.ages.age2", factory=Age2Step)  # type: ignore[valid-type]
     age3: Age3Step = setting(label="settings.ages.age3", factory=Age3Step)  # type: ignore[valid-type]
+    fish_ransom_age: int = setting(2, label="settings.ages.fish_ransom_age", ge=1, le=3)
+    """With ages on, ``robber.fish_ransom`` only protects players in this age or later."""
+    settler_gather_age: int = setting(2, label="settings.ages.settler_gather_age", ge=1, le=3)
+    """With ages on, settlers only gather (``settlers.gather``) for players in this age or later."""
+    settler_guard_age: int = setting(3, label="settings.ages.settler_guard_age", ge=1, le=3)
+    """With ages on, settlers only keep the robber away (``settlers.block_robber``) for players
+    in this age or later."""
     largest_population: LargestPopulationSettings = setting(
         label="settings.ages.largest_population", factory=LargestPopulationSettings)
 

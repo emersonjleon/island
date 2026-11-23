@@ -274,18 +274,21 @@ puerto 2:1 de pescado no hizo falta para estos números.
 ### Cambios de Emerson (23 nov 2026)
 
 - La Edad II vuelve a pedir una ciudad; la Edad III da 3 puntos (antes 2).
-- Las edades producen más: en la Edad II cada ciudad (y megaciudad) recibe 1 carta
-  más de cada hexágono que produce; en la Edad III también cada poblado
-  (`ages.ageN.bonus.extra_per_settlement` / `extra_per_city`, se suman).
+- Producción extra por edad: queda como ajuste (`ages.ageN.bonus.extra_per_settlement`
+  / `extra_per_city`), en 0 por defecto; los edificios producen como en Clásica.
+- El rescate con pescado (`robber.fish_ransom`, 2 en los presets con edades) solo
+  protege desde la Edad II (`ages.fish_ransom_age`).
+- Colonos (variación Colonos con edades): recogen desde la Edad II
+  (`ages.settler_gather_age`) y alejan al ladrón desde la Edad III
+  (`ages.settler_guard_age`).
 - Premio **Mayor población** (solo con edades): 2 puntos para quien tenga la mayor
   población (poblado 1, ciudad 2, megaciudad 4), con un mínimo de 6; funciona como
   el Camino más largo (`ages.largest_population`).
 - Metas: Edades 14 puntos, Grande con edades 17.
 
-Con esos valores, partidas de bots: Edades dura lo mismo que Clásica (unas 80
-tiradas, contra 78 de Clásica) y el lado de las edades gana el 60 %; Grande con
-edades dura unas 100 tiradas (92 en Isla grande) y el lado de las edades gana el
-62 %. La primera Edad II llega más tarde (tirada 50–80) porque vuelve a pedir una
+Con esos valores, partidas de bots: Edades dura unas 87 tiradas (78 en Clásica)
+y el lado de las edades gana el 53 %; Grande con edades dura unas 100 tiradas (92
+en Isla grande) y el lado de las edades gana el 56 %. La primera Edad II llega más tarde (tirada 50–80) porque vuelve a pedir una
 ciudad.
 
 Riesgo de "bola de nieve": quien llega primero a la Dorada produce más y suma 2

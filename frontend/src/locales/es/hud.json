@@ -284,7 +284,7 @@
     "short": "Edad {{n}}",
     "advancing": "Edad {{n}} en {{secs}} s",
     "cancel": "clic para cancelar (recuperas parte del costo)",
-    "help": "Avanzar a la edad {{n}}: más producción, más peces en las zonas de pesca, mano segura más grande, construcciones más rápidas y puntos",
+    "help": "Avanzar a la edad {{n}}: más peces en las zonas de pesca, mano segura más grande, construcciones más rápidas y puntos",
     "needs": "requiere {{needs}}",
     "cities_one": "{{count}} ciudad",
     "cities_other": "{{count}} ciudades",

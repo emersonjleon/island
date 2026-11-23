@@ -28,7 +28,7 @@ from engine.commands import BuySettler
 from engine.errors import RuleError
 from engine.events import Event, Hand, SettlerLanded, SettlersGathered
 from engine.game import SIG_PRODUCED, command_handler, emit
-from engine.rules import movement
+from engine.rules import age_state, movement
 from engine.rules.placement import missing_resources
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState, Settler
@@ -119,6 +119,8 @@ def _owed(state: GameState, roll: int) -> tuple[dict[int, dict[Resource, int]], 
         s = state.settlers[sid]
         if state.player(s.seat).resigned or roll not in gather_numbers(state, sid):
             continue
+        if not age_state.has_age(state, s.seat, state.settings.ages.settler_gather_age):
+            continue
         v = settler_at_work(state, sid)
         if v is None:
             continue
@@ -162,4 +164,6 @@ def blocked_hexes(state: GameState) -> frozenset[int]:
     if not state.settings.settlers.block_robber:
         return frozenset()
     vh = state.board.board.vertex_hexes
-    return frozenset(h for s in state.settlers.values() for h in vh[s.vertex])
+    guard = state.settings.ages.settler_guard_age
+    return frozenset(h for s in state.settlers.values() if age_state.has_age(state, s.seat, guard)
+                     for h in vh[s.vertex])

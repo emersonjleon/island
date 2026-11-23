@@ -7,7 +7,7 @@ from typing import Any
 from engine import game
 from engine.errors import RuleError
 from engine.events import AgeAdvanceCancelled, AgeAdvanceStarted, AgeReached, Buildable, Hand, LargestPopulation, Points
-from engine.rules import age_state, ages, construction, largest_population, placement, production, robber
+from engine.rules import age_state, ages, construction, largest_population, placement, production, robber, settlers
 from engine.settings.enums import BuildKind, Resource
 from engine.sim.invariants import resource_totals
 from engine.state import GameState
@@ -169,6 +169,30 @@ class LargestPopulationTest(unittest.TestCase):
         self.assertIsNone(largest_population.holder(s))
 
 
+class AgeGatesTest(unittest.TestCase):
+    def test_fish_ransom_from_age_two(self) -> None:
+        s = new_state({"robber": {"fish_ransom": 2}})
+        set_hand(s, 0, lumber=6, fish=4)
+        lost = robber._fish_ransom(s, 0)
+        self.assertIsNone(lost)                         # age I: robbed as usual
+        set_age(s, 0, 2)
+        self.assertEqual(robber._fish_ransom(s, 0), {Resource.FISH: 2})
+
+    def test_settlers_gather_from_age_two_and_guard_from_age_three(self) -> None:
+        from engine.tests.test_settlers import land_vertex_with_resources, only_settler, staying
+        s = make_state(n=3, overrides=staying({"ages": {"enabled": True},
+                                               "settlers": {"gather": True, "block_robber": True}}), stage=3)
+        v = land_vertex_with_resources(s)
+        only_settler(s, 0, v)
+        self.assertEqual(settlers.gather(s, 3, 0), [])
+        self.assertEqual(settlers.blocked_hexes(s), frozenset())
+        set_age(s, 0, 2)
+        self.assertTrue(settlers.gather(s, 3, 0))
+        self.assertEqual(settlers.blocked_hexes(s), frozenset())
+        set_age(s, 0, 3)
+        self.assertTrue(settlers.blocked_hexes(s))
+
+
 class EffectsTest(unittest.TestCase):
     def test_megacity_locked_until_age_three(self) -> None:
         s = new_state()
@@ -207,11 +231,11 @@ class EffectsTest(unittest.TestCase):
         self.assertEqual(production.owed_by_resource(s, roll)[0][Resource.FISH][0], 1)
         set_age(s, 0, 2)
         self.assertEqual(production.owed_by_resource(s, roll)[0][Resource.FISH][0], 2)
-        set_age(s, 0, 3)                                # + 1 fish, + 1 for every settlement
-        self.assertEqual(production.owed_by_resource(s, roll)[0][Resource.FISH][0], 4)
+        set_age(s, 0, 3)
+        self.assertEqual(production.owed_by_resource(s, roll)[0][Resource.FISH][0], 3)
 
     def test_more_production_in_later_ages(self) -> None:
-        s = new_state()
+        s = new_state({"ages": {"age2": {"bonus": {"extra_per_city": 1}}}})
         h = next(h for h in range(len(s.board.token)) if s.board.hex_resource(h) is not None
                  and h not in s.board.fishing and h != s.robber_hex and s.board.token[h] is not None)
         v = s.board.board.hex_vertices[h][0]
@@ -220,6 +244,10 @@ class EffectsTest(unittest.TestCase):
         base = production.owed_by_resource(s, roll)[0][res][0]
         set_age(s, 0, 2)                                # cities + 1
         self.assertEqual(production.owed_by_resource(s, roll)[0][res][0], base + 1)
+        plain = new_state()                             # off by default
+        place(plain, 0, v, BuildKind.CITY)
+        set_age(plain, 0, 3)
+        self.assertEqual(production.owed_by_resource(plain, roll)[0][res][0], base)
         off = make_state(stage=3, clock=False)
         place(off, 0, v, BuildKind.CITY)
         self.assertEqual(production.owed_by_resource(off, roll)[0][res][0], base)

@@ -30,7 +30,7 @@
           "type": "integer"
         },
         "extra_per_city": {
-          "default": 1,
+          "default": 0,
           "label": "settings.ages.age2.bonus.extra_per_city",
           "maximum": 5,
           "minimum": 0,
@@ -171,7 +171,7 @@
           "type": "integer"
         },
         "extra_per_settlement": {
-          "default": 1,
+          "default": 0,
           "label": "settings.ages.age3.bonus.extra_per_settlement",
           "maximum": 5,
           "minimum": 0,
@@ -292,10 +292,40 @@
           "title": "Enabled",
           "type": "boolean"
         },
+        "fish_ransom_age": {
+          "default": 2,
+          "description": "With ages on, ``robber.fish_ransom`` only protects players in this age or later.",
+          "label": "settings.ages.fish_ransom_age",
+          "maximum": 3,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Fish Ransom Age",
+          "type": "integer"
+        },
         "largest_population": {
           "$ref": "#/$defs/LargestPopulationSettings",
           "label": "settings.ages.largest_population",
           "stage": 1
+        },
+        "settler_gather_age": {
+          "default": 2,
+          "description": "With ages on, settlers only gather (``settlers.gather``) for players in this age or later.",
+          "label": "settings.ages.settler_gather_age",
+          "maximum": 3,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Settler Gather Age",
+          "type": "integer"
+        },
+        "settler_guard_age": {
+          "default": 3,
+          "description": "With ages on, settlers only keep the robber away (``settlers.block_robber``) for players\nin this age or later.",
+          "label": "settings.ages.settler_guard_age",
+          "maximum": 3,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Settler Guard Age",
+          "type": "integer"
         },
         "unlock": {
           "additionalProperties": {

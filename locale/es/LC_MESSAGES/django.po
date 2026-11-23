@@ -2178,3 +2178,15 @@ msgstr "Edad Dorada (III): cartas extra por poblado en cada tirada"
 
 msgid "Golden Age (III): extra cards per city on each roll"
 msgstr "Edad Dorada (III): cartas extra por ciudad en cada tirada"
+
+msgid "Age from which fish buy off the robber"
+msgstr "Edad desde la que el pescado compra al ladrón"
+
+msgid "Uses the robber's fish ransom setting."
+msgstr "Usa el ajuste de rescate con pescado del ladrón."
+
+msgid "Age from which settlers gather"
+msgstr "Edad desde la que los colonos recogen"
+
+msgid "Age from which settlers keep the robber away"
+msgstr "Edad desde la que los colonos alejan al ladrón"

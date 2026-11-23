@@ -2016,3 +2016,15 @@ msgstr "黄金时代（III）：每次掷骰每个村庄额外的牌"
 
 msgid "Golden Age (III): extra cards per city on each roll"
 msgstr "黄金时代（III）：每次掷骰每座城市额外的牌"
+
+msgid "Age from which fish buy off the robber"
+msgstr "从哪个时代起可以用鱼打发强盗"
+
+msgid "Uses the robber's fish ransom setting."
+msgstr "使用强盗的以鱼赎买设置。"
+
+msgid "Age from which settlers gather"
+msgstr "从哪个时代起拓荒者开始采集"
+
+msgid "Age from which settlers keep the robber away"
+msgstr "从哪个时代起拓荒者能挡住强盗"

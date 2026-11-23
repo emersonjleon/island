@@ -5,5 +5,6 @@
   "economy": {"bank": {"per_resource": {"brick": 28, "lumber": 28, "wool": 28, "grain": 28, "ore": 28, "fish": 28}}},
   "pieces": {"roads": 20, "settlements": 6, "cities": 5},
   "ages": {"enabled": true},
+  "robber": {"fish_ransom": 2},
   "victory": {"target": 17}
 }

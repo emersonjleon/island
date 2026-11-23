@@ -1,4 +1,5 @@
 {
   "ages": {"enabled": true},
+  "robber": {"fish_ransom": 2},
   "victory": {"target": 14}
 }

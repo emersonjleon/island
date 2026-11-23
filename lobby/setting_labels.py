@@ -132,6 +132,9 @@ LABELS = {
     "ages.largest_population.per_settlement": (_("Largest Population: population of a settlement"), ""),
     "ages.largest_population.per_city": (_("Largest Population: population of a city"), ""),
     "ages.largest_population.per_megacity": (_("Largest Population: population of a megacity"), ""),
+    "ages.fish_ransom_age": (_("Age from which fish buy off the robber"), _("Uses the robber's fish ransom setting.")),
+    "ages.settler_gather_age": (_("Age from which settlers gather"), ""),
+    "ages.settler_guard_age": (_("Age from which settlers keep the robber away"), ""),
     # robber
     "robber.enabled": (_("Robber on a 7"), ""),
     "robber.friendly_min_points": (_("Friendly robber: points needed to be robbed"),
