@@ -192,6 +192,7 @@
       "megacity": "Metrópolis",
       "longest_road": "Gran Ruta",
       "largest_army": "Gran Ejército",
+      "ages": "Edades",
       "victory_point": "Puntos de victoria"
     },
     "part": {
@@ -205,6 +206,8 @@
       "longest_road_other": "Gran Ruta ({{points}})",
       "largest_army_one": "Gran Ejército ({{points}})",
       "largest_army_other": "Gran Ejército ({{points}})",
+      "ages_one": "{{count}} edad ({{points}})",
+      "ages_other": "{{count}} edades ({{points}})",
       "victory_point_one": "{{count}} desarrollo de punto ({{points}})",
       "victory_point_other": "{{count}} desarrollos de punto ({{points}})"
     }

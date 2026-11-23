@@ -2088,3 +2088,60 @@ msgstr "Reglas nuevas que aún estamos probando."
 
 msgid "Save the rules you like with the box at the bottom to use them again with one click."
 msgstr "Guarda las reglas que te gusten con la casilla de abajo para usarlas de nuevo con un clic."
+
+msgid "Megacities count as cities."
+msgstr "Las megaciudades cuentan como ciudades."
+
+msgid "Age that unlocks each building"
+msgstr "Edad que desbloquea cada construcción"
+
+msgid "Ages: players advance to the Age of the Sea and the Golden Age"
+msgstr "Edades: los jugadores avanzan a la Edad del Mar y la Edad Dorada"
+
+msgid "Age of the Sea (II): cost"
+msgstr "Edad del Mar (II): costo"
+
+msgid "Age of the Sea (II): seconds of research"
+msgstr "Edad del Mar (II): segundos de investigación"
+
+msgid "Age of the Sea (II): cities needed"
+msgstr "Edad del Mar (II): ciudades necesarias"
+
+msgid "Age of the Sea (II): points needed"
+msgstr "Edad del Mar (II): puntos necesarios"
+
+msgid "Age of the Sea (II): points it gives"
+msgstr "Edad del Mar (II): puntos que da"
+
+msgid "Age of the Sea (II): extra fish per building on a fishing ground"
+msgstr "Edad del Mar (II): pescado extra por edificio en zona de pesca"
+
+msgid "Age of the Sea (II): extra cards kept safe on a 7"
+msgstr "Edad del Mar (II): cartas extra a salvo con el 7"
+
+msgid "Age of the Sea (II): build time (%)"
+msgstr "Edad del Mar (II): tiempo de construcción (%)"
+
+msgid "Golden Age (III): cost"
+msgstr "Edad Dorada (III): costo"
+
+msgid "Golden Age (III): seconds of research"
+msgstr "Edad Dorada (III): segundos de investigación"
+
+msgid "Golden Age (III): cities needed"
+msgstr "Edad Dorada (III): ciudades necesarias"
+
+msgid "Golden Age (III): points needed"
+msgstr "Edad Dorada (III): puntos necesarios"
+
+msgid "Golden Age (III): points it gives"
+msgstr "Edad Dorada (III): puntos que da"
+
+msgid "Golden Age (III): extra fish per building on a fishing ground"
+msgstr "Edad Dorada (III): pescado extra por edificio en zona de pesca"
+
+msgid "Golden Age (III): extra cards kept safe on a 7"
+msgstr "Edad Dorada (III): cartas extra a salvo con el 7"
+
+msgid "Golden Age (III): build time (%)"
+msgstr "Edad Dorada (III): tiempo de construcción (%)"

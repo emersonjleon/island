@@ -55,7 +55,7 @@
       "additionalProperties": false,
       "properties": {
         "cities": {
-          "default": 1,
+          "default": 0,
           "label": "settings.ages.age2.requires.cities",
           "maximum": 20,
           "minimum": 0,
@@ -93,7 +93,7 @@
           "default": {
             "brick": 1,
             "fish": 2,
-            "grain": 2,
+            "grain": 1,
             "wool": 1
           },
           "label": "settings.ages.age2.cost",
@@ -205,10 +205,9 @@
             "type": "integer"
           },
           "default": {
-            "fish": 3,
+            "fish": 2,
             "grain": 2,
-            "ore": 2,
-            "wool": 1
+            "ore": 2
           },
           "label": "settings.ages.age3.cost",
           "propertyNames": {

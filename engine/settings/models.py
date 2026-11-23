@@ -487,9 +487,11 @@ def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, p
     })
 
 
-Age2Step = _age_step("age2", {Resource.FISH: 2, Resource.GRAIN: 2, Resource.WOOL: 1, Resource.BRICK: 1},
-                     30000, cities=1, points=1, build_time_pct=85)
-Age3Step = _age_step("age3", {Resource.FISH: 3, Resource.GRAIN: 2, Resource.ORE: 2, Resource.WOOL: 1},
+# Costs and needs from the WP28 bot batches (docs/AGES_DESIGN.md, "Balance"): the age
+# side wins about 62 % against bots that ignore the ages, Age II comes early.
+Age2Step = _age_step("age2", {Resource.FISH: 2, Resource.GRAIN: 1, Resource.WOOL: 1, Resource.BRICK: 1},
+                     30000, cities=0, points=1, build_time_pct=85)
+Age3Step = _age_step("age3", {Resource.FISH: 2, Resource.GRAIN: 2, Resource.ORE: 2},
                      45000, cities=2, points=2, build_time_pct=70)
 AgeStep = Age2Step | Age3Step
 

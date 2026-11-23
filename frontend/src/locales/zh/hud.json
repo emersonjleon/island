@@ -192,6 +192,7 @@
       "megacity": "大都市",
       "longest_road": "最长道路",
       "largest_army": "最大军队",
+      "ages": "时代",
       "victory_point": "胜利分"
     },
     "part": {
@@ -205,6 +206,8 @@
       "longest_road_other": "最长道路（{{points}}）",
       "largest_army_one": "最大军队（{{points}}）",
       "largest_army_other": "最大军队（{{points}}）",
+      "ages_one": "{{count}} 个时代（{{points}}）",
+      "ages_other": "{{count}} 个时代（{{points}}）",
       "victory_point_one": "{{count}} 张胜利分发展卡（{{points}}）",
       "victory_point_other": "{{count}} 张胜利分发展卡（{{points}}）"
     }

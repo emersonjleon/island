@@ -36,6 +36,16 @@ describe("stats", () => {
     expect(pointsBreakdown(settings, state(), 1)).toEqual([{ source: "settlement", count: 1, points: 1 }]);
   });
 
+  it("counts the points of the ages reached", () => {
+    const s = state();
+    s.players[1]!.points = 4;
+    s.ages = { players: { "1": { age: 3, advancing: null, reached: { "2": 1000, "3": 2000 } } } };
+    const withAges = { ...settings, ages: { age2: { bonus: { points: 1 } }, age3: { bonus: { points: 2 } } } };
+    expect(pointsBreakdown(withAges, s, 1)).toEqual([
+      { source: "settlement", count: 1, points: 1 }, { source: "ages", count: 2, points: 3 },
+    ]);
+  });
+
   it("mirrors score changes and dice production from events", () => {
     const s = state();
     applyEvent(s, { k: "points", at: 1000, seat: 1, points: 2 });

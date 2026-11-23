@@ -14,8 +14,8 @@ from engine.state import GameState
 from engine.tests.test_dice import make_state, place, set_hand
 
 ON = {"ages": {"enabled": True}}
-AGE2 = dict(fish=2, grain=2, wool=1, brick=1)
-AGE3 = dict(fish=3, grain=2, ore=2, wool=1)
+AGE2 = dict(fish=2, grain=1, wool=1, brick=1)
+AGE3 = dict(fish=2, grain=2, ore=2)
 FISHING_HEX = 19            # fixture board: a fishing ground with token 4
 FISHING_VERTEX = 16         # a corner of it
 
@@ -55,9 +55,11 @@ class AdvanceTest(unittest.TestCase):
         s.players[0].setup_done = False
         self.assertEqual(code(s, 0, {"a": "advance_age"})[0], "age.setup_not_done")
         s.players[0].setup_done = True
-        self.assertEqual(code(s, 0, {"a": "advance_age"}), ("age.need_cities", {"need": 1, "have": 0}))
-        place(s, 0, 5, BuildKind.CITY)
         self.assertEqual(code(s, 0, {"a": "advance_age"})[0], "age.cannot_afford")
+        s1 = new_state({"ages": {"age2": {"requires": {"cities": 1}}}})
+        self.assertEqual(code(s1, 0, {"a": "advance_age"}), ("age.need_cities", {"need": 1, "have": 0}))
+        place(s1, 0, 5, BuildKind.CITY)
+        self.assertEqual(code(s1, 0, {"a": "advance_age"})[0], "age.cannot_afford")
         s2 = new_state({"ages": {"enabled": True, "age2": {"requires": {"cities": 0, "points": 3}}}})
         self.assertEqual(code(s2, 0, {"a": "advance_age"}), ("age.need_points", {"need": 3, "have": 0}))
 
@@ -118,7 +120,7 @@ class CancelTest(unittest.TestCase):
         game.apply(s, 0, {"a": "advance_age"}, 0)
         events = game.apply(s, 0, {"a": "cancel_age"}, 10)
         self.assertEqual(kinds(events), [AgeAdvanceCancelled, Hand])
-        self.assertEqual(events[0].refund, {Resource.FISH: 1, Resource.GRAIN: 1})
+        self.assertEqual(events[0].refund, {Resource.FISH: 1})
         self.assertEqual(s.players[0].hand[Resource.FISH], 1)
         self.assertEqual(s.bank[Resource.FISH], bank_fish + 1)
         self.assertEqual(resource_totals(s), before)

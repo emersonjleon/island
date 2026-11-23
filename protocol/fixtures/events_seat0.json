@@ -6,10 +6,9 @@
       "k": "age_advance_cancelled",
       "reason": "cancelled",
       "refund": {
-        "fish": 3,
+        "fish": 2,
         "grain": 2,
-        "ore": 2,
-        "wool": 1
+        "ore": 2
       },
       "seat": 0
     },
@@ -20,7 +19,7 @@
       "paid": {
         "brick": 1,
         "fish": 2,
-        "grain": 2,
+        "grain": 1,
         "wool": 1
       },
       "seat": 0,
