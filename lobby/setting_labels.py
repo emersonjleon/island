@@ -126,7 +126,7 @@ LABELS = {
     "ages.age2.bonus.extra_per_city": (_("Age of the Sea (II): extra cards per city on each roll"), _("Megacities too.")),
     "ages.age3.bonus.extra_per_settlement": (_("Golden Age (III): extra cards per settlement on each roll"), ""),
     "ages.age3.bonus.extra_per_city": (_("Golden Age (III): extra cards per city on each roll"), _("Megacities too.")),
-    "ages.largest_population.points": (_("Largest Population: points"), _("An award, like the Longest Road, for the largest population.")),
+    "ages.largest_population.points": (_("Largest Population: points"), _("An award, like the Longest Road, for the largest population. Only in games where settlers stay after setup.")),
     "ages.largest_population.min": (_("Largest Population: population needed"), ""),
     "ages.largest_population.per_settlement": (_("Largest Population: population of a settlement"), ""),
     "ages.largest_population.per_city": (_("Largest Population: population of a city"), ""),
@@ -173,7 +173,7 @@ LABELS = {
                               _("The robber cannot move onto a hex with a settler on one of its corners.")),
     # visibility
     "visibility.map": (_("Map"), _("Growing sight: each player sees only the land around their own pieces, and settlers where they stop. Explored: settlers also see as they walk. Live fog: like Explored, but other players' settlers and new buildings show only while in sight.")),
-    "visibility.hidden_numbers": (_("Numbers hidden until a building is next to them"), ""),
+    "visibility.hidden_numbers": (_("Numbers hidden until you discover them"), _("Each player sees only the numbers next to their own buildings or under their own settlers, not the ones other players find.")),
     "visibility.sight.road": (_("Road"), ""),
     "visibility.sight.settlement": (_("Settlement"), ""),
     "visibility.sight.city": (_("City"), ""),

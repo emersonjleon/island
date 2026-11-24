@@ -1961,8 +1961,8 @@ msgstr[1] "%(n)s usuarios registrados"
 msgid "Growing sight: each player sees only the land around their own pieces, and settlers where they stop. Explored: settlers also see as they walk. Live fog: like Explored, but other players' settlers and new buildings show only while in sight."
 msgstr "Vista creciente: cada jugador ve solo la tierra alrededor de sus propias piezas, y los colonos donde se detienen. Explorado: los colonos también ven mientras caminan. Niebla en vivo: como Explorado, pero los colonos y los edificios nuevos de los demás solo se ven mientras están a la vista."
 
-msgid "Numbers hidden until a building is next to them"
-msgstr "Números ocultos hasta que haya un edificio al lado"
+msgid "Numbers hidden until you discover them"
+msgstr "Números ocultos hasta que tú los descubras"
 
 msgid "Settler"
 msgstr "Colono"
@@ -2031,8 +2031,8 @@ msgstr "Una isla muy grande para 7 o más jugadores, y una partida larga."
 msgid "Settlers stay after the first settlements: every building needs one on the spot. Buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
 msgstr "Los colonos se quedan después de los primeros poblados: cada construcción necesita uno en el lugar. Compra más, déjalos recolectar con 3, 11 y 2 o 12, y úsalos para alejar al ladrón."
 
-msgid "Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them."
-msgstr "Colonos, y la isla está oculta: solo ves la tierra que has explorado, y los números aparecen cuando construyes al lado."
+msgid "Settlers, and the island is hidden: you see only the land you have explored."
+msgstr "Colonos, y la isla está oculta: solo ves la tierra que has explorado."
 
 msgid "A hard cap, on top of the settlers each building allows."
 msgstr "Un tope fijo, además de los colonos que permite cada edificio."
@@ -2137,8 +2137,8 @@ msgstr "También las megaciudades."
 msgid "Largest Population: points"
 msgstr "Mayor población: puntos"
 
-msgid "An award, like the Longest Road, for the largest population."
-msgstr "Un premio, como el Camino más largo, para la mayor población."
+msgid "An award, like the Longest Road, for the largest population. Only in games where settlers stay after setup."
+msgstr "Un premio, como el Camino más largo, para la mayor población. Solo en partidas donde los colonos se quedan tras la colocación."
 
 msgid "Largest Population: population needed"
 msgstr "Mayor población: población necesaria"
@@ -2223,3 +2223,6 @@ msgstr "Puntos para que el ladrón te pueda robar (0 = siempre)"
 
 msgid "Settlers stay after the first settlements"
 msgstr "Los colonos se quedan después de los primeros poblados"
+
+msgid "Each player sees only the numbers next to their own buildings or under their own settlers, not the ones other players find."
+msgstr "Cada jugador ve solo los números junto a sus propios edificios o bajo sus propios colonos, no los que encuentran los demás."

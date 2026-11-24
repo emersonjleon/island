@@ -112,6 +112,8 @@
             "brick": 1,
             "fish": 2,
             "grain": 1,
+            "lumber": 1,
+            "ore": 1,
             "wool": 1
           },
           "label": "settings.ages.age2.cost",
@@ -241,9 +243,12 @@
             "type": "integer"
           },
           "default": {
-            "fish": 2,
-            "grain": 2,
-            "ore": 2
+            "brick": 1,
+            "fish": 3,
+            "grain": 1,
+            "lumber": 1,
+            "ore": 1,
+            "wool": 1
           },
           "label": "settings.ages.age3.cost",
           "propertyNames": {
@@ -1231,7 +1236,7 @@
     },
     "LargestPopulationSettings": {
       "additionalProperties": false,
-      "description": "With ages on: an award, like the Longest Road, for the largest population.",
+      "description": "With ages on and settlers staying after setup: an award, like the Longest Road,\nfor the largest population.",
       "properties": {
         "min": {
           "default": 6,

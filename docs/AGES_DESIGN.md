@@ -78,10 +78,13 @@ No hace falta un colono para subir de edad, tampoco en la variación Colonos
 
 ## Costos por defecto
 
+Emerson (24 nov 2026): subir de edad cuesta uno de cada recurso de tierra más
+2 pescados (Edad del Mar) o 3 (Edad Dorada).
+
 | Qué | Costo | Cartas | Tiempo |
 | --- | --- | --- | --- |
-| Subir a Edad II | 2 pescado, 1 grano, 1 lana, 1 ladrillo | 5 | 30 s |
-| Subir a Edad III | 2 pescado, 2 grano, 2 mineral | 6 | 45 s |
+| Subir a Edad II | 1 madera, 1 ladrillo, 1 lana, 1 grano, 1 mineral, 2 pescado | 7 | 30 s |
+| Subir a Edad III | 1 madera, 1 ladrillo, 1 lana, 1 grano, 1 mineral, 3 pescado | 8 | 45 s |
 | Desarrollo nivel I (actual) | 1 lana, 1 grano, 1 mineral | 3 | — |
 | Desarrollo nivel II | 1 lana, 1 grano, 1 mineral, 1 pescado | 4 | — |
 | Desarrollo nivel III | 1 lana, 1 grano, 1 mineral, 2 pescado | 5 | — |
@@ -281,7 +284,7 @@ puerto 2:1 de pescado no hizo falta para estos números.
 - Colonos (variación Colonos con edades): recogen desde la Edad II
   (`ages.settler_gather_age`) y alejan al ladrón desde la Edad III
   (`ages.settler_guard_age`).
-- Premio **Mayor población** (solo con edades): 2 puntos para quien tenga la mayor
+- Premio **Mayor población** (solo con edades y colonos que se quedan tras la colocación): 2 puntos para quien tenga la mayor
   población (poblado 1, ciudad 2, megaciudad 4), con un mínimo de 6; funciona como
   el Camino más largo (`ages.largest_population`).
 - Metas: Edades 14 puntos, Grande con edades 17.

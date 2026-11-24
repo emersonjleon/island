@@ -14,8 +14,8 @@ from engine.state import GameState
 from engine.tests.test_dice import make_state, place, set_hand
 
 ON = {"ages": {"enabled": True}}
-AGE2 = dict(fish=2, grain=1, wool=1, brick=1)
-AGE3 = dict(fish=2, grain=2, ore=2)
+AGE2 = dict(lumber=1, brick=1, wool=1, grain=1, ore=1, fish=2)
+AGE3 = dict(lumber=1, brick=1, wool=1, grain=1, ore=1, fish=3)
 FISHING_HEX = 19            # fixture board: a fishing ground with token 4
 FISHING_VERTEX = 16         # a corner of it
 
@@ -65,7 +65,7 @@ class AdvanceTest(unittest.TestCase):
         s = new_state()
         place(s, 0, 5, BuildKind.CITY)
         s.players[0].points = 2
-        set_hand(s, 0, **AGE2, lumber=1)
+        set_hand(s, 0, **{**AGE2, "lumber": 2})
         before = resource_totals(s)
         events = game.apply(s, 0, {"a": "advance_age"}, 100)
         self.assertEqual(kinds(events), [AgeAdvanceStarted, Hand])
@@ -144,8 +144,15 @@ def place_built(state: GameState, seat: int, vertex: int, kind: BuildKind) -> li
 
 
 class LargestPopulationTest(unittest.TestCase):
+    def test_no_award_without_settlers(self) -> None:
+        s = new_state({"ages": {"largest_population": {"min": 1}}})
+        self.assertTrue(s.settings.settlers.leave_after_setup)
+        events = place_built(s, 0, 5, BuildKind.CITY)
+        self.assertIsNone(largest_population.holder(s))
+        self.assertNotIn(LargestPopulation, kinds(events))
+
     def test_award_moves_to_a_strictly_larger_population(self) -> None:
-        s = new_state({"ages": {"largest_population": {"min": 3}}})
+        s = new_state({"ages": {"largest_population": {"min": 3}}, "settlers": {"leave_after_setup": False}})
         place_built(s, 0, 5, BuildKind.CITY)                  # population 2
         self.assertIsNone(largest_population.holder(s))
         before = s.players[0].points

@@ -6,9 +6,12 @@
       "k": "age_advance_cancelled",
       "reason": "cancelled",
       "refund": {
-        "fish": 2,
-        "grain": 2,
-        "ore": 2
+        "brick": 1,
+        "fish": 3,
+        "grain": 1,
+        "lumber": 1,
+        "ore": 1,
+        "wool": 1
       },
       "seat": 0
     },
@@ -20,6 +23,8 @@
         "brick": 1,
         "fish": 2,
         "grain": 1,
+        "lumber": 1,
+        "ore": 1,
         "wool": 1
       },
       "seat": 0,
@@ -159,15 +164,6 @@
       },
       "previous": null,
       "seat": null
-    },
-    {
-      "at": 11000,
-      "k": "numbers_revealed",
-      "tokens": {
-        "12": 10,
-        "13": 9,
-        "16": 6
-      }
     },
     {
       "at": 233000,

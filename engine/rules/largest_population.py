@@ -1,7 +1,9 @@
 """Largest Population (ages): an award, like the Longest Road, for the biggest population.
 
 A seat's population is ``per_settlement`` per settlement, ``per_city`` per city and
-``per_megacity`` per megacity (``settings.ages.largest_population``). Only with ages on.
+``per_megacity`` per megacity (``settings.ages.largest_population``). Only with ages on
+and settlers that stay after setup (``settlers.leave_after_setup`` off): Emerson,
+Nov 24, 2026, the award belongs to games with settlers.
 
 * ``@connect(SIG_BUILT)`` (:func:`on_built`): after a settlement, city or megacity,
   recompute every population and the holder. Emits ``LargestPopulation`` when a
@@ -24,10 +26,15 @@ from engine.rules import age_state, longest_road, victory
 from engine.settings.enums import BuildKind
 from engine.state import GameState
 
-__all__ = ["BUILT_ORDER", "EXT_KEY", "population", "populations", "holder", "on_built"]
+__all__ = ["BUILT_ORDER", "EXT_KEY", "active", "population", "populations", "holder", "on_built"]
 
 BUILT_ORDER = longest_road.BUILT_ORDER + 10
 EXT_KEY = "largest_population"
+
+
+def active(state: GameState) -> bool:
+    """Whether the award is played: ages on and settlers staying after setup."""
+    return age_state.enabled(state) and not state.settings.settlers.leave_after_setup
 
 
 def population(state: GameState, seat: int) -> int:
@@ -53,7 +60,7 @@ def holder(state: GameState) -> int | None:
 @connect(SIG_BUILT, order=BUILT_ORDER)
 def on_built(state: GameState, now_ms: int, *, seat: int, kind: BuildKind, target: int, setup: bool,
              construction: int, **_: Any) -> list[Event]:
-    if not age_state.enabled(state) or BuildKind(kind) is BuildKind.ROAD or state.phase == "finished":
+    if not active(state) or BuildKind(kind) is BuildKind.ROAD or state.phase == "finished":
         return []
     ext = _ext(state)
     cfg = state.settings.ages.largest_population

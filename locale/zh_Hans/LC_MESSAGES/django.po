@@ -1869,8 +1869,8 @@ msgstr[0] "%(n)s 名注册用户"
 msgid "Growing sight: each player sees only the land around their own pieces."
 msgstr "逐步扩展的视野：每位玩家只能看到自己棋子周围的陆地。"
 
-msgid "Numbers hidden until a building is next to them"
-msgstr "数字在旁边有建筑之前保持隐藏"
+msgid "Numbers hidden until you discover them"
+msgstr "数字在你发现之前保持隐藏"
 
 msgid "Settler"
 msgstr "拓荒者"
@@ -1978,8 +1978,8 @@ msgstr "超级城市也算。"
 msgid "Largest Population: points"
 msgstr "最多人口：分数"
 
-msgid "An award, like the Longest Road, for the largest population."
-msgstr "像最长道路一样，奖励人口最多的玩家。"
+msgid "An award, like the Longest Road, for the largest population. Only in games where settlers stay after setup."
+msgstr "像最长道路一样，奖励人口最多的玩家。仅在开拓者于初始布置后留下的对局中生效。"
 
 msgid "Largest Population: population needed"
 msgstr "最多人口：所需人口"
@@ -2064,3 +2064,6 @@ msgstr "强盗可以抢你之前需要的分数（0 = 总是）"
 
 msgid "Settlers stay after the first settlements"
 msgstr "拓荒者在首批村庄之后留下"
+
+msgid "Each player sees only the numbers next to their own buildings or under their own settlers, not the ones other players find."
+msgstr "每位玩家只能看到自己建筑旁或自己开拓者所在处的数字，看不到其他玩家发现的数字。"

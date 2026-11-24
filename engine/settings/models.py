@@ -495,14 +495,18 @@ def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, p
 # Costs from the WP28 bot batches (docs/AGES_DESIGN.md, "Balance"); Emerson (23 nov
 # 2026): Age II needs a city and Age III gives 3 points. Extra production per age is a
 # setting, off by default (buildings produce as in the classic game).
-Age2Step = _age_step("age2", {Resource.FISH: 2, Resource.GRAIN: 1, Resource.WOOL: 1, Resource.BRICK: 1},
+# Emerson (24 nov 2026): advancing costs one of each land resource plus 2 fish (Age of
+# the Sea) or 3 fish (Golden Age).
+_ONE_OF_EACH = {Resource.LUMBER: 1, Resource.BRICK: 1, Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1}
+Age2Step = _age_step("age2", {**_ONE_OF_EACH, Resource.FISH: 2},
                      30000, cities=1, points=1, build_time_pct=85, extra_per_settlement=0, extra_per_city=0)
-Age3Step = _age_step("age3", {Resource.FISH: 2, Resource.GRAIN: 2, Resource.ORE: 2},
+Age3Step = _age_step("age3", {**_ONE_OF_EACH, Resource.FISH: 3},
                      45000, cities=2, points=3, build_time_pct=70, extra_per_settlement=0, extra_per_city=0)
 
 
 class LargestPopulationSettings(_Group):
-    """With ages on: an award, like the Longest Road, for the largest population."""
+    """With ages on and settlers staying after setup: an award, like the Longest Road,
+    for the largest population."""
     points: int = setting(2, label="settings.ages.largest_population.points", ge=0, le=10)
     min: int = setting(6, label="settings.ages.largest_population.min", ge=1, le=100)
     """Population needed to claim the award."""

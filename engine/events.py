@@ -388,9 +388,10 @@ class Revealed(Event):
 
 
 class Sight(Event):
-    """``seat``'s land in sight now changed (Live fog). ``in_sight``: hex ids, ascending.
-    Outside them a client keeps buildings and roads as last seen and drops other
-    players' settlers, constructions and the robber."""
+    """``seat``'s land in sight now changed (any fog). ``in_sight``: hex ids, ascending.
+    Under Live fog, outside them a client keeps buildings and roads as last seen and
+    drops other players' settlers, constructions and the robber; under the other fogs
+    it only marks which seen land is in sight now."""
     k: Literal["sight"] = "sight"
     audience: ClassVar[Literal["public", "private"]] = "private"
     seat: int
@@ -398,10 +399,13 @@ class Sight(Event):
 
 
 class NumbersRevealed(Event):
-    """Number tokens shown because a building now stands next to their hex
-    (``visibility.hidden_numbers``). ``tokens``: hex id -> token. Players get only
-    the hexes they have seen."""
+    """Number tokens ``seat`` now sees because it discovered their hexes: one of its
+    buildings stands next to them or one of its settlers on a corner
+    (``visibility.hidden_numbers``). ``tokens``: hex id -> token, only of hexes the
+    seat has seen. Only that seat gets it."""
     k: Literal["numbers_revealed"] = "numbers_revealed"
+    audience: ClassVar[Literal["public", "private"]] = "private"
+    seat: int
     tokens: dict[int, int]
 
 

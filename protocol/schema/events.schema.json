@@ -810,7 +810,7 @@
     },
     "NumbersRevealed": {
       "additionalProperties": false,
-      "description": "Number tokens shown because a building now stands next to their hex\n(``visibility.hidden_numbers``). ``tokens``: hex id -> token. Players get only\nthe hexes they have seen.",
+      "description": "Number tokens ``seat`` now sees because it discovered their hexes: one of its\nbuildings stands next to them or one of its settlers on a corner\n(``visibility.hidden_numbers``). ``tokens``: hex id -> token, only of hexes the\nseat has seen. Only that seat gets it.",
       "properties": {
         "at": {
           "title": "At",
@@ -822,6 +822,10 @@
           "title": "K",
           "type": "string"
         },
+        "seat": {
+          "title": "Seat",
+          "type": "integer"
+        },
         "tokens": {
           "additionalProperties": {
             "type": "integer"
@@ -832,6 +836,7 @@
       },
       "required": [
         "at",
+        "seat",
         "tokens"
       ],
       "title": "NumbersRevealed",
@@ -1471,7 +1476,7 @@
     },
     "Sight": {
       "additionalProperties": false,
-      "description": "``seat``'s land in sight now changed (Live fog). ``in_sight``: hex ids, ascending.\nOutside them a client keeps buildings and roads as last seen and drops other\nplayers' settlers, constructions and the robber.",
+      "description": "``seat``'s land in sight now changed (any fog). ``in_sight``: hex ids, ascending.\nUnder Live fog, outside them a client keeps buildings and roads as last seen and\ndrops other players' settlers, constructions and the robber; under the other fogs\nit only marks which seen land is in sight now.",
       "properties": {
         "at": {
           "title": "At",

@@ -7,12 +7,15 @@ Record, in ``state.ext["visibility"]`` (JSON-safe):
 
 * ``seen``: ``{"<seat>": [hex ids, ascending]}``, hexes the seat has seen. It
   never shrinks. Kept only while fog is on (``visibility.map`` is not ``open``).
-* ``sight`` (Live fog): ``{"<seat>": [hex ids]}``, the seat's land in sight after the
-  last step, to tell when land comes into or goes out of sight.
+* ``sight``: ``{"<seat>": [hex ids]}``, the seat's land in sight after the last step,
+  to tell when land comes into or goes out of sight (any fog; clients shade seen land
+  out of sight).
 * ``memory`` (Live fog): ``{"<seat>": {"b": {"<vertex>": [seat, kind]}, "r": {"<edge>": seat}}}``,
   other players' buildings and roads as the seat last saw them.
-* ``numbers``: hex ids whose number token is shown, when ``visibility.hidden_numbers``
-  is on: a token is shown once a building stands next to its hex.
+* ``numbers``: ``{"<seat>": [hex ids]}``, hexes whose number token the seat sees, when
+  ``visibility.hidden_numbers`` is on: a token shows to a player once one of *their own*
+  buildings stands next to its hex or one of their settlers stands on one of its
+  corners (Emerson, Nov 24, 2026: you see only the numbers you discover yourself).
 
 Sight of ``r`` hexes around a piece: ``r = 1`` is the hexes the piece touches,
 each step more adds their neighbours (``r = 0``: nothing). Sea hexes are seen too.
@@ -30,7 +33,7 @@ from engine.settings.enums import BuildKind, MapVisibility
 from engine.state import Construction, GameState, Settler
 
 __all__ = [
-    "EXT_KEY", "fog_on", "live_fog", "live_hexes", "memory", "numbers_hidden", "seen_hexes", "shown_numbers", "hexes_around",
+    "EXT_KEY", "fog_on", "live_fog", "live_hexes", "memory", "numbers_hidden", "seen_hexes", "shown_numbers", "discovered_numbers", "hexes_around",
     "vertex_sight", "edge_sight", "piece_sight", "settlers_reveal", "seat_sight",
     "seen_vertices", "seen_edges", "vertex_seen", "edge_seen", "construction_place_seen",
     "hex_view", "vertex_view", "edge_view", "board_for", "board_parts",
@@ -63,11 +66,23 @@ def seen_hexes(state: GameState, seat: int) -> frozenset[int]:
     return frozenset(_record(state).get("seen", {}).get(str(seat), ()))
 
 
-def shown_numbers(state: GameState) -> frozenset[int]:
-    """Hexes whose token is shown (every hex when numbers are not hidden)."""
+def shown_numbers(state: GameState, seat: int) -> frozenset[int]:
+    """Hexes whose token ``seat`` sees (every hex when numbers are not hidden)."""
     if not numbers_hidden(state):
         return frozenset(range(len(state.board.board.hexes)))
-    return frozenset(_record(state).get("numbers", ()))
+    numbers = _record(state).get("numbers", {})
+    if isinstance(numbers, list):   # games saved before numbers were per player
+        return frozenset(numbers)
+    return frozenset(numbers.get(str(seat), ()))
+
+
+def discovered_numbers(state: GameState, seat: int) -> set[int]:
+    """Hexes whose number ``seat`` discovers now: next to its own buildings, or with one
+    of its settlers on a corner."""
+    vh = state.board.board.vertex_hexes
+    out = {h for v, b in state.buildings.items() if b.seat == seat for h in vh[v]}
+    out |= {h for st in state.settlers.values() if st.seat == seat for h in vh[st.vertex]}
+    return out
 
 
 # ---------------------------------------------------------------------- sight
@@ -223,7 +238,7 @@ def board_for(state: GameState, viewer: int | None) -> dict[str, Any]:
     if viewer is None or not (fog_on(state) or numbers_hidden(state)):
         return gb.to_dict()
     seen = seen_hexes(state, viewer)
-    out = board_parts(gb, seen, seen, shown_numbers(state))
+    out = board_parts(gb, seen, seen, shown_numbers(state, viewer))
     out["robber_start"] = gb.robber_start if gb.robber_start in seen else None
     out["partial"] = fog_on(state) and state.phase != "finished"
     return out
