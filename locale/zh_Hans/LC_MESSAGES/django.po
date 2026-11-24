@@ -2067,3 +2067,152 @@ msgstr "拓荒者在首批村庄之后留下"
 
 msgid "Each player sees only the numbers next to their own buildings or under their own settlers, not the ones other players find."
 msgstr "每位玩家只能看到自己建筑旁或自己开拓者所在处的数字，看不到其他玩家发现的数字。"
+
+msgid "Age of the Sea (II)"
+msgstr "海洋时代（II）"
+
+msgid "Golden Age (III)"
+msgstr "黄金时代（III）"
+
+msgid "Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a hidden island, have their own column next to it."
+msgstr "先从经典玩法开始。创建对局时可以添加的变体，例如时代、开拓者或隐藏岛屿，在旁边单独一栏。"
+
+msgid "Classic game"
+msgstr "经典玩法"
+
+msgid "The classic island during a game: hexes with numbers, harbors, settlements and roads."
+msgstr "对局中的经典岛屿：带数字的六边形、港口、村庄和道路。"
+
+msgid "The island: each hex gives a resource when its number is rolled."
+msgstr "岛屿：掷出某个六边形的数字时，它就产出资源。"
+
+msgid "The bottom bar: your resources and the build and trade buttons."
+msgstr "底部栏：你的资源以及建造和交易按钮。"
+
+msgid "Your resources and the buttons to build, buy developments and trade."
+msgstr "你的资源，以及建造、购买发展卡和交易的按钮。"
+
+msgid "Variations"
+msgstr "变体"
+
+msgid "Hidden island"
+msgstr "隐藏岛屿"
+
+msgid "More rules"
+msgstr "更多规则"
+
+msgid "Pick them under Custom when you create a game. Everything from the classic game still applies; these rules are added on top."
+msgstr "创建对局时在“自定义”中选择。经典玩法的规则依然有效，这些规则是额外添加的。"
+
+msgid "Each player shows their age next to their name; the Age II button sits under the build buttons."
+msgstr "每位玩家的名字旁显示其时代；“时代 II”按钮位于建造按钮下方。"
+
+msgid "Your age shows next to your name; the age button is under the build buttons."
+msgstr "你的时代显示在名字旁；时代按钮在建造按钮下方。"
+
+msgid "Each player advances on their own, as in a real-time strategy game: pay the cost, wait while you research, and the new age brings points and advantages. Games with ages go to <strong>%(target)s points</strong>."
+msgstr "每位玩家各自升级，就像即时战略游戏：支付费用，等待研究完成，新时代会带来分数和优势。带时代的对局目标为 <strong>%(target)s 分</strong>。"
+
+msgid "Age"
+msgstr "时代"
+
+msgid "Needs"
+msgstr "条件"
+
+msgid "Gives"
+msgstr "奖励"
+
+msgid "%(n)s s of research"
+msgstr "研究 %(n)s 秒"
+
+msgid "%(n)s city"
+msgid_plural "%(n)s cities"
+msgstr[0] "%(n)s 座城市"
+
+msgid "+%(n)s point"
+msgid_plural "+%(n)s points"
+msgstr[0] "+%(n)s 分"
+
+msgid "Every age gives +%(fish)s fish for each of your buildings on a fishing ground when it produces, and lets you keep %(limit)s more resource safe from the robber on a 7."
+msgstr "每个时代让你在渔场上的每座建筑在渔场产出时多得 %(fish)s 条鱼，并且掷出 7 时可多保留 %(limit)s 张资源不被强盗夺走。"
+
+msgid "You build faster: %(p2)s%% of the normal time in the Age of the Sea and %(p3)s%% in the Golden Age."
+msgstr "建造更快：海洋时代为正常时间的 %(p2)s%%，黄金时代为 %(p3)s%%。"
+
+msgid "The megacity can only be built from age %(age)s on."
+msgstr "大都市只能在时代 %(age)s 及以后建造。"
+
+msgid "From age %(age)s on, a player holding at least %(n)s fish pays the robber those %(n)s fish instead of losing other resources."
+msgstr "从时代 %(age)s 起，持有至少 %(n)s 条鱼的玩家可以用这 %(n)s 条鱼打发强盗，而不损失其他资源。"
+
+msgid "You can cancel a research: part of the cost comes back, as with a building."
+msgstr "你可以取消研究：和建筑一样，会退还部分费用。"
+
+msgid "Fish is what you need most: settle next to fishing grounds early."
+msgstr "鱼是你最需要的：尽早在渔场旁定居。"
+
+msgid "A settler on the island with its gathering number under it, and the Settler button in the bottom bar."
+msgstr "岛上的开拓者，下方显示其采集数字；底部栏有“开拓者”按钮。"
+
+msgid "The number under your settler is the roll it gathers on; the Settler button buys another."
+msgstr "开拓者下方的数字是它采集的点数；“开拓者”按钮可再买一个。"
+
+msgid "In the classic game your settler leaves after the first settlements. With settlers, they stay on the island all game:"
+msgstr "在经典玩法中，开拓者在最初的村庄建好后离开。开启开拓者后，他们整局都留在岛上："
+
+msgid "Every building needs one of your settlers standing on the spot until it is finished."
+msgstr "每次建造都需要你的一名开拓者站在该位置直到完工。"
+
+msgid "Buy more settlers for %(cost)s. You may have %(per)s per settlement and %(city)s per city."
+msgstr "花 %(cost)s 购买更多开拓者。每个村庄可拥有 %(per)s 名，每座城市 %(city)s 名。"
+
+msgid "A settler at rest gathers from the hexes around it when its number is rolled: your first settler on the first number, the second on the next, and so on (%(rolls)s)."
+msgstr "静止的开拓者在掷出其数字时从周围六边形采集：第一名开拓者对应第一个数字，第二名对应下一个，依此类推（%(rolls)s）。"
+
+msgid "The robber cannot move onto a hex with one of your settlers on a corner."
+msgstr "强盗不能移动到角上站着你的开拓者的六边形。"
+
+msgid "Settlers walk faster on your own roads."
+msgstr "开拓者在你自己的道路上走得更快。"
+
+msgid "Settlers gather from age %(g)s on and keep the robber away from age %(b)s on."
+msgstr "开拓者从时代 %(g)s 起采集，从时代 %(b)s 起驱离强盗。"
+
+msgid "<strong>Largest population</strong>: %(points)s points for the biggest population (a settlement counts %(s)s, a city %(c)s, a megacity %(m)s), with at least %(min)s. It works like the longest road. It is only played in games with settlers."
+msgstr "<strong>最多人口</strong>：人口最多者得 %(points)s 分（村庄算 %(s)s，城市 %(c)s，大都市 %(m)s），至少需要 %(min)s。规则同最长道路。仅在有开拓者的对局中生效。"
+
+msgid "A hidden island: a light line surrounds the land in sight; land seen before is behind a veil of mist."
+msgstr "隐藏岛屿：一条浅色线围住视野内的土地；之前见过的土地蒙着一层薄雾。"
+
+msgid "The light line marks what you see now; the misty land you saw before."
+msgstr "浅色线标出你现在看到的范围；有雾的是你之前看到过的土地。"
+
+msgid "The island starts covered in mist. You see the land around your buildings, roads and settlers, and it stays on your map once seen."
+msgstr "岛屿一开始被迷雾覆盖。你能看到自己建筑、道路和开拓者周围的土地，见过的土地会留在地图上。"
+
+msgid "<strong>Growing sight</strong>: your settler reveals land where it stops."
+msgstr "<strong>逐步扩展的视野</strong>：开拓者在停下的地方揭示土地。"
+
+msgid "<strong>Explored</strong>: your settler also reveals land as it walks."
+msgstr "<strong>已探索区域</strong>：开拓者行走时也会揭示土地。"
+
+msgid "<strong>Live fog</strong>: like Explored, but on land out of sight you only see other players' buildings as you last saw them."
+msgstr "<strong>实时迷雾</strong>：同“已探索区域”，但视野外的土地上只能看到你上次看到时其他玩家的建筑。"
+
+msgid "A light line surrounds your field of vision, what you see right now. Land you saw before but do not see now stays under a light veil."
+msgstr "一条浅色线围住你的视野，即你此刻能看到的范围。之前见过但现在看不到的土地蒙着一层薄纱。"
+
+msgid "Numbers show by default. With hidden numbers, you only see the numbers you discover yourself: next to your buildings or where your settlers stand. The ones other players find stay hidden for you."
+msgstr "默认显示数字。开启隐藏数字后，你只能看到自己发现的数字：在你的建筑旁或你的开拓者所在处。其他玩家发现的数字对你仍然隐藏。"
+
+msgid "When the game ends, the mist lifts for everyone."
+msgstr "对局结束时，所有人的迷雾都会散去。"
+
+msgid "<strong>Friendly robber</strong>: the robber leaves alone anyone with fewer than %(n)s points, and what it takes goes back to the bank."
+msgstr "<strong>友善强盗</strong>：强盗不打扰分数少于 %(n)s 的玩家，抢走的资源回到银行。"
+
+msgid "<strong>Fast and big games</strong>: Blitz rolls the dice more often; Big and Huge islands are for more players."
+msgstr "<strong>快速与大型对局</strong>：闪电战掷骰更频繁；大岛和超大岛适合更多玩家。"
+
+msgid "<strong>Custom</strong>: start from any game type and change any rule. Share it as a code so your friends play the same rules."
+msgstr "<strong>自定义</strong>：从任意对局类型出发并修改任何规则。以代码分享，让朋友用同样的规则游戏。"

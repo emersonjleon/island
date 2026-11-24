@@ -4,7 +4,7 @@
 import type { TFunction } from "i18next";
 import { useState } from "preact/hooks";
 
-import type { BuildKind } from "../protocol/types";
+import type { BuildKind, ResMap } from "../protocol/types";
 import type { GameStore } from "../state/store";
 import { Dialog, useEscape } from "./Dialog";
 import { guideStep, type GuideStep } from "./guide";
@@ -44,7 +44,29 @@ export function ruleParams(t: TFunction, settings: Record<string, unknown>): Rec
     seconds: Math.round((rollInterval(settings) ?? 20000) / 1000),
     limit: num(settings, "robber", "card_limit") ?? 7,
     ratio: num(settings, "economy", "trade", "bank_ratio") ?? 4,
+    age2: formatRes(t, ageCost(settings, "age2")), age3: formatRes(t, ageCost(settings, "age3")),
+    population: num(settings, "ages", "largest_population", "points") ?? 2,
   };
+}
+
+function ageCost(settings: Record<string, unknown>, slot: "age2" | "age3"): ResMap | undefined {
+  const ages = settings["ages"] as Record<string, Record<string, unknown>> | undefined;
+  return ages?.[slot]?.["cost"] as ResMap | undefined;
+}
+
+/** The help lines for the variations this game plays (ages, settlers, fog, hidden numbers). */
+export function variantHelpKeys(settings: Record<string, unknown>): string[] {
+  const group = (name: string) => (settings[name] ?? {}) as Record<string, unknown>;
+  const ages = group("ages")["enabled"] === true;
+  const settlers = group("settlers")["leave_after_setup"] === false;
+  const vis = group("visibility");
+  const keys: string[] = [];
+  if (ages) keys.push("ages");
+  if (settlers) keys.push("settlers");
+  if (ages && settlers) keys.push("population");
+  if (vis["map"] && vis["map"] !== "open") keys.push("fog");
+  if (vis["hidden_numbers"] === true) keys.push("numbers");
+  return keys;
 }
 
 function stepText(t: TFunction, step: GuideStep, params: Record<string, unknown>): string {
@@ -93,6 +115,12 @@ export function HelpDialog({ store, t, touch, helpUrl, onClose }: {
       <ul class="help-rules">
         {(["goal", "dice", "setup", "build", "robber", "trade", "cards"] as const).map((k) => <li key={k}>{t(`hud:help.${k}`, p)}</li>)}
       </ul>
+      {variantHelpKeys(store.settings).length > 0 && <>
+        <h3>{t("hud:help.variants")}</h3>
+        <ul class="help-rules">
+          {variantHelpKeys(store.settings).map((k) => <li key={k}>{t(`hud:help.v.${k}`, p)}</li>)}
+        </ul>
+      </>}
       <h3>{t("hud:help.controls")}</h3>
       <p>{t(touch ? "hud:help.touch" : "hud:help.keys")}</p>
       <p><a href={helpUrl} target="_blank" rel="noopener">{t("hud:help.full")}</a></p>

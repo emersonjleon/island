@@ -1,135 +1,278 @@
-{% extends "base.html" %}{% load i18n %}
+{% extends "base.html" %}{% load i18n static %}
 {% block title %}{% translate "How to play" %} · {{ block.super }}{% endblock %}
+{% block main_class %}page page-wide rules-page{% endblock %}
 {% block content %}
 <h1>{% translate "How to play" %}</h1>
 <p class="lead">{% blocktranslate trimmed %}
   Ages of the Island is a race to build on an island, in real time. There are no turns:
   everyone plays at once while a clock rolls the dice for all.
 {% endblocktranslate %}</p>
+<p class="muted">{% blocktranslate trimmed %}
+  Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a
+  hidden island, have their own column next to it.
+{% endblocktranslate %}</p>
 
-<nav class="toc" aria-label="{% translate 'Contents' %}">
-  <a href="#goal">{% translate "Goal" %}</a> · <a href="#start">{% translate "The start" %}</a> ·
-  <a href="#dice">{% translate "Dice and resources" %}</a> · <a href="#build">{% translate "Building" %}</a> ·
-  <a href="#robber">{% translate "The robber" %}</a> · <a href="#trade">{% translate "Trading" %}</a> ·
-  <a href="#cards">{% translate "Developments and awards" %}</a> · <a href="#controls">{% translate "Controls" %}</a> ·
-  <a href="#tips">{% translate "Tips" %}</a>
-</nav>
+<div class="rules-columns">
+  <div class="rules-col rules-classic">
+    <h2 class="rules-col-title">{% translate "Classic game" %}</h2>
+    <nav class="toc" aria-label="{% translate 'Contents' %}">
+      <a href="#goal">{% translate "Goal" %}</a> · <a href="#start">{% translate "The start" %}</a> ·
+      <a href="#dice">{% translate "Dice and resources" %}</a> · <a href="#build">{% translate "Building" %}</a> ·
+      <a href="#robber">{% translate "The robber" %}</a> · <a href="#trade">{% translate "Trading" %}</a> ·
+      <a href="#cards">{% translate "Developments and awards" %}</a> · <a href="#controls">{% translate "Controls" %}</a> ·
+      <a href="#tips">{% translate "Tips" %}</a>
+    </nav>
+    <figure class="rules-shot">
+      <img src="{% static 'img/how/classic-board.webp' %}" width="600" height="540" loading="lazy"
+           alt="{% translate 'The classic island during a game: hexes with numbers, harbors, settlements and roads.' %}">
+      <figcaption>{% translate "The island: each hex gives a resource when its number is rolled." %}</figcaption>
+    </figure>
+    <section id="goal">
+      <h2>{% translate "Goal" %}</h2>
+      <p>{% blocktranslate trimmed with target=s.victory.target %}
+        The first player to reach <strong>{{ target }} points</strong> wins. You earn points with settlements,
+        cities, awards and some developments.
+      {% endblocktranslate %}</p>
+    </section>
 
-<section id="goal">
-  <h2>{% translate "Goal" %}</h2>
-  <p>{% blocktranslate trimmed with target=s.victory.target %}
-    The first player to reach <strong>{{ target }} points</strong> wins. You earn points with settlements,
-    cities, awards and some developments.
-  {% endblocktranslate %}</p>
-</section>
+    <section id="start">
+      <h2>{% translate "The start: your settler" %}</h2>
+      <ol>
+        <li>{% translate "Your settler lands on the coast. Walk it from corner to corner to the spot you like." %}</li>
+        <li>{% blocktranslate trimmed with settlements=s.setup.settlements roads=s.setup.roads %}
+          Build your first {{ settlements }} settlements and {{ roads }} roads. You already have the materials for them,
+          and each road goes next to the settlement you just built.
+        {% endblocktranslate %}</li>
+        <li>{% translate "A settlement needs a free corner: no other settlement may stand on a neighbouring corner." %}</li>
+        <li>{% translate "Each of your first two settlements gives you one resource from every hex around it." %}</li>
+        <li>{% translate "If someone finishes building on that corner first, your build is cancelled and refunded. Be quick!" %}</li>
+      </ol>
+      <p class="muted">{% translate "While a player is still building their starting settlements and roads, the robber never steals from them." %}</p>
+    </section>
 
-<section id="start">
-  <h2>{% translate "The start: your settler" %}</h2>
-  <ol>
-    <li>{% translate "Your settler lands on the coast. Walk it from corner to corner to the spot you like." %}</li>
-    <li>{% blocktranslate trimmed with settlements=s.setup.settlements roads=s.setup.roads %}
-      Build your first {{ settlements }} settlements and {{ roads }} roads. You already have the materials for them,
-      and each road goes next to the settlement you just built.
-    {% endblocktranslate %}</li>
-    <li>{% translate "A settlement needs a free corner: no other settlement may stand on a neighbouring corner." %}</li>
-    <li>{% translate "Each of your first two settlements gives you one resource from every hex around it." %}</li>
-    <li>{% translate "If someone finishes building on that corner first, your build is cancelled and refunded. Be quick!" %}</li>
-  </ol>
-  <p class="muted">{% translate "While a player is still building their starting settlements and roads, the robber never steals from them." %}</p>
-</section>
+    <section id="dice">
+      <h2>{% translate "Dice and resources" %}</h2>
+      <p>{% blocktranslate trimmed with seconds=roll_seconds %}
+        The clock starts with the first settlement and rolls two dice every <strong>{{ seconds }} seconds</strong>.
+        Every hex showing the rolled number gives its resource to each settlement around it (2 to a city).
+      {% endblocktranslate %}</p>
+      <p>{% translate "Forests give lumber, hills brick, pastures wool, fields grain, mountains ore and fishing grounds fish. The desert gives nothing." %}</p>
+      <p class="muted">{% translate "6 and 8 come up most often; 2 and 12 rarely. The dots under each number show how likely it is." %}</p>
+    </section>
 
-<section id="dice">
-  <h2>{% translate "Dice and resources" %}</h2>
-  <p>{% blocktranslate trimmed with seconds=roll_seconds %}
-    The clock starts with the first settlement and rolls two dice every <strong>{{ seconds }} seconds</strong>.
-    Every hex showing the rolled number gives its resource to each settlement around it (2 to a city).
-  {% endblocktranslate %}</p>
-  <p>{% translate "Forests give lumber, hills brick, pastures wool, fields grain, mountains ore and fishing grounds fish. The desert gives nothing." %}</p>
-  <p class="muted">{% translate "6 and 8 come up most often; 2 and 12 rarely. The dots under each number show how likely it is." %}</p>
-</section>
+    <section id="build">
+      <h2>{% translate "Building" %}</h2>
+      <table class="rules-table">
+        <thead><tr><th>{% translate "Building" %}</th><th>{% translate "Cost" %}</th><th>{% translate "Points" %}</th><th>{% translate "Time" %}</th></tr></thead>
+        <tbody>
+        {% for b in buildings %}
+          <tr><td>{{ b.name }}</td><td>{{ b.cost }}</td><td>{{ b.points }}</td><td>{% blocktranslate with n=b.seconds %}{{ n }} s{% endblocktranslate %}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <ul>
+        <li>{% translate "After the start, new roads and settlements must connect to your own roads." %}</li>
+        <li>{% translate "A city replaces one of your settlements and a megacity replaces one of your cities." %}</li>
+        <li>{% blocktranslate trimmed with roads=s.pieces.roads settlements=s.pieces.settlements cities=s.pieces.cities %}
+          Each player has {{ roads }} roads, {{ settlements }} settlements and {{ cities }} cities.
+        {% endblocktranslate %}</li>
+      </ul>
+    </section>
 
-<section id="build">
-  <h2>{% translate "Building" %}</h2>
-  <table class="rules-table">
-    <thead><tr><th>{% translate "Building" %}</th><th>{% translate "Cost" %}</th><th>{% translate "Points" %}</th><th>{% translate "Time" %}</th></tr></thead>
-    <tbody>
-    {% for b in buildings %}
-      <tr><td>{{ b.name }}</td><td>{{ b.cost }}</td><td>{{ b.points }}</td><td>{% blocktranslate with n=b.seconds %}{{ n }} s{% endblocktranslate %}</td></tr>
-    {% endfor %}
-    </tbody>
-  </table>
-  <ul>
-    <li>{% translate "After the start, new roads and settlements must connect to your own roads." %}</li>
-    <li>{% translate "A city replaces one of your settlements and a megacity replaces one of your cities." %}</li>
-    <li>{% blocktranslate trimmed with roads=s.pieces.roads settlements=s.pieces.settlements cities=s.pieces.cities %}
-      Each player has {{ roads }} roads, {{ settlements }} settlements and {{ cities }} cities.
-    {% endblocktranslate %}</li>
-  </ul>
-</section>
+    <section id="robber">
+      <h2>{% translate "The robber" %}</h2>
+      <p>{% blocktranslate trimmed with limit=s.robber.card_limit pct=s.robber.steal_pct %}
+        When the dice show a 7 nothing is produced. The robber takes {{ pct }}% of the resources of everyone holding
+        more than {{ limit }}, then moves by itself to a neighbouring hex. The hex where it stands produces nothing.
+      {% endblocktranslate %}</p>
+      <p class="muted">{% translate "Tip: spend or trade your resources before a 7 comes." %}</p>
+    </section>
 
-<section id="robber">
-  <h2>{% translate "The robber" %}</h2>
-  <p>{% blocktranslate trimmed with limit=s.robber.card_limit pct=s.robber.steal_pct %}
-    When the dice show a 7 nothing is produced. The robber takes {{ pct }}% of the resources of everyone holding
-    more than {{ limit }}, then moves by itself to a neighbouring hex. The hex where it stands produces nothing.
-  {% endblocktranslate %}</p>
-  <p class="muted">{% translate "Tip: spend or trade your resources before a 7 comes." %}</p>
-</section>
+    <section id="trade">
+      <h2>{% translate "Trading" %}</h2>
+      <p>{% blocktranslate trimmed with ratio=s.economy.trade.bank_ratio generic=s.board.harbors.generic_ratio specific=s.board.harbors.specific_ratio %}
+        Trade {{ ratio }} resources of one kind with the bank for 1 of any other. With a settlement or city on a harbor
+        you trade at {{ generic }}:1, or {{ specific }}:1 for that harbor's resource.
+      {% endblocktranslate %}</p>
+    </section>
 
-<section id="trade">
-  <h2>{% translate "Trading" %}</h2>
-  <p>{% blocktranslate trimmed with ratio=s.economy.trade.bank_ratio generic=s.board.harbors.generic_ratio specific=s.board.harbors.specific_ratio %}
-    Trade {{ ratio }} resources of one kind with the bank for 1 of any other. With a settlement or city on a harbor
-    you trade at {{ generic }}:1, or {{ specific }}:1 for that harbor's resource.
-  {% endblocktranslate %}</p>
-</section>
+    <section id="cards">
+      <h2>{% translate "Developments and awards" %}</h2>
+      <p>{% blocktranslate trimmed with cost=dev_card_cost %}
+        A development costs {{ cost }}. It is drawn at random and can be used from the roll after you bought it, one per roll. They never run out.
+      {% endblocktranslate %}</p>
+      <ul>
+        <li>{% blocktranslate trimmed with dist=s.robber.knight_max_distance %}
+          <strong>Knight</strong>: move the robber up to {{ dist }} hexes and steal a resource from a player there.
+        {% endblocktranslate %}</li>
+        <li>{% translate "<strong>Road building</strong>: two free roads." %}</li>
+        <li>{% translate "<strong>Year of plenty</strong>: two resources of your choice from the bank." %}</li>
+        <li>{% translate "<strong>Monopoly</strong>: all of one resource from every player." %}</li>
+        <li>{% translate "<strong>Victory point</strong>: one point when used." %}</li>
+      </ul>
+      <p>{% blocktranslate trimmed with road=s.victory.longest_road.min road_points=s.victory.longest_road.points army=s.victory.largest_army.min army_points=s.victory.largest_army.points %}
+        The longest road (at least {{ road }} segments) is worth {{ road_points }} points, and the largest army
+        (at least {{ army }} knights played) another {{ army_points }}.
+      {% endblocktranslate %}</p>
+    </section>
 
-<section id="cards">
-  <h2>{% translate "Developments and awards" %}</h2>
-  <p>{% blocktranslate trimmed with cost=dev_card_cost %}
-    A development costs {{ cost }}. It is drawn at random and can be used from the roll after you bought it, one per roll. They never run out.
-  {% endblocktranslate %}</p>
-  <ul>
-    <li>{% blocktranslate trimmed with dist=s.robber.knight_max_distance %}
-      <strong>Knight</strong>: move the robber up to {{ dist }} hexes and steal a resource from a player there.
-    {% endblocktranslate %}</li>
-    <li>{% translate "<strong>Road building</strong>: two free roads." %}</li>
-    <li>{% translate "<strong>Year of plenty</strong>: two resources of your choice from the bank." %}</li>
-    <li>{% translate "<strong>Monopoly</strong>: all of one resource from every player." %}</li>
-    <li>{% translate "<strong>Victory point</strong>: one point when used." %}</li>
-  </ul>
-  <p>{% blocktranslate trimmed with road=s.victory.longest_road.min road_points=s.victory.longest_road.points army=s.victory.largest_army.min army_points=s.victory.largest_army.points %}
-    The longest road (at least {{ road }} segments) is worth {{ road_points }} points, and the largest army
-    (at least {{ army }} knights played) another {{ army_points }}.
-  {% endblocktranslate %}</p>
-</section>
+    <section id="controls">
+      <h2>{% translate "Controls" %}</h2>
+      <h3>{% translate "Computer" %}</h3>
+      <ul>
+        <li>{% translate "WASD or the arrow keys walk your settler; Shift + WASD moves the camera; the mouse wheel zooms." %}</li>
+        <li>{% translate "Right-click a corner or edge to walk there or build." %}</li>
+        <li>{% translate "R builds a road, E a settlement, C a city; T opens trading. You can change the keys in the game." %}</li>
+      </ul>
+      <h3>{% translate "Phone or tablet" %}</h3>
+      <ul>
+        <li>{% translate "Tap a spot on the map to walk there or build." %}</li>
+        <li>{% translate "Drag to move the map, pinch to zoom; the buttons at the bottom build and trade." %}</li>
+      </ul>
+      <p class="muted">{% translate "In the game, the Guide panel under the dice clock tells you the next step, and the ? button repeats these rules." %}</p>
+    </section>
 
-<section id="controls">
-  <h2>{% translate "Controls" %}</h2>
-  <h3>{% translate "Computer" %}</h3>
-  <ul>
-    <li>{% translate "WASD or the arrow keys walk your settler; Shift + WASD moves the camera; the mouse wheel zooms." %}</li>
-    <li>{% translate "Right-click a corner or edge to walk there or build." %}</li>
-    <li>{% translate "R builds a road, E a settlement, C a city; T opens trading. You can change the keys in the game." %}</li>
-  </ul>
-  <h3>{% translate "Phone or tablet" %}</h3>
-  <ul>
-    <li>{% translate "Tap a spot on the map to walk there or build." %}</li>
-    <li>{% translate "Drag to move the map, pinch to zoom; the buttons at the bottom build and trade." %}</li>
-  </ul>
-  <p class="muted">{% translate "In the game, the Guide panel under the dice clock tells you the next step, and the ? button repeats these rules." %}</p>
-</section>
+    <section id="tips">
+      <h2>{% translate "Tips for your first game" %}</h2>
+      <ul>
+        <li>{% translate "Choose corners touching different resources and numbers like 5, 6, 8 and 9." %}</li>
+        <li>{% translate "Brick and lumber build roads; grain and ore build cities. You need both kinds." %}</li>
+        <li>{% translate "Build roads toward free corners before someone else takes them." %}</li>
+        <li>{% translate "Play against bots first: the host can add them in the game room." %}</li>
+      </ul>
+      <p>{% blocktranslate trimmed with max=max_players sized=s.players.sized_for %}
+        Games take 2 to {{ max }} players. With more than {{ sized }} players the island and the bank grow automatically.
+      {% endblocktranslate %}</p>
+    </section>
 
-<section id="tips">
-  <h2>{% translate "Tips for your first game" %}</h2>
-  <ul>
-    <li>{% translate "Choose corners touching different resources and numbers like 5, 6, 8 and 9." %}</li>
-    <li>{% translate "Brick and lumber build roads; grain and ore build cities. You need both kinds." %}</li>
-    <li>{% translate "Build roads toward free corners before someone else takes them." %}</li>
-    <li>{% translate "Play against bots first: the host can add them in the game room." %}</li>
-  </ul>
-  <p>{% blocktranslate trimmed with max=max_players sized=s.players.sized_for %}
-    Games take 2 to {{ max }} players. With more than {{ sized }} players the island and the bank grow automatically.
-  {% endblocktranslate %}</p>
-</section>
+    <figure class="rules-shot">
+      <img src="{% static 'img/how/classic-hud.webp' %}" width="564" height="135" loading="lazy"
+           alt="{% translate 'The bottom bar: your resources and the build and trade buttons.' %}">
+      <figcaption>{% translate "Your resources and the buttons to build, buy developments and trade." %}</figcaption>
+    </figure>
+  </div>
+
+  <div class="rules-col rules-variants">
+    <h2 class="rules-col-title">{% translate "Variations" %}</h2>
+    <nav class="toc" aria-label="{% translate 'Contents' %}">
+      <a href="#ages">{% translate "Ages" %}</a> · <a href="#settlers">{% translate "Settlers" %}</a> ·
+      <a href="#fog">{% translate "Hidden island" %}</a> · <a href="#more">{% translate "More rules" %}</a>
+    </nav>
+    <p class="muted">{% blocktranslate trimmed %}
+      Pick them under Custom when you create a game. Everything from the classic game still applies; these rules are added on top.
+    {% endblocktranslate %}</p>
+
+    <section id="ages">
+      <h2>{% translate "Ages" %}</h2>
+      <figure class="rules-shot">
+        <img src="{% static 'img/how/ages-hud.webp' %}" width="720" height="244" loading="lazy"
+             alt="{% translate 'Each player shows their age next to their name; the Age II button sits under the build buttons.' %}">
+        <figcaption>{% translate "Your age shows next to your name; the age button is under the build buttons." %}</figcaption>
+      </figure>
+      <p>{% blocktranslate trimmed with target=ages.victory.target %}
+        Each player advances on their own, as in a real-time strategy game: pay the cost, wait while you research,
+        and the new age brings points and advantages. Games with ages go to <strong>{{ target }} points</strong>.
+      {% endblocktranslate %}</p>
+      <table class="rules-table">
+        <thead><tr><th>{% translate "Age" %}</th><th>{% translate "Cost" %}</th><th>{% translate "Needs" %}</th><th>{% translate "Gives" %}</th></tr></thead>
+        <tbody>
+        {% for a in age_steps %}
+          <tr>
+            <td>{{ a.name }}</td>
+            <td>{{ a.cost }}<br><span class="muted">{% blocktranslate with n=a.seconds %}{{ n }} s of research{% endblocktranslate %}</span></td>
+            <td>{% blocktranslate count n=a.cities %}{{ n }} city{% plural %}{{ n }} cities{% endblocktranslate %}</td>
+            <td>{% blocktranslate count n=a.points %}+{{ n }} point{% plural %}+{{ n }} points{% endblocktranslate %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <ul>
+        {% with a2=age_steps.0 %}
+        <li>{% blocktranslate trimmed with fish=a2.fish limit=a2.card_limit %}
+          Every age gives +{{ fish }} fish for each of your buildings on a fishing ground when it produces, and lets you keep
+          {{ limit }} more resource safe from the robber on a 7.
+        {% endblocktranslate %}</li>
+        {% endwith %}
+        <li>{% blocktranslate trimmed with p2=age_steps.0.build_pct p3=age_steps.1.build_pct %}
+          You build faster: {{ p2 }}% of the normal time in the Age of the Sea and {{ p3 }}% in the Golden Age.
+        {% endblocktranslate %}</li>
+        <li>{% blocktranslate trimmed with age=megacity_age %}
+          The megacity can only be built from age {{ age }} on.
+        {% endblocktranslate %}</li>
+        {% if ages.robber.fish_ransom %}
+        <li>{% blocktranslate trimmed with n=ages.robber.fish_ransom age=ages.ages.fish_ransom_age %}
+          From age {{ age }} on, a player holding at least {{ n }} fish pays the robber those {{ n }} fish instead of losing other resources.
+        {% endblocktranslate %}</li>
+        {% endif %}
+        <li>{% translate "You can cancel a research: part of the cost comes back, as with a building." %}</li>
+      </ul>
+      <p class="muted">{% translate "Fish is what you need most: settle next to fishing grounds early." %}</p>
+    </section>
+
+    <section id="settlers">
+      <h2>{% translate "Settlers" %}</h2>
+      <figure class="rules-shot">
+        <img src="{% static 'img/how/settlers.webp' %}" width="650" height="510" loading="lazy"
+             alt="{% translate 'A settler on the island with its gathering number under it, and the Settler button in the bottom bar.' %}">
+        <figcaption>{% translate "The number under your settler is the roll it gathers on; the Settler button buys another." %}</figcaption>
+      </figure>
+      <p>{% translate "In the classic game your settler leaves after the first settlements. With settlers, they stay on the island all game:" %}</p>
+      <ul>
+        <li>{% translate "Every building needs one of your settlers standing on the spot until it is finished." %}</li>
+        <li>{% blocktranslate trimmed with cost=settler_cost per=settlers.settlers.per_settlement city=settlers.settlers.per_city %}
+          Buy more settlers for {{ cost }}. You may have {{ per }} per settlement and {{ city }} per city.
+        {% endblocktranslate %}</li>
+        {% if settlers.settlers.gather %}
+        <li>{% blocktranslate trimmed with rolls=gather_rolls %}
+          A settler at rest gathers from the hexes around it when its number is rolled: your first settler on the first number,
+          the second on the next, and so on ({{ rolls }}).
+        {% endblocktranslate %}</li>
+        {% endif %}
+        {% if settlers.settlers.block_robber %}
+        <li>{% translate "The robber cannot move onto a hex with one of your settlers on a corner." %}</li>
+        {% endif %}
+        <li>{% translate "Settlers walk faster on your own roads." %}</li>
+      </ul>
+      <h3>{% translate "Settlers with ages" %}</h3>
+      <ul>
+        <li>{% blocktranslate trimmed with g=both.ages.settler_gather_age b=both.ages.settler_guard_age %}
+          Settlers gather from age {{ g }} on and keep the robber away from age {{ b }} on.
+        {% endblocktranslate %}</li>
+        <li>{% blocktranslate trimmed with points=population.points min=population.min s=population.per_settlement c=population.per_city m=population.per_megacity %}
+          <strong>Largest population</strong>: {{ points }} points for the biggest population (a settlement counts {{ s }}, a city {{ c }},
+          a megacity {{ m }}), with at least {{ min }}. It works like the longest road. It is only played in games with settlers.
+        {% endblocktranslate %}</li>
+      </ul>
+    </section>
+
+    <section id="fog">
+      <h2>{% translate "Hidden island" %}</h2>
+      <figure class="rules-shot">
+        <img src="{% static 'img/how/fog.webp' %}" width="685" height="314" loading="lazy"
+             alt="{% translate 'A hidden island: a light line surrounds the land in sight; land seen before is behind a veil of mist.' %}">
+        <figcaption>{% translate "The light line marks what you see now; the misty land you saw before." %}</figcaption>
+      </figure>
+      <p>{% translate "The island starts covered in mist. You see the land around your buildings, roads and settlers, and it stays on your map once seen." %}</p>
+      <ul>
+        <li>{% translate "<strong>Growing sight</strong>: your settler reveals land where it stops." %}</li>
+        <li>{% translate "<strong>Explored</strong>: your settler also reveals land as it walks." %}</li>
+        <li>{% translate "<strong>Live fog</strong>: like Explored, but on land out of sight you only see other players' buildings as you last saw them." %}</li>
+        <li>{% translate "A light line surrounds your field of vision, what you see right now. Land you saw before but do not see now stays under a light veil." %}</li>
+        <li>{% translate "Numbers show by default. With hidden numbers, you only see the numbers you discover yourself: next to your buildings or where your settlers stand. The ones other players find stay hidden for you." %}</li>
+        <li>{% translate "When the game ends, the mist lifts for everyone." %}</li>
+      </ul>
+    </section>
+
+    <section id="more">
+      <h2>{% translate "More rules" %}</h2>
+      <ul>
+        <li>{% blocktranslate trimmed with n=friendly.robber.friendly_min_points %}
+          <strong>Friendly robber</strong>: the robber leaves alone anyone with fewer than {{ n }} points, and what it takes goes back to the bank.
+        {% endblocktranslate %}</li>
+        <li>{% translate "<strong>Fast and big games</strong>: Blitz rolls the dice more often; Big and Huge islands are for more players." %}</li>
+        <li>{% translate "<strong>Custom</strong>: start from any game type and change any rule. Share it as a code so your friends play the same rules." %}</li>
+      </ul>
+    </section>
+  </div>
+</div>
 {% endblock %}

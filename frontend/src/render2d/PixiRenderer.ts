@@ -47,7 +47,7 @@ const MIST_PUFF = 3.4;
  * Under Live fog what stands there is only remembered, so the veil is thicker. */
 const VEIL_PUFF = 2.2;
 const VEIL_ALPHA = 0.5;
-const VEIL_ALPHA_SEEN = 0.36;
+const VEIL_ALPHA_SEEN = 0.42;
 /** The line round the land in sight now (the field of vision). */
 const SIGHT_LINE = { width: 3, color: 0xfff3c4, alpha: 0.85 };
 

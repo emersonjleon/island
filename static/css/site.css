@@ -264,6 +264,18 @@ body.game-page { position: fixed; inset: 0; height: auto; min-height: 0; display
 
 /* How to play */
 .toc { margin: 0 0 16px; line-height: 1.8; }
+/* How to play: the classic game on the left, the variations on the right. */
+.page.page-wide { max-width: 76rem; }
+.rules-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.rules-col > section { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 16px 18px; margin: 16px 0; }
+.rules-col > section > h2:first-child { margin-top: 0; }
+.rules-col-title { margin: 8px 0 6px; padding-bottom: 6px; border-bottom: 3px solid var(--accent); }
+.rules-variants .rules-col-title { border-bottom-color: var(--accent-strong); }
+.rules-shot { margin: 8px 0 12px; }
+.rules-shot img { display: block; width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border); }
+.rules-shot figcaption { font-size: 0.88rem; color: var(--muted); margin-top: 4px; }
+@media (max-width: 900px) { .rules-columns { grid-template-columns: 1fr; gap: 8px; } }
 .rules-table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; }
 .rules-table th, .rules-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); }
 .rules-table th { font-size: 0.85rem; color: var(--muted); }
