@@ -2218,8 +2218,8 @@ msgstr "Edad del Mar (II)"
 msgid "Golden Age (III)"
 msgstr "Edad Dorada (III)"
 
-msgid "Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a hidden island, have their own column next to it."
-msgstr "Empieza por el juego clásico. Las variaciones que puedes añadir al crear una partida, como edades, colonos o isla oculta, tienen su propia columna al lado."
+msgid "Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a hidden island, have their own page."
+msgstr "Empieza por el juego clásico. Las variaciones que puedes añadir al crear una partida, como edades, colonos o isla oculta, tienen su propia página."
 
 msgid "Classic game"
 msgstr "Juego clásico"
@@ -2368,3 +2368,6 @@ msgstr "<strong>Mayor población</strong>: %(points)s puntos para quien tenga m�
 
 msgid "An award, like the Longest Road, for the player with the most settlers. Only in games where settlers stay after setup."
 msgstr "Un premio, como el Camino más largo, para quien tenga más colonos. Solo en partidas donde los colonos se quedan tras la colocación."
+
+msgid "Know the classic game? <a href=\"%(url)s\">Read about the variations</a>: ages, settlers and the hidden island."
+msgstr "¿Ya conoces el juego clásico? <a href=\"%(url)s\">Lee sobre las variaciones</a>: edades, colonos y la isla oculta."

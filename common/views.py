@@ -38,7 +38,6 @@ def how_to_play(request: HttpRequest) -> HttpResponse:
     ]
     context = {
         "s": s,
-        **_variant_rules(),
         "buildings": buildings,
         "dev_card_cost": _cost(costs.dev_card),
         "roll_seconds": s.clock.roll_interval_ms // MS_PER_SECOND,
@@ -47,9 +46,14 @@ def how_to_play(request: HttpRequest) -> HttpResponse:
     return render(request, "how_to_play.html", context)
 
 
+def how_to_play_variations(request: HttpRequest) -> HttpResponse:
+    """The second rules page: what each variation adds to the classic game."""
+    return render(request, "how_to_play_variations.html", _variant_rules())
+
+
 def _variant_rules() -> dict:
-    """Numbers for the right-hand column of the rules page (ages, settlers, hidden
-    island, friendly robber), each from the game type that introduces it."""
+    """Numbers for the variations page (ages, settlers, hidden island, friendly
+    robber), each from the game type that introduces it."""
     ages = load_preset("ages")
     a = ages.ages
     steps = []
