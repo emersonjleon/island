@@ -230,8 +230,9 @@ class CostSettings(_Group):
         {Resource.BRICK: 1, Resource.LUMBER: 1, Resource.WOOL: 1, Resource.GRAIN: 1},
         label="settings.economy.costs.settlement")
     city: ResourceMap = setting({Resource.GRAIN: 2, Resource.ORE: 3}, label="settings.economy.costs.city")
+    # Emerson (25 nov 2026): lumber, brick, 2 grain, ore and fish.
     megacity: ResourceMap = setting(
-        {Resource.GRAIN: 3, Resource.ORE: 4, Resource.BRICK: 2, Resource.WOOL: 2},
+        {Resource.LUMBER: 1, Resource.BRICK: 1, Resource.GRAIN: 2, Resource.ORE: 1, Resource.FISH: 1},
         label="settings.economy.costs.megacity")
     dev_card: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1},
                                     label="settings.economy.costs.dev_card", stage=2)

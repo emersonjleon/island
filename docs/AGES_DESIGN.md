@@ -88,7 +88,7 @@ Emerson (24 nov 2026): subir de edad cuesta uno de cada recurso de tierra más
 | Desarrollo nivel I (actual) | 1 lana, 1 grano, 1 mineral | 3 | — |
 | Desarrollo nivel II | 1 lana, 1 grano, 1 mineral, 1 pescado | 4 | — |
 | Desarrollo nivel III | 1 lana, 1 grano, 1 mineral, 2 pescado | 5 | — |
-| Megaciudad (sin cambio) | 3 grano, 4 mineral, 2 ladrillo, 2 lana | 11 | 15 s |
+| Megaciudad (25 nov 2026) | 1 madera, 1 ladrillo, 2 grano, 1 mineral, 1 pescado | 6 | 15 s |
 
 Como referencia, una ciudad cuesta 5 cartas y vale 1 punto más que un
 asentamiento. Subir a la II vale 1 punto por 6 cartas; subir a la III vale 2

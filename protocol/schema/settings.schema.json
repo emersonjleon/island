@@ -822,10 +822,11 @@
             "type": "integer"
           },
           "default": {
-            "brick": 2,
-            "grain": 3,
-            "ore": 4,
-            "wool": 2
+            "brick": 1,
+            "fish": 1,
+            "grain": 2,
+            "lumber": 1,
+            "ore": 1
           },
           "label": "settings.economy.costs.megacity",
           "propertyNames": {

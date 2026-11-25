@@ -45,7 +45,7 @@ The default preset copies the Catan base game for 3–4 players. Each value belo
 | Road | 1 brick, 1 lumber | 0 |
 | Settlement | 1 brick, 1 lumber, 1 wool, 1 grain | 1 |
 | City (upgrades a settlement) | 2 grain, 3 ore | 2 |
-| Megacity (upgrades a city) | 3 grain, 4 ore, 2 brick, 2 wool | 3 |
+| Megacity (upgrades a city) | 1 lumber, 1 brick, 2 grain, 1 ore, 1 fish (Emerson, Nov 25, 2026) | 3 |
 | Development card | 1 wool, 1 grain, 1 ore | varies |
 
 **Placement.**

@@ -28,7 +28,7 @@ from dataclasses import dataclass
 
 from engine.rules import age_state
 from engine.settings.enums import Resource
-from engine.sim.bots import CITY, ROAD, SETTLEMENT, GreedyBot, Intent, pips
+from engine.sim.bots import CITY, MEGACITY, ROAD, SETTLEMENT, GreedyBot, Intent, pips
 from engine.state import GameState
 
 __all__ = ["BotLevel", "LEVELS", "LEVEL_NAMES", "DEFAULT_LEVEL", "LevelBot", "make_level_bot"]
@@ -48,6 +48,7 @@ class BotLevel:
     max_age: int = 3          # with ages on: the last age the bot tries to reach
     age_trades: bool = True   # with ages on: trade with the bank toward an age's cost
     fishing_bonus: int = 0    # with ages on: extra spot score per fishing ground next to it
+    megacity_trades: bool = False  # trade with the bank toward a megacity when one card or two are missing
 
 
 LEVELS: dict[str, BotLevel] = {
@@ -56,7 +57,7 @@ LEVELS: dict[str, BotLevel] = {
     "medium": BotLevel("medium", think_ms=2000, mistake_pct=10, trade_pct=100,
                        variety_bonus=0, harbor_bonus=0, spend_before_seven=False),
     "hard": BotLevel("hard", think_ms=800, mistake_pct=0, trade_pct=100,
-                     variety_bonus=3, harbor_bonus=2, spend_before_seven=True),
+                     variety_bonus=3, harbor_bonus=2, spend_before_seven=True, megacity_trades=True),
 }
 LEVEL_NAMES: tuple[str, ...] = tuple(LEVELS)
 DEFAULT_LEVEL = "medium"
@@ -139,14 +140,28 @@ class LevelBot(GreedyBot):
         return state.player(self.seat).hand_count > state.settings.robber.card_limit
 
     def _spend_down(self, state: GameState) -> Intent | None:
-        """Over the robber limit with nothing to build: swap surplus towards a city or settlement."""
+        """Over the robber limit with nothing to build: swap surplus towards a megacity (with a
+        city to upgrade), a city or a settlement."""
         p = state.player(self.seat)
-        for kind in (CITY, SETTLEMENT, ROAD):
+        has_city = any(b.seat == self.seat and b.kind is CITY for b in state.buildings.values())
+        kinds = (MEGACITY, CITY, SETTLEMENT, ROAD) if has_city else (CITY, SETTLEMENT, ROAD)
+        for kind in kinds:
             if p.pieces_left.get(kind, 0) > 0:
                 t = self._trade_for(state, kind)
                 if t is not None:
                     return t
         return None
+
+    def network_builds(self, state: GameState) -> list[Intent]:
+        out = super().network_builds(state)
+        if self.level.megacity_trades and (not out or out[0]["a"] == "bank_trade"):
+            p = state.player(self.seat)
+            has_city = any(b.seat == self.seat and b.kind is CITY for b in state.buildings.values())
+            if has_city and p.pieces_left.get(MEGACITY, 0) > 0:
+                t = self._trade_for(state, MEGACITY, max_missing=2)
+                if t is not None and self._allow_trade():
+                    return [t]
+        return out
 
     def network(self, state: GameState) -> list[Intent]:
         out = [i for i in super().network(state) if i["a"] != "bank_trade" or self._allow_trade()]
