@@ -42,6 +42,7 @@ EARLY_FEATURES: frozenset[str] = frozenset({
     "settlers.start_count", "settlers.max", "settlers.per_settlement", "settlers.per_city",
     "settlers.leave_after_setup",        # WP23
     "settlers.gather", "settlers.gather_rolls", "settlers.gather_cards", "settlers.block_robber",
+    "settlers.largest_population",
     "economy.costs.settler", "settlers.builder_required=always",
     "robber.fish_ransom", "robber.friendly_min_points", "robber.stolen_to_bank",
     "robber.may_enter_fishing",                                                  # WP25
@@ -50,7 +51,7 @@ EARLY_FEATURES: frozenset[str] = frozenset({
 """Later-stage settings (``path``) and enum values (``path=value``) already available,
 as the packages implementing them land. Emptied when ``IMPLEMENTED_STAGE`` reaches their stage."""
 
-CURRENT_SCHEMA_VERSION = 1
+CURRENT_SCHEMA_VERSION = 2
 
 
 def feature_stage(path: str, stage: int, value: str | None = None) -> int:
@@ -356,6 +357,14 @@ class RobberSettings(_Group):
 
 
 # --------------------------------------------------------------------- settlers
+class LargestPopulationSettings(_Group):
+    """With settlers that stay after setup: an award, like the Longest Road, for the
+    player with the most settlers."""
+    points: int = setting(2, label="settings.settlers.largest_population.points", ge=0, le=10)
+    min: int = setting(3, label="settings.settlers.largest_population.min", ge=1, le=20)
+    """Settlers needed to claim the award."""
+
+
 class SettlerSettings(_Group):
     start_count: int = setting(1, label="settings.settlers.start_count", stage=3, ge=1, le=10)
     max: int = setting(20, label="settings.settlers.max", stage=3, ge=1, le=20)
@@ -378,6 +387,8 @@ class SettlerSettings(_Group):
         [[3], [11], [2, 12]], label="settings.settlers.gather_rolls", stage=3, min_length=1, max_length=6)
     """Numbers of the 1st, 2nd, 3rd... settler of a player (repeating)."""
     gather_cards: int = setting(1, label="settings.settlers.gather_cards", stage=3, ge=0, le=5)
+    largest_population: LargestPopulationSettings = setting(
+        label="settings.settlers.largest_population", stage=3, factory=LargestPopulationSettings)
     block_robber: bool = setting(False, label="settings.settlers.block_robber", stage=3)
     """The robber cannot move onto a hex with a settler on one of its corners."""
 
@@ -495,24 +506,16 @@ def _age_step(slot: str, cost: dict[Resource, int], time_ms: int, cities: int, p
 # Costs from the WP28 bot batches (docs/AGES_DESIGN.md, "Balance"); Emerson (23 nov
 # 2026): Age II needs a city and Age III gives 3 points. Extra production per age is a
 # setting, off by default (buildings produce as in the classic game).
+# Emerson (25 nov 2026): the Golden Age gives 2 points.
 # Emerson (24 nov 2026): advancing costs one of each land resource plus 2 fish (Age of
 # the Sea) or 3 fish (Golden Age).
 _ONE_OF_EACH = {Resource.LUMBER: 1, Resource.BRICK: 1, Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1}
 Age2Step = _age_step("age2", {**_ONE_OF_EACH, Resource.FISH: 2},
                      30000, cities=1, points=1, build_time_pct=85, extra_per_settlement=0, extra_per_city=0)
 Age3Step = _age_step("age3", {**_ONE_OF_EACH, Resource.FISH: 3},
-                     45000, cities=2, points=3, build_time_pct=70, extra_per_settlement=0, extra_per_city=0)
+                     45000, cities=2, points=2, build_time_pct=70, extra_per_settlement=0, extra_per_city=0)
 
 
-class LargestPopulationSettings(_Group):
-    """With ages on and settlers staying after setup: an award, like the Longest Road,
-    for the largest population."""
-    points: int = setting(2, label="settings.ages.largest_population.points", ge=0, le=10)
-    min: int = setting(6, label="settings.ages.largest_population.min", ge=1, le=100)
-    """Population needed to claim the award."""
-    per_settlement: int = setting(1, label="settings.ages.largest_population.per_settlement", ge=0, le=10)
-    per_city: int = setting(2, label="settings.ages.largest_population.per_city", ge=0, le=10)
-    per_megacity: int = setting(4, label="settings.ages.largest_population.per_megacity", ge=0, le=20)
 AgeStep = Age2Step | Age3Step
 
 
@@ -533,8 +536,6 @@ class AgesSettings(_Group):
     settler_guard_age: int = setting(3, label="settings.ages.settler_guard_age", ge=1, le=3)
     """With ages on, settlers only keep the robber away (``settlers.block_robber``) for players
     in this age or later."""
-    largest_population: LargestPopulationSettings = setting(
-        label="settings.ages.largest_population", factory=LargestPopulationSettings)
 
 
 # -------------------------------------------------------------------- dev cards

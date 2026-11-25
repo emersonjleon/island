@@ -2137,21 +2137,6 @@ msgstr "También las megaciudades."
 msgid "Largest Population: points"
 msgstr "Mayor población: puntos"
 
-msgid "An award, like the Longest Road, for the largest population. Only in games where settlers stay after setup."
-msgstr "Un premio, como el Camino más largo, para la mayor población. Solo en partidas donde los colonos se quedan tras la colocación."
-
-msgid "Largest Population: population needed"
-msgstr "Mayor población: población necesaria"
-
-msgid "Largest Population: population of a settlement"
-msgstr "Mayor población: población de un poblado"
-
-msgid "Largest Population: population of a city"
-msgstr "Mayor población: población de una ciudad"
-
-msgid "Largest Population: population of a megacity"
-msgstr "Mayor población: población de una megaciudad"
-
 msgid "Age of the Sea (II): extra cards per settlement on each roll"
 msgstr "Edad del Mar (II): cartas extra por poblado en cada tirada"
 
@@ -2339,9 +2324,6 @@ msgstr "Los colonos caminan más rápido por tus propios caminos."
 msgid "Settlers gather from age %(g)s on and keep the robber away from age %(b)s on."
 msgstr "Los colonos recolectan desde la edad %(g)s y alejan al ladrón desde la edad %(b)s."
 
-msgid "<strong>Largest population</strong>: %(points)s points for the biggest population (a settlement counts %(s)s, a city %(c)s, a megacity %(m)s), with at least %(min)s. It works like the longest road. It is only played in games with settlers."
-msgstr "<strong>Mayor población</strong>: %(points)s puntos para la mayor población (un poblado cuenta %(s)s, una ciudad %(c)s, una metrópolis %(m)s), con al menos %(min)s. Funciona como el camino más largo. Solo se juega en partidas con colonos."
-
 msgid "A hidden island: a light line surrounds the land in sight; land seen before is behind a veil of mist."
 msgstr "Una isla oculta: una línea clara rodea la tierra a la vista; la tierra vista antes queda tras un velo de niebla."
 
@@ -2377,3 +2359,12 @@ msgstr "<strong>Partidas rápidas y grandes</strong>: Blitz tira los dados más 
 
 msgid "<strong>Custom</strong>: start from any game type and change any rule. Share it as a code so your friends play the same rules."
 msgstr "<strong>Personalizada</strong>: parte de cualquier tipo de partida y cambia cualquier regla. Compártela como código para que tus amigos jueguen con las mismas reglas."
+
+msgid "Largest Population: settlers needed"
+msgstr "Mayor población: colonos necesarios"
+
+msgid "<strong>Largest population</strong>: %(points)s points for whoever has the most settlers (at least %(min)s). It works like the longest road: a tie keeps it where it is. It is played in every game with settlers, with or without ages."
+msgstr "<strong>Mayor población</strong>: %(points)s puntos para quien tenga más colonos (al menos %(min)s). Funciona como el camino más largo: con un empate se queda donde está. Se juega en toda partida con colonos, con o sin edades."
+
+msgid "An award, like the Longest Road, for the player with the most settlers. Only in games where settlers stay after setup."
+msgstr "Un premio, como el Camino más largo, para quien tenga más colonos. Solo en partidas donde los colonos se quedan tras la colocación."

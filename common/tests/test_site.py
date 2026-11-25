@@ -56,11 +56,11 @@ class SiteTests(TestCase):
         self.assertContains(response, "Variations")
         self.assertContains(response, "1 lumber, 1 brick, 1 wool, 1 grain, 1 ore, 2 fish")
         self.assertContains(response, "1 lumber, 1 brick, 1 wool, 1 grain, 1 ore, 3 fish")
-        self.assertContains(response, "only played in games with settlers")
+        self.assertContains(response, "whoever has the most settlers")
         self.assertContains(response, "img/how/fog.webp")
         response = self.client.get(reverse("how_to_play"), HTTP_ACCEPT_LANGUAGE="es")
         self.assertContains(response, "Variaciones")
-        self.assertContains(response, "Solo se juega en partidas con colonos")
+        self.assertContains(response, "quien tenga más colonos")
 
     def test_home_renders(self):
         response = self.client.get(reverse("home"))

@@ -191,7 +191,7 @@
           "type": "integer"
         },
         "points": {
-          "default": 3,
+          "default": 2,
           "label": "settings.ages.age3.bonus.points",
           "maximum": 10,
           "minimum": 0,
@@ -306,11 +306,6 @@
           "stage": 1,
           "title": "Fish Ransom Age",
           "type": "integer"
-        },
-        "largest_population": {
-          "$ref": "#/$defs/LargestPopulationSettings",
-          "label": "settings.ages.largest_population",
-          "stage": 1
         },
         "settler_gather_age": {
           "default": 2,
@@ -1236,48 +1231,21 @@
     },
     "LargestPopulationSettings": {
       "additionalProperties": false,
-      "description": "With ages on and settlers staying after setup: an award, like the Longest Road,\nfor the largest population.",
+      "description": "With settlers that stay after setup: an award, like the Longest Road, for the\nplayer with the most settlers.",
       "properties": {
         "min": {
-          "default": 6,
-          "description": "Population needed to claim the award.",
-          "label": "settings.ages.largest_population.min",
-          "maximum": 100,
+          "default": 3,
+          "description": "Settlers needed to claim the award.",
+          "label": "settings.settlers.largest_population.min",
+          "maximum": 20,
           "minimum": 1,
           "stage": 1,
           "title": "Min",
           "type": "integer"
         },
-        "per_city": {
-          "default": 2,
-          "label": "settings.ages.largest_population.per_city",
-          "maximum": 10,
-          "minimum": 0,
-          "stage": 1,
-          "title": "Per City",
-          "type": "integer"
-        },
-        "per_megacity": {
-          "default": 4,
-          "label": "settings.ages.largest_population.per_megacity",
-          "maximum": 20,
-          "minimum": 0,
-          "stage": 1,
-          "title": "Per Megacity",
-          "type": "integer"
-        },
-        "per_settlement": {
-          "default": 1,
-          "label": "settings.ages.largest_population.per_settlement",
-          "maximum": 10,
-          "minimum": 0,
-          "stage": 1,
-          "title": "Per Settlement",
-          "type": "integer"
-        },
         "points": {
           "default": 2,
-          "label": "settings.ages.largest_population.points",
+          "label": "settings.settlers.largest_population.points",
           "maximum": 10,
           "minimum": 0,
           "stage": 1,
@@ -1747,6 +1715,11 @@
           "default": "even_coast",
           "label": "settings.settlers.landing",
           "stage": 1
+        },
+        "largest_population": {
+          "$ref": "#/$defs/LargestPopulationSettings",
+          "label": "settings.settlers.largest_population",
+          "stage": 3
         },
         "leave_after_setup": {
           "default": true,
@@ -2239,10 +2212,10 @@
       "stage": 1
     },
     "schema_version": {
-      "default": 1,
+      "default": 2,
       "label": "settings.schema_version",
-      "maximum": 1,
-      "minimum": 1,
+      "maximum": 2,
+      "minimum": 2,
       "stage": 1,
       "title": "Schema Version",
       "type": "integer"
@@ -2287,6 +2260,7 @@
     "settlers.gather",
     "settlers.gather_cards",
     "settlers.gather_rolls",
+    "settlers.largest_population",
     "settlers.leave_after_setup",
     "settlers.max",
     "settlers.per_city",
@@ -2338,5 +2312,5 @@
       "private": 3
     }
   },
-  "x-schema-version": 1
+  "x-schema-version": 2
 }

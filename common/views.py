@@ -69,7 +69,7 @@ def _variant_rules() -> dict:
         "settlers": settlers,
         "settler_cost": _cost(settlers.economy.costs.settler),
         "gather_rolls": ", ".join(" / ".join(str(n) for n in rolls) for rolls in ss.gather_rolls),
-        "population": both.ages.largest_population,
+        "population": settlers.settlers.largest_population,
         "both": both,
         "explorer": explorer,
         "friendly": load_preset("friendly"),

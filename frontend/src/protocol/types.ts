@@ -76,6 +76,7 @@ export interface GameStateView {
   visibility?: { map: string; hidden_numbers: boolean; seen?: number[]; in_sight?: number[] };
   /** Stage 3: each player's age and research in progress (when ages are on). */
   ages?: import("../state/ages").AgesView;
+  largest_population?: import("../state/ages").PopulationView;
 }
 
 /** ``timeline``: [game ms, points] whenever the score changed; ``produced``: cards from dice. */

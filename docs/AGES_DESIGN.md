@@ -79,7 +79,7 @@ No hace falta un colono para subir de edad, tampoco en la variación Colonos
 ## Costos por defecto
 
 Emerson (24 nov 2026): subir de edad cuesta uno de cada recurso de tierra más
-2 pescados (Edad del Mar) o 3 (Edad Dorada).
+2 pescados (Edad del Mar) o 3 (Edad Dorada). La Edad III da 2 puntos (25 nov).
 
 | Qué | Costo | Cartas | Tiempo |
 | --- | --- | --- | --- |
@@ -284,10 +284,17 @@ puerto 2:1 de pescado no hizo falta para estos números.
 - Colonos (variación Colonos con edades): recogen desde la Edad II
   (`ages.settler_gather_age`) y alejan al ladrón desde la Edad III
   (`ages.settler_guard_age`).
-- Premio **Mayor población** (solo con edades y colonos que se quedan tras la colocación): 2 puntos para quien tenga la mayor
-  población (poblado 1, ciudad 2, megaciudad 4), con un mínimo de 6; funciona como
-  el Camino más largo (`ages.largest_population`).
 - Metas: Edades 14 puntos, Grande con edades 17.
+
+### Cambios de Emerson (24 y 25 nov 2026)
+
+- Subir de edad cuesta uno de cada recurso de tierra más 2 pescados (Edad del Mar)
+  o 3 (Edad Dorada).
+- La Edad III vuelve a dar 2 puntos.
+- Premio **Mayor población**: 2 puntos para quien tenga **más colonos** (mínimo 3),
+  en toda partida con colonos que se quedan tras la colocación, con o sin edades;
+  funciona como el Camino más largo (`settlers.largest_population`, antes
+  `ages.largest_population`; la migración de ajustes v1 → v2 mueve los puntos).
 
 Con esos valores, partidas de bots: Edades dura unas 87 tiradas (78 en Clásica)
 y el lado de las edades gana el 53 %; Grande con edades dura unas 100 tiradas (92

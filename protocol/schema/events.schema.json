@@ -704,7 +704,7 @@
     },
     "LargestPopulation": {
       "additionalProperties": false,
-      "description": "Populations or the Largest Population holder changed (ages; ``seat`` None: nobody).",
+      "description": "Settler counts or the Largest Population holder changed (settlers that stay;\n``population``: settlers per seat; ``seat`` None: nobody).",
       "properties": {
         "at": {
           "title": "At",

@@ -45,7 +45,7 @@ export function ruleParams(t: TFunction, settings: Record<string, unknown>): Rec
     limit: num(settings, "robber", "card_limit") ?? 7,
     ratio: num(settings, "economy", "trade", "bank_ratio") ?? 4,
     age2: formatRes(t, ageCost(settings, "age2")), age3: formatRes(t, ageCost(settings, "age3")),
-    population: num(settings, "ages", "largest_population", "points") ?? 2,
+    population: num(settings, "settlers", "largest_population", "points") ?? 2,
   };
 }
 
@@ -63,7 +63,7 @@ export function variantHelpKeys(settings: Record<string, unknown>): string[] {
   const keys: string[] = [];
   if (ages) keys.push("ages");
   if (settlers) keys.push("settlers");
-  if (ages && settlers) keys.push("population");
+  if (settlers) keys.push("population");
   if (vis["map"] && vis["map"] !== "open") keys.push("fog");
   if (vis["hidden_numbers"] === true) keys.push("numbers");
   return keys;

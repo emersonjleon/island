@@ -269,7 +269,7 @@
     "v": {
       "ages": "Edades: avanza por tu cuenta a la Edad del Mar ({{age2}}) y a la Edad Dorada ({{age3}}) para ganar puntos, construir más rápido y más. El botón de la edad está debajo de los de construir.",
       "settlers": "Los colonos se quedan toda la partida: cada construcción necesita a uno de tus colonos en el lugar. Compra más con el botón Colono; quietos, recolectan con su número.",
-      "population": "Mayor población: {{population}} puntos para la mayor población, como el camino más largo.",
+      "population": "Mayor población: {{population}} puntos para quien tenga más colonos, como el camino más largo.",
       "fog": "Isla oculta: una línea clara rodea lo que ves ahora; la tierra que viste antes queda bajo un velo suave.",
       "numbers": "Números ocultos: solo ves los números que tú descubres, junto a tus edificios o bajo tus colonos."
     }
@@ -285,7 +285,9 @@
     "open": "Precios",
     "title": "Precios",
     "close": "Cerrar",
-    "help": "Las filas resaltadas son lo que puedes comprar ahora."
+    "help": "Las filas resaltadas son lo que puedes comprar ahora.",
+    "megacity": "Metrópolis",
+    "age": "Edad {{n}}"
   },
   "age": {
     "button": "Edad {{n}}",

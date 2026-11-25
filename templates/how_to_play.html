@@ -232,15 +232,15 @@
         <li>{% translate "The robber cannot move onto a hex with one of your settlers on a corner." %}</li>
         {% endif %}
         <li>{% translate "Settlers walk faster on your own roads." %}</li>
+        <li>{% blocktranslate trimmed with points=population.points min=population.min %}
+          <strong>Largest population</strong>: {{ points }} points for whoever has the most settlers (at least {{ min }}).
+          It works like the longest road: a tie keeps it where it is. It is played in every game with settlers, with or without ages.
+        {% endblocktranslate %}</li>
       </ul>
       <h3>{% translate "Settlers with ages" %}</h3>
       <ul>
         <li>{% blocktranslate trimmed with g=both.ages.settler_gather_age b=both.ages.settler_guard_age %}
           Settlers gather from age {{ g }} on and keep the robber away from age {{ b }} on.
-        {% endblocktranslate %}</li>
-        <li>{% blocktranslate trimmed with points=population.points min=population.min s=population.per_settlement c=population.per_city m=population.per_megacity %}
-          <strong>Largest population</strong>: {{ points }} points for the biggest population (a settlement counts {{ s }}, a city {{ c }},
-          a megacity {{ m }}), with at least {{ min }}. It works like the longest road. It is only played in games with settlers.
         {% endblocktranslate %}</li>
       </ul>
     </section>

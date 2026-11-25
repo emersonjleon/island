@@ -156,8 +156,8 @@ INFO: dict[str, Any] = {
     "hidden_island": lambda s: s.visibility.map.value != "open",
     "longest_road_points": lambda s: s.victory.longest_road.points,
     "largest_army_points": lambda s: s.victory.largest_army.points,
-    "largest_population_points": lambda s: (s.ages.largest_population.points
-                                          if s.ages.enabled and not s.settlers.leave_after_setup else 0),
+    "largest_population_points": lambda s: (s.settlers.largest_population.points
+                                          if not s.settlers.leave_after_setup else 0),
     "fish_ransom": lambda s: s.robber.fish_ransom,
     "friendly_robber": lambda s: s.robber.friendly_min_points,
     "robber_fishing": lambda s: s.robber.may_enter_fishing,
@@ -167,7 +167,7 @@ INFO: dict[str, Any] = {
 INFO_PATHS = {
     "ages": "ages.enabled", "settlers_stay": "settlers.leave_after_setup", "hidden_island": "visibility.map",
     "longest_road_points": "victory.longest_road.points", "largest_army_points": "victory.largest_army.points",
-    "largest_population_points": "ages.largest_population.points", "fish_ransom": "robber.fish_ransom",
+    "largest_population_points": "settlers.largest_population.points", "fish_ransom": "robber.fish_ransom",
     "friendly_robber": "robber.friendly_min_points", "robber_fishing": "robber.may_enter_fishing",
 }
 

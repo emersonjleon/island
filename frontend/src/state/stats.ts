@@ -36,8 +36,8 @@ export function pointsBreakdown(settings: Settings, state: GameStateView, seat: 
   if (state.dev_cards?.army === seat) {
     parts.push({ source: "largest_army", count: 1, points: num(settings, ["victory", "largest_army", "points"], 2) });
   }
-  if (state.ages?.largest_population?.holder === seat) {
-    parts.push({ source: "largest_population", count: 1, points: num(settings, ["ages", "largest_population", "points"], 2) });
+  if (state.largest_population?.holder === seat) {
+    parts.push({ source: "largest_population", count: 1, points: num(settings, ["settlers", "largest_population", "points"], 2) });
   }
   const reached = Object.keys(state.ages?.players?.[String(seat)]?.reached ?? {});
   if (reached.length) {

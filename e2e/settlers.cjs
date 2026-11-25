@@ -61,7 +61,7 @@ async function signUp(page, name) {
     await page.click(".prices-open");
     const prices = await page.$$eval(".price-table th", (ths) => ths.length);
     await page.screenshot({ path: `${OUT}/e2e-settlers-prices.png` });
-    if (prices !== 5) throw new Error(`price list has ${prices} rows, expected 5`);
+    if (prices !== 6) throw new Error(`price list has ${prices} rows, expected 6 (with the megacity and the settler)`);
     await page.keyboard.press("Escape");
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.click("canvas", { position: { x: 1200, y: 600 } }).catch(() => {});

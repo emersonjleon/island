@@ -435,7 +435,8 @@ class AgeReached(Event):
 
 
 class LargestPopulation(Event):
-    """Populations or the Largest Population holder changed (ages; ``seat`` None: nobody)."""
+    """Settler counts or the Largest Population holder changed (settlers that stay;
+    ``population``: settlers per seat; ``seat`` None: nobody)."""
     k: Literal["largest_population"] = "largest_population"
     seat: int | None
     previous: int | None

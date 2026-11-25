@@ -1978,21 +1978,6 @@ msgstr "超级城市也算。"
 msgid "Largest Population: points"
 msgstr "最多人口：分数"
 
-msgid "An award, like the Longest Road, for the largest population. Only in games where settlers stay after setup."
-msgstr "像最长道路一样，奖励人口最多的玩家。仅在开拓者于初始布置后留下的对局中生效。"
-
-msgid "Largest Population: population needed"
-msgstr "最多人口：所需人口"
-
-msgid "Largest Population: population of a settlement"
-msgstr "最多人口：村庄的人口"
-
-msgid "Largest Population: population of a city"
-msgstr "最多人口：城市的人口"
-
-msgid "Largest Population: population of a megacity"
-msgstr "最多人口：超级城市的人口"
-
 msgid "Age of the Sea (II): extra cards per settlement on each roll"
 msgstr "海洋时代（II）：每次掷骰每个村庄额外的牌"
 
@@ -2178,9 +2163,6 @@ msgstr "开拓者在你自己的道路上走得更快。"
 msgid "Settlers gather from age %(g)s on and keep the robber away from age %(b)s on."
 msgstr "开拓者从时代 %(g)s 起采集，从时代 %(b)s 起驱离强盗。"
 
-msgid "<strong>Largest population</strong>: %(points)s points for the biggest population (a settlement counts %(s)s, a city %(c)s, a megacity %(m)s), with at least %(min)s. It works like the longest road. It is only played in games with settlers."
-msgstr "<strong>最多人口</strong>：人口最多者得 %(points)s 分（村庄算 %(s)s，城市 %(c)s，大都市 %(m)s），至少需要 %(min)s。规则同最长道路。仅在有开拓者的对局中生效。"
-
 msgid "A hidden island: a light line surrounds the land in sight; land seen before is behind a veil of mist."
 msgstr "隐藏岛屿：一条浅色线围住视野内的土地；之前见过的土地蒙着一层薄雾。"
 
@@ -2216,3 +2198,12 @@ msgstr "<strong>快速与大型对局</strong>：闪电战掷骰更频繁；大�
 
 msgid "<strong>Custom</strong>: start from any game type and change any rule. Share it as a code so your friends play the same rules."
 msgstr "<strong>自定义</strong>：从任意对局类型出发并修改任何规则。以代码分享，让朋友用同样的规则游戏。"
+
+msgid "Largest Population: settlers needed"
+msgstr "最多人口：所需开拓者数"
+
+msgid "<strong>Largest population</strong>: %(points)s points for whoever has the most settlers (at least %(min)s). It works like the longest road: a tie keeps it where it is. It is played in every game with settlers, with or without ages."
+msgstr "<strong>最多人口</strong>：开拓者最多者得 %(points)s 分（至少 %(min)s 名）。规则同最长道路：平局时保持不变。所有有开拓者的对局都适用，无论是否开启时代。"
+
+msgid "An award, like the Longest Road, for the player with the most settlers. Only in games where settlers stay after setup."
+msgstr "像最长道路一样，奖励开拓者最多的玩家。仅在开拓者于初始布置后留下的对局中生效。"

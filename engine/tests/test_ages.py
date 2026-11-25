@@ -91,7 +91,7 @@ class AdvanceTest(unittest.TestCase):
         game.apply(s, 0, {"a": "advance_age"}, 0)
         game.advance(s, 45000)
         self.assertEqual(age_state.age_of(s, 0), 3)
-        self.assertEqual(s.players[0].points, 3)
+        self.assertEqual(s.players[0].points, 2)
         self.assertEqual(code(s, 0, {"a": "advance_age"}, 45000), ("age.max", {"age": 3}))
 
     def test_zero_time_reaches_at_once(self) -> None:
@@ -141,39 +141,6 @@ def place_built(state: GameState, seat: int, vertex: int, kind: BuildKind) -> li
     """Put a building down and run the "built" listeners (points, awards)."""
     place(state, seat, vertex, kind)
     return game.emit(state, game.SIG_BUILT, 0, seat=seat, kind=kind, target=vertex, setup=False, construction=0)
-
-
-class LargestPopulationTest(unittest.TestCase):
-    def test_no_award_without_settlers(self) -> None:
-        s = new_state({"ages": {"largest_population": {"min": 1}}})
-        self.assertTrue(s.settings.settlers.leave_after_setup)
-        events = place_built(s, 0, 5, BuildKind.CITY)
-        self.assertIsNone(largest_population.holder(s))
-        self.assertNotIn(LargestPopulation, kinds(events))
-
-    def test_award_moves_to_a_strictly_larger_population(self) -> None:
-        s = new_state({"ages": {"largest_population": {"min": 3}}, "settlers": {"leave_after_setup": False}})
-        place_built(s, 0, 5, BuildKind.CITY)                  # population 2
-        self.assertIsNone(largest_population.holder(s))
-        before = s.players[0].points
-        events = place_built(s, 0, 30, BuildKind.SETTLEMENT)  # 3
-        self.assertEqual(largest_population.holder(s), 0)
-        self.assertEqual(s.players[0].points, before + 1 + 2)
-        self.assertIn(LargestPopulation, kinds(events))
-        place_built(s, 1, 40, BuildKind.CITY)
-        place_built(s, 1, 45, BuildKind.SETTLEMENT)           # 3: a tie keeps the holder
-        self.assertEqual(largest_population.holder(s), 0)
-        p0, p1 = s.players[0].points, s.players[1].points
-        place_built(s, 1, 49, BuildKind.SETTLEMENT)           # 4
-        self.assertEqual(largest_population.holder(s), 1)
-        self.assertEqual((s.players[0].points, s.players[1].points), (p0 - 2, p1 + 1 + 2))
-        self.assertEqual(ages.state_view(s, 2)["largest_population"]["holder"], 1)
-
-    def test_only_with_ages(self) -> None:
-        s = make_state(stage=3, clock=False)
-        for v in (5, 30, 45):
-            place_built(s, 0, v, BuildKind.CITY)
-        self.assertIsNone(largest_population.holder(s))
 
 
 class AgeGatesTest(unittest.TestCase):

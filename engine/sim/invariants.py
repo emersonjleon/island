@@ -147,7 +147,7 @@ def _points(state: GameState) -> list[str]:
         pts += devcards.vp_points(state, p.seat)
         pts += sum(s.bonus.points for s in age_state.reached_steps(state, p.seat))
         if largest_population.holder(state) == p.seat:
-            pts += state.settings.ages.largest_population.points
+            pts += state.settings.settlers.largest_population.points
         if pts != p.points:
             out.append(f"points.{p.seat}: cached {p.points} != {pts}")
     if state.phase == "finished":
