@@ -17,6 +17,7 @@
   "you": "你",
   "hand": "你的手牌",
   "build": {
+    "locked": "需要时代 {{n}}",
     "road": "道路",
     "settlement": "村庄",
     "city": "城市",

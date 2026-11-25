@@ -22,7 +22,7 @@ import { KeySettings } from "./KeySettings";
 import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
-import { advanceBlock, ageStep, agePlayer, agesOn, populationHolder } from "../state/ages";
+import { advanceBlock, ageStep, agePlayer, agesOn, populationHolder, unlockAge } from "../state/ages";
 import { buySettlerBlock, gatherNumbers, settlerLimit, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
@@ -507,12 +507,16 @@ function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade,
         {buildButtons(store.settings, (store.state?.buildings ?? []).filter((b) => b.seat === store.seat && b.kind === "city").length).map(({ kind, action }) => {
           const cost = costOf(store.settings, kind);
           const free = kind === "road" && freeRoads > 0;       // road building card
-          const ok = free || canAfford(hand, cost);
+          const needs = unlockAge(store.settings, kind);
+          const locked = needs > agePlayer(store.state, store.seat).age;   // ages: e.g. the megacity waits for age III
+          const ok = !locked && (free || canAfford(hand, cost));
+          const lockText = t("hud:build.locked", { n: ageName(needs) });
           return (
-            <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}`} onClick={() => controls.action(action)}
-                    aria-pressed={mode?.kind === kind} title={free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
-              <span class="build-name">{t(`hud:build.${kind}`)}</span>
-              {free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
+            <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}${locked ? " locked" : ""}`} disabled={locked}
+                    onClick={() => controls.action(action)} aria-pressed={mode?.kind === kind}
+                    title={locked ? `${lockText} · ${t("hud:build.cost", { res: formatRes(t, cost) })}` : free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
+              <span class="build-name">{locked && "🔒 "}{t(`hud:build.${kind}`)}</span>
+              {locked ? <span class="free-pill">{lockText}</span> : free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
               {free && <span class="badge count-badge" title={t("hud:build.free")}>{freeRoads}</span>}
             </button>
           );

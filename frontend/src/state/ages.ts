@@ -24,6 +24,14 @@ export function agesOn(settings: Settings): boolean {
   return group(settings)["enabled"] === true;
 }
 
+/** The age a construction needs with ages on (``ages.unlock``; missing kinds: age I), else 1. */
+export function unlockAge(settings: Settings, kind: string): number {
+  if (!agesOn(settings)) return 1;
+  const unlock = group(settings)["unlock"] as Record<string, unknown> | undefined;
+  const age = unlock?.[kind];
+  return typeof age === "number" ? age : 1;
+}
+
 /** The settings of advancing to ``age`` (2 or 3): cost, needed cities and points, time. */
 export function ageStep(settings: Settings, age: number): { cost: ResMap; cities: number; points: number; timeMs: number } | null {
   const s = group(settings)[`age${age}`];

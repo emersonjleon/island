@@ -17,6 +17,7 @@
   "you": "You",
   "hand": "Your hand",
   "build": {
+    "locked": "Requires Age {{n}}",
     "road": "Road",
     "settlement": "Settlement",
     "city": "City",

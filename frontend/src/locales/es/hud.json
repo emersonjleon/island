@@ -17,6 +17,7 @@
   "you": "Tú",
   "hand": "Tu mano",
   "build": {
+    "locked": "Requiere Edad {{n}}",
     "road": "Camino",
     "settlement": "Poblado",
     "city": "Ciudad",

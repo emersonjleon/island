@@ -9,3 +9,14 @@ describe("build buttons", () => {
     expect(kinds({ pieces: { megacities: 0 } }, 2)).toEqual(["road", "settlement", "city"]);
   });
 });
+
+describe("age locks", () => {
+  it("reads the age each construction needs only when ages are on", async () => {
+    const { unlockAge } = await import("../state/ages");
+    const ages = { ages: { enabled: true, unlock: { road: 1, settlement: 1, city: 1, megacity: 3 } } };
+    expect(unlockAge(ages, "megacity")).toBe(3);
+    expect(unlockAge(ages, "city")).toBe(1);
+    expect(unlockAge({ ages: { enabled: false, unlock: { megacity: 3 } } }, "megacity")).toBe(1);
+    expect(unlockAge({}, "megacity")).toBe(1);
+  });
+});
