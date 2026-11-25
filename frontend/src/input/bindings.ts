@@ -4,7 +4,7 @@
 export const ACTIONS = [
   "move_up", "move_down", "move_left", "move_right",
   "select_next", "select_1", "select_2", "select_3",
-  "build_road", "build_settlement", "build_city", "confirm", "cancel",
+  "build_road", "build_settlement", "build_city", "build_megacity", "confirm", "cancel",
   "camera_up", "camera_down", "camera_left", "camera_right",
   "zoom_in", "zoom_out", "center_selected",
   "buy_dev_card", "open_trade", "buy_settler",
@@ -25,6 +25,7 @@ export const DEFAULT_BINDINGS: Bindings = {
   build_road: ["KeyR"],
   build_settlement: ["KeyE"],
   build_city: ["KeyC"],
+  build_megacity: ["KeyM"],
   confirm: ["Enter", "NumpadEnter"],
   cancel: ["Escape"],
   camera_up: ["Shift+KeyW", "Shift+ArrowUp"],

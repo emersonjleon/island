@@ -138,7 +138,7 @@ Every game uses settlers to build the first two settlements. In the Settlers var
 | --- | --- | --- |
 | Move selected settler | W A S D or arrow keys | Right-click a spot to walk there |
 | Select a settler | Tab cycles; 1–3 picks directly | Left-click it; drag a box to select several |
-| Build road / settlement / city | R / E / C, then confirm with Enter | Right-click the corner or edge for a build menu |
+| Build road / settlement / city / megacity | R / E / C / M, then confirm with Enter | Right-click the corner or edge for a build menu |
 | Buy development card | V | Card button in the hand panel |
 | Open trade board | T | Trade button |
 | Move the camera | Hold Shift with W A S D | Drag with the middle button; push to the screen edge |

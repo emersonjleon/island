@@ -17,11 +17,13 @@
   "you": "你",
   "hand": "你的手牌",
   "build": {
+    "locked": "需要时代 {{n}}",
     "road": "道路",
     "settlement": "村庄",
     "city": "城市",
     "cost": "花费 {{res}}",
-    "free": "免费"
+    "free": "免费",
+    "megacity": "大都市"
   },
   "trade": {
     "open": "交易",
@@ -138,7 +140,8 @@
     "center_selected": "以拓荒者为中心",
     "buy_dev_card": "购买发展卡",
     "open_trade": "打开交易",
-    "buy_settler": "购买拓荒者"
+    "buy_settler": "购买拓荒者",
+    "build_megacity": "建造大都市"
   },
   "spectator": "你正在观看这局游戏",
   "youObject": "你",
@@ -262,7 +265,7 @@
     "trade": "与银行以 {{ratio}}:1 交易，在你有村庄的港口可以 3:1 或 2:1 交易。玩家之间在交易板上交易：发布报价，任何人都可以接受。",
     "cards": "发展卡花费 {{card}}：骑士可以移动强盗并偷取资源，其他卡提供道路、资源或分数。",
     "controls": "操作",
-    "keys": "WASD 或方向键走动 · 右键：走动或建造 · R 道路 · E 村庄 · C 城市 · T 交易 · Shift+WASD 镜头。",
+    "keys": "WASD 或方向键走动 · 右键：走动或建造 · R 道路 · E 村庄 · C 城市 · M 大都市 · T 交易 · Shift+WASD 镜头。",
     "touch": "轻触地图走动或建造 · 拖动移动地图 · 双指缩放 · 下方按钮用于建造和交易。",
     "full": "完整规则",
     "variants": "本局规则",

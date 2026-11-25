@@ -17,11 +17,13 @@
   "you": "You",
   "hand": "Your hand",
   "build": {
+    "locked": "Requires Age {{n}}",
     "road": "Road",
     "settlement": "Settlement",
     "city": "City",
     "cost": "Costs {{res}}",
-    "free": "Free"
+    "free": "Free",
+    "megacity": "Megacity"
   },
   "trade": {
     "open": "Trade",
@@ -138,7 +140,8 @@
     "center_selected": "Centre on settler",
     "buy_dev_card": "Buy development",
     "open_trade": "Open trade",
-    "buy_settler": "Buy settler"
+    "buy_settler": "Buy settler",
+    "build_megacity": "Build megacity"
   },
   "spectator": "You are watching this game",
   "youObject": "you",
@@ -262,7 +265,7 @@
     "trade": "Trade with the bank at {{ratio}}:1, or 3:1 and 2:1 at harbors where you have a settlement. Players trade on the board: post an offer and anyone can take it.",
     "cards": "Developments cost {{card}}: knights move the robber and steal, others give roads, resources or points.",
     "controls": "Controls",
-    "keys": "WASD or arrows walk · right-click: walk or build · R road · E settlement · C city · T trade · Shift+WASD camera.",
+    "keys": "WASD or arrows walk · right-click: walk or build · R road · E settlement · C city · M megacity · T trade · Shift+WASD camera.",
     "touch": "Tap the map to walk or build · drag to move the map · pinch to zoom · buttons below build and trade.",
     "full": "Full rules",
     "variants": "In this game",

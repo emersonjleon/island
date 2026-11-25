@@ -18,7 +18,7 @@ export interface Overlays {
   focusVertex?: number | null;
   focusEdge?: number | null;
   /** What the focused vertex would become, drawn there as a see-through preview. */
-  focusKind?: "settlement" | "city";
+  focusKind?: "settlement" | "city" | "megacity";
   /** Colour name of the player choosing (candidates are drawn in it). */
   colour?: string;
   /** Robber mode (knight card): hexes it may go to, and the one about to be chosen. */

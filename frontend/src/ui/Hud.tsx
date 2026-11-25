@@ -22,7 +22,7 @@ import { KeySettings } from "./KeySettings";
 import { PricesDialog } from "./Prices";
 import { ResignDialog, StatsDialog, StatsPanel } from "./Stats";
 import { othersOffers, playerTradesOn } from "../state/tradeboard";
-import { advanceBlock, ageStep, agePlayer, agesOn, populationHolder } from "../state/ages";
+import { advanceBlock, ageStep, agePlayer, agesOn, populationHolder, unlockAge } from "../state/ages";
 import { buySettlerBlock, gatherNumbers, settlerLimit, settlersStay } from "../state/settlers";
 import { TradeBoard } from "./TradeBoard";
 import {
@@ -404,11 +404,20 @@ function Log({ t, lines }: { t: TFunction; lines: LogLine[] }) {
 }
 
 // ------------------------------------------------------------------ hand + build
-const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Action }[] = [
+const BUILDS: { kind: BuildKind; action: Action }[] = [
   { kind: "road", action: "build_road" },
   { kind: "settlement", action: "build_settlement" },
   { kind: "city", action: "build_city" },
 ];
+const MEGACITY_BUILD: { kind: BuildKind; action: Action } = { kind: "megacity", action: "build_megacity" };
+
+/** The build buttons: the megacity joins once the player has a city to upgrade (and the
+ * game has megacities), so the bar stays short at the start. */
+export function buildButtons(settings: Record<string, unknown>, ownCities: number): { kind: BuildKind; action: Action }[] {
+  const pieces = settings["pieces"] as Record<string, unknown> | undefined;
+  const megacities = typeof pieces?.["megacities"] === "number" ? (pieces["megacities"] as number) : 0;
+  return megacities > 0 && ownCities > 0 ? [...BUILDS, MEGACITY_BUILD] : BUILDS;
+}
 
 /** Buying a settler (settlers variation): cost, how many you have, the next one's numbers. */
 function SettlerButton({ store, t, send }: Pick<HudProps, "store" | "t" | "send">) {
@@ -495,15 +504,19 @@ function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade,
         ))}
       </div>
       <div class="actions">
-        {BUILDS.map(({ kind, action }) => {
+        {buildButtons(store.settings, (store.state?.buildings ?? []).filter((b) => b.seat === store.seat && b.kind === "city").length).map(({ kind, action }) => {
           const cost = costOf(store.settings, kind);
           const free = kind === "road" && freeRoads > 0;       // road building card
-          const ok = free || canAfford(hand, cost);
+          const needs = unlockAge(store.settings, kind);
+          const locked = needs > agePlayer(store.state, store.seat).age;   // ages: e.g. the megacity waits for age III
+          const ok = !locked && (free || canAfford(hand, cost));
+          const lockText = t("hud:build.locked", { n: ageName(needs) });
           return (
-            <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}`} onClick={() => controls.action(action)}
-                    aria-pressed={mode?.kind === kind} title={free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
-              <span class="build-name">{t(`hud:build.${kind}`)}</span>
-              {free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
+            <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}${locked ? " locked" : ""}`} disabled={locked}
+                    onClick={() => controls.action(action)} aria-pressed={mode?.kind === kind}
+                    title={locked ? `${lockText} · ${t("hud:build.cost", { res: formatRes(t, cost) })}` : free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
+              <span class="build-name">{locked && "🔒 "}{t(`hud:build.${kind}`)}</span>
+              {locked ? <span class="free-pill">{lockText}</span> : free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
               {free && <span class="badge count-badge" title={t("hud:build.free")}>{freeRoads}</span>}
             </button>
           );

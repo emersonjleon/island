@@ -147,6 +147,15 @@ describe("InputController", () => {
     expect(sent).toEqual([{ a: "build", kind: "city", vertex: 3 }]);
   });
 
+  it("builds a megacity on a highlighted city with M and Enter", () => {
+    const { input, sent, store } = setup("running");
+    store.state!.players[0]!.setup.done = true;
+    store.state!.buildable = { roads: [], settlements: [], cities: [], megacities: [3] };
+    input.action("build_megacity");
+    input.action("confirm");
+    expect(sent).toEqual([{ a: "build", kind: "megacity", vertex: 3 }]);
+  });
+
   it("build mode follows candidates that appear while it is open", () => {
     const { input, store, start } = setup();
     const modes: (number | null)[] = [];
