@@ -15,11 +15,18 @@ here and not in ``GameSettings``.
   trades for what it is missing.
 * **hard** acts quickly, values resources it does not produce yet and harbors
   it can use, and spends cards before a seven can rob them.
+
+With ages on (docs/AGES_DESIGN.md, "Bots"): **easy** advances to the Age of the Sea
+when it can pay, never trades for it and stops there; **medium** treats each age as
+one more build and trades for what it lacks; **hard** does the same, faster.
+``fishing_bonus`` (valuing fishing grounds at setup) is off: in bot batches it made
+the hard bot lose more often to the medium one.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 
+from engine.rules import age_state
 from engine.settings.enums import Resource
 from engine.sim.bots import CITY, ROAD, SETTLEMENT, GreedyBot, Intent, pips
 from engine.state import GameState
@@ -38,11 +45,14 @@ class BotLevel:
     variety_bonus: int     # extra score per resource a spot adds to the bot's production
     harbor_bonus: int      # extra score for a harbor the bot could use
     spend_before_seven: bool  # trade cards away while holding more than the robber limit
+    max_age: int = 3          # with ages on: the last age the bot tries to reach
+    age_trades: bool = True   # with ages on: trade with the bank toward an age's cost
+    fishing_bonus: int = 0    # with ages on: extra spot score per fishing ground next to it
 
 
 LEVELS: dict[str, BotLevel] = {
     "easy": BotLevel("easy", think_ms=4000, mistake_pct=50, trade_pct=25,
-                     variety_bonus=0, harbor_bonus=0, spend_before_seven=False),
+                     variety_bonus=0, harbor_bonus=0, spend_before_seven=False, max_age=2, age_trades=False),
     "medium": BotLevel("medium", think_ms=2000, mistake_pct=10, trade_pct=100,
                        variety_bonus=0, harbor_bonus=0, spend_before_seven=False),
     "hard": BotLevel("hard", think_ms=800, mistake_pct=0, trade_pct=100,
@@ -80,12 +90,22 @@ class LevelBot(GreedyBot):
             if r not in produced:
                 new.add(r)
         score += self.level.variety_bonus * len(new)
+        if self.level.fishing_bonus and age_state.enabled(state):
+            score += self.level.fishing_bonus * sum(1 for h in gb.board.vertex_hexes[v] if h in gb.fishing)
         harbor = gb.vertex_harbor[v]
         if self.level.harbor_bonus and harbor is not None and state.settings.trading.harbor_trade:
             res = gb.harbors[harbor].resource
             if res is None or res in produced | new:
                 score += self.level.harbor_bonus
         return score
+
+    def _age_step(self, state: GameState) -> Intent | None:
+        if age_state.age_of(state, self.seat) >= self.level.max_age:
+            return None
+        step = super()._age_step(state)
+        if step is not None and step["a"] == "bank_trade" and not (self.level.age_trades and self._allow_trade()):
+            return None
+        return step
 
     def _blunder(self) -> bool:
         return self.level.mistake_pct > 0 and self.rng.randbelow(PERCENT) < self.level.mistake_pct

@@ -25,10 +25,10 @@ class Paced:
         return self.bot.decide(state)
 
 
-def play(levels: list[str], seed: int, check: bool = False):  # type: ignore[no-untyped-def]
+def play(levels: list[str], seed: int, check: bool = False, settings=None):  # type: ignore[no-untyped-def]
     bots = [make_level_bot(lv, i, seed * 10 + i) for i, lv in enumerate(levels)]
     driver = BotDriver(bots)
-    sim = Simulation(make_settings(), make_seats(len(levels)), seed, [Paced(driver, b) for b in bots],
+    sim = Simulation(settings or make_settings(), make_seats(len(levels)), seed, [Paced(driver, b) for b in bots],
                      think_ms=TICK_MS, check=check)
     return sim.run(MAX_MS)
 
@@ -85,6 +85,21 @@ class LevelGamesTest(unittest.TestCase):
         self.assertGreaterEqual(hard_easy["hard"], 14, hard_easy)
         hard_medium = wins(["medium", "hard"], range(30))
         self.assertGreater(hard_medium["hard"], hard_medium["medium"], hard_medium)
+
+
+class AgesLevelsTest(unittest.TestCase):
+    def test_levels_play_the_ages(self) -> None:
+        from engine.rules import age_state
+        from engine.settings import load_preset
+        settings = load_preset("ages", {}, implemented_stage=3)
+        reached = {level: 1 for level in LEVEL_NAMES}
+        for seed in (3, 4):
+            r = play(list(LEVEL_NAMES), seed, check=True, settings=settings)
+            self.assertTrue(r.finished)
+            for seat, level in enumerate(LEVEL_NAMES):
+                reached[level] = max(reached[level], age_state.age_of(r.state, seat))
+        self.assertLessEqual(reached["easy"], LEVELS["easy"].max_age)
+        self.assertGreaterEqual(max(reached["medium"], reached["hard"]), 2, reached)
 
 
 if __name__ == "__main__":

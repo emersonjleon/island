@@ -397,6 +397,14 @@ de pensar:
 Esto se agrega como campos del perfil de cada nivel en `engine/ai/levels.py`
 (`age_eagerness`, `fish_bonus`), que son parámetros del bot y no reglas del juego.
 
+*Hecho (24 nov 2026):* campos `max_age`, `age_trades` y `fishing_bonus` en
+`BotLevel`. Fácil sube solo a la Edad del Mar y sin comerciar por ella; medio y
+difícil suben hasta la Dorada y comercian por lo que les falta. Valorar las zonas
+de pesca al colocar (`fishing_bonus`) empeoró al difícil en las simulaciones (ganó
+12 de 30 contra el medio con 3 puntos por zona, 15 de 30 sin ellos), así que queda
+en 0. En el preset Edades, mesa de 2: difícil gana 55 de 90 contra medio y 14 de 20
+contra fácil; medio gana 15 de 20 contra fácil.
+
 ## Ajustes nuevos (resumen)
 
 Un grupo nuevo `ages` en `GameSettings`, con edades en ranuras fijas (`age2`,
