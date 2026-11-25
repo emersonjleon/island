@@ -24,7 +24,7 @@ def board(**kwargs: Any) -> GameSettings:
 class DefaultsTest(unittest.TestCase):
     def test_defaults_load(self) -> None:
         s = GameSettings()
-        self.assertEqual(s.schema_version, 1)
+        self.assertEqual(s.schema_version, 2)
         self.assertEqual(s.preset, "classic")
         self.assertEqual((s.players.min, s.players.max), (2, 4))
         self.assertEqual(s.board.land_hexes, 19)
@@ -348,7 +348,7 @@ class PresetTest(unittest.TestCase):
 
 class MigrationTest(unittest.TestCase):
     def test_current_version_passthrough(self) -> None:
-        raw = {"schema_version": 1, "victory": {"target": 8}}
+        raw = {"schema_version": 2, "victory": {"target": 8}}
         self.assertEqual(migrate(raw), raw)
         self.assertEqual(migrate({}), {})
 
@@ -359,16 +359,25 @@ class MigrationTest(unittest.TestCase):
             return data
 
         raw = {"schema_version": 0, "roll_seconds": 30}
-        out = migrate(raw, migrations={0: v0_to_v1})
+        out = migrate(raw, migrations={0: v0_to_v1}, target=1)
         self.assertEqual(out, {"schema_version": 1, "clock": {"roll_interval_ms": 30000}})
         self.assertEqual(raw["schema_version"], 0)  # input untouched
-        self.assertEqual(GameSettings.model_validate(out).clock.roll_interval_ms, 30000)
+        self.assertEqual(GameSettings.model_validate(migrate(out)).clock.roll_interval_ms, 30000)
+
+    def test_v1_moves_largest_population_to_settlers(self) -> None:
+        raw = {"schema_version": 1, "ages": {"enabled": True, "largest_population": {"points": 3, "min": 6, "per_city": 2}}}
+        out = migrate(raw)
+        self.assertEqual(out, {"schema_version": 2, "ages": {"enabled": True},
+                               "settlers": {"largest_population": {"points": 3}}})
+        self.assertEqual(GameSettings.model_validate(out).settlers.largest_population.points, 3)
+        # unversioned overrides stored before the move (lobby games, saved settings)
+        self.assertEqual(migrate({"ages": {"largest_population": {"min": 6}}}), {"ages": {}})
 
     def test_errors(self) -> None:
         with self.assertRaises(MigrationError):
             migrate({"schema_version": 0})
         with self.assertRaises(MigrationError):
-            migrate({"schema_version": 2})
+            migrate({"schema_version": 3})
         with self.assertRaises(MigrationError):
             migrate({"schema_version": "1"})
 

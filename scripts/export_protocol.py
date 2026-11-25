@@ -48,7 +48,9 @@ FOG_SETTINGS = {"visibility": {"map": "live_fog", "hidden_numbers": True},
                 "settlers": {"leave_after_setup": False, "gather": True, "block_robber": True}}   # a second, short game
 FOG_ROLLS = 10
 AGES_SETTINGS = {"ages": {"enabled": True, "age2": {"requires": {"cities": 0}, "time_ms": 1000},
-                          "age3": {"requires": {"cities": 0}}}}   # a third, short game for the age events
+                          "age3": {"requires": {"cities": 0}}},
+                 "settlers": {"leave_after_setup": False}}   # a third, short game for the age events
+                                                             # (Largest Population needs settlers)
 
 
 # ------------------------------------------------------------------- codes

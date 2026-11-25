@@ -43,9 +43,13 @@ const CLOUD_RINGS = MIST_ALPHA.length;
 /** Diameter of one soft puff of mist, in hex radii: puffs overlap so no hex outline shows. */
 const MIST_PUFF = 3.4;
 
-/** Live fog veil over land seen but not in sight: puff size (hex radii) and thickness. */
+/** Veil over land seen before but not in sight now: puff size (hex radii) and thickness.
+ * Under Live fog what stands there is only remembered, so the veil is thicker. */
 const VEIL_PUFF = 2.2;
 const VEIL_ALPHA = 0.5;
+const VEIL_ALPHA_SEEN = 0.42;
+/** The line round the land in sight now (the field of vision). */
+const SIGHT_LINE = { width: 3, color: 0xfff3c4, alpha: 0.85 };
 
 let puffTexture: Texture | null = null;
 /** A white disc that fades out towards its rim (drawn once, tinted per use). Soft
@@ -119,7 +123,8 @@ export class PixiRenderer implements Renderer {
   private settlerLabels = new Container();
   private settlerLabelText = new Map<number, Text>();
   private robberLayer = new Graphics();
-  /** Live fog: a light veil over land seen before but not in sight now. */
+  /** Under fog: a light veil over land seen before but not in sight now, and a line
+   * round the land in sight. */
   private veilLayer = new Container();
   private veilKey = "";
   private focusLayer = new Graphics();
@@ -237,18 +242,23 @@ export class PixiRenderer implements Renderer {
     for (const hb of board.harbors) this.boardLayer.addChild(this.harbor(hb.vertices, hb.ratio, hb.resource));
   }
 
-  /** Live fog: veil the land the player has seen but does not see now, so what stands
-   * there reads as remembered, not live. Redrawn only when the sight changes. */
+  /** Under fog: veil the land the player has seen but does not see now, and draw a line
+   * round the land in sight, so the field of vision reads apart from what was seen
+   * before (under Live fog what stands out of sight is only remembered). Redrawn only
+   * when the sight changes. */
   private drawVeil(store: GameStore): void {
     const vis = store.state?.visibility;
     const board = store.board;
-    const live = vis?.map === "live_fog" && !!board?.partial && Array.isArray(vis.in_sight);
-    const inSight = new Set(live ? vis!.in_sight : []);
-    const out = live ? known(board!.hexes).filter((h) => !inSight.has(h.id)) : [];
-    const key = out.map((h) => h.id).join(",");
+    const fog = !!board?.partial && !!vis && vis.map !== "open" && Array.isArray(vis.in_sight);
+    const inSight = new Set(fog ? vis!.in_sight : []);
+    const hexes = fog ? known(board!.hexes) : [];
+    const out = hexes.filter((h) => !inSight.has(h.id));
+    const inside = hexes.filter((h) => inSight.has(h.id));
+    const key = `${vis?.map}|${out.map((h) => h.id).join(",")}|${inside.map((h) => h.id).join(",")}`;
     if (key === this.veilKey) return;
     this.veilKey = key;
     for (const c of this.veilLayer.removeChildren()) c.destroy();
+    const alpha = vis?.map === "live_fog" ? VEIL_ALPHA : VEIL_ALPHA_SEEN;
     for (const h of out) {
       const c = hexCenter(h.q, h.r);
       const s = new Sprite(puff());
@@ -256,9 +266,28 @@ export class PixiRenderer implements Renderer {
       s.width = s.height = VEIL_PUFF * UNIT;
       s.position.set(c.x * UNIT, c.y * UNIT);
       s.tint = P.CLOUD;
-      s.alpha = VEIL_ALPHA;
+      s.alpha = alpha;
       this.veilLayer.addChild(s);
     }
+    if (out.length && inside.length) this.veilLayer.addChild(this.sightLine(inside.map((h) => [h.q, h.r])));
+  }
+
+  /** A line along the outer edges of ``hexes`` (axial q, r): the edge of the field of vision. */
+  private sightLine(hexes: [number, number][]): Graphics {
+    const g = new Graphics();
+    const keys = new Set(hexes.map(([q, r]) => `${q},${r}`));
+    for (const [q, r] of hexes) {
+      const corners = hexCorners(q, r);
+      for (const [dq, dr] of HEX_DIRS) {
+        if (keys.has(`${q + dq},${r + dr}`)) continue;
+        // The shared side: the two corners one radius away from the neighbour's centre too.
+        const n = hexCenter(q + dq, r + dr);
+        const side = corners.filter((p) => Math.abs(Math.hypot(p.x - n.x, p.y - n.y) - 1) < 1e-6);
+        if (side.length !== 2) continue;
+        g.moveTo(side[0]!.x * UNIT, side[0]!.y * UNIT).lineTo(side[1]!.x * UNIT, side[1]!.y * UNIT);
+      }
+    }
+    return g.stroke({ ...SIGHT_LINE, cap: "round" });
   }
 
   /** Whether both ends of ``edge`` are on the board this player knows. */

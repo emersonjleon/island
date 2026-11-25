@@ -6,9 +6,10 @@
      settlers while they reveal) is added to what it has seen. Newly seen hexes
      -> :class:`Revealed` for that seat, with the board there and the pieces
      standing on it;
-  2. ``visibility.hidden_numbers``: every hex next to a building shows its token
-     from then on -> :class:`NumbersRevealed` (tokens of producing hexes and
-     fishing grounds only).
+  2. ``visibility.hidden_numbers``: each seat sees the token of every hex it
+     discovers itself (:func:`engine.sight.discovered_numbers`: next to its own
+     buildings, or under its settlers) from then on -> :class:`NumbersRevealed` for
+     that seat (tokens of producing hexes and fishing grounds only).
 
 * ``@after_step(order=950)`` :func:`lift_fog`, after victory: once the game is over
   every seat sees the whole island -> one last :class:`Revealed` per seat.
@@ -49,31 +50,42 @@ def reveal(state: GameState, seat: int, hexes: set[int], now_ms: int,
     seen = old | new
     if new:
         _record(state).setdefault("seen", {})[str(seat)] = sorted(seen)
-    board = sight.board_parts(state.board, new, seen, sight.shown_numbers(state))
+    board = sight.board_parts(state.board, new, seen, sight.shown_numbers(state, seat))
     pieces = pieces_view(state, -1, frozenset(new) | back)
     if pieces["robber"] is None:
         del pieces["robber"]
     return Revealed(at=now_ms, seat=seat, board=board, pieces=pieces)
 
 
-def _reveal_numbers(state: GameState, now_ms: int) -> NumbersRevealed | None:
+def _numbers(state: GameState) -> dict[str, list[int]]:
+    rec = _record(state)
+    if not isinstance(rec.get("numbers"), dict):   # games saved before numbers were per player
+        old = rec.get("numbers", [])
+        rec["numbers"] = {str(p.seat): sorted(old) for p in state.players} if old else {}
+    return rec["numbers"]
+
+
+def _show_numbers(state: GameState, seat: int, hexes: set[int], now_ms: int,
+                  producing_only: bool = True) -> NumbersRevealed | None:
+    """Show ``seat`` the tokens of ``hexes`` it does not see yet; the event, if any."""
     gb = state.board
-    shown = set(_record(state).get("numbers", ()))
-    near = {h for v in state.buildings for h in gb.board.vertex_hexes[v]}
-    new = {h for h in near - shown if gb.token[h] is not None and gb.hex_resource(h) is not None}
+    shown = sight.shown_numbers(state, seat)
+    new = {h for h in hexes - shown
+           if gb.token[h] is not None and (not producing_only or gb.hex_resource(h) is not None)}
     if not new:
         return None
-    _record(state)["numbers"] = sorted(shown | new)
-    return NumbersRevealed(at=now_ms, tokens={h: int(gb.token[h]) for h in sorted(new)})  # type: ignore[arg-type]
+    _numbers(state)[str(seat)] = sorted(shown | new)
+    return NumbersRevealed(at=now_ms, seat=seat, tokens={h: int(gb.token[h]) for h in sorted(new)})  # type: ignore[arg-type]
 
 
 @after_step(order=VISIBILITY_ORDER)
 def update_visibility(state: GameState, now_ms: int) -> list[Event]:
     events: list[Event] = []
     if sight.numbers_hidden(state):
-        ev = _reveal_numbers(state, now_ms)
-        if ev is not None:
-            events.append(ev)
+        for p in state.players:
+            ev = _show_numbers(state, p.seat, sight.discovered_numbers(state, p.seat), now_ms)
+            if ev is not None:
+                events.append(ev)
     if sight.fog_on(state):
         for p in state.players:
             events += _update_seat(state, p.seat, now_ms)
@@ -82,17 +94,16 @@ def update_visibility(state: GameState, now_ms: int) -> list[Event]:
 
 def _update_seat(state: GameState, seat: int, now_ms: int) -> list[Event]:
     now = sight.seat_sight(state, seat)
-    if not sight.live_fog(state):
-        rev = reveal(state, seat, now, now_ms)
-        return [] if rev is None else [rev]
     sights = _record(state).setdefault("sight", {})
     before = set(sights.get(str(seat), ()))
-    back = frozenset((now - before) & sight.seen_hexes(state, seat))
+    live = sight.live_fog(state)
+    back = frozenset((now - before) & sight.seen_hexes(state, seat)) if live else frozenset()
     events: list[Event] = []
     rev = reveal(state, seat, now, now_ms, back)
     if rev is not None:
         events.append(rev)
-    _remember(state, seat, now)
+    if live:
+        _remember(state, seat, now)
     if now != before:
         sights[str(seat)] = sorted(now)
         events.append(Sight(at=now_ms, seat=seat, in_sight=sorted(now)))
@@ -126,11 +137,10 @@ def lift_fog(state: GameState, now_ms: int) -> list[Event]:
     everything = set(range(len(gb.board.hexes)))
     events: list[Event] = []
     if sight.numbers_hidden(state):
-        shown = set(_record(state).get("numbers", ()))
-        new = {h for h in everything - shown if gb.token[h] is not None}
-        _record(state)["numbers"] = sorted(everything)
-        if new:
-            events.append(NumbersRevealed(at=now_ms, tokens={h: int(gb.token[h]) for h in sorted(new)}))  # type: ignore[arg-type]
+        for p in state.players:
+            ev = _show_numbers(state, p.seat, everything, now_ms, producing_only=False)
+            if ev is not None:
+                events.append(ev)
     for p in state.players:
         back = frozenset(everything) if sight.live_fog(state) else frozenset()
         rev = reveal(state, p.seat, everything, now_ms, back)

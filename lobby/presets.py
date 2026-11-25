@@ -34,7 +34,7 @@ EXPERIMENTAL_INFO = {
     "ages_settlers": (_("Settlers with ages"), _("Settlers stay on the island; they gather from the Age of the Sea and keep the robber away from the Golden Age. 14 points.")),
     "ages_explorer": (_("Explorers of the ages"), _("Settlers and ages on a hidden island: explore to find land and fishing grounds. 14 points.")),
     "settlers": (_("Settlers"), _("Settlers stay after the first settlements: every building needs one on the spot. Buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away.")),
-    "explorer": (_("Explorer"), _("Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them.")),
+    "explorer": (_("Explorer"), _("Settlers, and the island is hidden: you see only the land you have explored.")),
     "friendly": (_("Friendly robber"), _("The classic island, but the robber leaves alone anyone with fewer than 3 points, and what it takes goes back to the bank.")),
 }
 
@@ -156,7 +156,8 @@ INFO: dict[str, Any] = {
     "hidden_island": lambda s: s.visibility.map.value != "open",
     "longest_road_points": lambda s: s.victory.longest_road.points,
     "largest_army_points": lambda s: s.victory.largest_army.points,
-    "largest_population_points": lambda s: s.ages.largest_population.points if s.ages.enabled else 0,
+    "largest_population_points": lambda s: (s.settlers.largest_population.points
+                                          if not s.settlers.leave_after_setup else 0),
     "fish_ransom": lambda s: s.robber.fish_ransom,
     "friendly_robber": lambda s: s.robber.friendly_min_points,
     "robber_fishing": lambda s: s.robber.may_enter_fishing,
@@ -166,7 +167,7 @@ INFO: dict[str, Any] = {
 INFO_PATHS = {
     "ages": "ages.enabled", "settlers_stay": "settlers.leave_after_setup", "hidden_island": "visibility.map",
     "longest_road_points": "victory.longest_road.points", "largest_army_points": "victory.largest_army.points",
-    "largest_population_points": "ages.largest_population.points", "fish_ransom": "robber.fish_ransom",
+    "largest_population_points": "settlers.largest_population.points", "fish_ransom": "robber.fish_ransom",
     "friendly_robber": "robber.friendly_min_points", "robber_fishing": "robber.may_enter_fishing",
 }
 

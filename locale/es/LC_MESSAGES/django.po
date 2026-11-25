@@ -1961,8 +1961,8 @@ msgstr[1] "%(n)s usuarios registrados"
 msgid "Growing sight: each player sees only the land around their own pieces, and settlers where they stop. Explored: settlers also see as they walk. Live fog: like Explored, but other players' settlers and new buildings show only while in sight."
 msgstr "Vista creciente: cada jugador ve solo la tierra alrededor de sus propias piezas, y los colonos donde se detienen. Explorado: los colonos también ven mientras caminan. Niebla en vivo: como Explorado, pero los colonos y los edificios nuevos de los demás solo se ven mientras están a la vista."
 
-msgid "Numbers hidden until a building is next to them"
-msgstr "Números ocultos hasta que haya un edificio al lado"
+msgid "Numbers hidden until you discover them"
+msgstr "Números ocultos hasta que tú los descubras"
 
 msgid "Settler"
 msgstr "Colono"
@@ -2031,8 +2031,8 @@ msgstr "Una isla muy grande para 7 o más jugadores, y una partida larga."
 msgid "Settlers stay after the first settlements: every building needs one on the spot. Buy more, let them gather on 3, 11 and 2 or 12, and use them to keep the robber away."
 msgstr "Los colonos se quedan después de los primeros poblados: cada construcción necesita uno en el lugar. Compra más, déjalos recolectar con 3, 11 y 2 o 12, y úsalos para alejar al ladrón."
 
-msgid "Settlers, and the island is hidden: you see only the land you have explored, and numbers show once you build next to them."
-msgstr "Colonos, y la isla está oculta: solo ves la tierra que has explorado, y los números aparecen cuando construyes al lado."
+msgid "Settlers, and the island is hidden: you see only the land you have explored."
+msgstr "Colonos, y la isla está oculta: solo ves la tierra que has explorado."
 
 msgid "A hard cap, on top of the settlers each building allows."
 msgstr "Un tope fijo, además de los colonos que permite cada edificio."
@@ -2137,21 +2137,6 @@ msgstr "También las megaciudades."
 msgid "Largest Population: points"
 msgstr "Mayor población: puntos"
 
-msgid "An award, like the Longest Road, for the largest population."
-msgstr "Un premio, como el Camino más largo, para la mayor población."
-
-msgid "Largest Population: population needed"
-msgstr "Mayor población: población necesaria"
-
-msgid "Largest Population: population of a settlement"
-msgstr "Mayor población: población de un poblado"
-
-msgid "Largest Population: population of a city"
-msgstr "Mayor población: población de una ciudad"
-
-msgid "Largest Population: population of a megacity"
-msgstr "Mayor población: población de una megaciudad"
-
 msgid "Age of the Sea (II): extra cards per settlement on each roll"
 msgstr "Edad del Mar (II): cartas extra por poblado en cada tirada"
 
@@ -2223,3 +2208,163 @@ msgstr "Puntos para que el ladrón te pueda robar (0 = siempre)"
 
 msgid "Settlers stay after the first settlements"
 msgstr "Los colonos se quedan después de los primeros poblados"
+
+msgid "Each player sees only the numbers next to their own buildings or under their own settlers, not the ones other players find."
+msgstr "Cada jugador ve solo los números junto a sus propios edificios o bajo sus propios colonos, no los que encuentran los demás."
+
+msgid "Age of the Sea (II)"
+msgstr "Edad del Mar (II)"
+
+msgid "Golden Age (III)"
+msgstr "Edad Dorada (III)"
+
+msgid "Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a hidden island, have their own column next to it."
+msgstr "Empieza por el juego clásico. Las variaciones que puedes añadir al crear una partida, como edades, colonos o isla oculta, tienen su propia columna al lado."
+
+msgid "Classic game"
+msgstr "Juego clásico"
+
+msgid "The classic island during a game: hexes with numbers, harbors, settlements and roads."
+msgstr "La isla clásica durante una partida: hexágonos con números, puertos, poblados y caminos."
+
+msgid "The island: each hex gives a resource when its number is rolled."
+msgstr "La isla: cada hexágono da un recurso cuando sale su número."
+
+msgid "The bottom bar: your resources and the build and trade buttons."
+msgstr "La barra de abajo: tus recursos y los botones para construir y comerciar."
+
+msgid "Your resources and the buttons to build, buy developments and trade."
+msgstr "Tus recursos y los botones para construir, comprar desarrollos y comerciar."
+
+msgid "Variations"
+msgstr "Variaciones"
+
+msgid "Hidden island"
+msgstr "Isla oculta"
+
+msgid "More rules"
+msgstr "Más reglas"
+
+msgid "Pick them under Custom when you create a game. Everything from the classic game still applies; these rules are added on top."
+msgstr "Elígelas en Personalizada al crear una partida. Todo lo del juego clásico sigue valiendo; estas reglas se suman."
+
+msgid "Each player shows their age next to their name; the Age II button sits under the build buttons."
+msgstr "Cada jugador muestra su edad junto a su nombre; el botón Edad II está debajo de los botones de construir."
+
+msgid "Your age shows next to your name; the age button is under the build buttons."
+msgstr "Tu edad aparece junto a tu nombre; el botón de la edad está debajo de los de construir."
+
+msgid "Each player advances on their own, as in a real-time strategy game: pay the cost, wait while you research, and the new age brings points and advantages. Games with ages go to <strong>%(target)s points</strong>."
+msgstr "Cada jugador avanza por su cuenta, como en un juego de estrategia en tiempo real: pagas el costo, esperas mientras investigas y la nueva edad trae puntos y ventajas. Las partidas con edades se juegan a <strong>%(target)s puntos</strong>."
+
+msgid "Age"
+msgstr "Edad"
+
+msgid "Needs"
+msgstr "Requiere"
+
+msgid "Gives"
+msgstr "Da"
+
+msgid "%(n)s s of research"
+msgstr "%(n)s s de investigación"
+
+msgid "%(n)s city"
+msgid_plural "%(n)s cities"
+msgstr[0] "%(n)s ciudad"
+msgstr[1] "%(n)s ciudades"
+
+msgid "+%(n)s point"
+msgid_plural "+%(n)s points"
+msgstr[0] "+%(n)s punto"
+msgstr[1] "+%(n)s puntos"
+
+msgid "Every age gives +%(fish)s fish for each of your buildings on a fishing ground when it produces, and lets you keep %(limit)s more resource safe from the robber on a 7."
+msgstr "Cada edad da +%(fish)s pescado por cada edificio tuyo en una zona de pesca cuando produce, y te deja guardar %(limit)s recurso más a salvo del ladrón con el 7."
+
+msgid "You build faster: %(p2)s%% of the normal time in the Age of the Sea and %(p3)s%% in the Golden Age."
+msgstr "Construyes más rápido: %(p2)s%% del tiempo normal en la Edad del Mar y %(p3)s%% en la Edad Dorada."
+
+msgid "The megacity can only be built from age %(age)s on."
+msgstr "La metrópolis solo se puede construir desde la edad %(age)s."
+
+msgid "From age %(age)s on, a player holding at least %(n)s fish pays the robber those %(n)s fish instead of losing other resources."
+msgstr "Desde la edad %(age)s, quien tenga al menos %(n)s pescados le paga al ladrón esos %(n)s pescados en vez de perder otros recursos."
+
+msgid "You can cancel a research: part of the cost comes back, as with a building."
+msgstr "Puedes cancelar una investigación: recuperas parte del costo, como con un edificio."
+
+msgid "Fish is what you need most: settle next to fishing grounds early."
+msgstr "El pescado es lo que más necesitas: instálate pronto junto a zonas de pesca."
+
+msgid "A settler on the island with its gathering number under it, and the Settler button in the bottom bar."
+msgstr "Un colono en la isla con su número de recolección debajo, y el botón Colono en la barra de abajo."
+
+msgid "The number under your settler is the roll it gathers on; the Settler button buys another."
+msgstr "El número bajo tu colono es la tirada con la que recolecta; el botón Colono compra otro."
+
+msgid "In the classic game your settler leaves after the first settlements. With settlers, they stay on the island all game:"
+msgstr "En el juego clásico tu colono se va después de los primeros poblados. Con colonos, se quedan en la isla toda la partida:"
+
+msgid "Every building needs one of your settlers standing on the spot until it is finished."
+msgstr "Cada construcción necesita a uno de tus colonos en el lugar hasta que termine."
+
+msgid "Buy more settlers for %(cost)s. You may have %(per)s per settlement and %(city)s per city."
+msgstr "Compra más colonos por %(cost)s. Puedes tener %(per)s por poblado y %(city)s por ciudad."
+
+msgid "A settler at rest gathers from the hexes around it when its number is rolled: your first settler on the first number, the second on the next, and so on (%(rolls)s)."
+msgstr "Un colono quieto recolecta de los hexágonos que lo rodean cuando sale su número: tu primer colono con el primer número, el segundo con el siguiente, y así (%(rolls)s)."
+
+msgid "The robber cannot move onto a hex with one of your settlers on a corner."
+msgstr "El ladrón no puede ir a un hexágono con uno de tus colonos en una esquina."
+
+msgid "Settlers walk faster on your own roads."
+msgstr "Los colonos caminan más rápido por tus propios caminos."
+
+msgid "Settlers gather from age %(g)s on and keep the robber away from age %(b)s on."
+msgstr "Los colonos recolectan desde la edad %(g)s y alejan al ladrón desde la edad %(b)s."
+
+msgid "A hidden island: a light line surrounds the land in sight; land seen before is behind a veil of mist."
+msgstr "Una isla oculta: una línea clara rodea la tierra a la vista; la tierra vista antes queda tras un velo de niebla."
+
+msgid "The light line marks what you see now; the misty land you saw before."
+msgstr "La línea clara marca lo que ves ahora; la tierra con niebla, lo que viste antes."
+
+msgid "The island starts covered in mist. You see the land around your buildings, roads and settlers, and it stays on your map once seen."
+msgstr "La isla empieza cubierta de niebla. Ves la tierra alrededor de tus edificios, caminos y colonos, y queda en tu mapa una vez vista."
+
+msgid "<strong>Growing sight</strong>: your settler reveals land where it stops."
+msgstr "<strong>Visión creciente</strong>: tu colono revela la tierra donde se detiene."
+
+msgid "<strong>Explored</strong>: your settler also reveals land as it walks."
+msgstr "<strong>Explorado</strong>: tu colono también revela la tierra mientras camina."
+
+msgid "<strong>Live fog</strong>: like Explored, but on land out of sight you only see other players' buildings as you last saw them."
+msgstr "<strong>Niebla en vivo</strong>: como Explorado, pero en la tierra fuera de tu vista solo ves los edificios de los demás como los viste la última vez."
+
+msgid "A light line surrounds your field of vision, what you see right now. Land you saw before but do not see now stays under a light veil."
+msgstr "Una línea clara rodea tu campo de visión, lo que ves en este momento. La tierra que viste antes pero ya no ves queda bajo un velo suave."
+
+msgid "Numbers show by default. With hidden numbers, you only see the numbers you discover yourself: next to your buildings or where your settlers stand. The ones other players find stay hidden for you."
+msgstr "Los números se ven por defecto. Con números ocultos, solo ves los números que tú descubres: junto a tus edificios o donde están tus colonos. Los que encuentran los demás siguen ocultos para ti."
+
+msgid "When the game ends, the mist lifts for everyone."
+msgstr "Al terminar la partida, la niebla se levanta para todos."
+
+msgid "<strong>Friendly robber</strong>: the robber leaves alone anyone with fewer than %(n)s points, and what it takes goes back to the bank."
+msgstr "<strong>Ladrón amistoso</strong>: el ladrón deja en paz a quien tenga menos de %(n)s puntos, y lo que roba vuelve al banco."
+
+msgid "<strong>Fast and big games</strong>: Blitz rolls the dice more often; Big and Huge islands are for more players."
+msgstr "<strong>Partidas rápidas y grandes</strong>: Blitz tira los dados más seguido; las islas Grande y Enorme son para más jugadores."
+
+msgid "<strong>Custom</strong>: start from any game type and change any rule. Share it as a code so your friends play the same rules."
+msgstr "<strong>Personalizada</strong>: parte de cualquier tipo de partida y cambia cualquier regla. Compártela como código para que tus amigos jueguen con las mismas reglas."
+
+msgid "Largest Population: settlers needed"
+msgstr "Mayor población: colonos necesarios"
+
+msgid "<strong>Largest population</strong>: %(points)s points for whoever has the most settlers (at least %(min)s). It works like the longest road: a tie keeps it where it is. It is played in every game with settlers, with or without ages."
+msgstr "<strong>Mayor población</strong>: %(points)s puntos para quien tenga más colonos (al menos %(min)s). Funciona como el camino más largo: con un empate se queda donde está. Se juega en toda partida con colonos, con o sin edades."
+
+msgid "An award, like the Longest Road, for the player with the most settlers. Only in games where settlers stay after setup."
+msgstr "Un premio, como el Camino más largo, para quien tenga más colonos. Solo en partidas donde los colonos se quedan tras la colocación."

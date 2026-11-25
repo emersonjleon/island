@@ -16,8 +16,28 @@ __all__ = ["Migration", "MIGRATIONS", "MigrationError", "migrate"]
 
 Migration = Callable[[dict[str, Any]], dict[str, Any]]
 
-MIGRATIONS: dict[int, Migration] = {}
-"""from_version -> step to from_version + 1. Empty while only v1 exists."""
+def _move_largest_population(data: dict[str, Any]) -> dict[str, Any]:
+    """Largest Population moved from ``ages`` to ``settlers`` and now counts settlers
+    (Emerson, Nov 25, 2026): its points move along; ``min`` and the per-building
+    populations meant something else, so they are dropped. Also run on dicts that
+    carry no version (lobby overrides and saved settings stored before the move)."""
+    ages = data.get("ages")
+    old = ages.pop("largest_population", None) if isinstance(ages, dict) else None
+    if isinstance(old, dict) and "points" in old:
+        settlers = data.setdefault("settlers", {})
+        if isinstance(settlers, dict):
+            settlers.setdefault("largest_population", {})["points"] = old["points"]
+    return data
+
+
+def _v1_to_v2(data: dict[str, Any]) -> dict[str, Any]:
+    data = _move_largest_population(data)
+    data["schema_version"] = 2
+    return data
+
+
+MIGRATIONS: dict[int, Migration] = {1: _v1_to_v2}
+"""from_version -> step to from_version + 1."""
 
 
 class MigrationError(ValueError):
@@ -38,6 +58,8 @@ def migrate(
     """Return a migrated deep copy of ``raw``. A missing ``schema_version`` means ``target``."""
     steps = MIGRATIONS if migrations is None else migrations
     data = copy.deepcopy(dict(raw))
+    if "schema_version" not in data and migrations is None:
+        data = _move_largest_population(data)   # unversioned dicts stored before v2
     version = data.get("schema_version", target)
     if not isinstance(version, int) or isinstance(version, bool):
         raise MigrationError("settings.migrate.bad_version", version=version)

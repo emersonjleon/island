@@ -48,6 +48,11 @@ async function signUp(page, name) {
       .map((sel) => Math.round(document.querySelector(`.hud-hand ${sel}`).getBoundingClientRect().top)));
     if (rows[0] !== rows[2] || rows[1] <= rows[0]) throw new Error(`the classic row changed or the age button is not below it: ${rows}`);
     if (!(await page.locator(".hud-scores .age-tag").count())) throw new Error("scores do not show ages");
+    await page.click(".prices-open");
+    const priceRows = await page.$$eval(".price-table th", (ths) => ths.map((th) => th.textContent));
+    log("prices:", priceRows.join(", "));
+    if (!priceRows.some((r) => /II$/.test(r)) || !priceRows.some((r) => /III$/.test(r))) throw new Error("price list misses the ages");
+    await page.keyboard.press("Escape");
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `${OUT}/e2e-ages-start.png` });
     await page.setViewportSize({ width: 412, height: 860 });

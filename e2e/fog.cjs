@@ -62,7 +62,8 @@ async function signUp(page, name) {
     log("start:", JSON.stringify(first));
     if (!first.partial) throw new Error("the board is not partial under Growing sight");
     if (first.hexes > 10) throw new Error(`saw ${first.hexes} hexes at the start`);
-    if (first.tokens !== 0) throw new Error("number tokens shown before any building");
+    // Hidden numbers: only the ones this player discovers (under its own settler, so far).
+    if (first.tokens > 3) throw new Error(`${first.tokens} number tokens shown before any building`);
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `${OUT}/e2e-fog-start.png` });
 

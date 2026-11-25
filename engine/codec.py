@@ -18,6 +18,7 @@ from engine.board.topology import Board
 from engine.rng import Rng
 from engine.scheduler import Scheduler
 from engine.settings.enums import STAGE_LATER, BuildKind, Resource, Terrain
+from engine.settings.migrations import migrate
 from engine.settings.models import GameSettings
 from engine.state import (
     Building, Construction, GameState, PlayerState, SeatInfo, Settler, SettlerStep,
@@ -161,7 +162,7 @@ def load(d: dict[str, Any]) -> GameState:
     if d.get("codec") != CODEC_VERSION:
         raise ValueError(f"unsupported codec version {d.get('codec')!r}")
     # The settings were validated when the game was created; do not re-apply the stage gate.
-    settings = GameSettings.model_validate(d["settings"], context={"implemented_stage": STAGE_LATER})
+    settings = GameSettings.model_validate(migrate(d["settings"]), context={"implemented_stage": STAGE_LATER})
     return GameState(
         settings=settings,
         board=load_board(d["board"]),
