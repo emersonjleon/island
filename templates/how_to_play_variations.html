@@ -1,0 +1,126 @@
+{% extends "base.html" %}{% load i18n static %}
+{% block title %}{% translate "Variations" %} · {% translate "How to play" %} · {{ block.super }}{% endblock %}
+{% block main_class %}page rules-page{% endblock %}
+{% block content %}
+<h1>{% translate "How to play" %}</h1>
+{% include "how_to_play_tabs.html" with active="variations" %}
+<nav class="toc" aria-label="{% translate 'Contents' %}">
+  <a href="#ages">{% translate "Ages" %}</a> · <a href="#settlers">{% translate "Settlers" %}</a> ·
+  <a href="#fog">{% translate "Hidden island" %}</a> · <a href="#more">{% translate "More rules" %}</a>
+</nav>
+<p class="muted">{% blocktranslate trimmed %}
+  Pick them under Custom when you create a game. Everything from the classic game still applies; these rules are added on top.
+{% endblocktranslate %}</p>
+
+<section id="ages">
+  <h2>{% translate "Ages" %}</h2>
+  <figure class="rules-shot">
+    <img src="{% static 'img/how/ages-hud.webp' %}" width="720" height="244" loading="lazy"
+         alt="{% translate 'Each player shows their age next to their name; the Age II button sits under the build buttons.' %}">
+    <figcaption>{% translate "Your age shows next to your name; the age button is under the build buttons." %}</figcaption>
+  </figure>
+  <p>{% blocktranslate trimmed with target=ages.victory.target %}
+    Each player advances on their own, as in a real-time strategy game: pay the cost, wait while you research,
+    and the new age brings points and advantages. Games with ages go to <strong>{{ target }} points</strong>.
+  {% endblocktranslate %}</p>
+  <table class="rules-table">
+    <thead><tr><th>{% translate "Age" %}</th><th>{% translate "Cost" %}</th><th>{% translate "Needs" %}</th><th>{% translate "Gives" %}</th></tr></thead>
+    <tbody>
+    {% for a in age_steps %}
+      <tr>
+        <td>{{ a.name }}</td>
+        <td>{{ a.cost }}<br><span class="muted">{% blocktranslate with n=a.seconds %}{{ n }} s of research{% endblocktranslate %}</span></td>
+        <td>{% blocktranslate count n=a.cities %}{{ n }} city{% plural %}{{ n }} cities{% endblocktranslate %}</td>
+        <td>{% blocktranslate count n=a.points %}+{{ n }} point{% plural %}+{{ n }} points{% endblocktranslate %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <ul>
+    {% with a2=age_steps.0 %}
+    <li>{% blocktranslate trimmed with fish=a2.fish limit=a2.card_limit %}
+      Every age gives +{{ fish }} fish for each of your buildings on a fishing ground when it produces, and lets you keep
+      {{ limit }} more resource safe from the robber on a 7.
+    {% endblocktranslate %}</li>
+    {% endwith %}
+    <li>{% blocktranslate trimmed with p2=age_steps.0.build_pct p3=age_steps.1.build_pct %}
+      You build faster: {{ p2 }}% of the normal time in the Age of the Sea and {{ p3 }}% in the Golden Age.
+    {% endblocktranslate %}</li>
+    <li>{% blocktranslate trimmed with age=megacity_age %}
+      The megacity can only be built from age {{ age }} on.
+    {% endblocktranslate %}</li>
+    {% if ages.robber.fish_ransom %}
+    <li>{% blocktranslate trimmed with n=ages.robber.fish_ransom age=ages.ages.fish_ransom_age %}
+      From age {{ age }} on, a player holding at least {{ n }} fish pays the robber those {{ n }} fish instead of losing other resources.
+    {% endblocktranslate %}</li>
+    {% endif %}
+    <li>{% translate "You can cancel a research: part of the cost comes back, as with a building." %}</li>
+  </ul>
+  <p class="muted">{% translate "Fish is what you need most: settle next to fishing grounds early." %}</p>
+</section>
+
+<section id="settlers">
+  <h2>{% translate "Settlers" %}</h2>
+  <figure class="rules-shot">
+    <img src="{% static 'img/how/settlers.webp' %}" width="650" height="510" loading="lazy"
+         alt="{% translate 'A settler on the island with its gathering number under it, and the Settler button in the bottom bar.' %}">
+    <figcaption>{% translate "The number under your settler is the roll it gathers on; the Settler button buys another." %}</figcaption>
+  </figure>
+  <p>{% translate "In the classic game your settler leaves after the first settlements. With settlers, they stay on the island all game:" %}</p>
+  <ul>
+    <li>{% translate "Every building needs one of your settlers standing on the spot until it is finished." %}</li>
+    <li>{% blocktranslate trimmed with cost=settler_cost per=settlers.settlers.per_settlement city=settlers.settlers.per_city %}
+      Buy more settlers for {{ cost }}. You may have {{ per }} per settlement and {{ city }} per city.
+    {% endblocktranslate %}</li>
+    {% if settlers.settlers.gather %}
+    <li>{% blocktranslate trimmed with rolls=gather_rolls %}
+      A settler at rest gathers from the hexes around it when its number is rolled: your first settler on the first number,
+      the second on the next, and so on ({{ rolls }}).
+    {% endblocktranslate %}</li>
+    {% endif %}
+    {% if settlers.settlers.block_robber %}
+    <li>{% translate "The robber cannot move onto a hex with one of your settlers on a corner." %}</li>
+    {% endif %}
+    <li>{% translate "Settlers walk faster on your own roads." %}</li>
+    <li>{% blocktranslate trimmed with points=population.points min=population.min %}
+      <strong>Largest population</strong>: {{ points }} points for whoever has the most settlers (at least {{ min }}).
+      It works like the longest road: a tie keeps it where it is. It is played in every game with settlers, with or without ages.
+    {% endblocktranslate %}</li>
+  </ul>
+  <h3>{% translate "Settlers with ages" %}</h3>
+  <ul>
+    <li>{% blocktranslate trimmed with g=both.ages.settler_gather_age b=both.ages.settler_guard_age %}
+      Settlers gather from age {{ g }} on and keep the robber away from age {{ b }} on.
+    {% endblocktranslate %}</li>
+  </ul>
+</section>
+
+<section id="fog">
+  <h2>{% translate "Hidden island" %}</h2>
+  <figure class="rules-shot">
+    <img src="{% static 'img/how/fog.webp' %}" width="685" height="314" loading="lazy"
+         alt="{% translate 'A hidden island: a light line surrounds the land in sight; land seen before is behind a veil of mist.' %}">
+    <figcaption>{% translate "The light line marks what you see now; the misty land you saw before." %}</figcaption>
+  </figure>
+  <p>{% translate "The island starts covered in mist. You see the land around your buildings, roads and settlers, and it stays on your map once seen." %}</p>
+  <ul>
+    <li>{% translate "<strong>Growing sight</strong>: your settler reveals land where it stops." %}</li>
+    <li>{% translate "<strong>Explored</strong>: your settler also reveals land as it walks." %}</li>
+    <li>{% translate "<strong>Live fog</strong>: like Explored, but on land out of sight you only see other players' buildings as you last saw them." %}</li>
+    <li>{% translate "A light line surrounds your field of vision, what you see right now. Land you saw before but do not see now stays under a light veil." %}</li>
+    <li>{% translate "Numbers show by default. With hidden numbers, you only see the numbers you discover yourself: next to your buildings or where your settlers stand. The ones other players find stay hidden for you." %}</li>
+    <li>{% translate "When the game ends, the mist lifts for everyone." %}</li>
+  </ul>
+</section>
+
+<section id="more">
+  <h2>{% translate "More rules" %}</h2>
+  <ul>
+    <li>{% blocktranslate trimmed with n=friendly.robber.friendly_min_points %}
+      <strong>Friendly robber</strong>: the robber leaves alone anyone with fewer than {{ n }} points, and what it takes goes back to the bank.
+    {% endblocktranslate %}</li>
+    <li>{% translate "<strong>Fast and big games</strong>: Blitz rolls the dice more often; Big and Huge islands are for more players." %}</li>
+    <li>{% translate "<strong>Custom</strong>: start from any game type and change any rule. Share it as a code so your friends play the same rules." %}</li>
+  </ul>
+</section>
+{% endblock %}

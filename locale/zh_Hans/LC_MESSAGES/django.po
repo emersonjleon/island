@@ -2059,8 +2059,8 @@ msgstr "海洋时代（II）"
 msgid "Golden Age (III)"
 msgstr "黄金时代（III）"
 
-msgid "Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a hidden island, have their own column next to it."
-msgstr "先从经典玩法开始。创建对局时可以添加的变体，例如时代、开拓者或隐藏岛屿，在旁边单独一栏。"
+msgid "Start with the classic game. The variations you can add when you create a game, such as ages, settlers or a hidden island, have their own page."
+msgstr "先从经典玩法开始。创建对局时可以添加的变体，例如时代、开拓者或隐藏岛屿，有单独的页面。"
 
 msgid "Classic game"
 msgstr "经典玩法"
@@ -2207,3 +2207,6 @@ msgstr "<strong>最多人口</strong>：开拓者最多者得 %(points)s 分（�
 
 msgid "An award, like the Longest Road, for the player with the most settlers. Only in games where settlers stay after setup."
 msgstr "像最长道路一样，奖励开拓者最多的玩家。仅在开拓者于初始布置后留下的对局中生效。"
+
+msgid "Know the classic game? <a href=\"%(url)s\">Read about the variations</a>: ages, settlers and the hidden island."
+msgstr "已经熟悉经典玩法？<a href=\"%(url)s\">阅读变体说明</a>：时代、开拓者和隐藏岛屿。"

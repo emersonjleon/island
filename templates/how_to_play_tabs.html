@@ -1,0 +1,4 @@
+{% load i18n %}<nav class="rules-tabs" aria-label="{% translate 'How to play' %}">
+  <a href="{% url 'how_to_play' %}"{% if active == "classic" %} aria-current="page"{% endif %}>{% translate "Classic game" %}</a>
+  <a href="{% url 'how_to_play_variations' %}"{% if active == "variations" %} aria-current="page"{% endif %}>{% translate "Variations" %}</a>
+</nav>
