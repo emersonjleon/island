@@ -456,7 +456,10 @@ de la versión 1 agrega `ages.enabled = false`.
 - En la compra de desarrollos, una pestaña por nivel con su costo.
 - Íconos con cuenta regresiva para Flota pesquera, Mercader y Gran mercado.
 - Estadísticas y fin de partida: "Edades" como fuente de puntos en la leyenda, y
-  la tirada en que cada jugador llegó a cada edad.
+  la tirada en que cada jugador llegó a cada edad. (Hecho: una tabla con el
+  minuto de juego en que cada jugador llegó a la Edad II y III, y una marca con
+  el número de la edad sobre su línea en la gráfica de puntos. Se usa el minuto
+  y no la tirada porque la gráfica ya va por tiempo.)
 - Opcional: los edificios cambian de aspecto con la edad (2D y 3D).
 - Todo el texto en español e inglés.
 

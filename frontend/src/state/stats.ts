@@ -86,3 +86,22 @@ export function clockText(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 }
+
+/** When ``seat`` reached each age after the first, as [age, game ms], oldest first (empty with ages off). */
+export function ageMarks(state: GameStateView, seat: number): [number, number][] {
+  const reached = state.ages?.players?.[String(seat)]?.reached ?? {};
+  return Object.entries(reached)
+    .map(([age, at]): [number, number] => [Number(age), at])
+    .filter(([age, at]) => age > 1 && Number.isFinite(at))
+    .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+}
+
+/** The score of a step line at ``ms`` (the last change at or before it). */
+export function scoreAt(line: [number, number][], ms: number): number {
+  let points = line[0]?.[1] ?? 0;
+  for (const [t, p] of line) {
+    if (t > ms) break;
+    points = p;
+  }
+  return points;
+}

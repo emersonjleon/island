@@ -75,6 +75,14 @@ async function signUp(page, name) {
       await page.waitForTimeout(500);
     }
     await page.screenshot({ path: `${OUT}/e2e-ages-end.png` });
+    const table = page.locator(".hud-over .stats-ages");
+    await table.waitFor({ timeout: 10_000 });
+    const cells = await table.locator("tbody td").allTextContents();
+    log("ages reached:", cells.join(" | "));
+    if (best > 1 && !cells.some((c) => /\d+:\d\d/.test(c))) throw new Error("the results do not say when an age was reached");
+    if (best > 1 && !(await page.locator(".hud-over .stats-chart .age-mark").count())) throw new Error("the score chart has no age marks");
+    await table.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `${OUT}/e2e-ages-results.png` });
     log("PASS");
   } catch (err) {
     console.error("FAIL:", err.message);

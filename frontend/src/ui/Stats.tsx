@@ -5,7 +5,8 @@ import type { TFunction } from "i18next";
 
 import type { GameStateView, PlayerView } from "../protocol/types";
 import { playerColour } from "../render2d/palette";
-import { POINT_SOURCES, type PointSource, clockText, pointsBreakdown, producedTotal, scoreLine, stepPath } from "../state/stats";
+import { agesOn } from "../state/ages";
+import { POINT_SOURCES, type PointSource, ageMarks, clockText, pointsBreakdown, producedTotal, scoreAt, scoreLine, stepPath } from "../state/stats";
 import type { GameStore } from "../state/store";
 import { Dialog, useEscape } from "./Dialog";
 import { ResIcon } from "./icons";
@@ -32,6 +33,7 @@ export function StatsPanel({ store, t, now }: { store: GameStore; t: TFunction; 
     <div class="stats">
       <Breakdown store={store} t={t} state={s} />
       <ScoreChart store={store} t={t} state={s} until={until} />
+      <Ages store={store} t={t} state={s} />
       <Production store={store} t={t} state={s} />
     </div>
   );
@@ -130,7 +132,50 @@ function ScoreChart({ store, t, state, until }: { store: GameStore; t: TFunction
           <path key={p.seat} d={stepPath(line, x, y)} class={p.resigned ? "line resigned" : "line"}
                 style={{ stroke: colourHex(p.colour) }} />
         ))}
+        {lines.flatMap(({ p, line }) => ageMarks(state, p.seat).map(([age, at]) => (
+          <g key={`a${p.seat}-${age}`} class="age-mark">
+            <title>{t("hud:stats.ageAt", { name: p.name, age: AGE_ROMAN[age - 1] ?? age, time: clockText(at) })}</title>
+            <circle cx={x(at)} cy={y(scoreAt(line, at))} r={5.5} style={{ fill: colourHex(p.colour) }} />
+            <text x={x(at)} y={y(scoreAt(line, at)) + 2.6} text-anchor="middle">{AGE_ROMAN[age - 1] ?? age}</text>
+          </g>
+        )))}
       </svg>
+    </section>
+  );
+}
+
+// ------------------------------------------------------------------ ages
+const AGE_ROMAN = ["I", "II", "III"];
+
+function Ages({ store, t, state }: { store: GameStore; t: TFunction; state: GameStateView }) {
+  if (!agesOn(store.settings) || !state.ages?.players) return null;
+  const players = ranked(state);
+  const ages = [2, 3];
+  return (
+    <section>
+      <h3>{t("hud:stats.ages")}</h3>
+      <table class="stats-ages">
+        <thead>
+          <tr><th />{ages.map((a) => <th key={a} scope="col">{t("hud:stats.ageCol", { age: AGE_ROMAN[a - 1] })}</th>)}</tr>
+        </thead>
+        <tbody>
+          {players.map((p) => {
+            const reached = new Map(ageMarks(state, p.seat));
+            return (
+              <tr key={p.seat}>
+                <th scope="row">
+                  <span class="swatch" style={{ background: colourHex(p.colour) }} />
+                  <span class="name">{p.seat === store.seat ? t("hud:you") : p.name}</span>
+                </th>
+                {ages.map((a) => {
+                  const at = reached.get(a);
+                  return <td key={a}>{at === undefined ? <span class="muted">{t("hud:stats.ageNotYet")}</span> : clockText(at)}</td>;
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </section>
   );
 }

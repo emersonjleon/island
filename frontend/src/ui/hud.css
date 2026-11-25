@@ -256,6 +256,15 @@ table.keys td { padding: 4px 0; }
 .stats-produced .mini { display: inline-flex; align-items: center; gap: 2px; padding: 1px 5px 1px 3px; border-radius: 6px;
   background: var(--res-bg); font-size: 0.78rem; font-weight: 700; }
 .stats-produced .mini .res-icon { width: 13px; height: 13px; }
+.stats-ages { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.stats-ages th, .stats-ages td { padding: 4px 6px; text-align: center; font-variant-numeric: tabular-nums; }
+.stats-ages thead th { font-size: 0.78rem; color: #6b5a33; font-weight: 700; }
+.stats-ages tbody tr + tr > * { border-top: 1px solid #ebe1c8; }
+.stats-ages tbody th { text-align: left; font-weight: 400; white-space: nowrap; }
+.stats-ages tbody th .swatch { margin-right: 8px; vertical-align: -1px; }
+.stats-ages .name { display: inline-block; max-width: 9em; overflow: hidden; text-overflow: ellipsis; vertical-align: bottom; }
+.stats-chart .age-mark circle { stroke: #fff; stroke-width: 1.5; }
+.stats-chart .age-mark text { fill: #fff; font-size: 6.5px; font-weight: 700; pointer-events: none; }
 .over-reason { margin: -6px 0 10px; color: #6b5a33; }
 .over-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 14px; }
 /* The results can be long on a phone: keep the buttons in reach while it scrolls. */
