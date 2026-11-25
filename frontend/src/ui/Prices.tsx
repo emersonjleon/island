@@ -3,15 +3,38 @@ import type { TFunction } from "i18next";
 
 import type { BuildKind, ResMap, Resource } from "../protocol/types";
 import type { GameStore } from "../state/store";
+import { ageStep, agesOn } from "../state/ages";
 import { settlersStay } from "../state/settlers";
 import { Dialog, useEscape } from "./Dialog";
 import { ResIcon } from "./icons";
 import { RESOURCES, canAfford, costOf } from "./model";
 
-/** The purchases of this game, in the order of the hand bar (settler last, when the game has them). */
+/** The purchases of this game, in the order of the hand bar; the megacity and the
+ * settler only when the game has them. */
 export function priceKinds(settings: GameStore["settings"]): BuildKind[] {
-  const kinds = ["road", "settlement", "city", "dev_card"] as BuildKind[];
+  const kinds = ["road", "settlement", "city"] as BuildKind[];
+  if (megacitiesOn(settings)) kinds.push("megacity" as BuildKind);
+  kinds.push("dev_card" as BuildKind);
   return settlersStay(settings) ? [...kinds, "settler" as BuildKind] : kinds;
+}
+
+function megacitiesOn(settings: GameStore["settings"]): boolean {
+  const pieces = settings["pieces"] as Record<string, unknown> | undefined;
+  return typeof pieces?.["megacities"] === "number" && (pieces["megacities"] as number) > 0;
+}
+
+export interface PriceRow { key: string; name: string; params?: Record<string, unknown>; cost: ResMap }
+
+/** Every row of the price list: the purchases, then the ages when the game has them. */
+export function priceRows(settings: GameStore["settings"]): PriceRow[] {
+  const rows: PriceRow[] = priceKinds(settings).map((kind) => ({ key: kind, name: NAME[kind] ?? kind, cost: costOf(settings, kind) }));
+  if (agesOn(settings)) {
+    for (const age of [2, 3]) {
+      const step = ageStep(settings, age);
+      if (step) rows.push({ key: `age${age}`, name: "hud:prices.age", params: { n: age === 2 ? "II" : "III" }, cost: step.cost });
+    }
+  }
+  return rows;
 }
 
 /** The resources of a cost, one entry per card, in hand order. */
@@ -21,7 +44,7 @@ export function priceCards(cost: ResMap): Resource[] {
 
 const NAME: Record<string, string> = {
   road: "hud:build.road", settlement: "hud:build.settlement", city: "hud:build.city",
-  dev_card: "hud:dev.button", settler: "hud:settler.button",
+  megacity: "hud:prices.megacity", dev_card: "hud:dev.button", settler: "hud:settler.button",
 };
 
 export function PricesDialog({ store, t, onClose }: { store: GameStore; t: TFunction; onClose(): void }) {
@@ -31,12 +54,11 @@ export function PricesDialog({ store, t, onClose }: { store: GameStore; t: TFunc
     <Dialog title={t("hud:prices.title")} t={t} closeKey="hud:prices.close" onClose={onClose}>
       <table class="price-table">
         <tbody>
-          {priceKinds(store.settings).map((kind) => {
-            const cost = costOf(store.settings, kind);
+          {priceRows(store.settings).map(({ key, name, params, cost }) => {
             const ok = hand ? canAfford(hand, cost) : false;
             return (
-              <tr key={kind} class={ok ? "can" : ""}>
-                <th scope="row">{t(NAME[kind] ?? kind)}</th>
+              <tr key={key} class={ok ? "can" : ""}>
+                <th scope="row">{t(name, params)}</th>
                 <td>
                   <span class="price-cards" aria-label={priceCards(cost).map((r) => t(`hud:res.${r}`)).join(", ")}>
                     {priceCards(cost).map((r, i) => <span key={i} class={`price-card res-${r}`}><ResIcon res={r} size={22} /></span>)}

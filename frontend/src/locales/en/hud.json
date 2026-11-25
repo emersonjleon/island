@@ -264,7 +264,15 @@
     "controls": "Controls",
     "keys": "WASD or arrows walk · right-click: walk or build · R road · E settlement · C city · T trade · Shift+WASD camera.",
     "touch": "Tap the map to walk or build · drag to move the map · pinch to zoom · buttons below build and trade.",
-    "full": "Full rules"
+    "full": "Full rules",
+    "variants": "In this game",
+    "v": {
+      "ages": "Ages: advance on your own to the Age of the Sea ({{age2}}) and the Golden Age ({{age3}}) for points, faster builds and more. The age button is under the build buttons.",
+      "settlers": "Settlers stay all game: every building needs one of your settlers on the spot. Buy more with the Settler button; at rest they gather on their number.",
+      "population": "Largest population: {{population}} points for whoever has the most settlers, like the longest road.",
+      "fog": "Hidden island: a light line surrounds what you see now; land you saw before stays under a light veil.",
+      "numbers": "Hidden numbers: you see only the numbers you discover yourself, next to your buildings or under your settlers."
+    }
   },
   "settler": {
     "button": "Settler",
@@ -277,7 +285,9 @@
     "open": "Prices",
     "title": "Prices",
     "close": "Close",
-    "help": "Highlighted rows are what you can buy now."
+    "help": "Highlighted rows are what you can buy now.",
+    "megacity": "Megacity",
+    "age": "Age {{n}}"
   },
   "age": {
     "button": "Age {{n}}",

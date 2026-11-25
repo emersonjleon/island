@@ -152,11 +152,13 @@ function applyRevealedPieces(state: GameStateView, pieces: Partial<GameStateView
   if (pieces.robber !== undefined && pieces.robber !== null) state.robber = pieces.robber;
 }
 
-/** Live fog: the land in sight changed. Other players' settlers, constructions and the
- * robber out of sight go (buildings and roads stay as last seen). */
+/** The land in sight changed (any fog). Under Live fog, other players' settlers,
+ * constructions and the robber out of sight go (buildings and roads stay as last seen);
+ * under the other fogs only the field of vision the renderer draws changes. */
 export function applySight(state: GameStateView, board: BoardMsg, inSight: number[]): void {
   const sight = new Set(inSight);
   if (state.visibility) state.visibility.in_sight = [...inSight];
+  if (state.visibility?.map !== "live_fog") return;
   const vertexIn = (v: number) => (board.vertices[v]?.hexes ?? []).some((h) => sight.has(h));
   const edgeIn = (e: number) => (board.edges[e]?.hexes ?? []).some((h) => sight.has(h));
   const me = state.viewer;

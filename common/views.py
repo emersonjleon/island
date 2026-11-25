@@ -2,7 +2,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
-from engine.settings import PlayersSettings, Resource, load_preset
+from engine.settings import BuildKind, PlayersSettings, Resource, load_preset
 
 # Resource names for the rules page (the game screen has its own catalogue).
 RESOURCE_NAMES = {
@@ -38,9 +38,39 @@ def how_to_play(request: HttpRequest) -> HttpResponse:
     ]
     context = {
         "s": s,
+        **_variant_rules(),
         "buildings": buildings,
         "dev_card_cost": _cost(costs.dev_card),
         "roll_seconds": s.clock.roll_interval_ms // MS_PER_SECOND,
         "max_players": PlayersSettings.model_fields["max"].metadata[-1].le,
     }
     return render(request, "how_to_play.html", context)
+
+
+def _variant_rules() -> dict:
+    """Numbers for the right-hand column of the rules page (ages, settlers, hidden
+    island, friendly robber), each from the game type that introduces it."""
+    ages = load_preset("ages")
+    a = ages.ages
+    steps = []
+    for name, step in ((_("Age of the Sea (II)"), a.age2), (_("Golden Age (III)"), a.age3)):
+        steps.append({"name": name, "cost": _cost(step.cost), "seconds": step.time_ms // MS_PER_SECOND,
+                      "cities": step.requires.cities, "points": step.bonus.points,
+                      "fish": step.bonus.fish_per_fishing_building, "card_limit": step.bonus.card_limit,
+                      "build_pct": step.bonus.build_time_pct})
+    settlers = load_preset("settlers")
+    ss = settlers.settlers
+    both = load_preset("ages_settlers")
+    explorer = load_preset("explorer")
+    return {
+        "ages": ages,
+        "age_steps": steps,
+        "megacity_age": a.unlock.get(BuildKind.MEGACITY, 1),
+        "settlers": settlers,
+        "settler_cost": _cost(settlers.economy.costs.settler),
+        "gather_rolls": ", ".join(" / ".join(str(n) for n in rolls) for rolls in ss.gather_rolls),
+        "population": settlers.settlers.largest_population,
+        "both": both,
+        "explorer": explorer,
+        "friendly": load_preset("friendly"),
+    }

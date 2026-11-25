@@ -198,6 +198,22 @@ describe("Growing sight", () => {
     expect(store.state!.visibility!.in_sight).toEqual([]);
   });
 
+  it("only moves the field of vision under the other fogs", () => {
+    const store = new GameStore();
+    store.apply(fixture<BoardMsg>("board_seat0_fog.json"));
+    store.apply({ t: "state", seq: 1, now: 0, state: baseState() });
+    const board = store.board!;
+    const a = known(board.vertices)[0]!;
+    const s = store.state!;
+    s.visibility = { map: "explored", hidden_numbers: false, in_sight: [1, 2] };
+    s.settlers = [{ id: 1, seat: 1, vertex: a.id, path: [], step: null }];
+    s.robber = a.hexes[0]!;
+    store.apply({ t: "events", seq: 2, now: 5, events: [{ k: "sight", at: 5, seat: s.viewer!, in_sight: [3] }] });
+    expect(store.state!.settlers.map((x) => x.id)).toEqual([1]);
+    expect(store.state!.robber).toBe(a.hexes[0]);
+    expect(store.state!.visibility!.in_sight).toEqual([3]);
+  });
+
   it("lifts the fog when the game ends", () => {
     const store = new GameStore();
     store.apply(fixture<BoardMsg>("board_seat0_fog.json"));

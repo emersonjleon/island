@@ -73,7 +73,7 @@ class SightTest(unittest.TestCase):
         self.assertTrue(sight.vertex_sight(state.board, far, 2) <= after)
         self.assertEqual(rev[0].pieces["buildings"], [{"vertex": far, "seat": 0, "kind": "city"}])
         del state.buildings[far]
-        self.assertEqual(update_visibility(state, 2), [])
+        self.assertEqual([e.k for e in update_visibility(state, 2)], ["sight"])   # out of sight, still seen
         self.assertEqual(sight.seen_hexes(state, 0), after)
 
     def test_other_players_pieces_hidden_on_unseen_land(self) -> None:
@@ -116,23 +116,43 @@ class SightTest(unittest.TestCase):
 
 
 class HiddenNumbersTest(unittest.TestCase):
-    def test_open_map_hidden_numbers(self) -> None:
+    @staticmethod
+    def tokens(state, seat: int) -> dict[int, int]:  # type: ignore[no-untyped-def]
+        board = views.board_for(state, seat)
+        return {h["id"]: h["token"] for h in board["hexes"] if h["token"] is not None}
+
+    def test_open_map_hidden_numbers_are_per_player(self) -> None:
         overrides = {"visibility": {"hidden_numbers": True}}
         state, _ = new_state(overrides)
+        gb = state.board
         board = views.board_for(state, 0)
-        self.assertEqual(len(board["hexes"]), len(state.board.board.hexes))
-        self.assertTrue(all(h["token"] is None for h in board["hexes"]))
-        self.assertTrue(all(f["token"] is None for f in board["fishing"]))
-        self.assertEqual(views.board_for(state, None), state.board.to_dict())
-        v = state.board.board.hex_vertices[0][0]
+        self.assertEqual(len(board["hexes"]), len(gb.board.hexes))
+        self.assertEqual(views.board_for(state, None), gb.to_dict())
+        # at the start each player sees only the numbers under its own settler
+        for p in state.players:
+            st = state.settlers[p.settler_ids[0]]
+            self.assertTrue(set(self.tokens(state, p.seat)) <= set(gb.board.vertex_hexes[st.vertex]))
+        v = next(v for v in gb.board.land_vertices
+                 if not set(gb.board.vertex_hexes[v]) & set(self.tokens(state, 2))
+                 and any(gb.token[h] is not None and gb.hex_resource(h) is not None for h in gb.board.vertex_hexes[v]))
+        before0 = self.tokens(state, 0)
         state.buildings[v] = Building(2, BuildKind.SETTLEMENT)
         evs = update_visibility(state, 1)
-        self.assertEqual(len(evs), 1)
-        shown = {h: t for h, t in evs[0].tokens.items()}
+        self.assertEqual([(e.k, e.seat) for e in evs], [("numbers_revealed", 2)])
+        shown = dict(evs[0].tokens)
         self.assertTrue(shown)
-        board = views.board_for(state, 0)
-        tokens = {h["id"]: h["token"] for h in board["hexes"] if h["token"] is not None}
-        self.assertEqual(tokens, shown)
+        self.assertTrue(set(shown) <= set(gb.board.vertex_hexes[v]))
+        self.assertEqual({h: t for h, t in self.tokens(state, 2).items() if h in shown}, shown)
+        self.assertEqual(self.tokens(state, 0), before0)   # another player's discovery stays hidden
+        self.assertEqual(views.filter_events(evs, 0, state), [])
+        self.assertEqual(views.filter_events(evs, None, state), [])
+
+    def test_old_shared_record_still_loads(self) -> None:
+        state, _ = new_state({"visibility": {"hidden_numbers": True}})
+        state.ext["visibility"]["numbers"] = [0, 1]
+        self.assertEqual(sight.shown_numbers(state, 1), frozenset({0, 1}))
+        update_visibility(state, 1)
+        self.assertIsInstance(state.ext["visibility"]["numbers"], dict)
 
 
 class LiveFogTest(unittest.TestCase):
@@ -222,7 +242,7 @@ class NoLeakTest(unittest.TestCase):
 
     def check_board(self, test, state, seat: int, board: dict[str, Any]) -> None:  # type: ignore[no-untyped-def]
         seen = sight.seen_hexes(state, seat)
-        numbers = sight.shown_numbers(state)
+        numbers = sight.shown_numbers(state, seat)
         for h in board["hexes"]:
             test.assertIn(h["id"], seen)
             if h["token"] is not None:
@@ -263,8 +283,10 @@ class NoLeakTest(unittest.TestCase):
             self.check_board(self, state, seat, d["board"])
             self.check_pieces(state, seat, d["pieces"])
         elif k == "numbers_revealed":
+            self.assertEqual(d["seat"], seat)
             for h in d["tokens"]:
                 self.assertIn(int(h), seen)
+                self.assertIn(int(h), sight.shown_numbers(state, seat))
         elif k in ("built", "construction_started") and d["seat"] != seat:
             if d["kind"] == "road":
                 self.assertTrue(sight.edge_seen(gb, live, d["target"]))
