@@ -3,7 +3,8 @@
     "walk": "走到这里",
     "road": "修建道路",
     "settlement": "建造村庄",
-    "city": "建造城市"
+    "city": "建造城市",
+    "megacity": "建造大都市"
   },
   "mode": {
     "robber": "移动强盗",
@@ -18,8 +19,9 @@
     "freeRoad_other": "免费道路：还剩 {{count}} 条",
     "setupRoad": "现在在新村庄旁边修一条道路",
     "setupRoadHelp": "选择一条虚线：Tab 或方向键选择，Enter 建造",
-    "setupRoadTouch": "轻触旁边的一条虚线"
+    "setupRoadTouch": "轻触旁边的一条虚线",
+    "megacity": "建造一座大都市"
   },
-  "help": "WASD 或方向键：走动 · 右键：走动或建造 · R E C：建造 · Shift+WASD：镜头",
+  "help": "WASD 或方向键：走动 · 右键：走动或建造 · R E C M：建造 · Shift+WASD：镜头",
   "rejected": "无法执行（{{code}}）"
 }

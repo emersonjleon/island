@@ -404,11 +404,20 @@ function Log({ t, lines }: { t: TFunction; lines: LogLine[] }) {
 }
 
 // ------------------------------------------------------------------ hand + build
-const BUILDS: { kind: BuildKind & ("road" | "settlement" | "city"); action: Action }[] = [
+const BUILDS: { kind: BuildKind; action: Action }[] = [
   { kind: "road", action: "build_road" },
   { kind: "settlement", action: "build_settlement" },
   { kind: "city", action: "build_city" },
 ];
+const MEGACITY_BUILD: { kind: BuildKind; action: Action } = { kind: "megacity", action: "build_megacity" };
+
+/** The build buttons: the megacity joins once the player has a city to upgrade (and the
+ * game has megacities), so the bar stays short at the start. */
+export function buildButtons(settings: Record<string, unknown>, ownCities: number): { kind: BuildKind; action: Action }[] {
+  const pieces = settings["pieces"] as Record<string, unknown> | undefined;
+  const megacities = typeof pieces?.["megacities"] === "number" ? (pieces["megacities"] as number) : 0;
+  return megacities > 0 && ownCities > 0 ? [...BUILDS, MEGACITY_BUILD] : BUILDS;
+}
 
 /** Buying a settler (settlers variation): cost, how many you have, the next one's numbers. */
 function SettlerButton({ store, t, send }: Pick<HudProps, "store" | "t" | "send">) {
@@ -495,7 +504,7 @@ function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade,
         ))}
       </div>
       <div class="actions">
-        {BUILDS.map(({ kind, action }) => {
+        {buildButtons(store.settings, (store.state?.buildings ?? []).filter((b) => b.seat === store.seat && b.kind === "city").length).map(({ kind, action }) => {
           const cost = costOf(store.settings, kind);
           const free = kind === "road" && freeRoads > 0;       // road building card
           const ok = free || canAfford(hand, cost);

@@ -21,7 +21,8 @@
     "settlement": "Poblado",
     "city": "Ciudad",
     "cost": "Cuesta {{res}}",
-    "free": "Gratis"
+    "free": "Gratis",
+    "megacity": "Metrópolis"
   },
   "trade": {
     "open": "Comerciar",
@@ -138,7 +139,8 @@
     "center_selected": "Centrar en el colono",
     "buy_dev_card": "Comprar desarrollo",
     "open_trade": "Abrir comercio",
-    "buy_settler": "Comprar colono"
+    "buy_settler": "Comprar colono",
+    "build_megacity": "Construir metrópolis"
   },
   "spectator": "Estás mirando esta partida",
   "youObject": "ti",
@@ -262,7 +264,7 @@
     "trade": "Comercia con el banco a {{ratio}}:1, o a 3:1 y 2:1 en los puertos donde tengas un poblado. Entre jugadores se comercia en el tablero: publica una oferta y cualquiera puede tomarla.",
     "cards": "Los desarrollos cuestan {{card}}: los caballeros mueven al ladrón y roban; los demás dan caminos, recursos o puntos.",
     "controls": "Controles",
-    "keys": "WASD o flechas: caminar · clic derecho: caminar o construir · R camino · E poblado · C ciudad · T comerciar · Shift+WASD cámara.",
+    "keys": "WASD o flechas: caminar · clic derecho: caminar o construir · R camino · E poblado · C ciudad · M metrópolis · T comerciar · Shift+WASD cámara.",
     "touch": "Toca el mapa para caminar o construir · arrastra para mover el mapa · pellizca para acercar · los botones de abajo construyen y comercian.",
     "full": "Reglas completas"
   },

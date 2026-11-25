@@ -3,7 +3,8 @@
     "walk": "Walk here",
     "road": "Build road",
     "settlement": "Build settlement",
-    "city": "Build city"
+    "city": "Build city",
+    "megacity": "Build megacity"
   },
   "mode": {
     "robber": "Move the robber",
@@ -18,8 +19,9 @@
     "freeRoad_other": "Free roads: {{count}} left",
     "setupRoad": "Now a road next to your new settlement",
     "setupRoadHelp": "Pick one of the dashed lines: Tab or arrows to choose, Enter to build",
-    "setupRoadTouch": "Tap one of the dashed lines next to it"
+    "setupRoadTouch": "Tap one of the dashed lines next to it",
+    "megacity": "Build a megacity"
   },
-  "help": "WASD or arrows: walk · Right-click: walk or build · R E C: build · Shift+WASD: camera",
+  "help": "WASD or arrows: walk · Right-click: walk or build · R E C M: build · Shift+WASD: camera",
   "rejected": "Not possible ({{code}})"
 }

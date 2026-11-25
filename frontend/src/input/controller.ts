@@ -11,7 +11,7 @@ import { heldDirection, neighbourToward } from "./directions";
 import { TouchGestures } from "./touch";
 import { devPlayer, knightHexes } from "../state/devcards";
 
-export type BuildChoice = "road" | "settlement" | "city";
+export type BuildChoice = "road" | "settlement" | "city" | "megacity";
 /** What a pick mode places: a building, or the robber (knight card). */
 export type ModeKind = BuildChoice | "robber";
 
@@ -71,11 +71,11 @@ const CAMERA: Partial<Record<Action, Pt>> = {
   camera_up: { x: 0, y: 1 }, camera_down: { x: 0, y: -1 }, camera_left: { x: 1, y: 0 }, camera_right: { x: -1, y: 0 },
 };
 const BUILD_KEYS: Partial<Record<Action, BuildChoice>> = {
-  build_road: "road", build_settlement: "settlement", build_city: "city",
+  build_road: "road", build_settlement: "settlement", build_city: "city", build_megacity: "megacity",
 };
 /** How long a finished setup settlement waits for its road candidates before giving up the prompt. */
 const ROAD_PROMPT_MS = 3000;
-const BUILDABLE_FIELD = { road: "roads", settlement: "settlements", city: "cities" } as const;
+const BUILDABLE_FIELD = { road: "roads", settlement: "settlements", city: "cities", megacity: "megacities" } as const;
 
 interface Awaiting { target: number; at: number }
 interface PendingBuild { kind: BuildChoice; target: number; spots: number[] }
@@ -698,7 +698,7 @@ export class InputController {
     let walkTo: number | null = null;
     if (hit?.kind === "vertex") {
       walkTo = hit.id;
-      for (const kind of ["settlement", "city"] as const) {
+      for (const kind of ["settlement", "city", "megacity"] as const) {
         if (this.candidates(kind).includes(hit.id)) items.push({ label: kind, run: () => this.build(kind, hit.id) });
       }
     } else if (hit?.kind === "edge") {
