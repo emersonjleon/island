@@ -460,7 +460,9 @@ de la versión 1 agrega `ages.enabled = false`.
   minuto de juego en que cada jugador llegó a la Edad II y III, y una marca con
   el número de la edad sobre su línea en la gráfica de puntos. Se usa el minuto
   y no la tirada porque la gráfica ya va por tiempo.)
-- Opcional: los edificios cambian de aspecto con la edad (2D y 3D).
+- Opcional: los edificios cambian de aspecto con la edad (2D y 3D). (Hecho en 2D:
+  un banderín sobre el techo más alto, crema en la Edad II y dorado con cola
+  partida en la Edad III; nada en la Edad I ni sin edades.)
 - Todo el texto en español e inglés.
 
 ## Paquetes de trabajo propuestos

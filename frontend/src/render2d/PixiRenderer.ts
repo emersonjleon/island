@@ -8,6 +8,7 @@ import type { BoardMsg, Resource } from "../protocol/types";
 import type { Insets, Overlays, PickResult, Renderer } from "../render/Renderer";
 import { constructionProgress, settlerPosition } from "../sim/interp";
 import { ownGatherNumbers } from "../state/settlers";
+import { agePlayer } from "../state/ages";
 import { known, type GameStore } from "../state/store";
 import { drawBuilding } from "./buildings";
 import { drawTerrainDecor, drawWaves } from "./decor";
@@ -456,7 +457,7 @@ export class PixiRenderer implements Renderer {
     }
     for (const b of s.buildings) {
       const p = geo.vertex[b.vertex];
-      if (p) this.building(g, p, b.kind, P.playerColour(store.colourOf(b.seat)), 1);
+      if (p) this.building(g, p, b.kind, P.playerColour(store.colourOf(b.seat)), 1, agePlayer(s, b.seat).age);
     }
     for (const c of s.constructions) {
       const p = geo.vertex[c.target];
@@ -486,8 +487,8 @@ export class PixiRenderer implements Renderer {
     line(0, -1.5).stroke({ width: 2, color: 0xffffff, alpha: 0.3 * alpha, cap: "round" });
   }
 
-  private building(g: Graphics, p: Pt, kind: string, colour: number, alpha: number): void {
-    drawBuilding(g, kind, p.x * UNIT, p.y * UNIT, UNIT, colour, alpha);
+  private building(g: Graphics, p: Pt, kind: string, colour: number, alpha: number, age = 1): void {
+    drawBuilding(g, kind, p.x * UNIT, p.y * UNIT, UNIT, colour, alpha, age);
   }
 
   /** Build mode candidates: dashed roads and dashed rings in the player's colour, all
