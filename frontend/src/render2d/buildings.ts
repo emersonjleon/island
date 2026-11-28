@@ -2,6 +2,8 @@
 // a cottage, a town hall with a tower, and a walled city with three towers and a
 // gold dome. Walls carry the player colour, roofs a darker shade of it, so pieces stay
 // easy to tell apart at a glance. ``alpha`` below 1 draws a piece under construction.
+// With ages on, the owner's age shows as a pennant on the highest roof: cream in
+// Age II, gold with a split tail in Age III (none in Age I).
 import type { Graphics } from "pixi.js";
 
 import * as P from "./palette";
@@ -9,6 +11,8 @@ import * as P from "./palette";
 const WINDOW = 0xffe9a3;
 const GOLD = 0xf0c94f;
 const GOLD_DARK = 0xa67c1a;
+const PENNANT_II = 0xfaf3dc;
+const POLE = 0x4a3a22;
 
 /** Multiply each channel by ``f`` (f < 1 darkens, f > 1 lightens towards white). */
 export function shade(colour: number, f: number): number {
@@ -62,12 +66,39 @@ class Pen {
 }
 
 /** Draw one building centred on its vertex at (x, y) pixels; ``u`` is the hex radius in pixels. */
-export function drawBuilding(g: Graphics, kind: string, x: number, y: number, u: number, colour: number, alpha: number): void {
+export function drawBuilding(g: Graphics, kind: string, x: number, y: number, u: number, colour: number, alpha: number,
+                             age = 1): void {
   const pen = new Pen(g, alpha, Math.max(1.2, u * 0.028));
   const roof = shade(colour, 0.62);
   if (kind === "settlement") settlement(pen, x, y, u * 0.17, colour, roof);
   else if (kind === "city") city(pen, x, y, u * 0.19, colour, roof);
   else megacity(pen, x, y, u * 0.2, colour, roof);
+  if (age >= 2) for (const [px, py] of peaks(kind, x, y, u)) pennant(pen, px, py, u * 0.17, age);
+}
+
+/** Where the pennants stand: the top of the highest roof(s) of each kind. */
+export function peaks(kind: string, x: number, y: number, u: number): [number, number][] {
+  if (kind === "settlement") {
+    const s = u * 0.17;
+    return [[x, y + s * 0.95 - s * 2.1]];
+  }
+  if (kind === "city") {
+    const s = u * 0.19;
+    return [[x + s * 0.725, y + s * 0.95 - s * 3.1]];
+  }
+  const s = u * 0.2;
+  return [-1, 1].map((side): [number, number] => [x + side * s * 1.25, y + s - s * 2.95]);
+}
+
+/** A pole with a flag blowing right; the Age III flag is gold, longer, with a split tail. */
+function pennant(pen: Pen, x: number, y: number, s: number, age: number): void {
+  const pole = s * (age >= 3 ? 1.25 : 1.0);
+  pen.rect(x - s * 0.05, y - pole, s * 0.1, pole, POLE);
+  const top = y - pole;
+  const len = s * (age >= 3 ? 1.05 : 0.8);
+  const h = s * 0.42;
+  if (age >= 3) pen.poly([x + s * 0.05, top, x + len, top + h * 0.1, x + len * 0.7, top + h / 2, x + len, top + h * 0.9, x + s * 0.05, top + h], GOLD, GOLD_DARK);
+  else pen.poly([x + s * 0.05, top, x + len, top + h / 2, x + s * 0.05, top + h], PENNANT_II, POLE);
 }
 
 function settlement(pen: Pen, x: number, y: number, s: number, wall: number, roof: number): void {

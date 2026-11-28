@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { GameStateView } from "../protocol/types";
-import { pointsBreakdown, scoreLine, stepPath } from "./stats";
+import { ageMarks, pointsBreakdown, scoreAt, scoreLine, stepPath } from "./stats";
 import { applyEvent } from "./store";
 
 function state(): GameStateView {
@@ -64,5 +64,25 @@ describe("stats", () => {
     expect(s.players[1]!.resigned).toBe(true);
     expect(scoreLine(s, 1, 9000)).toEqual([[0, 0], [1000, 2], [9000, 2]]);
     expect(stepPath([[0, 0], [10, 2]], (t) => t, (p) => -p)).toBe("M0.0,0.0H10.0V-2.0");
+  });
+});
+
+describe("age marks", () => {
+  it("lists the ages reached after the first, oldest first", () => {
+    const s = state();
+    s.ages = { players: {
+      "0": { age: 3, advancing: null, reached: { "3": 50_000, "2": 20_000 } },
+      "1": { age: 1, advancing: null, reached: {} },
+    } };
+    expect(ageMarks(s, 0)).toEqual([[2, 20_000], [3, 50_000]]);
+    expect(ageMarks(s, 1)).toEqual([]);
+    expect(ageMarks(state(), 0)).toEqual([]);
+  });
+
+  it("reads the score of a step line at a time", () => {
+    const line: [number, number][] = [[0, 0], [10_000, 2], [30_000, 4]];
+    expect(scoreAt(line, 5_000)).toBe(0);
+    expect(scoreAt(line, 10_000)).toBe(2);
+    expect(scoreAt(line, 99_000)).toBe(4);
   });
 });
