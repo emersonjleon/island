@@ -126,79 +126,140 @@ Se suman al llegar. Todas son ajustes por edad (`ages.age2.bonus.*`, `ages.age3.
 
 ## Desarrollos mejorados
 
+*Rediseño del 25 nov 2026. La primera propuesta tenía cartas demasiado fuertes
+para un juego en tiempo real. Los cambios y sus razones están en "Qué cambió y
+por qué", al final de esta sección.*
+
 ### La idea
 
 Hoy hay un solo mazo de desarrollos (14 caballeros, 5 puntos, 2 construcción de
-caminos, 2 año de abundancia, 2 monopolio). La propuesta agrega **dos mazos más,
-uno por edad**. Las cartas viejas no cambian: el nivel I es el mazo de hoy.
+caminos, 2 año de abundancia, 2 monopolio), que cuesta lana, trigo y mineral.
+Las edades agregan **dos mazos más, uno por edad**. Las cartas viejas no cambian:
+el nivel I es el mazo de hoy.
 
 - Al comprar, el jugador elige de qué mazo, hasta el de su edad. Un jugador en la
   Edad Dorada puede seguir comprando nivel I si le conviene (es más barato).
-- Cada nivel cuesta lo mismo que hoy más pescado: nivel II +1 pescado, nivel III
-  +2 pescados.
-- Se mantiene la regla de una carta jugada por tirada, compartida entre niveles,
-  y la carta comprada se puede jugar desde la tirada siguiente.
+- Cada nivel cuesta lo de hoy más pescado: el nivel II, +1 pescado (4 cartas), y
+  el nivel III, +2 pescados (5 cartas).
+- Sigue valiendo la regla de una carta jugada por tirada, compartida entre los
+  niveles. La carta comprada se puede jugar desde la tirada siguiente.
 - Cada mazo se rellena solo cuando se acaba (`dev_cards.refill`), como hoy.
-- Lo que hay en tu mano se ve igual que hoy para los demás: cuántas tienes, y
-  ahora también de qué nivel (no cuáles).
+- Los demás ven tu mano como hoy: cuántas cartas tienes, y ahora también de qué
+  nivel, pero no cuáles.
 
-### Por qué mazos por nivel
+### Reglas del diseño
 
-Un mazo de nivel más alto no es solo "cartas más fuertes": cambia **qué** sale.
-El nivel II es el mazo del mar y del comercio (pescado, intercambio, caminos), y
-el nivel III es el mazo del final de partida (ejército, megaciudades y puntos).
-Así comprar un desarrollo es una decisión: nivel I barato y conocido, nivel II
-para acelerar la economía, nivel III para cerrar la partida.
+Las cartas se diseñaron con cinco reglas. Sirven también para juzgar cartas nuevas
+en el futuro:
 
-Otra opción era que subir de edad mejorara las cartas que ya tienes (por ejemplo,
-que todos tus caballeros roben 2). Es más difícil de explicar en pantalla y de
-equilibrar, y no le da uso al pescado al comprar. Por eso la descarto.
+1. **Nada instantáneo.** En tiempo real, el corazón del juego es la carrera por
+   un lugar: quien empieza a construir primero se arriesga a que otro termine
+   antes. Ninguna carta se salta el tiempo de construcción.
+2. **Poder parecido al precio.** Una carta de nivel I vale unas 3 cartas. Una de
+   nivel II puede valer unas 4 y una de nivel III unas 5, pero no mucho más. El
+   pescado es escaso, así que se pagan con algo que cuesta conseguir.
+3. **Ataques con tope.** Una carta de ataque afecta a un solo jugador y nunca
+   roba más de 2 cartas. Roba 2 solo a quien acumula por encima de su límite
+   del 7, así que ahorrar sin pasarse sigue siendo seguro. Así no se castiga a
+   quien junta pescado para subir de edad.
+4. **Todo efecto se ve.** Los efectos que duran varias tiradas se muestran a
+   todos, con su cuenta regresiva.
+5. **Los puntos no son una lotería.** Comprar cartas para buscar puntos no debe
+   rendir más que construir. Hoy, en el nivel I, sale un punto cada 15 cartas
+   gastadas en promedio. Una ciudad da un punto por 5 cartas. Los niveles altos
+   no bajan de esas 15 cartas por punto.
 
-### Nivel II: desarrollos del Mar (20 cartas)
+### Nivel II: desarrollos del Mar (18 cartas)
+
+El mazo del mar y del comercio: acelera la economía, con poco ataque y pocos puntos.
 
 | Carta | Copias | Qué hace | Cuándo conviene | Contrajuego |
 | --- | --- | --- | --- | --- |
-| **Caballero veterano** | 8 | Mueve el ladrón hasta 5 hexágonos (el caballero normal, 3) y roba 2 cartas en vez de 1. Cuenta como 1 caballero para el Mayor Ejército. | Para frenar al líder aunque esté lejos, o para quitar pescado a quien ahorra para subir de edad. | Gastar antes de acumular; tener edificios en varias zonas. |
-| **Flota pesquera** | 3 | Durante las 3 tiradas siguientes, tus edificios en zonas de pesca producen el doble (suma con el +1 de la Edad II). | Cuando estás por subir a la Dorada o quieres vender pescado en el tablero de ofertas. | El ladrón en tu zona de pesca (si `robber.may_enter_fishing` está activo). |
-| **Mercader** | 2 | Durante las 3 tiradas siguientes, comercias con el banco a 2:1 en cualquier recurso. | Cuando tienes muchas cartas de un tipo y te falta otro para una ciudad o una edad. | Ninguno directo; dura poco. |
-| **Gran calzada** | 2 | 3 caminos gratis, construidos al instante (sin tiempo de construcción). | Para ganarle un lugar a otro jugador o asegurar el Camino más largo. | Llegar primero; los caminos siguen la regla de distancia normal. |
-| **Cosecha abundante** | 2 | Tomas 3 recursos cualesquiera del banco, pescado incluido (el año de abundancia da 2). | Para completar un costo justo, sobre todo el pescado de una edad. | Si el banco no tiene, no se da. |
+| **Caballero veterano** | 6 | Como el caballero, pero mueve el ladrón hasta 4 hexágonos (el normal, 3). Roba 1 carta, o 2 si la víctima tiene más cartas que su límite del 7. Cuenta como 1 caballero para el Mayor Ejército. | Para llegar a un rival lejano o castigar a quien acumula. | No pasarse del límite del 7; tener edificios en varias zonas. |
+| **Flota pesquera** | 3 | Durante las 3 tiradas siguientes, cada uno de tus edificios en una zona de pesca da 1 pescado más cuando esa zona produce. | Antes de ahorrar para la Edad Dorada o para vender pescado. | El ladrón en tu zona de pesca. |
+| **Mercader** | 3 | Durante las 3 tiradas siguientes, comercias con el banco a 2:1 en cualquier recurso. | Cuando tienes mucho de un recurso y te falta otro. | Dura poco; los demás ven que está activo. |
+| **Calzada** | 2 | 3 caminos gratis, con el tiempo normal de construcción (la construcción de caminos da 2). | Para correr hacia un lugar libre o pelear el Camino más largo. | Llegar primero; las reglas normales de los caminos. |
+| **Cosecha abundante** | 2 | Tomas 3 recursos del banco, a lo sumo 1 de ellos pescado (el año de abundancia da 2). | Para completar un costo justo. | Si el banco no tiene, no se da. |
+| **Punto de victoria** | 2 | 1 punto, al jugarla. | Siempre. | — |
+
+Proporciones: 6 caballeros de 18 (33 %; hoy son 14 de 25, el 56 %) y 2 puntos de
+18 (11 %). Eso es un punto cada 36 cartas gastadas: nadie compra el nivel II para
+buscar puntos, sino por su economía.
+
+### Nivel III: desarrollos Dorados (13 cartas)
+
+El mazo del final de la partida. Da herramientas para cerrar la partida, pero
+también una para alcanzar al líder.
+
+| Carta | Copias | Qué hace | Cuándo conviene | Contrajuego |
+| --- | --- | --- | --- | --- |
+| **Caballero de élite** | 4 | Mueve el ladrón hasta 5 hexágonos y roba como el veterano (1 carta, o 2 si la víctima pasa su límite). **Cuenta como 2 caballeros** para el Mayor Ejército. | Para pelear el Mayor Ejército al final. | Otro jugador en la Edad Dorada puede responder igual. |
+| **Arquitecto** | 2 | En las 5 tiradas siguientes, tu próxima ciudad o megaciudad cuesta 2 cartas menos (eliges cuáles, sin contar el pescado). Se construye con el tiempo normal. | Antes de una megaciudad. | Si otro termina antes en ese lugar, el descuento se pierde con la obra. |
+| **Gran mercado** | 2 | Durante las 5 tiradas siguientes, comercias con el banco a 2:1 en cualquier recurso. | Para convertir una gran producción en megaciudades. | Los demás ven que está activo. |
+| **Tributo** | 2 | Cada jugador con más puntos que tú te da 1 carta al azar. | Cuando vas atrás. Si vas primero, no hace nada. | Ninguno: es el freno al líder. |
 | **Punto de victoria** | 3 | 1 punto, al jugarla. | Siempre. | — |
 
-Proporción: 8 caballeros de 20 (40 %, como hoy 14 de 25 es 56 %) y 3 puntos de 20
-(15 %, como hoy 20 %). El nivel II es menos de ejército y más de economía.
+Proporciones: 3 puntos de 13 (23 %). A 5 cartas cada compra, sale un punto cada
+22 cartas, menos que en el nivel I (15). El nivel III se compra por sus efectos y
+no para buscar puntos.
 
-### Nivel III: desarrollos Dorados (15 cartas)
-
-| Carta | Copias | Qué hace | Cuándo conviene | Contrajuego |
-| --- | --- | --- | --- | --- |
-| **Caballero de élite** | 5 | Mueve el ladrón a cualquier hexágono, roba 2 cartas y **cuenta como 2 caballeros** para el Mayor Ejército. | Para ganar o arrebatar el Mayor Ejército al final de la partida. | Otro jugador en la Dorada puede responder igual. |
-| **Arquitecto** | 2 | Tu próxima ciudad o megaciudad se construye al instante y cuesta 2 cartas menos (eliges cuáles). | Justo antes de una megaciudad, para cerrar la partida antes de que reaccionen. | Ninguno directo. |
-| **Gran mercado** | 2 | Durante las 5 tiradas siguientes, comercias con el banco a 2:1 y con tus puertos a 1:1 en un recurso que eliges al jugarla. | Para convertir una gran producción de un recurso en megaciudades. | Ninguno directo. |
-| **Monopolio real** | 1 | Como el monopolio, pero de dos recursos a la vez. | Cuando todos acumulan para el final. | Gastar antes de acumular. |
-| **Punto de victoria** | 5 | 1 punto, al jugarla. | Siempre. | — |
-
-Proporción: 5 puntos de 15 (33 %). El nivel III es la vía de puntos de final de
-partida: con 5 pescados y 10 cartas más se compran dos desarrollos de nivel III,
-con dos tercios de probabilidad de al menos un punto.
+**Por qué el Tributo.** El riesgo más grande de las edades es la bola de nieve:
+quien llega primero a la Dorada produce más y suma puntos. El Tributo es la única
+carta que pesa más cuanto más atrás estás. Para el líder no hace nada, así que no
+se puede usar para escaparse.
 
 ### Efectos que duran varias tiradas
 
-Flota pesquera, Mercader y Gran mercado son los primeros efectos del juego que
-duran un tiempo. Encajan con el tiempo real: se muestran como un ícono con cuenta
-regresiva en el panel del jugador, y los demás ven que está activo (un Mercader
-activo dice "este jugador va a comerciar"). Para mantenerlo simple, solo puede
-haber un efecto activo de cada carta por jugador; jugar otra igual alarga la
-duración en vez de duplicarla.
+Flota pesquera, Mercader, Gran mercado y Arquitecto duran un tiempo. Se muestran
+como un ícono con cuenta regresiva en el panel del jugador, y los demás ven que
+está activo (un Mercader activo dice "este jugador va a comerciar"). Para
+mantenerlo simple, cada jugador tiene a lo sumo un efecto activo de cada carta.
+Jugar otra igual suma sus tiradas a la cuenta, hasta el doble de la duración de
+una carta.
 
 ### Ajustes de los desarrollos mejorados
 
-Todo es configurable en Personalizada: el contenido de cada mazo
-(`dev_cards.deck_tier2`, `dev_cards.deck_tier3`), su costo
-(`economy.costs.dev_card_tier2`, `dev_card_tier3`), y cada número de cada carta
-(distancia y robo de los caballeros, cuántos caballeros cuenta el de élite, tiradas
-de cada efecto, cartas de cada cosecha, caminos de la gran calzada, descuento del
-arquitecto). Un mazo con todas las copias en 0 apaga ese nivel.
+Todo es configurable en Personalizada:
+
+- El contenido de cada mazo (`dev_cards.deck_tier2`, `dev_cards.deck_tier3`). Un
+  mazo con todas las copias en 0 apaga ese nivel.
+- Su costo (`economy.costs.dev_card_tier2`, `dev_card_tier3`).
+- Cada número de cada carta:
+  - el alcance y el robo de los caballeros, y cuántos caballeros cuenta el de élite;
+  - las tiradas de cada efecto y su máximo;
+  - el pescado de la Flota;
+  - las cartas y el pescado máximo de la Cosecha;
+  - los caminos de la Calzada;
+  - el descuento del Arquitecto;
+  - las cartas del Tributo.
+
+### Qué cambió y por qué
+
+| Carta (primera propuesta) | Ahora | Por qué |
+| --- | --- | --- |
+| Caballero veterano: 8 copias, 5 hexágonos, roba 2 siempre | 6 copias, 4 hexágonos, roba 2 solo a quien pasa su límite | Sumado al ladrón del 7, castigaba a quien ahorra pescado para subir de edad |
+| Caballero de élite: cualquier hexágono, roba 2, cuenta 2, 5 copias | 5 hexágonos, roba como el veterano, cuenta 2, 4 copias | Con dos cartas se ganaba el Mayor Ejército en segundos desde cualquier lado |
+| Gran calzada: 3 caminos al instante | Calzada: 3 caminos con tiempo normal | Construir al instante deja a los demás sin respuesta en la carrera por un lugar |
+| Arquitecto: al instante y 2 cartas menos | Solo 2 cartas menos, en 5 tiradas | Igual que la calzada; la ventana de 5 tiradas evita guardarlo toda la partida |
+| Flota pesquera: el doble de pescado | +1 pescado por edificio | El doble se sumaba con la ventaja de la Edad II y desbordaba el banco de pescado |
+| Cosecha abundante: 3, pescado incluido | 3, a lo sumo 1 pescado | Daba 3 pescados por 1, y el pescado dejaba de ser escaso |
+| Gran mercado: 2:1 con el banco y 1:1 en puertos de un recurso | 2:1 con el banco en todo, 5 tiradas | El 1:1 casi no se ve en el juego y era difícil de explicar |
+| Monopolio real (dos monopolios a la vez) | Quitado; en su lugar, el Tributo | Al final de la partida dejaba sin nada a todos a la vez |
+| Puntos: 3 de 20 (II) y 5 de 15 (III) | 2 de 18 y 3 de 13 | El final se volvía una compra de cartas para buscar puntos |
+
+### Cómo se comprueba
+
+Antes de fijar los números, una tanda de partidas de bots (`engine/sim`), con y
+sin desarrollos mejorados, debe cumplir esto:
+
+- La partida no se alarga ni se acorta más de un 10 %.
+- El lado que usa las edades sigue ganando entre el 50 % y el 65 %.
+- El jugador que va primero a mitad de partida no gana más seguido que hoy (la bola de nieve).
+- El Mayor Ejército no cambia de manos más de 3 veces por partida en la mediana.
+- Ninguna carta decide sola: ganar con o sin cada carta no cambia más de 10 puntos porcentuales.
+
+Si un criterio falla, se cambian los números de las cartas (copias, robo,
+tiradas), no las reglas.
 
 ## El pescado
 
@@ -213,7 +274,7 @@ Lo que ayuda a que el pescado no decida la partida desde la colocación inicial:
 
 - La ventaja de +1 pescado de la Edad II.
 - El comercio entre jugadores: el pescado se vuelve algo que se negocia.
-- Cosecha abundante, que puede dar pescado.
+- Cosecha abundante, que puede dar 1 pescado.
 - Los bots valoran las zonas de pesca cuando hay edades, así que compiten por ellas.
 
 **El puerto 2:1 de pescado (sin decidir).** A favor: le da a quien no tiene zona
@@ -303,7 +364,8 @@ ciudad.
 
 Riesgo de "bola de nieve": quien llega primero a la Dorada produce más y suma 2
 puntos. Contrapesos ya incluidos: la subida se anuncia y tarda, el monopolio y el
-ladrón pueden frenar el pescado, y el Caballero veterano alcanza más lejos. Si la
+ladrón pueden frenar el pescado, el Caballero veterano alcanza más lejos, y el
+Tributo del nivel III le quita cartas a quien va adelante. Si la
 simulación muestra que el líder se escapa, hay un ajuste opcional
 `ages.followers_discount_pct`: cada jugador que ya está en una edad abarata un
 X % la subida para los demás (apagado por defecto).
@@ -398,8 +460,8 @@ de pensar:
   cuando tiene el pescado de sobra.
 - **Difícil:** valora las zonas de pesca al colocar sus primeros asentamientos,
   sube a la II apenas puede, guarda pescado para la III, juega Flota pesquera y
-  Mercader cuando le rinden, usa el Arquitecto para su megaciudad y compra nivel
-  III cerca del final para buscar puntos.
+  Mercader cuando le rinden, usa el Arquitecto para su megaciudad, juega el
+  Tributo cuando va atrás y no compra nivel III solo para buscar puntos.
 
 Esto se agrega como campos del perfil de cada nivel en `engine/ai/levels.py`
 (`age_eagerness`, `fish_bonus`), que son parámetros del bot y no reglas del juego.
@@ -482,8 +544,12 @@ el juego jugable.
    este documento.
    *Primera parte hecha (23 nov 2026):* el bot codicioso sube de edad y comercia
    por el costo; costos nuevos en "Resultado de la simulación".
-4. **WP29 Desarrollos mejorados.** Mazos por nivel, cartas nuevas y efectos por
-   tiradas, en motor, interfaz y bots.
+4. **WP29 Desarrollos mejorados**, en dos partes:
+   - **WP29a.** Mazos por nivel y compra por nivel, con las cartas de economía
+     (Flota pesquera, Mercader, Gran mercado, Calzada, Cosecha abundante,
+     Arquitecto y puntos). Incluye los efectos por tiradas, en motor, interfaz y bots.
+   - **WP29b.** Las cartas de ataque y de freno (Caballero veterano, Caballero de
+     élite, Tributo) y la tanda de simulaciones de "Cómo se comprueba".
 5. **WP31 Modo premium.** Campo y ajuste del sitio, la regla en todas las formas
    de crear partida, etiquetas en la pantalla y el administrador. Se puede hacer
    antes o en paralelo con las edades.
@@ -505,8 +571,8 @@ WP26 a WP28 ya dan un juego completo con edades y megaciudades.
 Ya respondidas: preset gratis de 4 con edades (por ahora no); jugadores gratis en
 partidas premium (sí: 3 invitados fijos y 15 invitaciones sueltas al mes).
 
-1. ¿Te gustan los desarrollos mejorados propuestos? ¿Alguna carta que quieras
-   agregar, quitar o cambiar?
+1. Desarrollos mejorados: rediseñados el 25 nov 2026, por pedido de Emerson, para
+   que sean menos disruptivos. ¿Te gusta el rediseño, sobre todo el Tributo?
 2. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
 3. ¿Tres edades, o cuatro con una "Edad de los Navegantes" reservada para barcos y
    combate más adelante? Propongo tres ahora.
