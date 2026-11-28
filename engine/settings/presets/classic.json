@@ -1,3 +1,4 @@
 {
-  "clock": {"roll_interval_ms": 15000}
+  "clock": {"roll_interval_ms": 15000},
+  "pieces": {"megacities": 0}
 }

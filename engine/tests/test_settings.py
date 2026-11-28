@@ -302,10 +302,12 @@ class PresetTest(unittest.TestCase):
                 self.assertEqual((s.board.land_hexes, s.economy.bank.per_resource[Resource.ORE]), (90, 70))
 
     def test_classic_equals_defaults(self) -> None:
-        # Classic is the defaults with 15 s dice (Emerson, 2026-11-17).
-        self.assertEqual(preset_overrides("classic"), {"clock": {"roll_interval_ms": 15000}})
-        self.assertEqual(load_preset("classic"),
-                         GameSettings.model_validate({"preset": "classic", "clock": {"roll_interval_ms": 15000}}))
+        # Classic is the defaults with 15 s dice (Emerson, 2026-11-17) and no megacities
+        # (Emerson, 2026-11-28: they come with other game types and Custom).
+        classic = {"clock": {"roll_interval_ms": 15000}, "pieces": {"megacities": 0}}
+        self.assertEqual(preset_overrides("classic"), classic)
+        self.assertEqual(load_preset("classic"), GameSettings.model_validate({"preset": "classic", **classic}))
+        self.assertEqual(load_preset("classic").pieces.megacities, 0)
 
     def test_blitz(self) -> None:
         s = load_preset("blitz")

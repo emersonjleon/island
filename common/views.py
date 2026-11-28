@@ -33,9 +33,10 @@ def how_to_play(request: HttpRequest) -> HttpResponse:
         {"name": _("Settlement"), "cost": _cost(costs.settlement), "points": points.settlement,
          "seconds": build.settlement // MS_PER_SECOND},
         {"name": _("City"), "cost": _cost(costs.city), "points": points.city, "seconds": build.city // MS_PER_SECOND},
-        {"name": _("Megacity"), "cost": _cost(costs.megacity), "points": points.megacity,
-         "seconds": build.megacity // MS_PER_SECOND},
     ]
+    if s.pieces.megacities:      # Classic has no megacities (Emerson, 2026-11-28); a game type may add them
+        buildings.append({"name": _("Megacity"), "cost": _cost(costs.megacity), "points": points.megacity,
+                          "seconds": build.megacity // MS_PER_SECOND})
     context = {
         "s": s,
         "buildings": buildings,

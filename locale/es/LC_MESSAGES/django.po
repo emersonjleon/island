@@ -2371,3 +2371,7 @@ msgstr "Un premio, como el Camino más largo, para quien tenga más colonos. Sol
 
 msgid "Know the classic game? <a href=\"%(url)s\">Read about the variations</a>: ages, settlers and the hidden island."
 msgstr "¿Ya conoces el juego clásico? <a href=\"%(url)s\">Lee sobre las variaciones</a>: edades, colonos y la isla oculta."
+
+#: templates/how_to_play.html
+msgid "A city replaces one of your settlements."
+msgstr "Una ciudad reemplaza a uno de tus poblados."
