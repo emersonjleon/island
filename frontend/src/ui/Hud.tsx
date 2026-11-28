@@ -8,7 +8,7 @@ import { useEffect, useState } from "preact/hooks";
 import type { Action, Bindings } from "../input/bindings";
 import type { ModeInfo } from "../input/controller";
 import type { LinkInfo } from "../net/connection";
-import type { BuildKind, Intent, Resource } from "../protocol/types";
+import type { BuildKind, DevCardKind, Intent, Resource } from "../protocol/types";
 import { playerColour } from "../render2d/palette";
 import type { GameStore } from "../state/store";
 import "./hud.css";
@@ -38,8 +38,8 @@ export interface HudControls {
   setBindings(b: Bindings): void;
   /** Show the whole island. */
   fitView(): void;
-  /** Knight card: let the player pick the robber's hex on the board. */
-  startRobber(): void;
+  /** Knight card (or veteran / elite knight): let the player pick the robber's hex on the board. */
+  startRobber(card?: DevCardKind): void;
 }
 
 export interface HudProps {
@@ -77,7 +77,7 @@ export interface HudHandle {
   notifyText(text: string): void;
   openTrade(): void;
   /** The player picked the robber's hex for a knight: play it (asking whom to rob if needed). */
-  robberPicked(hex: number): void;
+  robberPicked(hex: number, card?: DevCardKind): void;
   /** Buy a development card (keyboard shortcut). */
   buyCard(): void;
   /** Buy a settler (keyboard shortcut; settlers variation). */
@@ -107,7 +107,7 @@ function Hud(props: HudProps & { handle: HudHandle }) {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [dialog, setDialog] = useState<"trade" | "keys" | "dev" | "stats" | "resign" | "fullscreen" | "help" | "prices" | null>(null);
   const [overHidden, setOverHidden] = useState(false);
-  const [victim, setVictim] = useState<{ hex: number; victims: number[] } | null>(null);
+  const [victim, setVictim] = useState<{ hex: number; victims: number[]; card: DevCardKind } | null>(null);
   const [bindings, setBindings] = useState(props.bindings);
 
   useEffect(() => {
@@ -157,13 +157,13 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       if (why && why !== "settler.not_available") handle.notify(why, why === "settler.max" ? { max: settlerLimit(store.settings, store.state, store.seat) } : {});
       else if (!why) props.send({ a: "buy_settler" });
     };
-    handle.robberPicked = (hex) => {
+    handle.robberPicked = (hex, card = "knight") => {
       const s = store.state;
       const seat = store.seat;
       if (!s || seat === null || !store.board) return;
       const robbable = knightVictims(store.board, s, hex, seat, store.settings).filter((v) => (store.player(v)?.hand_count ?? 1) > 0);
-      if (robbable.length > 1) setVictim({ hex, victims: robbable });
-      else props.send({ a: "play_dev_card", card: "knight", hex, ...(robbable.length ? { victim: robbable[0] } : {}) });
+      if (robbable.length > 1) setVictim({ hex, victims: robbable, card });
+      else props.send({ a: "play_dev_card", card, hex, ...(robbable.length ? { victim: robbable[0] } : {}) });
     };
   }, [handle, t, store, props]);
 
@@ -218,10 +218,10 @@ function Hud(props: HudProps & { handle: HudHandle }) {
       {dialog === "trade" && s && playing && <TradeDialog {...props} onClose={() => setDialog(null)} />}
       {dialog === "dev" && s && playing && (
         <DevCardsDialog store={store} t={t} now={props.now} send={props.send}
-                        startRobber={() => props.controls.startRobber()} onClose={() => setDialog(null)} />
+                        startRobber={(card) => props.controls.startRobber(card)} onClose={() => setDialog(null)} />
       )}
       {victim && s && (
-        <VictimDialog store={store} t={t} hex={victim.hex} victims={victim.victims} send={props.send} onClose={() => setVictim(null)} />
+        <VictimDialog store={store} t={t} hex={victim.hex} victims={victim.victims} card={victim.card} send={props.send} onClose={() => setVictim(null)} />
       )}
       {dialog === "keys" && (
         <KeySettings
@@ -358,6 +358,11 @@ function Scores({ store, t, onStats, onPrices, onResign }: HudProps & { onStats(
                   {holds && <> · <strong class="award">{t("hud:scores.longest_road")}</strong></>}
                   {p.seat !== store.seat && cardCount(dev) > 0 && <> · {t("hud:scores.dev", { count: cardCount(dev) })}</>}
                   {(dev?.knights ?? 0) > 0 && <> · {t("hud:scores.knights", { count: dev!.knights })}</>}
+                  {Object.entries(dev?.effects ?? {}).map(([kind, left]) => (
+                    <span key={kind}> · <span class="dev-effect" title={t("hud:dev.effect", { card: t(`hud:dev.kind.${kind}`), count: left })}>
+                      {t(`hud:dev.kind.${kind}`)} ⏳{left}
+                    </span></span>
+                  ))}
                   {army && <> · <strong class="award">{t("hud:scores.largest_army")}</strong></>}
                   {populationHolder(s) === p.seat && <> · <strong class="award">{t("hud:scores.largest_population")}</strong></>}
                   {agesOn(store.settings) && <> · <span class="age-tag">{t("hud:age.short", { n: ageName(agePlayer(s, p.seat).age) })}</span></>}

@@ -2210,3 +2210,96 @@ msgstr "像最长道路一样，奖励开拓者最多的玩家。仅在开拓者
 
 msgid "Know the classic game? <a href=\"%(url)s\">Read about the variations</a>: ages, settlers and the hidden island."
 msgstr "已经熟悉经典玩法？<a href=\"%(url)s\">阅读变体说明</a>：时代、开拓者和隐藏岛屿。"
+
+msgid "Development of the Sea (tier II)"
+msgstr "海洋发展卡（II级）"
+
+msgid "Golden development (tier III)"
+msgstr "黄金发展卡（III级）"
+
+msgid "Advanced developments: a deck for each age"
+msgstr "进阶发展卡：每个时代一副牌"
+
+msgid "Developments of the Sea (tier II) in the deck"
+msgstr "牌堆中的海洋发展卡（II级）"
+
+msgid "Golden developments (tier III) in the deck"
+msgstr "牌堆中的黄金发展卡（III级）"
+
+msgid "Hexes a veteran knight moves the robber"
+msgstr "老兵骑士移动强盗的格数"
+
+msgid "Hexes an elite knight moves the robber"
+msgstr "精英骑士移动强盗的格数"
+
+msgid "Cards a veteran or elite knight steals"
+msgstr "老兵或精英骑士偷取的牌数"
+
+msgid "Cards it steals from a player over the robber's limit"
+msgstr "从超过强盗上限的玩家处偷取的牌数"
+
+msgid "Rolls a fishing fleet lasts"
+msgstr "捕鱼船队持续的掷骰次数"
+
+msgid "Extra fish per building from a fishing fleet"
+msgstr "捕鱼船队使每座建筑额外获得的鱼"
+
+msgid "Rolls a merchant lasts"
+msgstr "商人持续的掷骰次数"
+
+msgid "Rolls a great market lasts"
+msgstr "大市场持续的掷骰次数"
+
+msgid "Bank trade ratio with a merchant or great market"
+msgstr "商人或大市场生效时与银行的兑换比例"
+
+msgid "Longest an effect can grow when played again (%)"
+msgstr "再次使用时效果最多延长到（%）"
+
+msgid "Roads from a causeway"
+msgstr "堤道给予的道路"
+
+msgid "Resources from a bountiful harvest"
+msgstr "大丰收给予的资源"
+
+msgid "Most fish from a bountiful harvest"
+msgstr "大丰收最多给予的鱼"
+
+msgid "Rolls an architect lasts"
+msgstr "建筑师持续的掷骰次数"
+
+msgid "Cards an architect takes off a city or megacity"
+msgstr "建筑师为城市或大都市减免的牌数"
+
+msgid "Cards each player ahead gives with a tribute"
+msgstr "进贡时每位领先玩家给出的牌数"
+
+msgid "Veteran knight"
+msgstr "老兵骑士"
+
+msgid "Fishing fleet"
+msgstr "捕鱼船队"
+
+msgid "Merchant"
+msgstr "商人"
+
+msgid "Causeway"
+msgstr "堤道"
+
+msgid "Bountiful harvest"
+msgstr "大丰收"
+
+msgid "Elite knight"
+msgstr "精英骑士"
+
+msgid "Architect"
+msgstr "建筑师"
+
+msgid "Great market"
+msgstr "大市场"
+
+msgid "Tribute"
+msgstr "进贡"
+
+msgid "Each age opens a new deck of developments: in the Age of the Sea, developments of the Sea (%(c2)s) with a veteran knight, fishing fleet, merchant, causeway and bountiful harvest; in the Golden Age, golden developments (%(c3)s) with an elite knight, architect, great market and tribute. The fleet, the markets and the architect last a few rolls, and everyone sees them."
+msgstr "每个时代都会开放一副新的发展卡：海洋时代有海洋发展卡（%(c2)s），包括老兵骑士、捕鱼船队、商人、堤道和大丰收；黄金时代有黄金发展卡（%(c3)s），包括精英骑士、建筑师、大市场和进贡。船队、市场和建筑师的效果持续几次掷骰，所有人都能看到。"

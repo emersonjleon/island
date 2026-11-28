@@ -160,14 +160,32 @@
       "victory_point": "胜利分",
       "road_building": "道路建设",
       "year_of_plenty": "丰收之年",
-      "monopoly": "垄断"
+      "monopoly": "垄断",
+      "veteran_knight": "老兵骑士",
+      "fishing_fleet": "捕鱼船队",
+      "merchant": "商人",
+      "causeway": "堤道",
+      "bountiful_harvest": "大丰收",
+      "elite_knight": "精英骑士",
+      "architect": "建筑师",
+      "great_market": "大市场",
+      "tribute": "进贡"
     },
     "help": {
       "knight": "把强盗移动最多 3 格并偷取一份资源",
       "victory_point": "打出时得 1 分",
       "road_building": "免费修建 2 条道路",
       "year_of_plenty": "从银行拿取 2 份资源",
-      "monopoly": "从每位玩家那里拿走一种资源"
+      "monopoly": "从每位玩家那里拿走一种资源",
+      "veteran_knight": "将强盗移动至多 {{reach}} 格；偷 1 张牌，若对方超过强盗上限则偷 2 张",
+      "fishing_fleet": "接下来 {{rolls}} 次掷骰，渔场产出时每座建筑多得 {{fish}} 条鱼",
+      "merchant": "接下来 {{rolls}} 次掷骰，任何资源都可按 {{ratio}}:1 与银行兑换",
+      "causeway": "免费建造 {{count}} 条道路",
+      "bountiful_harvest": "从银行拿取 {{count}} 张资源，最多 {{fish}} 条鱼",
+      "elite_knight": "将强盗移动至多 {{reach}} 格；偷 1 张牌，若对方超过强盗上限则偷 2 张",
+      "architect": "{{rolls}} 次掷骰内，你的下一座城市或大都市少花 {{count}} 张牌",
+      "great_market": "接下来 {{rolls}} 次掷骰，任何资源都可按 {{ratio}}:1 与银行兑换",
+      "tribute": "每位分数比你高的玩家随机给你 {{count}} 张牌"
     },
     "menu": "发展卡",
     "menuHelp": "购买和使用发展卡",
@@ -177,7 +195,24 @@
     "deckLeft_one": "牌堆还剩 {{count}} 张",
     "deckLeft_other": "牌堆还剩 {{count}} 张",
     "buyNow": "购买",
-    "yours": "你的卡牌"
+    "yours": "你的卡牌",
+    "tier": "{{n}}级",
+    "tierName": {
+      "1": "发展卡",
+      "2": "海洋发展卡",
+      "3": "黄金发展卡"
+    },
+    "tierHelp": {
+      "1": "骑士、道路建设、丰收、垄断或胜利点",
+      "2": "老兵骑士、捕鱼船队、商人、堤道、大丰收或胜利点",
+      "3": "精英骑士、建筑师、大市场、进贡或胜利点"
+    },
+    "tierLocked": "第{{n}}时代起",
+    "pickHarvest": "选择从银行拿取的 {{count}} 张资源（最多 {{fish}} 条鱼）",
+    "pickArchitect": "选择你的下一座城市或大都市少花的 {{count}} 张牌（不能是鱼）",
+    "effect_one": "{{card}}：还剩 {{count}} 次掷骰",
+    "effect_other": "{{card}}：还剩 {{count}} 次掷骰",
+    "effects": "生效中的效果"
   },
   "stats": {
     "open": "统计",

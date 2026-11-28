@@ -18,7 +18,9 @@ here and not in ``GameSettings``.
 
 With ages on (docs/AGES_DESIGN.md, "Bots"): **easy** advances to the Age of the Sea
 when it can pay, never trades for it and stops there; **medium** treats each age as
-one more build and trades for what it lacks; **hard** does the same, faster.
+one more build and trades for what it lacks; **hard** does the same, faster. Easy
+buys only first-tier developments; medium and hard buy the advanced ones of their age
+when they can spare the fish.
 ``fishing_bonus`` (valuing fishing grounds at setup) is off: in bot batches it made
 the hard bot lose more often to the medium one.
 """
@@ -48,12 +50,14 @@ class BotLevel:
     max_age: int = 3          # with ages on: the last age the bot tries to reach
     age_trades: bool = True   # with ages on: trade with the bank toward an age's cost
     fishing_bonus: int = 0    # with ages on: extra spot score per fishing ground next to it
+    max_dev_tier: int = 3     # advanced developments: the highest tier the bot buys
     megacity_trades: bool = False  # trade with the bank toward a megacity when one card or two are missing
 
 
 LEVELS: dict[str, BotLevel] = {
     "easy": BotLevel("easy", think_ms=4000, mistake_pct=50, trade_pct=25,
-                     variety_bonus=0, harbor_bonus=0, spend_before_seven=False, max_age=2, age_trades=False),
+                     variety_bonus=0, harbor_bonus=0, spend_before_seven=False, max_age=2, age_trades=False,
+                     max_dev_tier=1),
     "medium": BotLevel("medium", think_ms=2000, mistake_pct=10, trade_pct=100,
                        variety_bonus=0, harbor_bonus=0, spend_before_seven=False),
     "hard": BotLevel("hard", think_ms=800, mistake_pct=0, trade_pct=100,
@@ -69,6 +73,7 @@ class LevelBot(GreedyBot):
     def __init__(self, seat: int, seed: int, level: BotLevel) -> None:
         super().__init__(seat, seed)
         self.level = level
+        self.max_dev_tier = level.max_dev_tier
 
     # ---------------------------------------------------------------- scoring
     def _produced(self, state: GameState) -> set[Resource]:

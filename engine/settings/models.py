@@ -236,6 +236,12 @@ class CostSettings(_Group):
         label="settings.economy.costs.megacity")
     dev_card: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1},
                                     label="settings.economy.costs.dev_card", stage=2)
+    dev_card_tier2: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1, Resource.FISH: 1},
+                                          label="settings.economy.costs.dev_card_tier2")
+    """A tier II development (ages with ``ages.dev_tiers``)."""
+    dev_card_tier3: ResourceMap = setting({Resource.WOOL: 1, Resource.GRAIN: 1, Resource.ORE: 1, Resource.FISH: 2},
+                                          label="settings.economy.costs.dev_card_tier3")
+    """A tier III development (ages with ``ages.dev_tiers``)."""
     settler: ResourceMap = setting(
         {Resource.WOOL: 1, Resource.GRAIN: 1, Resource.FISH: 2},
         label="settings.economy.costs.settler", stage=3)
@@ -528,6 +534,9 @@ class AgesSettings(_Group):
         {BuildKind.ROAD: 1, BuildKind.SETTLEMENT: 1, BuildKind.CITY: 1, BuildKind.MEGACITY: 3},
         label="settings.ages.unlock")
     """The age each construction needs (missing kinds: age I)."""
+    dev_tiers: bool = setting(True, label="settings.ages.dev_tiers")
+    """Advanced developments: tier II and III decks (``dev_cards.deck_tier2`` / ``deck_tier3``),
+    bought from the matching age on."""
     age2: Age2Step = setting(label="settings.ages.age2", factory=Age2Step)  # type: ignore[valid-type]
     age3: Age3Step = setting(label="settings.ages.age3", factory=Age3Step)  # type: ignore[valid-type]
     fish_ransom_age: int = setting(2, label="settings.ages.fish_ransom_age", ge=1, le=3)
@@ -554,6 +563,39 @@ class DevCardSettings(_Group):
     victory_point_points: int = setting(1, label="settings.dev_cards.victory_point_points", ge=0, le=10)
     road_building_roads: int = setting(2, label="settings.dev_cards.road_building_roads", ge=0, le=10)
     year_of_plenty_cards: int = setting(2, label="settings.dev_cards.year_of_plenty_cards", ge=0, le=10)
+    # Advanced developments (docs/AGES_DESIGN.md, "Desarrollos mejorados"): bought with
+    # ages on and ``ages.dev_tiers``, up to the buyer's age. Each tier has its own deck.
+    deck_tier2: dict[DevCardKind, Annotated[int, Field(ge=0, le=100)]] = setting(
+        {DevCardKind.VETERAN_KNIGHT: 6, DevCardKind.FISHING_FLEET: 3, DevCardKind.MERCHANT: 3,
+         DevCardKind.CAUSEWAY: 2, DevCardKind.BOUNTIFUL_HARVEST: 2, DevCardKind.VICTORY_POINT: 2},
+        label="settings.dev_cards.deck_tier2")
+    deck_tier3: dict[DevCardKind, Annotated[int, Field(ge=0, le=100)]] = setting(
+        {DevCardKind.ELITE_KNIGHT: 4, DevCardKind.ARCHITECT: 2, DevCardKind.GREAT_MARKET: 2,
+         DevCardKind.TRIBUTE: 2, DevCardKind.VICTORY_POINT: 3},
+        label="settings.dev_cards.deck_tier3")
+    veteran_max_distance: int = setting(4, label="settings.dev_cards.veteran_max_distance", ge=1, le=20)
+    elite_max_distance: int = setting(5, label="settings.dev_cards.elite_max_distance", ge=1, le=20)
+    strong_knight_steal: int = setting(1, label="settings.dev_cards.strong_knight_steal", ge=0, le=20)
+    """Cards a veteran or elite knight steals."""
+    strong_knight_hoard_steal: int = setting(2, label="settings.dev_cards.strong_knight_hoard_steal", ge=0, le=20)
+    """Cards it steals instead from a player holding more than their robber card limit."""
+    fleet_rolls: int = setting(3, label="settings.dev_cards.fleet_rolls", ge=1, le=50)
+    fleet_fish: int = setting(1, label="settings.dev_cards.fleet_fish", ge=0, le=10)
+    """Extra fish per own building on a producing fishing ground while a fishing fleet is on."""
+    merchant_rolls: int = setting(3, label="settings.dev_cards.merchant_rolls", ge=1, le=50)
+    great_market_rolls: int = setting(5, label="settings.dev_cards.great_market_rolls", ge=1, le=50)
+    market_ratio: int = setting(2, label="settings.dev_cards.market_ratio", ge=1, le=10)
+    """Bank trade ratio for any resource while a merchant or great market is on."""
+    effect_max_pct: int = setting(200, label="settings.dev_cards.effect_max_pct", ge=100, le=1000)
+    """Playing a card whose effect is still on adds its rolls, up to this percent of one card's."""
+    causeway_roads: int = setting(3, label="settings.dev_cards.causeway_roads", ge=0, le=10)
+    harvest_cards: int = setting(3, label="settings.dev_cards.harvest_cards", ge=0, le=10)
+    harvest_max_fish: int = setting(1, label="settings.dev_cards.harvest_max_fish", ge=0, le=10)
+    architect_rolls: int = setting(5, label="settings.dev_cards.architect_rolls", ge=1, le=50)
+    architect_discount: int = setting(2, label="settings.dev_cards.architect_discount", ge=0, le=10)
+    """Cards (never fish) taken off the next city or megacity while an architect is on."""
+    tribute_cards: int = setting(3, label="settings.dev_cards.tribute_cards", ge=0, le=20)
+    """Random cards each player with more points gives the tribute's player."""
 
     @model_validator(mode="after")
     def _cooldown_ms_given(self) -> Self:

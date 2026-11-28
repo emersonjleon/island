@@ -105,7 +105,7 @@ export type Intent =
   | { a: "build"; kind: BuildKind; vertex?: number; edge?: number; settler?: number }
   | { a: "cancel_build"; construction: number }
   | { a: "bank_trade"; give: ResMap; get: ResMap }
-  | { a: "buy_dev_card" }
+  | { a: "buy_dev_card"; tier?: number }
   | { a: "buy_settler"; vertex?: number }
   | { a: "advance_age" }
   | { a: "cancel_age" }
@@ -115,19 +115,25 @@ export type Intent =
   | { a: "accept_offer"; offer: number }
   | { a: "resign" };
 
-export type DevCardKind = "knight" | "victory_point" | "road_building" | "year_of_plenty" | "monopoly";
+export type DevCardKind = "knight" | "victory_point" | "road_building" | "year_of_plenty" | "monopoly"
+  | "veteran_knight" | "fishing_fleet" | "merchant" | "causeway" | "bountiful_harvest"
+  | "elite_knight" | "architect" | "great_market" | "tribute";
 /** One of the viewer's own cards: when it was bought (game ms, and dice rolls so far). */
-export interface DevCard { kind: DevCardKind; at?: number; roll?: number }
+export interface DevCard { kind: DevCardKind; at?: number; roll?: number; tier?: number }
 export interface DevCardsPlayer {
   knights: number;
   count?: number;
   cards?: DevCard[];
   last_play?: { at: number; roll: number } | null;
   free_roads?: number;
+  /** Effects on (fishing fleet, merchant, great market, architect): kind -> rolls left. Public. */
+  effects?: Partial<Record<DevCardKind, number>>;
+  /** Advanced developments on: cards per tier ("1", "2", "3"), when the count is shown. */
+  tiers?: Record<string, number>;
 }
 /** An offer on the trade board: ``seat`` gives ``give`` for ``get``. */
 export interface TradeOffer { id: number; seat: number; give: ResMap; get: ResMap; at: number; expires_at: number | null }
-export interface DevCardsView { deck_left: number; army: number | null; players: Record<string, DevCardsPlayer> }
+export interface DevCardsView { deck_left: number; army: number | null; players: Record<string, DevCardsPlayer>; decks_left?: Record<string, number> }
 
 const KINDS = new Set(["welcome", "board", "state", "events", "ack", "reject", "notice", "pong", "chat", "presence"]);
 

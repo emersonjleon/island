@@ -63,5 +63,17 @@
   "age_started": "{{who}} 正在进入第 {{age}} 时代",
   "age_started_you": "你正在进入第 {{age}} 时代",
   "age_reached": "{{who}} 进入了第 {{age}} 时代",
-  "age_reached_you": "你进入了第 {{age}} 时代"
+  "age_reached_you": "你进入了第 {{age}} 时代",
+  "dev_strong_knight": "{{who}} 使用了{{card}}并移动了强盗",
+  "dev_strong_knight_you": "你使用了{{card}}并移动了强盗",
+  "dev_strong_knight_robbed": "{{who}} 使用了{{card}}，从{{victim}}处偷了 {{count}} 张牌",
+  "dev_strong_knight_robbed_you": "你使用了{{card}}，从{{victim}}处偷了 {{count}} 张牌",
+  "dev_effect": "{{who}} 使用了{{card}}，持续 {{count}} 次掷骰",
+  "dev_effect_you": "你使用了{{card}}，持续 {{count}} 次掷骰",
+  "dev_causeway": "{{who}} 使用了堤道：{{count}} 条免费道路",
+  "dev_causeway_you": "你使用了堤道：{{count}} 条免费道路",
+  "dev_harvest": "{{who}} 通过大丰收拿取了 {{res}}",
+  "dev_harvest_you": "你通过大丰收拿取了 {{res}}",
+  "dev_tribute": "{{who}} 收取了 {{count}} 张牌的进贡",
+  "dev_tribute_you": "你收取了 {{count}} 张牌的进贡"
 }

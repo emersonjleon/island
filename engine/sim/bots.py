@@ -21,7 +21,7 @@ from typing import Any
 from engine.rng import Rng
 from engine.board import coords
 from engine import sight
-from engine.rules import age_state, ages, construction, devcards, movement, placement, robber, settlers, trade, trade_board
+from engine.rules import age_state, ages, construction, dev_effects, devcards, movement, placement, robber, settlers, trade, trade_board
 from engine.settings.enums import BuildKind, DevCardKind, Resource
 from engine.state import GameState, Settler
 
@@ -204,19 +204,20 @@ class GreedyBot(Bot):
 
     def _play(self, state: GameState, kind: DevCardKind) -> Intent | None:
         play: Intent = {"a": "play_dev_card", "card": kind.value}
-        if kind is DevCardKind.KNIGHT:
-            return self._knight(state, play)
-        if kind is DevCardKind.ROAD_BUILDING:
+        if kind in devcards.KNIGHT_KINDS:
+            return self._knight(state, play, devcards.knight_reach(state, kind))
+        if kind in (DevCardKind.ROAD_BUILDING, DevCardKind.CAUSEWAY):
             return play if placement.legal_targets(state, self.seat, ROAD) else None
-        if kind is DevCardKind.YEAR_OF_PLENTY:
-            p = state.player(self.seat)
-            want: list[str] = []
-            for k in (CITY, SETTLEMENT, ROAD):
-                cost = placement.cost_of(state, k)
-                want += [r.value for r in Resource for _ in range(max(0, cost[r] - p.hand[r]))]
-            n = state.settings.dev_cards.year_of_plenty_cards
-            play["resources"] = (want + [Resource.GRAIN.value] * n)[:n]
+        if kind in (DevCardKind.YEAR_OF_PLENTY, DevCardKind.BOUNTIFUL_HARVEST):
+            play["resources"] = self._wanted(state, kind)
             return play
+        if kind in devcards.EFFECT_ROLLS:
+            return self._effect(state, kind, play)
+        if kind is DevCardKind.TRIBUTE:
+            me = state.player(self.seat)
+            ahead = [q for q in state.players if q.seat != self.seat and not q.resigned and q.points > me.points
+                     and q.hand_count > 0 and not robber.is_spared(state, q.seat)]
+            return play if ahead else None
         if kind is DevCardKind.MONOPOLY:
             totals = {r: sum(q.hand[r] for q in state.players if q.seat != self.seat) for r in Resource}
             best = max(totals, key=lambda r: (totals[r], -list(Resource).index(r)))
@@ -226,12 +227,51 @@ class GreedyBot(Bot):
             return play
         return play                                              # victory point
 
-    def _knight(self, state: GameState, play: Intent) -> Intent | None:
+    def _wanted(self, state: GameState, kind: DevCardKind) -> list[str]:
+        """Resources to take with a year of plenty or bountiful harvest: what the next builds lack."""
+        p = state.player(self.seat)
+        cfg = state.settings.dev_cards
+        n = cfg.harvest_cards if kind is DevCardKind.BOUNTIFUL_HARVEST else cfg.year_of_plenty_cards
+        fish_left = cfg.harvest_max_fish if kind is DevCardKind.BOUNTIFUL_HARVEST else n
+        want: list[str] = []
+        for k in (CITY, SETTLEMENT, ROAD):
+            cost = placement.cost_of(state, k)
+            for r in Resource:
+                for _ in range(max(0, cost[r] - p.hand[r])):
+                    if r is Resource.FISH:
+                        if fish_left <= 0:
+                            continue
+                        fish_left -= 1
+                    want.append(r.value)
+        return (want + [Resource.GRAIN.value] * n)[:n]
+
+    def _effect(self, state: GameState, kind: DevCardKind, play: Intent) -> Intent | None:
+        """Fishing fleet, merchant, great market or architect, when it pays off now."""
+        if dev_effects.active(state, self.seat, kind):
+            return None
+        if kind is DevCardKind.FISHING_FLEET:
+            fishing = state.board.fishing
+            on_sea = any(b.seat == self.seat and any(h in fishing for h in state.board.board.vertex_hexes[v])
+                         for v, b in state.buildings.items())
+            return play if on_sea else None
+        if kind is DevCardKind.ARCHITECT:
+            target = MEGACITY if age_state.has_age(state, self.seat, 3) and placement.legal_targets(
+                state, self.seat, MEGACITY) else CITY
+            cost = placement.cost_of(state, target)
+            n = state.settings.dev_cards.architect_discount
+            pool = [r.value for r in sorted(Resource, key=lambda r: -cost[r]) if r is not Resource.FISH
+                    for _ in range(cost[r])]
+            play["resources"] = (pool + [Resource.ORE.value] * n)[:n]
+            return play
+        p = state.player(self.seat)                                # merchant / great market
+        return play if any(p.hand[r] >= 2 for r in Resource) else None
+
+    def _knight(self, state: GameState, play: Intent, limit: int | None = None) -> Intent | None:
         start = state.robber_hex
         if start is None or not state.settings.robber.enabled:
             return None
         board = state.board.board
-        limit = state.settings.robber.knight_max_distance
+        limit = state.settings.robber.knight_max_distance if limit is None else limit
         best: tuple[int, int] | None = None
         for h in range(len(board.hexes)):
             if not board.is_land(h):
@@ -256,11 +296,23 @@ class GreedyBot(Bot):
         play["victim"] = max(sorted(near), key=lambda s: state.player(s).hand_count)
         return play
 
+    #: Highest development tier the bot buys (advanced developments, with ages).
+    max_dev_tier = 3
+
     def _buy_card(self, state: GameState) -> Intent | None:
-        cost = state.settings.economy.costs.dev_card
+        """The highest tier it may buy and afford, keeping the fish of its next age."""
         p = state.player(self.seat)
-        if sum(devcards.deck_left(state).values()) and all(p.hand[r] >= n for r, n in cost.items()):
-            return {"a": "buy_dev_card"}
+        reserve = 0
+        if self.uses_ages and age_state.enabled(state) and age_state.age_of(state, self.seat) < age_state.LAST_AGE:
+            reserve = age_state.step(state, age_state.age_of(state, self.seat) + 1).cost.get(Resource.FISH, 0)
+        top = age_state.age_of(state, self.seat) if devcards.tiers_enabled(state) else 1
+        for tier in range(min(top, self.max_dev_tier), 0, -1):
+            if devcards.buy_error(state, self.seat, tier) is not None:
+                continue
+            cost = devcards.tier_cost(state, tier)
+            if tier > 1 and p.hand[Resource.FISH] - cost[Resource.FISH] < reserve:
+                continue
+            return {"a": "buy_dev_card"} if tier == 1 else {"a": "buy_dev_card", "tier": tier}
         return None
 
     # ----------------------------------------------------------- trade board

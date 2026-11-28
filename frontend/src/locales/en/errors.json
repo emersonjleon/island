@@ -91,7 +91,11 @@
     "need_resources": "Choose {{count}} resources",
     "bank_short": "The bank doesn't have those resources",
     "need_resource": "Choose a resource",
-    "blocked_by_settler": "A settler guards that hex: the robber can't go there"
+    "blocked_by_settler": "A settler guards that hex: the robber can't go there",
+    "no_tiers": "Advanced developments are off in this game",
+    "tier_locked": "Tier {{tier}} developments need age {{tier}}",
+    "too_much_fish": "At most {{max}} fish",
+    "no_fish_discount": "The architect can't take fish off"
   },
   "settler": {
     "setup_not_done": "Finish your setup first",

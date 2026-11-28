@@ -35,7 +35,7 @@ from typing import Literal
 from engine.errors import RuleError
 from engine.events import Buildable, Event
 from engine.game import after_step
-from engine.rules import age_state
+from engine.rules import age_state, dev_effects
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState, PlayerState
 from engine.views import register_buildable_provider
@@ -74,10 +74,15 @@ def free_roads(state: GameState, seat: int) -> int:
 
 
 def build_cost(state: GameState, seat: int, kind: BuildKind) -> dict[Resource, int]:
-    """What ``seat`` pays to start building ``kind`` now (a free road costs nothing)."""
+    """What ``seat`` pays to start building ``kind`` now: a free road costs nothing, and
+    an architect takes its cards off a city or megacity (never below 0)."""
     if kind is BuildKind.ROAD and free_roads(state, seat) > 0:
         return {r: 0 for r in Resource}
-    return cost_of(state, kind)
+    cost = cost_of(state, kind)
+    if kind in (BuildKind.CITY, BuildKind.MEGACITY):
+        for r, n in dev_effects.architect_discount(state, seat).items():
+            cost[r] = max(0, cost[r] - n)
+    return cost
 
 
 def missing_resources(hand: dict[Resource, int], cost: dict[Resource, int]) -> dict[str, int]:

@@ -70,6 +70,8 @@ def _variant_rules() -> dict:
         "ages": ages,
         "age_steps": steps,
         "megacity_age": a.unlock.get(BuildKind.MEGACITY, 1),
+        "dev_tier2_cost": _cost(ages.economy.costs.dev_card_tier2),
+        "dev_tier3_cost": _cost(ages.economy.costs.dev_card_tier3),
         "settlers": settlers,
         "settler_cost": _cost(settlers.economy.costs.settler),
         "gather_rolls": ", ".join(" / ".join(str(n) for n in rolls) for rolls in ss.gather_rolls),

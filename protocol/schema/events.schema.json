@@ -403,6 +403,11 @@
         "seat": {
           "title": "Seat",
           "type": "integer"
+        },
+        "tier": {
+          "default": 1,
+          "title": "Tier",
+          "type": "integer"
         }
       },
       "required": [
@@ -420,14 +425,23 @@
         "victory_point",
         "road_building",
         "year_of_plenty",
-        "monopoly"
+        "monopoly",
+        "veteran_knight",
+        "fishing_fleet",
+        "merchant",
+        "causeway",
+        "bountiful_harvest",
+        "elite_knight",
+        "architect",
+        "great_market",
+        "tribute"
       ],
       "title": "DevCardKind",
       "type": "string"
     },
     "DevCardPlayed": {
       "additionalProperties": false,
-      "description": "``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),\n``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).\nYear of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count). Road building:\n``roads`` free roads.",
+      "description": "``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),\n``stolen`` cards taken (the kinds go only to the two players, in ``Hand``); the\nveteran and elite knights the same. Year of plenty and bountiful harvest: ``took``\n(from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count).\nTribute: ``taken`` (seat -> count). Road building and causeway: ``roads`` free roads.\nFishing fleet, merchant, great market and architect: ``rolls`` left of the effect;\narchitect also ``discount`` (cards off the next city or megacity).",
       "properties": {
         "at": {
           "title": "At",
@@ -435,6 +449,16 @@
         },
         "card": {
           "$ref": "#/$defs/DevCardKind"
+        },
+        "discount": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "title": "Discount",
+          "type": "object"
         },
         "hex": {
           "anyOf": [
@@ -468,6 +492,11 @@
         "roads": {
           "default": 0,
           "title": "Roads",
+          "type": "integer"
+        },
+        "rolls": {
+          "default": 0,
+          "title": "Rolls",
           "type": "integer"
         },
         "seat": {

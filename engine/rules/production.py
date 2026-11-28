@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from engine.events import Event, Hand, Produced
 from engine.game import SIG_PRODUCED, emit
-from engine.rules import age_state
+from engine.rules import age_state, dev_effects
 from engine.settings.enums import BuildKind, Resource
 from engine.state import GameState
 
@@ -61,7 +61,8 @@ def _hex_owed(state: GameState, hex_id: int) -> dict[int, int]:
 
 def _with_age_bonus(state: GameState, hex_id: int, per_seat: dict[int, int]) -> dict[int, int]:
     """Ages: each building on a producing hex adds ``age_state.production_bonus``, and on
-    a fishing ground also ``age_state.fish_bonus``."""
+    a fishing ground also ``age_state.fish_bonus`` and a fishing fleet's fish
+    (``dev_effects.fleet_fish``)."""
     out = dict(per_seat)
     fishing = hex_id in state.board.fishing
     for v in state.board.board.hex_vertices[hex_id]:
@@ -69,7 +70,7 @@ def _with_age_bonus(state: GameState, hex_id: int, per_seat: dict[int, int]) -> 
         if b is not None and b.seat in out:
             out[b.seat] += age_state.production_bonus(state, b.seat, b.kind)
             if fishing:
-                out[b.seat] += age_state.fish_bonus(state, b.seat)
+                out[b.seat] += age_state.fish_bonus(state, b.seat) + dev_effects.fleet_fish(state, b.seat)
     return out
 
 

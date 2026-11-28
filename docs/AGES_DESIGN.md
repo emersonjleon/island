@@ -549,12 +549,15 @@ el juego jugable.
    este documento.
    *Primera parte hecha (23 nov 2026):* el bot codicioso sube de edad y comercia
    por el costo; costos nuevos en "Resultado de la simulación".
-4. **WP29 Desarrollos mejorados**, en dos partes:
-   - **WP29a.** Mazos por nivel y compra por nivel, con las cartas de economía
-     (Flota pesquera, Mercader, Gran mercado, Calzada, Cosecha abundante,
-     Arquitecto y puntos). Incluye los efectos por tiradas, en motor, interfaz y bots.
-   - **WP29b.** Las cartas de ataque y de freno (Caballero veterano, Caballero de
-     élite, Tributo) y la tanda de simulaciones de "Cómo se comprueba".
+4. **WP29 Desarrollos mejorados.** Mazos por nivel, cartas nuevas y efectos por
+   tiradas, en motor, interfaz y bots.
+   *Hecho (27 nov 2026), todas las cartas en un solo paquete:* `engine/rules/devcards.py`
+   (niveles, caballeros, Tributo) y `engine/rules/dev_effects.py` (efectos por
+   tiradas); `ages.dev_tiers` y los ajustes de cada carta en `dev_cards.*`. En
+   partidas de bots con los valores por defecto, los bots casi no compran niveles
+   altos (guardan el pescado para la edad siguiente), y la duración no cambia
+   (mediana de 108 tiradas en 12 partidas, con y sin niveles). Falta la tanda de
+   "Cómo se comprueba", con bots que usen más las cartas.
 5. **WP31 Modo premium.** Campo y ajuste del sitio, la regla en todas las formas
    de crear partida, etiquetas en la pantalla y el administrador. Se puede hacer
    antes o en paralelo con las edades.
@@ -574,13 +577,15 @@ WP26 a WP28 ya dan un juego completo con edades y megaciudades.
 ## Preguntas abiertas para Emerson
 
 Ya respondidas: preset gratis de 4 con edades (por ahora no); jugadores gratis en
-partidas premium (sí: 3 invitados fijos y 15 invitaciones sueltas al mes).
+partidas premium (sí: 3 invitados fijos y 15 invitaciones sueltas al mes); las
+ciudades siguen en la Edad I, como en el clásico (sí, 27 nov 2026); desarrollos
+mejorados (rediseño aprobado el 27 nov 2026, con todos los caballeros contando 1 y
+el Tributo de 3 cartas); tres edades, sin una cuarta (27 nov 2026).
 
-1. Desarrollos mejorados: rediseñados el 25 nov 2026, por pedido de Emerson, para
-   que sean menos disruptivos. ¿Te gusta el rediseño, sobre todo el Tributo?
-2. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
-3. ¿Tres edades, o cuatro con una "Edad de los Navegantes" reservada para barcos y
-   combate más adelante? Propongo tres ahora.
-4. ¿Las ciudades siguen en la Edad I (como Catan)? Propongo que sí.
-5. ¿Te gustan los nombres (Colonos, Mar, Dorada)?
-6. ¿Las edades de los demás siempre visibles, incluso con niebla? Propongo que sí.
+Ideas para más adelante (Emerson, 27 nov 2026): los barcos entran en la Edad del
+Mar, con otros mapas de varias islas unidas por caminos marítimos. Los combates
+quedan para la Edad Dorada, pero necesitan su propio diseño antes de hacerlos.
+
+1. Puerto 2:1 de pescado: propongo decidirlo con la simulación. ¿De acuerdo?
+2. ¿Te gustan los nombres (Colonos, Mar, Dorada)?
+3. ¿Las edades de los demás siempre visibles, incluso con niebla? Propongo que sí.

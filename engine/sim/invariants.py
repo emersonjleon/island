@@ -101,8 +101,11 @@ def _board(state: GameState) -> list[str]:
 
 
 def _dev_cards(state: GameState) -> list[str]:
-    """Every card is in the deck, in a hand or played (one full deck per refill more)."""
+    """Every card is in a deck, in a hand or played (one full deck per refill more).
+    Advanced tiers: each tier's deck plus its drawn cards is whole, and the first tier's
+    deck, hands and plays add up once the advanced draws are taken out."""
     view = state.ext.get(devcards.EXT_KEY, {})
+    out: list[str] = []
     count = {k: n for k, n in devcards.deck_left(state).items()}
     for cards in view.get("hands", {}).values():
         for c in cards:
@@ -110,11 +113,21 @@ def _dev_cards(state: GameState) -> list[str]:
     for played in view.get("played", {}).values():
         for k, n in played.items():
             count[k] = count.get(k, 0) + n
+    for tier in (2, 3):
+        drawn = view.get("drawn", {}).get(str(tier), {})
+        for k, n in drawn.items():
+            count[k] = count.get(k, 0) - n
+        left = devcards.deck_left(state, tier)
+        decks = 1 + int(view.get("tier_refills", {}).get(str(tier), 0))
+        whole = {k: left.get(k, 0) + drawn.get(k, 0) for k in {*left, *drawn}}
+        want_t = {k.value: n * decks for k, n in devcards.tier_deck(state, tier).items()}
+        if str(tier) in view.get("decks", {}) and {k: n for k, n in whole.items() if n} != {k: n for k, n in want_t.items() if n}:
+            out.append(f"dev_cards.tier{tier}: {whole} != {want_t}")
     decks = 1 + int(view.get("refills", 0))
     want = {k.value: n * decks for k, n in state.settings.dev_cards.deck.items()}
     if {k: n for k, n in count.items() if n} != {k: n for k, n in want.items() if n}:
-        return [f"dev_cards.total: {count} != {want}"]
-    return []
+        out.append(f"dev_cards.total: {count} != {want}")
+    return out
 
 
 def _trade_board(state: GameState) -> list[str]:

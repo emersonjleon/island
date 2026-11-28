@@ -2,7 +2,7 @@
 // intents (move_settler, build) and camera moves. It reads the store, never
 // changes it, and only knows the renderer through the Renderer interface.
 import { BoardGeometry, dist2, walkableNeighbours, type Pt } from "../board/geometry";
-import type { BuildKind, Intent, SettlerView } from "../protocol/types";
+import type { BuildKind, DevCardKind, Intent, SettlerView } from "../protocol/types";
 import type { Overlays, Renderer } from "../render/Renderer";
 import { settlerPosition } from "../sim/interp";
 import type { GameStore } from "../state/store";
@@ -36,7 +36,7 @@ export interface InputOptions {
   /** Build mode changed (null = left build mode). */
   onMode?: (mode: ModeInfo | null) => void;
   /** Robber mode picked a hex (knight card). */
-  onRobber?: (hex: number) => void;
+  onRobber?: (hex: number, card: DevCardKind) => void;
   /** Actions the HUD owns (open_trade, buy_dev_card, buy_settler). */
   onAction?: (action: Action) => void;
   /** Show a right-click menu at a screen point; returns a close function. */
@@ -91,6 +91,8 @@ export class InputController {
   private awaiting = new Map<number, Awaiting>();
   private pending = new Map<number, PendingBuild>();
   private geo: BoardGeometry | null = null;
+  /** The knight card the robber pick mode is for (knight, veteran or elite). */
+  private robberCard: DevCardKind = "knight";
   private overlayKey = "";
   private modeCount = -1;
   private modeFree = 0;
@@ -327,7 +329,7 @@ export class InputController {
   private candidates(kind: ModeKind): number[] {
     if (kind === "robber") {
       const board = this.opts.store.board;
-      return board && this.state ? knightHexes(board, this.state, this.opts.store.settings) : [];
+      return board && this.state ? knightHexes(board, this.state, this.opts.store.settings, this.robberCard) : [];
     }
     return this.state?.buildable?.[BUILDABLE_FIELD[kind]] ?? [];
   }
@@ -497,14 +499,15 @@ export class InputController {
 
   /** Build ``kind`` at ``target``: build now if a settler stands there, else walk one there first. */
   /** Knight card: pick the hex the robber goes to (the HUD then plays the card). */
-  startRobber(): void {
+  startRobber(card: DevCardKind = "knight"): void {
+    this.robberCard = card;
     if (this.mode?.kind === "robber") return;
     this.toggleMode("robber");
   }
 
   build(kind: ModeKind, target: number): void {
     this.setMode(null);
-    if (kind === "robber") { this.opts.onRobber?.(target); return; }
+    if (kind === "robber") { this.opts.onRobber?.(target, this.robberCard); return; }
     const geo = this.geometry();
     const board = this.opts.store.board;
     if (!geo || !board) return;

@@ -87,18 +87,22 @@ class BankTrade(_Cmd):
 
 
 class BuyDevCard(_Cmd):
-    """Buy the top card of the development deck (stage 2)."""
+    """Buy the top card of a development deck (stage 2). ``tier`` 2 or 3: an advanced
+    development (ages with ``ages.dev_tiers``, from that age on)."""
     a: Literal["buy_dev_card"] = "buy_dev_card"
+    tier: int = Field(default=1, ge=1, le=3)
 
 
 class PlayDevCard(_Cmd):
     """Play a development card (stage 2). Fields by card:
 
-    * ``knight``: ``hex`` (where the robber goes) and, when several players could be
-      robbed there, ``victim``;
-    * ``year_of_plenty``: ``resources`` (one entry per card taken, repeats allowed);
+    * ``knight`` / ``veteran_knight`` / ``elite_knight``: ``hex`` (where the robber
+      goes) and, when several players could be robbed there, ``victim``;
+    * ``year_of_plenty`` / ``bountiful_harvest``: ``resources`` (one entry per card
+      taken, repeats allowed);
+    * ``architect``: ``resources``, the cards taken off the next city or megacity;
     * ``monopoly``: ``resource``;
-    * ``victory_point`` / ``road_building``: nothing else.
+    * any other card: nothing else.
 
     Whether the right fields are given for the card is a rule check (``dev.*`` codes).
     """

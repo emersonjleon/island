@@ -91,7 +91,11 @@
     "need_resources": "请选择 {{count}} 份资源",
     "bank_short": "银行没有这些资源",
     "need_resource": "请选择一种资源",
-    "blocked_by_settler": "有拓荒者守护那个六边形：强盗不能去那里"
+    "blocked_by_settler": "有拓荒者守护那个六边形：强盗不能去那里",
+    "no_tiers": "本局未开启进阶发展卡",
+    "tier_locked": "{{tier}}级发展卡需要第{{tier}}时代",
+    "too_much_fish": "最多 {{max}} 条鱼",
+    "no_fish_discount": "建筑师不能减免鱼"
   },
   "settler": {
     "setup_not_done": "请先完成准备阶段",

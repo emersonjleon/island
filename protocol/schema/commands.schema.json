@@ -149,13 +149,20 @@
     },
     "BuyDevCard": {
       "additionalProperties": false,
-      "description": "Buy the top card of the development deck (stage 2).",
+      "description": "Buy the top card of a development deck (stage 2). ``tier`` 2 or 3: an advanced\ndevelopment (ages with ``ages.dev_tiers``, from that age on).",
       "properties": {
         "a": {
           "const": "buy_dev_card",
           "default": "buy_dev_card",
           "title": "A",
           "type": "string"
+        },
+        "tier": {
+          "default": 1,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Tier",
+          "type": "integer"
         }
       },
       "title": "BuyDevCard",
@@ -251,7 +258,16 @@
         "victory_point",
         "road_building",
         "year_of_plenty",
-        "monopoly"
+        "monopoly",
+        "veteran_knight",
+        "fishing_fleet",
+        "merchant",
+        "causeway",
+        "bountiful_harvest",
+        "elite_knight",
+        "architect",
+        "great_market",
+        "tribute"
       ],
       "title": "DevCardKind",
       "type": "string"
@@ -295,7 +311,7 @@
     },
     "PlayDevCard": {
       "additionalProperties": false,
-      "description": "Play a development card (stage 2). Fields by card:\n\n* ``knight``: ``hex`` (where the robber goes) and, when several players could be\n  robbed there, ``victim``;\n* ``year_of_plenty``: ``resources`` (one entry per card taken, repeats allowed);\n* ``monopoly``: ``resource``;\n* ``victory_point`` / ``road_building``: nothing else.\n\nWhether the right fields are given for the card is a rule check (``dev.*`` codes).",
+      "description": "Play a development card (stage 2). Fields by card:\n\n* ``knight`` / ``veteran_knight`` / ``elite_knight``: ``hex`` (where the robber\n  goes) and, when several players could be robbed there, ``victim``;\n* ``year_of_plenty`` / ``bountiful_harvest``: ``resources`` (one entry per card\n  taken, repeats allowed);\n* ``architect``: ``resources``, the cards taken off the next city or megacity;\n* ``monopoly``: ``resource``;\n* any other card: nothing else.\n\nWhether the right fields are given for the card is a rule check (``dev.*`` codes).",
       "properties": {
         "a": {
           "const": "play_dev_card",

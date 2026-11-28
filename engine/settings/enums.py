@@ -62,6 +62,17 @@ class DevCardKind(StrEnum):
     ROAD_BUILDING = "road_building"
     YEAR_OF_PLENTY = "year_of_plenty"
     MONOPOLY = "monopoly"
+    # Advanced developments (ages, docs/AGES_DESIGN.md): tier II, the sea
+    VETERAN_KNIGHT = "veteran_knight"
+    FISHING_FLEET = "fishing_fleet"
+    MERCHANT = "merchant"
+    CAUSEWAY = "causeway"
+    BOUNTIFUL_HARVEST = "bountiful_harvest"
+    # tier III, golden
+    ELITE_KNIGHT = "elite_knight"
+    ARCHITECT = "architect"
+    GREAT_MARKET = "great_market"
+    TRIBUTE = "tribute"
 
 
 class SeatOrder(StrEnum):
