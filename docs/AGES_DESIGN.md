@@ -193,10 +193,10 @@ también una para alcanzar al líder.
 
 | Carta | Copias | Qué hace | Cuándo conviene | Contrajuego |
 | --- | --- | --- | --- | --- |
-| **Caballero de élite** | 4 | Mueve el ladrón hasta 5 hexágonos y roba como el veterano (1 carta, o 2 si la víctima pasa su límite). **Cuenta como 2 caballeros** para el Mayor Ejército. | Para pelear el Mayor Ejército al final. | Otro jugador en la Edad Dorada puede responder igual. |
+| **Caballero de élite** | 4 | Mueve el ladrón hasta 5 hexágonos y roba como el veterano (1 carta, o 2 si la víctima pasa su límite). Cuenta como 1 caballero para el Mayor Ejército, como todos los caballeros. | Para alcanzar a un rival en cualquier parte de la isla al final de la partida. | Otro jugador en la Edad Dorada puede responder igual. |
 | **Arquitecto** | 2 | En las 5 tiradas siguientes, tu próxima ciudad o megaciudad cuesta 2 cartas menos (eliges cuáles, sin contar el pescado). Se construye con el tiempo normal. | Antes de una megaciudad. | Si otro termina antes en ese lugar, el descuento se pierde con la obra. |
 | **Gran mercado** | 2 | Durante las 5 tiradas siguientes, comercias con el banco a 2:1 en cualquier recurso. | Para convertir una gran producción en megaciudades. | Los demás ven que está activo. |
-| **Tributo** | 2 | Cada jugador con más puntos que tú te da 1 carta al azar. | Cuando vas atrás. Si vas primero, no hace nada. | Ninguno: es el freno al líder. |
+| **Tributo** | 2 | Cada jugador con más puntos que tú te da 3 cartas al azar (o las que tenga, si tiene menos). | Cuando vas atrás. Si vas primero, no hace nada. | Gastar las cartas antes; ir atrás de quien lo juega. |
 | **Punto de victoria** | 3 | 1 punto, al jugarla. | Siempre. | — |
 
 Proporciones: 3 puntos de 13 (23 %). A 5 cartas cada compra, sale un punto cada
@@ -206,7 +206,11 @@ no para buscar puntos.
 **Por qué el Tributo.** El riesgo más grande de las edades es la bola de nieve:
 quien llega primero a la Dorada produce más y suma puntos. El Tributo es la única
 carta que pesa más cuanto más atrás estás. Para el líder no hace nada, así que no
-se puede usar para escaparse.
+se puede usar para escaparse. Da 3 cartas por jugador (decisión de Emerson, 27 nov
+2026). Con uno adelante son 3 cartas, menos que lo que cuesta. Con tres adelante
+son 9, mucho más. Por eso pesa tanto al final, cuando las diferencias de puntos
+son claras. Las cartas que da cada jugador son un ajuste, por si la simulación
+muestra que frena demasiado.
 
 ### Efectos que duran varias tiradas
 
@@ -225,26 +229,26 @@ Todo es configurable en Personalizada:
   mazo con todas las copias en 0 apaga ese nivel.
 - Su costo (`economy.costs.dev_card_tier2`, `dev_card_tier3`).
 - Cada número de cada carta:
-  - el alcance y el robo de los caballeros, y cuántos caballeros cuenta el de élite;
+  - el alcance y el robo de los caballeros;
   - las tiradas de cada efecto y su máximo;
   - el pescado de la Flota;
   - las cartas y el pescado máximo de la Cosecha;
   - los caminos de la Calzada;
   - el descuento del Arquitecto;
-  - las cartas del Tributo.
+  - las cartas que da cada jugador en el Tributo (3).
 
 ### Qué cambió y por qué
 
 | Carta (primera propuesta) | Ahora | Por qué |
 | --- | --- | --- |
 | Caballero veterano: 8 copias, 5 hexágonos, roba 2 siempre | 6 copias, 4 hexágonos, roba 2 solo a quien pasa su límite | Sumado al ladrón del 7, castigaba a quien ahorra pescado para subir de edad |
-| Caballero de élite: cualquier hexágono, roba 2, cuenta 2, 5 copias | 5 hexágonos, roba como el veterano, cuenta 2, 4 copias | Con dos cartas se ganaba el Mayor Ejército en segundos desde cualquier lado |
+| Caballero de élite: cualquier hexágono, roba 2, cuenta 2, 5 copias | 5 hexágonos, roba como el veterano, cuenta 1, 4 copias | Con dos cartas se ganaba el Mayor Ejército en segundos desde cualquier lado. Todos los caballeros cuentan 1 (decisión de Emerson, 27 nov 2026) |
 | Gran calzada: 3 caminos al instante | Calzada: 3 caminos con tiempo normal | Construir al instante deja a los demás sin respuesta en la carrera por un lugar |
 | Arquitecto: al instante y 2 cartas menos | Solo 2 cartas menos, en 5 tiradas | Igual que la calzada; la ventana de 5 tiradas evita guardarlo toda la partida |
 | Flota pesquera: el doble de pescado | +1 pescado por edificio | El doble se sumaba con la ventaja de la Edad II y desbordaba el banco de pescado |
 | Cosecha abundante: 3, pescado incluido | 3, a lo sumo 1 pescado | Daba 3 pescados por 1, y el pescado dejaba de ser escaso |
 | Gran mercado: 2:1 con el banco y 1:1 en puertos de un recurso | 2:1 con el banco en todo, 5 tiradas | El 1:1 casi no se ve en el juego y era difícil de explicar |
-| Monopolio real (dos monopolios a la vez) | Quitado; en su lugar, el Tributo | Al final de la partida dejaba sin nada a todos a la vez |
+| Monopolio real (dos monopolios a la vez) | Quitado; en su lugar, el Tributo (3 cartas de cada jugador que va adelante) | Al final de la partida dejaba sin nada a todos a la vez; el Tributo solo toca a quien va adelante |
 | Puntos: 3 de 20 (II) y 5 de 15 (III) | 2 de 18 y 3 de 13 | El final se volvía una compra de cartas para buscar puntos |
 
 ### Cómo se comprueba
