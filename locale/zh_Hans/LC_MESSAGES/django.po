@@ -2210,3 +2210,7 @@ msgstr "像最长道路一样，奖励开拓者最多的玩家。仅在开拓者
 
 msgid "Know the classic game? <a href=\"%(url)s\">Read about the variations</a>: ages, settlers and the hidden island."
 msgstr "已经熟悉经典玩法？<a href=\"%(url)s\">阅读变体说明</a>：时代、开拓者和隐藏岛屿。"
+
+#: templates/how_to_play.html
+msgid "A city replaces one of your settlements."
+msgstr "城市取代你的一座村庄。"

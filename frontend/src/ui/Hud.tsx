@@ -404,19 +404,22 @@ function Log({ t, lines }: { t: TFunction; lines: LogLine[] }) {
 }
 
 // ------------------------------------------------------------------ hand + build
-const BUILDS: { kind: BuildKind; action: Action }[] = [
+const BUILDS: BuildButton[] = [
   { kind: "road", action: "build_road" },
   { kind: "settlement", action: "build_settlement" },
   { kind: "city", action: "build_city" },
 ];
-const MEGACITY_BUILD: { kind: BuildKind; action: Action } = { kind: "megacity", action: "build_megacity" };
+const MEGACITY_BUILD: BuildButton = { kind: "megacity", action: "build_megacity" };
 
-/** The build buttons: the megacity joins once the player has a city to upgrade (and the
- * game has megacities), so the bar stays short at the start. */
-export function buildButtons(settings: Record<string, unknown>, ownCities: number): { kind: BuildKind; action: Action }[] {
+type BuildButton = { kind: BuildKind; action: Action };
+
+/** The build buttons. The classic row (road, settlement, city) never changes, so it
+ * keeps fitting on a phone; the megacity goes in the row of variations below, and only
+ * once the player has a city to upgrade (and the game has megacities). */
+export function buildButtons(settings: Record<string, unknown>, ownCities: number): { main: BuildButton[]; extra: BuildButton[] } {
   const pieces = settings["pieces"] as Record<string, unknown> | undefined;
   const megacities = typeof pieces?.["megacities"] === "number" ? (pieces["megacities"] as number) : 0;
-  return megacities > 0 && ownCities > 0 ? [...BUILDS, MEGACITY_BUILD] : BUILDS;
+  return { main: BUILDS, extra: megacities > 0 && ownCities > 0 ? [MEGACITY_BUILD] : [] };
 }
 
 /** Buying a settler (settlers variation): cost, how many you have, the next one's numbers. */
@@ -492,6 +495,25 @@ function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade,
   const offerCount = othersOffers(store.state, store.seat).length;
   const devCost = costOf(store.settings, "dev_card" as BuildKind);
   const freeRoads = devPlayer(store.state, store.seat)?.free_roads ?? 0;
+  const ownCities = (store.state?.buildings ?? []).filter((b) => b.seat === store.seat && b.kind === "city").length;
+  const extraBuilds = buildButtons(store.settings, ownCities).extra;
+  const buildButton = (kind: BuildKind, action: Action) => {
+    const cost = costOf(store.settings, kind);
+    const free = kind === "road" && freeRoads > 0;       // road building card
+    const needs = unlockAge(store.settings, kind);
+    const locked = needs > agePlayer(store.state, store.seat).age;   // ages: e.g. the megacity waits for age III
+    const ok = !locked && (free || canAfford(hand, cost));
+    const lockText = t("hud:build.locked", { n: ageName(needs) });
+    return (
+      <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}${locked ? " locked" : ""}`} disabled={locked}
+              onClick={() => controls.action(action)} aria-pressed={mode?.kind === kind}
+              title={locked ? `${lockText} · ${t("hud:build.cost", { res: formatRes(t, cost) })}` : free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
+        <span class="build-name">{locked && "🔒 "}{t(`hud:build.${kind}`)}</span>
+        {locked ? <span class="free-pill">{lockText}</span> : free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
+        {free && <span class="badge count-badge" title={t("hud:build.free")}>{freeRoads}</span>}
+      </button>
+    );
+  };
   return (
     <div class="hud-panel hud-hand">
       <div class="cards" aria-label={t("hud:hand")}>
@@ -504,23 +526,7 @@ function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade,
         ))}
       </div>
       <div class="actions">
-        {buildButtons(store.settings, (store.state?.buildings ?? []).filter((b) => b.seat === store.seat && b.kind === "city").length).map(({ kind, action }) => {
-          const cost = costOf(store.settings, kind);
-          const free = kind === "road" && freeRoads > 0;       // road building card
-          const needs = unlockAge(store.settings, kind);
-          const locked = needs > agePlayer(store.state, store.seat).age;   // ages: e.g. the megacity waits for age III
-          const ok = !locked && (free || canAfford(hand, cost));
-          const lockText = t("hud:build.locked", { n: ageName(needs) });
-          return (
-            <button key={kind} type="button" class={`build build-${kind}${ok ? "" : " short"}${locked ? " locked" : ""}`} disabled={locked}
-                    onClick={() => controls.action(action)} aria-pressed={mode?.kind === kind}
-                    title={locked ? `${lockText} · ${t("hud:build.cost", { res: formatRes(t, cost) })}` : free ? t("hud:build.free") : t("hud:build.cost", { res: formatRes(t, cost) })}>
-              <span class="build-name">{locked && "🔒 "}{t(`hud:build.${kind}`)}</span>
-              {locked ? <span class="free-pill">{lockText}</span> : free ? <span class="free-pill">{t("hud:build.free")}</span> : <CostPips cost={cost} />}
-              {free && <span class="badge count-badge" title={t("hud:build.free")}>{freeRoads}</span>}
-            </button>
-          );
-        })}
+        {buildButtons(store.settings, ownCities).main.map(({ kind, action }) => buildButton(kind, action))}
         <button type="button" class={`build dev-open${canAfford(hand, devCost) ? "" : " short"}`} onClick={onDev}
                 aria-pressed={devOpen} title={`${t("hud:dev.menuHelp")} · ${t("hud:build.cost", { res: formatRes(t, devCost) })}`}>
           <span class="build-name">{t("hud:dev.button")}</span>
@@ -538,10 +544,11 @@ function HandBar({ store, t, send, now, controls, touch, mode, devOpen, onTrade,
       </div>
       {/* Variants add their buttons in ONE row below, so the classic row never moves.
           At most one extra row: more options go into a dialog (like the development cards). */}
-      {(settlersStay(store.settings) || agesOn(store.settings)) && (
+      {(settlersStay(store.settings) || agesOn(store.settings) || extraBuilds.length > 0) && (
         <div class="actions extras">
           {agesOn(store.settings) && <AgeButton store={store} t={t} send={send} now={now} />}
           {settlersStay(store.settings) && <SettlerButton store={store} t={t} send={send} />}
+          {extraBuilds.map(({ kind, action }) => buildButton(kind, action))}
         </div>
       )}
     </div>

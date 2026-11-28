@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 import { buildButtons } from "./Hud";
 
 describe("build buttons", () => {
-  it("adds the megacity once the player has a city and the game has megacities", () => {
-    const kinds = (s: Record<string, unknown>, cities: number) => buildButtons(s, cities).map((b) => b.kind);
-    expect(kinds({ pieces: { megacities: 4 } }, 0)).toEqual(["road", "settlement", "city"]);
-    expect(kinds({ pieces: { megacities: 4 } }, 1)).toEqual(["road", "settlement", "city", "megacity"]);
-    expect(kinds({ pieces: { megacities: 0 } }, 2)).toEqual(["road", "settlement", "city"]);
+  it("keeps the classic row and puts the megacity in the row below once the player has a city", () => {
+    const kinds = (s: Record<string, unknown>, cities: number) => {
+      const b = buildButtons(s, cities);
+      return [b.main.map((x) => x.kind), b.extra.map((x) => x.kind)];
+    };
+    const classic = ["road", "settlement", "city"];
+    expect(kinds({ pieces: { megacities: 4 } }, 0)).toEqual([classic, []]);
+    expect(kinds({ pieces: { megacities: 4 } }, 1)).toEqual([classic, ["megacity"]]);
+    expect(kinds({ pieces: { megacities: 0 } }, 2)).toEqual([classic, []]);
   });
 });
 

@@ -69,7 +69,11 @@ hidden island, have their own page.
   </table>
   <ul>
     <li>{% translate "After the start, new roads and settlements must connect to your own roads." %}</li>
+    {% if s.pieces.megacities %}
     <li>{% translate "A city replaces one of your settlements and a megacity replaces one of your cities." %}</li>
+    {% else %}
+    <li>{% translate "A city replaces one of your settlements." %}</li>
+    {% endif %}
     <li>{% blocktranslate trimmed with roads=s.pieces.roads settlements=s.pieces.settlements cities=s.pieces.cities %}
       Each player has {{ roads }} roads, {{ settlements }} settlements and {{ cities }} cities.
     {% endblocktranslate %}</li>
