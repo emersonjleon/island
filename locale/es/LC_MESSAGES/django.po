@@ -2371,3 +2371,96 @@ msgstr "Un premio, como el Camino más largo, para quien tenga más colonos. Sol
 
 msgid "Know the classic game? <a href=\"%(url)s\">Read about the variations</a>: ages, settlers and the hidden island."
 msgstr "¿Ya conoces el juego clásico? <a href=\"%(url)s\">Lee sobre las variaciones</a>: edades, colonos y la isla oculta."
+
+msgid "Development of the Sea (tier II)"
+msgstr "Desarrollo del Mar (nivel II)"
+
+msgid "Golden development (tier III)"
+msgstr "Desarrollo Dorado (nivel III)"
+
+msgid "Advanced developments: a deck for each age"
+msgstr "Desarrollos mejorados: un mazo por edad"
+
+msgid "Developments of the Sea (tier II) in the deck"
+msgstr "Desarrollos del Mar (nivel II) en el mazo"
+
+msgid "Golden developments (tier III) in the deck"
+msgstr "Desarrollos Dorados (nivel III) en el mazo"
+
+msgid "Hexes a veteran knight moves the robber"
+msgstr "Hexágonos que un caballero veterano mueve el ladrón"
+
+msgid "Hexes an elite knight moves the robber"
+msgstr "Hexágonos que un caballero de élite mueve el ladrón"
+
+msgid "Cards a veteran or elite knight steals"
+msgstr "Cartas que roba un caballero veterano o de élite"
+
+msgid "Cards it steals from a player over the robber's limit"
+msgstr "Cartas que roba a quien pasa el límite del ladrón"
+
+msgid "Rolls a fishing fleet lasts"
+msgstr "Tiradas que dura una flota pesquera"
+
+msgid "Extra fish per building from a fishing fleet"
+msgstr "Pescado extra por edificio con una flota pesquera"
+
+msgid "Rolls a merchant lasts"
+msgstr "Tiradas que dura un mercader"
+
+msgid "Rolls a great market lasts"
+msgstr "Tiradas que dura un gran mercado"
+
+msgid "Bank trade ratio with a merchant or great market"
+msgstr "Cambio con el banco con un mercader o gran mercado"
+
+msgid "Longest an effect can grow when played again (%)"
+msgstr "Lo máximo que crece un efecto al jugarlo otra vez (%)"
+
+msgid "Roads from a causeway"
+msgstr "Caminos de una calzada"
+
+msgid "Resources from a bountiful harvest"
+msgstr "Recursos de una cosecha abundante"
+
+msgid "Most fish from a bountiful harvest"
+msgstr "Máximo de pescado de una cosecha abundante"
+
+msgid "Rolls an architect lasts"
+msgstr "Tiradas que dura un arquitecto"
+
+msgid "Cards an architect takes off a city or megacity"
+msgstr "Cartas que un arquitecto descuenta de una ciudad o metrópolis"
+
+msgid "Cards each player ahead gives with a tribute"
+msgstr "Cartas que da cada jugador adelante con un tributo"
+
+msgid "Veteran knight"
+msgstr "Caballero veterano"
+
+msgid "Fishing fleet"
+msgstr "Flota pesquera"
+
+msgid "Merchant"
+msgstr "Mercader"
+
+msgid "Causeway"
+msgstr "Calzada"
+
+msgid "Bountiful harvest"
+msgstr "Cosecha abundante"
+
+msgid "Elite knight"
+msgstr "Caballero de élite"
+
+msgid "Architect"
+msgstr "Arquitecto"
+
+msgid "Great market"
+msgstr "Gran mercado"
+
+msgid "Tribute"
+msgstr "Tributo"
+
+msgid "Each age opens a new deck of developments: in the Age of the Sea, developments of the Sea (%(c2)s) with a veteran knight, fishing fleet, merchant, causeway and bountiful harvest; in the Golden Age, golden developments (%(c3)s) with an elite knight, architect, great market and tribute. The fleet, the markets and the architect last a few rolls, and everyone sees them."
+msgstr "Cada edad abre un mazo nuevo de desarrollos: en la Edad del Mar, los desarrollos del Mar (%(c2)s), con caballero veterano, flota pesquera, mercader, calzada y cosecha abundante; en la Edad Dorada, los desarrollos Dorados (%(c3)s), con caballero de élite, arquitecto, gran mercado y tributo. La flota, los mercados y el arquitecto duran unas tiradas, y todos los ven."

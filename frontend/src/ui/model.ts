@@ -161,6 +161,22 @@ export function logLine(
           const total = Object.values((ev.taken ?? {}) as Record<string, number>).reduce((a, n) => a + n, 0);
           return { text: tw("dev_monopoly", { who, res: t(`hud:res.${String(ev.resource)}`), count: total }), seat };
         }
+        case "veteran_knight":
+        case "elite_knight": {
+          const card = t(`hud:dev.kind.${String(ev.card)}`);
+          return { text: victim ? tw("dev_strong_knight_robbed", { who, victim, card, count: ev.stolen ?? 0 }) : tw("dev_strong_knight", { who, card }), seat };
+        }
+        case "fishing_fleet":
+        case "merchant":
+        case "great_market":
+        case "architect":
+          return { text: tw("dev_effect", { who, card: t(`hud:dev.kind.${String(ev.card)}`), count: ev.rolls ?? 0 }), seat };
+        case "causeway": return { text: tw("dev_causeway", { who, count: ev.roads ?? 0 }), seat };
+        case "bountiful_harvest": return { text: tw("dev_harvest", { who, res: formatRes(t, ev.took as ResMap) }), seat };
+        case "tribute": {
+          const total = Object.values((ev.taken ?? {}) as Record<string, number>).reduce((a, n) => a + n, 0);
+          return { text: tw("dev_tribute", { who, count: total }), seat };
+        }
         default: return null;
       }
     }

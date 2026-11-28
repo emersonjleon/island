@@ -160,14 +160,32 @@
       "victory_point": "Victory point",
       "road_building": "Road building",
       "year_of_plenty": "Year of plenty",
-      "monopoly": "Monopoly"
+      "monopoly": "Monopoly",
+      "veteran_knight": "Veteran knight",
+      "fishing_fleet": "Fishing fleet",
+      "merchant": "Merchant",
+      "causeway": "Causeway",
+      "bountiful_harvest": "Bountiful harvest",
+      "elite_knight": "Elite knight",
+      "architect": "Architect",
+      "great_market": "Great market",
+      "tribute": "Tribute"
     },
     "help": {
       "knight": "Move the robber up to 3 hexes and steal a resource",
       "victory_point": "Worth a point when played",
       "road_building": "Build 2 roads for free",
       "year_of_plenty": "Take 2 resources from the bank",
-      "monopoly": "Take one resource from every player"
+      "monopoly": "Take one resource from every player",
+      "veteran_knight": "Move the robber up to {{reach}} hexes; steal 1 card, or 2 from someone over the robber's limit",
+      "fishing_fleet": "For {{rolls}} rolls, +{{fish}} fish per building on a producing fishing ground",
+      "merchant": "For {{rolls}} rolls, trade any resource with the bank at {{ratio}}:1",
+      "causeway": "Build {{count}} roads for free",
+      "bountiful_harvest": "Take {{count}} resources from the bank, at most {{fish}} fish",
+      "elite_knight": "Move the robber up to {{reach}} hexes; steal 1 card, or 2 from someone over the robber's limit",
+      "architect": "Your next city or megacity in {{rolls}} rolls costs {{count}} cards less",
+      "great_market": "For {{rolls}} rolls, trade any resource with the bank at {{ratio}}:1",
+      "tribute": "Each player with more points gives you {{count}} random cards"
     },
     "menu": "Developments",
     "menuHelp": "Buy and use development cards",
@@ -177,7 +195,24 @@
     "deckLeft_one": "{{count}} card left in the deck",
     "deckLeft_other": "{{count}} cards left in the deck",
     "buyNow": "Buy",
-    "yours": "Your cards"
+    "yours": "Your cards",
+    "tier": "Tier {{n}}",
+    "tierName": {
+      "1": "Developments",
+      "2": "Developments of the Sea",
+      "3": "Golden developments"
+    },
+    "tierHelp": {
+      "1": "Knight, road building, plenty, monopoly or a victory point",
+      "2": "Veteran knight, fishing fleet, merchant, causeway, harvest or a victory point",
+      "3": "Elite knight, architect, great market, tribute or a victory point"
+    },
+    "tierLocked": "From age {{n}}",
+    "pickHarvest": "Choose {{count}} resources to take from the bank (at most {{fish}} fish)",
+    "pickArchitect": "Choose the {{count}} cards your next city or megacity will cost less (not fish)",
+    "effect_one": "{{card}}: {{count}} roll left",
+    "effect_other": "{{card}}: {{count}} rolls left",
+    "effects": "Effects on"
   },
   "stats": {
     "open": "Stats",

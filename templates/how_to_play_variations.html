@@ -49,6 +49,14 @@
     <li>{% blocktranslate trimmed with age=megacity_age %}
       The megacity can only be built from age {{ age }} on.
     {% endblocktranslate %}</li>
+    {% if ages.ages.dev_tiers %}
+    <li>{% blocktranslate trimmed with c2=dev_tier2_cost c3=dev_tier3_cost %}
+      Each age opens a new deck of developments: in the Age of the Sea, developments of the Sea ({{ c2 }}) with
+      a veteran knight, fishing fleet, merchant, causeway and bountiful harvest; in the Golden Age, golden
+      developments ({{ c3 }}) with an elite knight, architect, great market and tribute. The fleet, the markets
+      and the architect last a few rolls, and everyone sees them.
+    {% endblocktranslate %}</li>
+    {% endif %}
     {% if ages.robber.fish_ransom %}
     <li>{% blocktranslate trimmed with n=ages.robber.fish_ransom age=ages.ages.fish_ransom_age %}
       From age {{ age }} on, a player holding at least {{ n }} fish pays the robber those {{ n }} fish instead of losing other resources.

@@ -508,3 +508,4 @@ table.keys td { padding: 4px 0; }
 @media (prefers-reduced-motion: reduce) { .age-advance .age-bar { transition: none; } }
 .age-tag { font-weight: 600; }
 .hud-hand .age-tag.age-max { align-self: center; padding: 0 8px; }
+.dev-effect { white-space: nowrap; }

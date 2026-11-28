@@ -268,6 +268,7 @@ class DevCardBought(Event):
     seat: int
     card: DevCardKind
     deck_left: int
+    tier: int = 1
 
     def redacted(self, vis: VisibilitySettings) -> dict[str, Any] | None:
         if vis.dev_cards is InfoVisibility.OPEN:
@@ -281,9 +282,12 @@ class DevCardBought(Event):
 
 class DevCardPlayed(Event):
     """``seat`` played ``card``. Knight: ``hex`` and ``victim`` (None: nobody to rob),
-    ``stolen`` cards taken (the kinds go only to the two players, in ``Hand``).
-    Year of plenty: ``took`` (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count). Road building:
-    ``roads`` free roads."""
+    ``stolen`` cards taken (the kinds go only to the two players, in ``Hand``); the
+    veteran and elite knights the same. Year of plenty and bountiful harvest: ``took``
+    (from the bank, public). Monopoly: ``resource`` and ``taken`` (seat -> count).
+    Tribute: ``taken`` (seat -> count). Road building and causeway: ``roads`` free roads.
+    Fishing fleet, merchant, great market and architect: ``rolls`` left of the effect;
+    architect also ``discount`` (cards off the next city or megacity)."""
     k: Literal["dev_card_played"] = "dev_card_played"
     seat: int
     card: DevCardKind
@@ -294,6 +298,8 @@ class DevCardPlayed(Event):
     resource: Resource | None = None
     taken: dict[int, int] = Field(default_factory=dict)
     roads: int = 0
+    rolls: int = 0
+    discount: ResMap = Field(default_factory=dict)
 
 
 class LargestArmy(Event):

@@ -99,7 +99,7 @@ async function main(): Promise<void> {
       if (a === "buy_dev_card") hud?.buyCard();
       if (a === "buy_settler") hud?.buySettler();
     },
-    onRobber: (hex) => hud?.robberPicked(hex),
+    onRobber: (hex, card) => hud?.robberPicked(hex, card),
     showMenu: menuFactory(canvasHost, t),
   });
   input = controller;
@@ -112,7 +112,7 @@ async function main(): Promise<void> {
       setPaused: (p) => controller.setPaused(p),
       setBindings: (b) => controller.setBindings(b),
       fitView: () => renderer.fit(),
-      startRobber: () => controller.startRobber(),
+      startRobber: (card) => controller.startRobber(card),
     },
     touch: touchFirst(),
     reconnect: () => connection.retryNow(),

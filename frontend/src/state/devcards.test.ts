@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { BoardMsg, DevCardsPlayer, GameStateView } from "../protocol/types";
-import { knightHexes, knightVictims, whyNot } from "./devcards";
+import { cardHelpValues, knightHexes, knightReach, knightVictims, tierCostKey, tiersOn, whyNot } from "./devcards";
 
 const hex = (id: number, q: number, r: number, terrain: string | null = "forest", land = true) =>
   ({ id, q, r, land, terrain, token: 5 }) as BoardMsg["hexes"][number];
@@ -61,5 +61,22 @@ describe("development card rules on the client", () => {
     const s = state({ buildings, players } as unknown as Partial<GameStateView>);
     expect(knightVictims(board, s, 1, 0, { robber: { friendly_min_points: 3 } })).toEqual([2]);
     expect(knightVictims(board, s, 1, 0)).toEqual([1, 2]);
+  });
+});
+
+describe("advanced developments", () => {
+  it("are on with ages unless dev_tiers is off", () => {
+    expect(tiersOn({})).toBe(false);
+    expect(tiersOn({ ages: { enabled: true } })).toBe(true);
+    expect(tiersOn({ ages: { enabled: true, dev_tiers: false } })).toBe(false);
+    expect([1, 2, 3].map(tierCostKey)).toEqual(["dev_card", "dev_card_tier2", "dev_card_tier3"]);
+  });
+
+  it("give each knight its reach and each card its numbers", () => {
+    const settings = { robber: { knight_max_distance: 1 }, dev_cards: { veteran_max_distance: 2, elite_max_distance: 3, tribute_cards: 3 } };
+    expect(["knight", "veteran_knight", "elite_knight"].map((k) => knightReach(settings, k as never))).toEqual([1, 2, 3]);
+    expect(knightHexes(board, state(), settings, "veteran_knight").length).toBeGreaterThan(knightHexes(board, state(), settings).length);
+    expect(cardHelpValues(settings, "tribute")).toEqual({ count: 3 });
+    expect(cardHelpValues({}, "merchant")).toEqual({ rolls: 3, ratio: 2 });
   });
 });

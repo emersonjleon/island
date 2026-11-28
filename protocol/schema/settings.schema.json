@@ -290,6 +290,14 @@
           "label": "settings.ages.age3",
           "stage": 1
         },
+        "dev_tiers": {
+          "default": true,
+          "description": "Advanced developments: tier II and III decks (``dev_cards.deck_tier2`` / ``deck_tier3``),\nbought from the matching age on.",
+          "label": "settings.ages.dev_tiers",
+          "stage": 1,
+          "title": "Dev Tiers",
+          "type": "boolean"
+        },
         "enabled": {
           "default": false,
           "label": "settings.ages.enabled",
@@ -815,6 +823,48 @@
           "title": "Dev Card",
           "type": "object"
         },
+        "dev_card_tier2": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "fish": 1,
+            "grain": 1,
+            "ore": 1,
+            "wool": 1
+          },
+          "description": "A tier II development (ages with ``ages.dev_tiers``).",
+          "label": "settings.economy.costs.dev_card_tier2",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Dev Card Tier2",
+          "type": "object"
+        },
+        "dev_card_tier3": {
+          "additionalProperties": {
+            "maximum": 1000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "fish": 2,
+            "grain": 1,
+            "ore": 1,
+            "wool": 1
+          },
+          "description": "A tier III development (ages with ``ages.dev_tiers``).",
+          "label": "settings.economy.costs.dev_card_tier3",
+          "propertyNames": {
+            "$ref": "#/$defs/Resource"
+          },
+          "stage": 1,
+          "title": "Dev Card Tier3",
+          "type": "object"
+        },
         "megacity": {
           "additionalProperties": {
             "maximum": 1000,
@@ -903,7 +953,16 @@
         "victory_point",
         "road_building",
         "year_of_plenty",
-        "monopoly"
+        "monopoly",
+        "veteran_knight",
+        "fishing_fleet",
+        "merchant",
+        "causeway",
+        "bountiful_harvest",
+        "elite_knight",
+        "architect",
+        "great_market",
+        "tribute"
       ],
       "title": "DevCardKind",
       "type": "string"
@@ -911,6 +970,34 @@
     "DevCardSettings": {
       "additionalProperties": false,
       "properties": {
+        "architect_discount": {
+          "default": 2,
+          "description": "Cards (never fish) taken off the next city or megacity while an architect is on.",
+          "label": "settings.dev_cards.architect_discount",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Architect Discount",
+          "type": "integer"
+        },
+        "architect_rolls": {
+          "default": 5,
+          "label": "settings.dev_cards.architect_rolls",
+          "maximum": 50,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Architect Rolls",
+          "type": "integer"
+        },
+        "causeway_roads": {
+          "default": 3,
+          "label": "settings.dev_cards.causeway_roads",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Causeway Roads",
+          "type": "integer"
+        },
         "cooldown": {
           "$ref": "#/$defs/Cooldown",
           "default": "per_roll",
@@ -954,6 +1041,133 @@
           "title": "Deck",
           "type": "object"
         },
+        "deck_tier2": {
+          "additionalProperties": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "bountiful_harvest": 2,
+            "causeway": 2,
+            "fishing_fleet": 3,
+            "merchant": 3,
+            "veteran_knight": 6,
+            "victory_point": 2
+          },
+          "label": "settings.dev_cards.deck_tier2",
+          "propertyNames": {
+            "$ref": "#/$defs/DevCardKind"
+          },
+          "stage": 1,
+          "title": "Deck Tier2",
+          "type": "object"
+        },
+        "deck_tier3": {
+          "additionalProperties": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "default": {
+            "architect": 2,
+            "elite_knight": 4,
+            "great_market": 2,
+            "tribute": 2,
+            "victory_point": 3
+          },
+          "label": "settings.dev_cards.deck_tier3",
+          "propertyNames": {
+            "$ref": "#/$defs/DevCardKind"
+          },
+          "stage": 1,
+          "title": "Deck Tier3",
+          "type": "object"
+        },
+        "effect_max_pct": {
+          "default": 200,
+          "description": "Playing a card whose effect is still on adds its rolls, up to this percent of one card's.",
+          "label": "settings.dev_cards.effect_max_pct",
+          "maximum": 1000,
+          "minimum": 100,
+          "stage": 1,
+          "title": "Effect Max Pct",
+          "type": "integer"
+        },
+        "elite_max_distance": {
+          "default": 5,
+          "label": "settings.dev_cards.elite_max_distance",
+          "maximum": 20,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Elite Max Distance",
+          "type": "integer"
+        },
+        "fleet_fish": {
+          "default": 1,
+          "description": "Extra fish per own building on a producing fishing ground while a fishing fleet is on.",
+          "label": "settings.dev_cards.fleet_fish",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Fleet Fish",
+          "type": "integer"
+        },
+        "fleet_rolls": {
+          "default": 3,
+          "label": "settings.dev_cards.fleet_rolls",
+          "maximum": 50,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Fleet Rolls",
+          "type": "integer"
+        },
+        "great_market_rolls": {
+          "default": 5,
+          "label": "settings.dev_cards.great_market_rolls",
+          "maximum": 50,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Great Market Rolls",
+          "type": "integer"
+        },
+        "harvest_cards": {
+          "default": 3,
+          "label": "settings.dev_cards.harvest_cards",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Harvest Cards",
+          "type": "integer"
+        },
+        "harvest_max_fish": {
+          "default": 1,
+          "label": "settings.dev_cards.harvest_max_fish",
+          "maximum": 10,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Harvest Max Fish",
+          "type": "integer"
+        },
+        "market_ratio": {
+          "default": 2,
+          "description": "Bank trade ratio for any resource while a merchant or great market is on.",
+          "label": "settings.dev_cards.market_ratio",
+          "maximum": 10,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Market Ratio",
+          "type": "integer"
+        },
+        "merchant_rolls": {
+          "default": 3,
+          "label": "settings.dev_cards.merchant_rolls",
+          "maximum": 50,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Merchant Rolls",
+          "type": "integer"
+        },
         "refill": {
           "default": true,
           "description": "A fresh copy of ``deck`` is shuffled in when it runs out, so cards never run out.",
@@ -969,6 +1183,45 @@
           "minimum": 0,
           "stage": 1,
           "title": "Road Building Roads",
+          "type": "integer"
+        },
+        "strong_knight_hoard_steal": {
+          "default": 2,
+          "description": "Cards it steals instead from a player holding more than their robber card limit.",
+          "label": "settings.dev_cards.strong_knight_hoard_steal",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Strong Knight Hoard Steal",
+          "type": "integer"
+        },
+        "strong_knight_steal": {
+          "default": 1,
+          "description": "Cards a veteran or elite knight steals.",
+          "label": "settings.dev_cards.strong_knight_steal",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Strong Knight Steal",
+          "type": "integer"
+        },
+        "tribute_cards": {
+          "default": 3,
+          "description": "Random cards each player with more points gives the tribute's player.",
+          "label": "settings.dev_cards.tribute_cards",
+          "maximum": 20,
+          "minimum": 0,
+          "stage": 1,
+          "title": "Tribute Cards",
+          "type": "integer"
+        },
+        "veteran_max_distance": {
+          "default": 4,
+          "label": "settings.dev_cards.veteran_max_distance",
+          "maximum": 20,
+          "minimum": 1,
+          "stage": 1,
+          "title": "Veteran Max Distance",
           "type": "integer"
         },
         "victory_point_points": {

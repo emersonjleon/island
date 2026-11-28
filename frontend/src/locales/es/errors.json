@@ -91,7 +91,11 @@
     "need_resources": "Elige {{count}} recursos",
     "bank_short": "El banco no tiene esos recursos",
     "need_resource": "Elige un recurso",
-    "blocked_by_settler": "Un colono protege ese hexágono: el ladrón no puede ir allí"
+    "blocked_by_settler": "Un colono protege ese hexágono: el ladrón no puede ir allí",
+    "no_tiers": "Los desarrollos mejorados están apagados en esta partida",
+    "tier_locked": "Los desarrollos de nivel {{tier}} piden la edad {{tier}}",
+    "too_much_fish": "A lo sumo {{max}} pescado",
+    "no_fish_discount": "El arquitecto no descuenta pescado"
   },
   "settler": {
     "setup_not_done": "Primero termina tu preparación",

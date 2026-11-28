@@ -6,7 +6,9 @@ The ratio is the best (lowest) of ``settings.economy.trade.bank_ratio`` and, whe
 ``settings.trading.harbor_trade`` is on, the harbors on which the player owns a
 finished settlement or city (``state.board.vertex_harbor``): a generic harbor gives
 ``settings.board.harbors.generic_ratio`` for any resource, a specific harbor
-``specific_ratio`` for its own resource only. See :func:`best_ratio`.
+``specific_ratio`` for its own resource only. A merchant or great market development
+(:mod:`engine.rules.dev_effects`) gives ``dev_cards.market_ratio`` for any resource
+while it is on. See :func:`best_ratio`.
 
 Reject codes (checked in this order, nothing changes on reject):
 
@@ -29,6 +31,7 @@ from engine.commands import BankTrade
 from engine.errors import RuleError
 from engine.events import Event, Hand, Traded
 from engine.game import command_handler
+from engine.rules import dev_effects
 from engine.settings.enums import Resource
 from engine.state import GameState
 
@@ -50,6 +53,9 @@ def best_ratio(state: GameState, seat: int, give: Resource) -> tuple[int, Litera
     s = state.settings
     ratio: int = s.economy.trade.bank_ratio
     via: Literal["bank", "harbor"] = "bank"
+    market = dev_effects.market_ratio(state, seat)      # merchant / great market card
+    if market is not None and market < ratio:
+        ratio = market
     if not s.trading.harbor_trade:
         return ratio, via
     hs = s.board.harbors

@@ -63,5 +63,17 @@
   "age_started": "{{who}} está avanzando a la edad {{age}}",
   "age_started_you": "Estás avanzando a la edad {{age}}",
   "age_reached": "{{who}} llegó a la edad {{age}}",
-  "age_reached_you": "Llegaste a la edad {{age}}"
+  "age_reached_you": "Llegaste a la edad {{age}}",
+  "dev_strong_knight": "{{who}} jugó un {{card}} y movió el ladrón",
+  "dev_strong_knight_you": "Jugaste un {{card}} y moviste el ladrón",
+  "dev_strong_knight_robbed": "{{who}} jugó un {{card}} y le robó {{count}} cartas a {{victim}}",
+  "dev_strong_knight_robbed_you": "Jugaste un {{card}} y le robaste {{count}} cartas a {{victim}}",
+  "dev_effect": "{{who}} jugó {{card}} por {{count}} tiradas",
+  "dev_effect_you": "Jugaste {{card}} por {{count}} tiradas",
+  "dev_causeway": "{{who}} jugó una calzada: {{count}} caminos gratis",
+  "dev_causeway_you": "Jugaste una calzada: {{count}} caminos gratis",
+  "dev_harvest": "{{who}} tomó {{res}} con una cosecha abundante",
+  "dev_harvest_you": "Tomaste {{res}} con una cosecha abundante",
+  "dev_tribute": "{{who}} cobró un tributo de {{count}} cartas",
+  "dev_tribute_you": "Cobraste un tributo de {{count}} cartas"
 }

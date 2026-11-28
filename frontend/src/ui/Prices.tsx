@@ -4,6 +4,7 @@ import type { TFunction } from "i18next";
 import type { BuildKind, ResMap, Resource } from "../protocol/types";
 import type { GameStore } from "../state/store";
 import { ageStep, agesOn } from "../state/ages";
+import { tiersOn } from "../state/devcards";
 import { settlersStay } from "../state/settlers";
 import { Dialog, useEscape } from "./Dialog";
 import { ResIcon } from "./icons";
@@ -25,9 +26,18 @@ function megacitiesOn(settings: GameStore["settings"]): boolean {
 
 export interface PriceRow { key: string; name: string; params?: Record<string, unknown>; cost: ResMap }
 
-/** Every row of the price list: the purchases, then the ages when the game has them. */
+/** Every row of the price list: the purchases (with the advanced developments after the
+ * first tier when the game has them), then the ages when the game has them. */
 export function priceRows(settings: GameStore["settings"]): PriceRow[] {
-  const rows: PriceRow[] = priceKinds(settings).map((kind) => ({ key: kind, name: NAME[kind] ?? kind, cost: costOf(settings, kind) }));
+  const rows: PriceRow[] = [];
+  for (const kind of priceKinds(settings)) {
+    rows.push({ key: kind, name: NAME[kind] ?? kind, cost: costOf(settings, kind) });
+    if (kind === ("dev_card" as BuildKind) && tiersOn(settings)) {
+      for (const tier of [2, 3]) {
+        rows.push({ key: `dev_card_tier${tier}`, name: `hud:dev.tierName.${tier}`, cost: costOf(settings, `dev_card_tier${tier}` as BuildKind) });
+      }
+    }
+  }
   if (agesOn(settings)) {
     for (const age of [2, 3]) {
       const step = ageStep(settings, age);

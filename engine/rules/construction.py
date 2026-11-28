@@ -44,7 +44,7 @@ from engine.events import Built, ConstructionCancelled, ConstructionStarted, Eve
 from engine.game import (
     SIG_BUILT, SIG_SETTLER_DEPARTING, TIMER_CONSTRUCTION_DONE, command_handler, connect, emit, timer_handler,
 )
-from engine.rules import age_state
+from engine.rules import age_state, dev_effects
 from engine.scheduler import Timer
 from engine.settings.enums import BuilderRequired, BuildKind, Resource
 from engine.state import Building, Construction, GameState
@@ -133,6 +133,8 @@ def start_construction(state: GameState, seat: int, kind: BuildKind, target: int
     if kind is BuildKind.ROAD and pl.free_roads(state, seat) > 0:
         free = state.ext["devcards"]["free_roads"]
         free[str(seat)] -= 1                 # used up even if the build is cancelled later
+    if kind in (BuildKind.CITY, BuildKind.MEGACITY) and not setup:
+        dev_effects.use_architect(state, seat)   # the discount goes with this build
     for r in Resource:
         p.hand[r] -= cost[r]
     p.pieces_left[kind] -= 1

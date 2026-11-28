@@ -160,14 +160,32 @@
       "victory_point": "Punto de victoria",
       "road_building": "Construcción de caminos",
       "year_of_plenty": "Año de abundancia",
-      "monopoly": "Monopolio"
+      "monopoly": "Monopolio",
+      "veteran_knight": "Caballero veterano",
+      "fishing_fleet": "Flota pesquera",
+      "merchant": "Mercader",
+      "causeway": "Calzada",
+      "bountiful_harvest": "Cosecha abundante",
+      "elite_knight": "Caballero de élite",
+      "architect": "Arquitecto",
+      "great_market": "Gran mercado",
+      "tribute": "Tributo"
     },
     "help": {
       "knight": "Mueve el ladrón hasta 3 hexágonos y roba un recurso",
       "victory_point": "Vale un punto al jugarla",
       "road_building": "Construye 2 caminos gratis",
       "year_of_plenty": "Toma 2 recursos del banco",
-      "monopoly": "Quítales un recurso a todos los jugadores"
+      "monopoly": "Quítales un recurso a todos los jugadores",
+      "veteran_knight": "Mueve el ladrón hasta {{reach}} hexágonos; roba 1 carta, o 2 a quien pasa el límite del ladrón",
+      "fishing_fleet": "Durante {{rolls}} tiradas, +{{fish}} pescado por edificio en una zona de pesca que produce",
+      "merchant": "Durante {{rolls}} tiradas, cambia cualquier recurso con el banco a {{ratio}}:1",
+      "causeway": "Construye {{count}} caminos gratis",
+      "bountiful_harvest": "Toma {{count}} recursos del banco, a lo sumo {{fish}} pescado",
+      "elite_knight": "Mueve el ladrón hasta {{reach}} hexágonos; roba 1 carta, o 2 a quien pasa el límite del ladrón",
+      "architect": "Tu próxima ciudad o metrópolis en {{rolls}} tiradas cuesta {{count}} cartas menos",
+      "great_market": "Durante {{rolls}} tiradas, cambia cualquier recurso con el banco a {{ratio}}:1",
+      "tribute": "Cada jugador con más puntos te da {{count}} cartas al azar"
     },
     "menu": "Desarrollos",
     "menuHelp": "Compra y usa cartas de desarrollo",
@@ -177,7 +195,24 @@
     "deckLeft_one": "Queda {{count}} carta en el mazo",
     "deckLeft_other": "Quedan {{count}} cartas en el mazo",
     "buyNow": "Comprar",
-    "yours": "Tus cartas"
+    "yours": "Tus cartas",
+    "tier": "Nivel {{n}}",
+    "tierName": {
+      "1": "Desarrollos",
+      "2": "Desarrollos del Mar",
+      "3": "Desarrollos Dorados"
+    },
+    "tierHelp": {
+      "1": "Caballero, construcción de caminos, abundancia, monopolio o un punto",
+      "2": "Caballero veterano, flota pesquera, mercader, calzada, cosecha o un punto",
+      "3": "Caballero de élite, arquitecto, gran mercado, tributo o un punto"
+    },
+    "tierLocked": "Desde la edad {{n}}",
+    "pickHarvest": "Elige {{count}} recursos para tomar del banco (a lo sumo {{fish}} pescado)",
+    "pickArchitect": "Elige las {{count}} cartas que costará menos tu próxima ciudad o metrópolis (sin pescado)",
+    "effect_one": "{{card}}: queda {{count}} tirada",
+    "effect_other": "{{card}}: quedan {{count}} tiradas",
+    "effects": "Efectos activos"
   },
   "stats": {
     "open": "Estadísticas",

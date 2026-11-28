@@ -52,6 +52,16 @@ async function signUp(page, name) {
     const priceRows = await page.$$eval(".price-table th", (ths) => ths.map((th) => th.textContent));
     log("prices:", priceRows.join(", "));
     if (!priceRows.some((r) => /II$/.test(r)) || !priceRows.some((r) => /III$/.test(r))) throw new Error("price list misses the ages");
+    if (priceRows.filter((r) => /development/i.test(r || "")).length < 3) throw new Error("price list misses the advanced developments");
+    await page.keyboard.press("Escape");
+    log("the developments menu has a deck per age; the higher ones are locked in age I");
+    await page.click(".hud-hand .actions button.dev-open");
+    await page.locator(".dev-tier-3").waitFor({ timeout: 5_000 });
+    const tiers = await page.$$eval(".dev-buy", (els) => els.map((el) => ({
+      cls: el.className, locked: el.querySelector("button.buy-card").disabled, label: el.querySelector("button.buy-card").textContent })));
+    log("tiers:", JSON.stringify(tiers));
+    if (tiers.length !== 3 || !tiers[1].locked || !tiers[2].locked) throw new Error("tier II and III should be locked in age I");
+    await page.screenshot({ path: `${OUT}/e2e-ages-devcards.png` });
     await page.keyboard.press("Escape");
     await page.waitForTimeout(1500);
     await page.screenshot({ path: `${OUT}/e2e-ages-start.png` });

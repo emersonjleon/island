@@ -88,15 +88,18 @@
       "at": 30000,
       "deck_left": 24,
       "k": "dev_card_bought",
-      "seat": 0
+      "seat": 0,
+      "tier": 1
     },
     {
       "at": 31000,
       "card": "year_of_plenty",
+      "discount": {},
       "hex": null,
       "k": "dev_card_played",
       "resource": null,
       "roads": 0,
+      "rolls": 0,
       "seat": 0,
       "stolen": 0,
       "taken": {},

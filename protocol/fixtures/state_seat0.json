@@ -58,6 +58,7 @@
         "0": {
           "cards": [],
           "count": 0,
+          "effects": {},
           "free_roads": 0,
           "knights": 1,
           "last_play": {
@@ -67,10 +68,12 @@
         },
         "1": {
           "count": 0,
+          "effects": {},
           "knights": 0
         },
         "2": {
           "count": 0,
+          "effects": {},
           "knights": 1
         }
       }
